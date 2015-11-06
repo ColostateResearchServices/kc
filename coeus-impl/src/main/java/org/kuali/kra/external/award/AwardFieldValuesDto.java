@@ -20,16 +20,16 @@ package org.kuali.kra.external.award;
 
 public class AwardFieldValuesDto {
 
-	private Long awardId;
+	private String awardId;
 	private String awardNumber;
 	private String chartOfAccounts;
 	private String accountNumber;
 	private String principalInvestigatorId;
 	
-	public Long getAwardId() {
+	public String getAwardId() {
 		return awardId;
 	}
-	public void setAwardId(Long awardId) {
+	public void setAwardId(String awardId) {
 		this.awardId = awardId;
 	}
 	public String getAwardNumber() {

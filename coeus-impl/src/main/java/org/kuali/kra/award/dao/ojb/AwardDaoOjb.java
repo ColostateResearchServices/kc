@@ -50,20 +50,25 @@ public class AwardDaoOjb extends LookupDaoOjb implements OjbCollectionAware, Awa
 
 	@Override
     public String getAwardNumber(Long awardId) {
-        final Criteria crit = new Criteria();
-        crit.addEqualTo(AWARD_ID, awardId);
-        final ReportQueryByCriteria q = QueryFactory.newReportQuery(Award.class, crit);
-        q.setAttributes(new String[] { AWARD_NUMBER });
-        @SuppressWarnings("unchecked")
-		final Iterator<String> resultsIter = getPersistenceBrokerTemplate().getIteratorByQuery(q);
-        if (!resultsIter.hasNext()) {
-            return null;
-        }
-        final String awardNumber = resultsIter.next();
-        while (resultsIter.hasNext()) {
-            resultsIter.next(); // exhaust the iterator so the result set can be returned
-        }
-        return awardNumber;
+		final List<String> awardNumbers = new ArrayList<>();
+		String awdNumString=null;
+		try (final Connection connection = getDataSource().getConnection();
+				 final PreparedStatement statement = connection.prepareStatement("SELECT AWARD_NUMBER FROM AWARD WHERE AWARD_ID = ? ")) {
+				statement.setString(1, awardId.toString());
+				try (ResultSet result = statement.executeQuery()) {
+					while (result.next()) {
+						awardNumbers.add(result.getString(1));
+					}
+				}
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+        
+		if (!awardNumbers.isEmpty()) {
+		  awdNumString = awardNumbers.get(0);
+		}
+		
+        return awdNumString;
     }
 
     /**

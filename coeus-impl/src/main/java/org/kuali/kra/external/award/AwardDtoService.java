@@ -53,6 +53,7 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 			AwardDTO dto = new AwardDTO();
 			dto.setAwardId(award.getAwardId());
 			dto.setAwardNumber(award.getAwardNumber());
+			dto.setAccountNumber(award.getAccountNumber());
 			dto.setAwardStartDate(award.getBeginDate());
 			dto.setAwardEndDate(award.getLastAwardAmountInfo().getFinalExpirationDate());
 			dto.setAwardTotalAmount(award.getLastAwardAmountInfo().getObliDistributableAmount().bigDecimalValue());
@@ -79,6 +80,8 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 			dto.setExcludedFromInvoicing(award.getAwardCgb().isSuspendInvoicing());
 			dto.setExcludedFromInvoicingReason(award.getSuspendInvoicingComment().getComments());
 			dto.setMethodOfPayment(awardMethodOfPaymentDtoService.buildDto(award.getAwardMethodOfPayment()));
+			dto.setSequenceNumber(award.getSequenceNumber().toString());
+			dto.setSequenceStatus(award.getAwardSequenceStatus());
 						
 			if (award.getFundingProposals() != null && !award.getFundingProposals().isEmpty()) {
 				InstitutionalProposal instProp = getBusinessObjectService().findBySinglePrimaryKey(InstitutionalProposal.class, award.getFundingProposals().get(0).getProposalId());

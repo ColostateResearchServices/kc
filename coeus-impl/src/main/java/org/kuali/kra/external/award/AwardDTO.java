@@ -34,6 +34,7 @@ import org.kuali.kra.external.sponsor.SponsorDTO;
 @XmlType(name = "awardDTO", propOrder = {
     "awardId",
     "awardNumber",
+    "accountNumber",
     "proposal",
     "awardStartDate",
     "awardEndDate",
@@ -64,7 +65,9 @@ import org.kuali.kra.external.sponsor.SponsorDTO;
     "methodOfPayment",
     "invoiceBillingFrequency",
     "excludedFromInvoicing",
-    "excludedFromInvoicingReason"
+    "excludedFromInvoicingReason",
+    "sequenceNumber",
+    "sequenceStatus"
 })
 public class AwardDTO implements Serializable {
 
@@ -72,6 +75,7 @@ public class AwardDTO implements Serializable {
 
 	private Long awardId;
 	private String awardNumber;
+	private String accountNumber;
     private ProposalDTO proposal;
 	private Date awardStartDate;
 	private Date awardEndDate;
@@ -103,6 +107,8 @@ public class AwardDTO implements Serializable {
     private BigDecimal minInvoiceAmount;
     private AwardMethodOfPaymentDTO methodOfPayment;
     private FrequencyDto invoiceBillingFrequency;
+    private String sequenceNumber;
+    private String sequenceStatus;
 
 	public Long getAwardId() {
 		return awardId;
@@ -301,5 +307,23 @@ public class AwardDTO implements Serializable {
 	}
 	public void setExcludedFromInvoicingReason(String excludedFromInvoicingReason) {
 		this.excludedFromInvoicingReason = excludedFromInvoicingReason;
+	}
+	public String getAccountNumber() {
+		return accountNumber;
+	}
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+	public String getSequenceNumber() {
+		return sequenceNumber;
+	}
+	public void setSequenceNumber(String sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
+	}
+	public String getSequenceStatus() {
+		return sequenceStatus;
+	}
+	public void setSequenceStatus(String sequenceStatus) {
+		this.sequenceStatus = sequenceStatus;
 	}
 }

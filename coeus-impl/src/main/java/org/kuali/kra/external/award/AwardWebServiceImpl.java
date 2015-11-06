@@ -19,6 +19,7 @@
 package org.kuali.kra.external.award;
 
 import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,8 @@ import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
+
 
 public class AwardWebServiceImpl implements AwardWebService {
 	
@@ -46,6 +49,7 @@ public class AwardWebServiceImpl implements AwardWebService {
 	private KcDtoService<AwardDTO, Award> awardDtoService;
 	private ParameterService parameterService;
 	
+	@Transactional
 	public AwardDTO getAward(Long awardId) {
 		String awardNumber = getAwardService().getAwardNumber(awardId);
 		if (StringUtils.isNotBlank(awardNumber)) {
@@ -89,19 +93,19 @@ public class AwardWebServiceImpl implements AwardWebService {
 	public List<AwardDTO> getMatchingAwards(AwardFieldValuesDto fieldValuesDto) {
 		List<AwardDTO> results = new ArrayList<AwardDTO>();
 		Map<String, Object> fieldValues = new HashMap<String, Object>();
-		if (fieldValuesDto.getAwardId() != null) {
+		if (StringUtils.isNotBlank(fieldValuesDto.getAwardId()) ) {
 			fieldValues.put("awardId", fieldValuesDto.getAwardId());
 		}
-		if (fieldValuesDto.getChartOfAccounts() != null) {
+		if (StringUtils.isNotBlank(fieldValuesDto.getChartOfAccounts())) {
 			fieldValues.put("financialChartOfAccountsCode", fieldValuesDto.getChartOfAccounts());
 		}
-		if (fieldValuesDto.getAccountNumber() != null) {
+		if (StringUtils.isNotBlank(fieldValuesDto.getAccountNumber())) {
 			fieldValues.put("accountNumber", fieldValuesDto.getAccountNumber());
 		}
-		if (fieldValuesDto.getPrincipalInvestigatorId() != null) {
+		if (StringUtils.isNotBlank(fieldValuesDto.getPrincipalInvestigatorId())) {
 			fieldValues.put("projectPersons.personId", fieldValuesDto.getPrincipalInvestigatorId());
 		}
-		if (fieldValuesDto.getAwardNumber() != null) {
+		if (StringUtils.isNotBlank(fieldValuesDto.getAwardNumber() )) {
 			fieldValues.put("awardNumber", fieldValuesDto.getAwardNumber());
 		}
         // use the awardSequenceStatus to return the latest active award
