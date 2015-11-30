@@ -18,6 +18,8 @@
  */
 package org.kuali.kra.external.award;
 
+import java.math.BigDecimal;
+
 import org.kuali.coeus.common.framework.sponsor.Sponsor;
 import org.kuali.kra.award.document.AwardDocument;
 import org.kuali.kra.award.home.Award;
@@ -49,7 +51,7 @@ public class AwardAccountDtoService extends KcDtoServiceBase<AwardAccountDTO, Aw
         }
         
         // send the award number which is the proposal number on the KFS side
-        awardAccountDTO.setProposalNumber(award.getAwardNumber());
+        awardAccountDTO.setAwardNumber(award.getAwardNumber());
         awardAccountDTO.setSponsorCode(award.getSponsorCode());
         awardAccountDTO.setSponsorName(award.getSponsorName());
         awardAccountDTO.setFederalSponsor(isFederalSponsor(award));
@@ -70,6 +72,24 @@ public class AwardAccountDtoService extends KcDtoServiceBase<AwardAccountDTO, Aw
             awardAccountDTO.setSponsorTypeCode(null);
         }
         
+        awardAccountDTO.setAccountNumber(award.getAccountNumber());
+        awardAccountDTO.setChartOfAcccountsCode(award.getFinancialChartOfAccountsCode());
+        
+        if (ObjectUtils.isNotNull(award.getAwardCgb())) {
+	        awardAccountDTO.setFinalBill(award.getAwardCgb().isFinalBill());
+	        awardAccountDTO.setLastBilledDate(award.getAwardCgb().getLastBilledDate());
+	        awardAccountDTO.setPreviousLastBilledDate(award.getAwardCgb().getPreviousLastBilledDate());
+	        awardAccountDTO.setLetterOfCreditReviewIndicator(award.getAwardCgb().isLetterOfCreditReviewIndicator());
+	        if (award.getAwardCgb().getAmountToDraw() != null) {
+	            awardAccountDTO.setAmountToDraw(award.getAwardCgb().getAmountToDraw().bigDecimalValue());
+	        }
+	        else {
+		        awardAccountDTO.setAmountToDraw(BigDecimal.ZERO);
+	        	
+	        }
+	        
+        }
+
         return awardAccountDTO;
 	}
 	

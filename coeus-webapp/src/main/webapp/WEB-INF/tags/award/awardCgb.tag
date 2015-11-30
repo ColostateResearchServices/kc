@@ -95,68 +95,12 @@
 		<tr>
 			<th>
 				<div style="text-align:right;">
-					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.additionalFormsRequired}"  />
-				</div>
-			</th>
-			<td>
-				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.additionalFormsRequired" attributeEntry="${cgbAttributes.additionalFormsRequired}" readOnly="${cgbReadOnly}"/>
-				</div>
-			</td>
-			<th>
-				<div style="text-align:right;">
-					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.autoApproveInvoice}"  />
-				</div>
-			</th>
-			<td>
-				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.autoApproveInvoice" attributeEntry="${cgbAttributes.autoApproveInvoice}" readOnly="${cgbReadOnly}"/>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<th>
-				<div style="text-align:right;">
-					<c:out value="${document.awardList[0].additionalFormsDescriptionComment.commentType.description}"/>
-				</div>
-			</th>
-			<td colspan="3">
-				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.additionalFormsDescriptionComment.comments" attributeEntry="${awardCommentAttributes.comments}" readOnly="${cgbReadOnly}"/>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<th>
-				<div style="text-align:right;">
-					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.minInvoiceAmount}"  />
-				</div>
-			</th>
-			<td>
-				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.minInvoiceAmount" attributeEntry="${cgbAttributes.minInvoiceAmount}" readOnly="${cgbReadOnly}"/>
-				</div>
-			</td>
-			<th>
-				<div style="text-align:right;">
 					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.invoicingOption}"  />
 				</div>
 			</th>
 			<td>
 				<div style="text-align:left;">
 					<kul:htmlControlAttribute property="${cgbPath}.awardCgb.invoicingOption" attributeEntry="${cgbAttributes.invoicingOption}" readOnly="${cgbReadOnly}"/>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<th>
-				<div style="text-align:right;">
-					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.stopWork}"  />
-				</div>
-			</th>
-			<td>
-				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.stopWork" attributeEntry="${cgbAttributes.stopWork}" readOnly="${cgbReadOnly}"/>
 				</div>
 			</td>
 			<th>
@@ -174,21 +118,41 @@
                                 anchor="${tabKey}" />
                     </c:if>
 				</div>
-			</td>
+			</td>			
 		</tr>
 		<tr>
 			<th>
 				<div style="text-align:right;">
-					<c:out value="${document.awardList[0].stopWorkReasonComment.commentType.description}"/>
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.autoApproveInvoice}"  />
 				</div>
 			</th>
-			<td colspan="3">
+			<td>
 				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.stopWorkReasonComment.comments" attributeEntry="${awardCommentAttributes.comments}" readOnly="${cgbReadOnly}"/>
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.autoApproveInvoice" attributeEntry="${cgbAttributes.autoApproveInvoice}" readOnly="${cgbReadOnly}"/>
 				</div>
-			</td>
+			</td>		
+			<th>
+				<div style="text-align:right;">
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.minInvoiceAmount}"  />
+				</div>
+			</th>
+			<td>
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.minInvoiceAmount" attributeEntry="${cgbAttributes.minInvoiceAmount}" readOnly="${cgbReadOnly}"/>
+				</div>
+			</td>			
 		</tr>
 		<tr>
+			<th>
+				<div style="text-align:right;">
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.stopWork}"  />
+				</div>
+			</th>
+			<td>
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.stopWork" attributeEntry="${cgbAttributes.stopWork}" readOnly="${cgbReadOnly}"/>
+				</div>
+			</td>		
 			<th>
 				<div style="text-align:right;">
 					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.suspendInvoicing }"/>
@@ -203,6 +167,16 @@
 		<tr>
 			<th>
 				<div style="text-align:right;">
+					<c:out value="${document.awardList[0].stopWorkReasonComment.commentType.description}"/>
+				</div>
+			</th>
+			<td>
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.stopWorkReasonComment.comments" attributeEntry="${awardCommentAttributes.comments}" readOnly="${cgbReadOnly}"/>
+				</div>
+			</td>
+			<th>
+				<div style="text-align:right;">
 					<c:out value="${document.awardList[0].suspendInvoicingComment.commentType.description}"/>
 				</div>
 			</th>
@@ -210,8 +184,33 @@
 				<div style="text-align:left;">
 	                <kul:htmlControlAttribute property="${cgbPath}.suspendInvoicingComment.comments" attributeEntry="${awardCommentAttributes.comments}" readOnly="${cgbReadOnly}"/>
 				</div>
+			</td>					
+		</tr>
+		<tr>
+			<th>
+				<div style="text-align:right;">
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.additionalFormsRequired}"  />
+				</div>
+			</th>
+			<td>
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.additionalFormsRequired" attributeEntry="${cgbAttributes.additionalFormsRequired}" readOnly="${cgbReadOnly}"/>
+				</div>
 			</td>
-		</tr>					
+
+		</tr>
+		<tr>
+			<th>
+				<div style="text-align:right;">
+					<c:out value="${document.awardList[0].additionalFormsDescriptionComment.commentType.description}"/>
+				</div>
+			</th>
+			<td colspan="3">
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.additionalFormsDescriptionComment.comments" attributeEntry="${awardCommentAttributes.comments}" readOnly="${cgbReadOnly}"/>
+				</div>
+			</td>
+		</tr>			
 	</table>
 	</div>
 </kul:tab>

@@ -21,6 +21,7 @@ package org.kuali.kra.external.award;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -67,7 +68,8 @@ import org.kuali.kra.external.sponsor.SponsorDTO;
     "excludedFromInvoicing",
     "excludedFromInvoicingReason",
     "sequenceNumber",
-    "sequenceStatus"
+    "sequenceStatus",
+    "awardAccounts"
 })
 public class AwardDTO implements Serializable {
 
@@ -109,6 +111,8 @@ public class AwardDTO implements Serializable {
     private FrequencyDto invoiceBillingFrequency;
     private String sequenceNumber;
     private String sequenceStatus;
+    private List<AwardAccountDTO> awardAccounts;
+
 
 	public Long getAwardId() {
 		return awardId;
@@ -325,5 +329,11 @@ public class AwardDTO implements Serializable {
 	}
 	public void setSequenceStatus(String sequenceStatus) {
 		this.sequenceStatus = sequenceStatus;
+	}
+	public List<AwardAccountDTO> getAwardAccounts() {
+		return awardAccounts;
+	}
+	public void setAwardAccounts(List<AwardAccountDTO> awardAccounts) {
+		this.awardAccounts = awardAccounts;
 	}
 }

@@ -18,6 +18,7 @@
  */
 package org.kuali.kra.external.award.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kuali.coeus.common.framework.version.VersionStatus;
@@ -78,15 +79,17 @@ public class AwardAccountServiceImpl implements AwardAccountService {
         List<Award> awards = new ArrayList<Award>();
         HashMap<String, String> searchCriteria =  new HashMap<String, String>();
         // It is possible to have a null chart of accounts code
-        if (ObjectUtils.isNotNull(financialAccountNumber)) {
+        if (!StringUtils.isEmpty(financialAccountNumber)) {
             searchCriteria.put("accountNumber", financialAccountNumber);  
-            searchCriteria.put("financialChartOfAccountsCode", chartOfAccounts);
+            if (!StringUtils.isEmpty(chartOfAccounts)) {
+            	searchCriteria.put("financialChartOfAccountsCode", chartOfAccounts);
+            }
             // use the awardSequenceStatus to return the latest active award
             searchCriteria.put("awardSequenceStatus", VersionStatus.ACTIVE.name());
             awards = new ArrayList<Award>(businessObjectService.findMatching(Award.class, searchCriteria));
         }
         if (ObjectUtils.isNull(awards) || awards.isEmpty()) {           
-            LOG.warn("No award found for the account number " + financialAccountNumber + " and chart " + "chartOfAccounts");            
+            LOG.warn("No award found for the account number " + financialAccountNumber + " and chart " + chartOfAccounts);            
         }  
         return awards;
     }

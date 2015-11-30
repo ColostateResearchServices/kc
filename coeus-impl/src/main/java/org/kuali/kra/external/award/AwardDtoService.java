@@ -18,7 +18,14 @@
  */
 package org.kuali.kra.external.award;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
+import org.kuali.coeus.common.framework.sponsor.Sponsor;
+import org.kuali.kra.award.awardhierarchy.AwardHierarchy;
+import org.kuali.kra.award.awardhierarchy.AwardHierarchyService;
 import org.kuali.kra.award.cgb.AwardCgbConstants;
 import org.kuali.kra.award.contacts.AwardUnitContact;
 import org.kuali.kra.award.home.Award;
@@ -26,7 +33,6 @@ import org.kuali.kra.award.home.AwardConstants;
 import org.kuali.kra.award.home.AwardMethodOfPayment;
 import org.kuali.kra.award.paymentreports.Frequency;
 import org.kuali.kra.award.paymentreports.awardreports.AwardReportTerm;
-import org.kuali.coeus.common.framework.sponsor.Sponsor;
 import org.kuali.kra.external.awardpayment.AwardMethodOfPaymentDTO;
 import org.kuali.kra.external.frequency.FrequencyDto;
 import org.kuali.kra.external.service.KcDtoService;
@@ -46,6 +52,8 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 	private KcDtoService<SponsorDTO, Sponsor> sponsorDtoService;
 	private KcDtoService<AwardMethodOfPaymentDTO, AwardMethodOfPayment> awardMethodOfPaymentDtoService;
 	private KcDtoService<FrequencyDto, Frequency> frequencyDtoService;
+	private AwardAccountDtoService awardAccountDtoService;
+	private AwardHierarchyService awardHierarchyService;
 	
 	@Override
 	public AwardDTO buildDto(Award award) {
@@ -106,6 +114,8 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 					dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(reportItem.getFrequency()));
 				}
 			}
+						
+			dto.setAwardAccounts(getAwardAccounts(award));
 			
 			return dto;
 		} else {
@@ -163,6 +173,40 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 	public void setFrequencyDtoService(
 			KcDtoService<FrequencyDto, Frequency> frequencyDtoService) {
 		this.frequencyDtoService = frequencyDtoService;
+	}
+	
+	protected List<AwardAccountDTO> getAwardAccounts(Award award) {
+		
+		List<AwardAccountDTO> awardAccounts = new ArrayList<AwardAccountDTO>();
+
+		List<String> orderList = new ArrayList<String>();
+		Map<String, AwardHierarchy>  hierarchyMap =  getAwardHierarchyService().getAwardHierarchy(award.getAwardNumber(), orderList);
+		
+		for (String awardNum : orderList) {
+			AwardAccountDTO awardAccountDto = new AwardAccountDTO();
+			Award awardFromHierarchy = hierarchyMap.get(awardNum).getAward();
+			awardAccountDto = getAwardAccountDtoService().buildDto(awardFromHierarchy);
+			awardAccounts.add(awardAccountDto);			
+		 }
+		
+		return awardAccounts;
+	}
+	
+	public AwardHierarchyService getAwardHierarchyService() {
+		return awardHierarchyService;
+	}
+
+	public AwardAccountDtoService getAwardAccountDtoService() {
+		return awardAccountDtoService;
+	}
+
+	public void setAwardAccountDtoService(
+			AwardAccountDtoService awardAccountDtoservice) {
+		this.awardAccountDtoService = awardAccountDtoservice;
+	}
+
+	public void setAwardHierarchyService(AwardHierarchyService awardHierarchyService) {
+		this.awardHierarchyService = awardHierarchyService;
 	}
 
 }

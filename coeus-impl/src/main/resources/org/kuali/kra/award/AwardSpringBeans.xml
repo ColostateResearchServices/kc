@@ -1169,13 +1169,7 @@
 
     <bean id="awardJavaFunctionKrmsTermService" class="org.kuali.kra.award.service.impl.AwardJavaFunctionKrmsTermServiceImpl"/>
 
-    <bean id="awardDtoService" class="org.kuali.kra.external.award.AwardDtoService">
-        <property name="businessObjectService" ref="businessObjectService" />
-        <property name="parameterService" ref="parameterService"/>
-        <property name="proposalDtoService" ref="proposalDtoService"/>
-        <property name="sponsorDtoService" ref="sponsorDtoService"/>
-        <property name="awardMethodOfPaymentDtoService" ref="awardMethodOfPaymentDtoService"/>
-    </bean>
+
 
     <bean id="institutionalProposalService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="institutionalProposalService" />
@@ -1185,6 +1179,16 @@
         <property name="businessObjectService" ref="businessObjectService" />
         <property name="parameterService" ref="parameterService"/>
         <property name="institutionalProposalService" ref="institutionalProposalService"/>
+    </bean>
+
+    <bean id="awardDtoService" class="org.kuali.kra.external.award.AwardDtoService">
+        <property name="businessObjectService" ref="businessObjectService" />
+        <property name="parameterService" ref="parameterService"/>
+        <property name="awardHierarchyService" ref="awardHierarchyService"/>
+        <property name="proposalDtoService" ref="proposalDtoService"/>
+        <property name="sponsorDtoService" ref="sponsorDtoService"/>
+        <property name="awardAccountDtoService" ref="awardAccountDtoService"/>
+        <property name="awardMethodOfPaymentDtoService" ref="awardMethodOfPaymentDtoService"/>
     </bean>
 
     <bean id="proposalDtoService" class="org.kuali.kra.external.award.ProposalDtoService"/>

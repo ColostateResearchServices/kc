@@ -161,17 +161,29 @@ public class AwardWebServiceImpl implements AwardWebService {
 			AwardBillingUpdateDto updateDto) {
 		AwardBillingUpdateStatusDto result = new AwardBillingUpdateStatusDto();
 		AwardCgb award = null;
-		if (StringUtils.isNotEmpty(searchDto.getChartOfAccounts()) && StringUtils.isNotEmpty(searchDto.getAccountNumber())) {
-			Map<String, Object> values = new HashMap<String, Object>();
+		Map<String, Object> values = new HashMap<String, Object>();
+
+		if (StringUtils.isNotEmpty(searchDto.getChartOfAccounts())) {
 			values.put("award.financialChartOfAccountsCode", searchDto.getChartOfAccounts());
+		}
+		if  (StringUtils.isNotEmpty(searchDto.getAccountNumber())) {
 			values.put("award.accountNumber", searchDto.getAccountNumber());
-            // use the awardSequenceStatus to return the latest active award
+		}
+        if (StringUtils.isNotEmpty(searchDto.getAwardId())) {
+			values.put("award.awardId", searchDto.getAccountNumber());
+        }
+        if (StringUtils.isNotEmpty(searchDto.getAwardNumber())) {
+			values.put("award.awardNumber", searchDto.getAwardNumber());
+        }       
+        if (!values.isEmpty()) {
+		    // use the awardSequenceStatus to return the latest active award
             values.put("awardSequenceStatus", VersionStatus.ACTIVE.name());
             List<AwardCgb> cgbAwards = new ArrayList<AwardCgb>(businessObjectService.findMatching(AwardCgb.class, values));
             if (!cgbAwards.isEmpty()) {
             	award = cgbAwards.get(0);
             }
 		}
+	
 		if (award == null) {
 			result.setSuccess(false);
 			result.getErrorMessages().add("Unable to find an award for update based on unique identifiers.");
