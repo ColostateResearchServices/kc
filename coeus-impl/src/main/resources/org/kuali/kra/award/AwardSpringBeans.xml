@@ -1188,6 +1188,7 @@
         <property name="proposalDtoService" ref="proposalDtoService"/>
         <property name="sponsorDtoService" ref="sponsorDtoService"/>
         <property name="awardAccountDtoService" ref="awardAccountDtoService"/>
+        <property name="frequencyDtoService" ref="frequencyDtoService"/>
         <property name="awardMethodOfPaymentDtoService" ref="awardMethodOfPaymentDtoService"/>
     </bean>
 

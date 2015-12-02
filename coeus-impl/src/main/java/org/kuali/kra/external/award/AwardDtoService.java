@@ -28,6 +28,7 @@ import org.kuali.kra.award.awardhierarchy.AwardHierarchy;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchyService;
 import org.kuali.kra.award.cgb.AwardCgbConstants;
 import org.kuali.kra.award.contacts.AwardUnitContact;
+import org.kuali.kra.award.document.AwardDocument;
 import org.kuali.kra.award.home.Award;
 import org.kuali.kra.award.home.AwardConstants;
 import org.kuali.kra.award.home.AwardMethodOfPayment;
@@ -87,10 +88,14 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 			dto.setMinInvoiceAmount(award.getAwardCgb().getMinInvoiceAmount() != null ? award.getAwardCgb().getMinInvoiceAmount().bigDecimalValue() : null);
 			dto.setExcludedFromInvoicing(award.getAwardCgb().isSuspendInvoicing());
 			dto.setExcludedFromInvoicingReason(award.getSuspendInvoicingComment().getComments());
-			dto.setMethodOfPayment(awardMethodOfPaymentDtoService.buildDto(award.getAwardMethodOfPayment()));
 			dto.setSequenceNumber(award.getSequenceNumber().toString());
 			dto.setSequenceStatus(award.getAwardSequenceStatus());
-						
+
+			if (StringUtils.isNotEmpty(award.getMethodOfPaymentCode())) {
+				AwardMethodOfPayment awardMethodOfPayment = getBusinessObjectService().findBySinglePrimaryKey(AwardMethodOfPayment.class, award.getMethodOfPaymentCode());
+			    dto.setMethodOfPayment(awardMethodOfPaymentDtoService.buildDto(awardMethodOfPayment));
+			}
+			
 			if (award.getFundingProposals() != null && !award.getFundingProposals().isEmpty()) {
 				InstitutionalProposal instProp = getBusinessObjectService().findBySinglePrimaryKey(InstitutionalProposal.class, award.getFundingProposals().get(0).getProposalId());
 				dto.setProposal(proposalDtoService.buildDto(instProp));
@@ -102,13 +107,13 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 				return null;
 			}
 			
-			String fundManagerTypeCode = getParameterService().getParameterValueAsString(Award.class, FUND_MANAGER_TYPE_CODE_PARAM);
+			String fundManagerTypeCode = getParameterService().getParameterValueAsString(AwardDocument.class, FUND_MANAGER_TYPE_CODE_PARAM);
 			for (AwardUnitContact contact : award.getAwardUnitContacts()) {
 				if (StringUtils.equals(contact.getUnitAdministratorTypeCode(), fundManagerTypeCode)) {
 					dto.setFundManagerId(contact.getPersonId());
 				}
 			}
-			String invoiceReportDesc =  getParameterService().getParameterValueAsString(Award.class, AwardConstants.INVOICE_REPORT_DESC_PARAM);
+			String invoiceReportDesc =  getParameterService().getParameterValueAsString(AwardDocument.class, AwardConstants.INVOICE_REPORT_DESC_PARAM);
 			for (AwardReportTerm reportItem : award.getAwardReportTermItems()) {
 				if (StringUtils.equals(invoiceReportDesc, reportItem.getReport().getDescription())) {
 					dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(reportItem.getFrequency()));
