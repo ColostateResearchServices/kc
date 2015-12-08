@@ -78,16 +78,7 @@ public class AwardAccountDtoService extends KcDtoServiceBase<AwardAccountDTO, Aw
         if (ObjectUtils.isNotNull(award.getAwardCgb())) {
 	        awardAccountDTO.setFinalBill(award.getAwardCgb().isFinalBill());
 	        awardAccountDTO.setLastBilledDate(award.getAwardCgb().getLastBilledDate());
-	        awardAccountDTO.setPreviousLastBilledDate(award.getAwardCgb().getPreviousLastBilledDate());
-	        awardAccountDTO.setLetterOfCreditReviewIndicator(award.getAwardCgb().isLetterOfCreditReviewIndicator());
-	        if (award.getAwardCgb().getAmountToDraw() != null) {
-	            awardAccountDTO.setAmountToDraw(award.getAwardCgb().getAmountToDraw().bigDecimalValue());
-	        }
-	        else {
-		        awardAccountDTO.setAmountToDraw(BigDecimal.ZERO);
-	        	
-	        }
-	        
+	        awardAccountDTO.setPreviousLastBilledDate(award.getAwardCgb().getPreviousLastBilledDate());	        
         }
 
         return awardAccountDTO;

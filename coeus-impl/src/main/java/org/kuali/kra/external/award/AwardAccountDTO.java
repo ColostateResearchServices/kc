@@ -53,8 +53,6 @@ public class AwardAccountDTO implements Serializable {
     private boolean finalBill;
     private Date lastBilledDate;
     private Date previousLastBilledDate;
-    private BigDecimal amountToDraw;
-    private boolean letterOfCreditReviewIndicator;
     
 
     public String getPrimeSponsorTypeCode() {
@@ -219,23 +217,5 @@ public class AwardAccountDTO implements Serializable {
 	public void setPreviousLastBilledDate(Date previousLastBilledDate) {
 		this.previousLastBilledDate = previousLastBilledDate;
 	}
-
-	public BigDecimal getAmountToDraw() {
-		return amountToDraw;
-	}
-
-	public void setAmountToDraw(BigDecimal amountToDraw) {
-		this.amountToDraw = amountToDraw;
-	}
-
-	public boolean isLetterOfCreditReviewIndicator() {
-		return letterOfCreditReviewIndicator;
-	}
-
-	public void setLetterOfCreditReviewIndicator(
-			boolean letterOfCreditReviewIndicator) {
-		this.letterOfCreditReviewIndicator = letterOfCreditReviewIndicator;
-	}
-
     
 }

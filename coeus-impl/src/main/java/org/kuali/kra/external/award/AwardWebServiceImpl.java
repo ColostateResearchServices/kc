@@ -160,62 +160,63 @@ public class AwardWebServiceImpl implements AwardWebService {
 	public AwardBillingUpdateStatusDto updateAwardBillingStatus(AwardFieldValuesDto searchDto,
 			AwardBillingUpdateDto updateDto) {
 		AwardBillingUpdateStatusDto result = new AwardBillingUpdateStatusDto();
-		AwardCgb award = null;
+		AwardCgb awardCgb = null;
+		Award award = null;
 		Map<String, Object> values = new HashMap<String, Object>();
 
 		if (StringUtils.isNotEmpty(searchDto.getChartOfAccounts())) {
-			values.put("award.financialChartOfAccountsCode", searchDto.getChartOfAccounts());
+			values.put("financialChartOfAccountsCode", searchDto.getChartOfAccounts());
 		}
 		if  (StringUtils.isNotEmpty(searchDto.getAccountNumber())) {
-			values.put("award.accountNumber", searchDto.getAccountNumber());
+			values.put("accountNumber", searchDto.getAccountNumber());
 		}
         if (StringUtils.isNotEmpty(searchDto.getAwardId())) {
-			values.put("award.awardId", searchDto.getAccountNumber());
+			values.put("awardId", searchDto.getAwardId());
         }
         if (StringUtils.isNotEmpty(searchDto.getAwardNumber())) {
-			values.put("award.awardNumber", searchDto.getAwardNumber());
+			values.put("awardNumber", searchDto.getAwardNumber());
         }       
         if (!values.isEmpty()) {
 		    // use the awardSequenceStatus to return the latest active award
             values.put("awardSequenceStatus", VersionStatus.ACTIVE.name());
-            List<AwardCgb> cgbAwards = new ArrayList<AwardCgb>(businessObjectService.findMatching(AwardCgb.class, values));
-            if (!cgbAwards.isEmpty()) {
-            	award = cgbAwards.get(0);
+            List<Award> awards = new ArrayList<Award>(businessObjectService.findMatching(Award.class, values));
+
+            
+            if (awards.size()>1) {
+    			result.setSuccess(false);
+    			result.getErrorMessages().add("Cannot update mulitple awards, found "+ awards.size() +" awards based on critera provided.");
+    			return result;            	
+            }
+            else if (!awards.isEmpty()) {
+            	award = awards.get(0);
             }
 		}
 	
-		if (award == null) {
+		if (award == null || award.getAwardCgb() == null) {
 			result.setSuccess(false);
 			result.getErrorMessages().add("Unable to find an award for update based on unique identifiers.");
 			return result;
 		}
 		
+		awardCgb = award.getAwardCgb();
+		
 		if (updateDto.isDoFinalBilledUpdate()) {
-			award.setFinalBill(updateDto.isFinalBilledIndicator());
+			awardCgb.setFinalBill(updateDto.isFinalBilledIndicator());
 		}
 		if (updateDto.isDoLastBillDateUpdate()) {
-			award.setPreviousLastBilledDate(award.getLastBilledDate());
-			award.setLastBilledDate(updateDto.getLastBillDate());
-		}
-		if (updateDto.isDoAmountToDrawUpdate()) {
-			award.setAmountToDraw(new ScaleTwoDecimal(updateDto.getAmountToDraw()));
+			awardCgb.setPreviousLastBilledDate(awardCgb.getLastBilledDate());
+			awardCgb.setLastBilledDate(updateDto.getLastBillDate());
 		}
 		if (updateDto.isDoInvoiceDocStatusUpdate()) {
-			award.setInvoiceDocumentStatus(updateDto.getInvoiceDocumentStatus());
-		}
-		if (updateDto.isDoLocCreationTypeUpdate()) {
-			
-		}
-		if (updateDto.isDoLocReviewUpdate()) {
-			award.setLetterOfCreditReviewIndicator(updateDto.isLocReviewIndicator());
+			awardCgb.setInvoiceDocumentStatus(updateDto.getInvoiceDocumentStatus());
 		}
 		if (updateDto.isRestorePreviousBillDate()) {
-			award.setLastBilledDate(award.getPreviousLastBilledDate());
-			award.setPreviousLastBilledDate(null);
+			awardCgb.setLastBilledDate(awardCgb.getPreviousLastBilledDate());
+			awardCgb.setPreviousLastBilledDate(null);
 		}
 		
-		getBusinessObjectService().save(award);
-		result.setAwardNumber(award.getAwardNumber());
+		getBusinessObjectService().save(awardCgb);
+		result.setAwardNumber(awardCgb.getAwardNumber());
 		result.setSuccess(true);
 		return result;
 	}
