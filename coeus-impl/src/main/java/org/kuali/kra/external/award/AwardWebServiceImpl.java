@@ -19,7 +19,6 @@
 package org.kuali.kra.external.award;
 
 import java.util.ArrayList;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +27,13 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 import org.kuali.kra.award.cgb.AwardCgb;
+import org.kuali.kra.award.contacts.AwardUnitContact;
 import org.kuali.kra.award.home.Award;
 import org.kuali.kra.award.home.AwardConstants;
 import org.kuali.kra.award.home.AwardService;
 import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.kuali.kra.award.dao.AwardLookupDao;
+import org.kuali.kra.award.document.AwardDocument;
 import org.kuali.kra.external.service.KcDtoService;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.krad.service.BusinessObjectService;
@@ -43,6 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class AwardWebServiceImpl implements AwardWebService {
 	
+	public static final String FUND_MANAGER_TYPE_CODE_PARAM = "FIN_SYS_UNIT_ADMIN_TYPE_FUND_MANAGER";
+
 	private BusinessObjectService businessObjectService;
 	private AwardService awardService;
 	private AwardLookupDao awardLookupDao;
@@ -108,7 +111,13 @@ public class AwardWebServiceImpl implements AwardWebService {
 		if (StringUtils.isNotBlank(fieldValuesDto.getAwardNumber() )) {
 			fieldValues.put("awardNumber", fieldValuesDto.getAwardNumber());
 		}
-        // use the awardSequenceStatus to return the latest active award
+		if (StringUtils.isNotBlank(fieldValuesDto.getFundManagerId() )) {
+			String fundManagerTypeCode = getParameterService().getParameterValueAsString(AwardDocument.class, FUND_MANAGER_TYPE_CODE_PARAM);
+			fieldValues.put("awardUnitContacts.unitAdministratorTypeCode", fundManagerTypeCode);
+			fieldValues.put("awardUnitContacts.personId", fieldValuesDto.getFundManagerId());
+		}		
+
+		// use the awardSequenceStatus to return the latest active award
 		fieldValues.put("awardSequenceStatus", VersionStatus.ACTIVE.name());
 		Collection<Award> awards = getAwardService().retrieveAwardsByCriteria(fieldValues);
 

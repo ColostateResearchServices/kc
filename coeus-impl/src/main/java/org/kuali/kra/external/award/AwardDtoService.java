@@ -63,6 +63,7 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 			dto.setAwardId(award.getAwardId());
 			dto.setAwardNumber(award.getAwardNumber());
 			dto.setAccountNumber(award.getAccountNumber());
+			dto.setChartOfAccountsCode(award.getFinancialChartOfAccountsCode());
 			dto.setAwardStartDate(award.getBeginDate());
 			dto.setAwardEndDate(award.getLastAwardAmountInfo().getFinalExpirationDate());
 			dto.setAwardTotalAmount(award.getLastAwardAmountInfo().getObliDistributableAmount().bigDecimalValue());
@@ -72,6 +73,7 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 			dto.setAwardIndirectCostAmount(award.getLastAwardAmountInfo().getObligatedTotalIndirect().bigDecimalValue());
 			dto.setProposalAwardTypeCode(award.getAwardTypeCode().toString());
 			dto.setAwardStatusCode(award.getStatusCode().toString());
+			dto.setActive(StringUtils.equalsIgnoreCase(award.getAwardStatus().getDescription(), "Active"));
 			dto.setSponsorCode(award.getSponsorCode());
 			dto.setTitle(award.getTitle());
 			dto.setUnitNumber(award.getLeadUnitNumber());

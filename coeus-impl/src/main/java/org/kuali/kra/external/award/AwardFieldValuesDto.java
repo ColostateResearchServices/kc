@@ -25,6 +25,7 @@ public class AwardFieldValuesDto {
 	private String chartOfAccounts;
 	private String accountNumber;
 	private String principalInvestigatorId;
+	private String fundManagerId;
 	
 	public String getAwardId() {
 		return awardId;
@@ -55,5 +56,11 @@ public class AwardFieldValuesDto {
 	}
 	public void setPrincipalInvestigatorId(String principalInvestigatorId) {
 		this.principalInvestigatorId = principalInvestigatorId;
+	}
+	public String getFundManagerId() {
+		return fundManagerId;
+	}
+	public void setFundManagerId(String fundManagerId) {
+		this.fundManagerId = fundManagerId;
 	}
 }

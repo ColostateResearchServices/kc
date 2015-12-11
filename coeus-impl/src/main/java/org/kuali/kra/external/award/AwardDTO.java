@@ -36,6 +36,7 @@ import org.kuali.kra.external.sponsor.SponsorDTO;
     "awardId",
     "awardNumber",
     "accountNumber",
+    "chartOfAccountsCode",
     "proposal",
     "awardStartDate",
     "awardEndDate",
@@ -47,6 +48,7 @@ import org.kuali.kra.external.sponsor.SponsorDTO;
     "awardCreateTimestamp",
     "proposalAwardTypeCode",
     "awardStatusCode",
+    "active",
     "sponsorCode",
     "title",
     "awardCommentText",
@@ -78,6 +80,7 @@ public class AwardDTO implements Serializable {
 	private Long awardId;
 	private String awardNumber;
 	private String accountNumber;
+	private String chartOfAccountsCode;
     private ProposalDTO proposal;
 	private Date awardStartDate;
 	private Date awardEndDate;
@@ -89,6 +92,7 @@ public class AwardDTO implements Serializable {
     private Date awardCreateTimestamp;
     private String proposalAwardTypeCode;
     private String awardStatusCode;
+    private boolean active;
     private String sponsorCode;
     private String title;
     private String awardCommentText;
@@ -335,5 +339,17 @@ public class AwardDTO implements Serializable {
 	}
 	public void setAwardAccounts(List<AwardAccountDTO> awardAccounts) {
 		this.awardAccounts = awardAccounts;
+	}
+	public String getChartOfAccountsCode() {
+		return chartOfAccountsCode;
+	}
+	public void setChartOfAccountsCode(String chartOfAccountsCode) {
+		this.chartOfAccountsCode = chartOfAccountsCode;
+	}
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }
