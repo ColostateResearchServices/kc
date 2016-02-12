@@ -1,0 +1,42 @@
+/*
+ * Kuali Coeus, a comprehensive research administration system for higher education.
+ * 
+ * Copyright 2005-2015 Kuali, Inc.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.kuali.coeus.sys.framework.rest;
+
+public class RestServiceConstants {
+
+	public static enum RestApiVersions {
+		VER_1("1");
+		private String version;
+		private RestApiVersions(String version) {
+			this.version = version;
+		}
+		public String getVersion() {
+			return version;
+		}
+	}
+	
+	public final class Configuration {
+		public static final String AUTH_USERS_URL = "auth.users.url";
+		public static final String AUTH_BASE_URL = "auth.base.url";
+	}
+	
+	private RestServiceConstants() {
+		throw new RuntimeException("constants class. cannot be instantiated.");
+	}
+}

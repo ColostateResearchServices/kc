@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.kuali.coeus</groupId>
         <artifactId>coeus</artifactId>
-        <version>1509.58-SNAPSHOT</version>
+        <version>1601.107-SNAPSHOT</version>
     </parent>
     <artifactId>coeus-impl</artifactId>
     <packaging>jar</packaging>
@@ -569,6 +569,11 @@
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
         </dependency>
+        
+        <dependency>
+        	<groupId>org.mockito</groupId>
+        	<artifactId>mockito-core</artifactId>
+       	</dependency>        
 
         <dependency>
             <groupId>org.kuali.commons</groupId>

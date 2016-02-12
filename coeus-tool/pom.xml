@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.kuali.coeus</groupId>
         <artifactId>coeus</artifactId>
-        <version>1509.58-SNAPSHOT</version>
+        <version>1601.107-SNAPSHOT</version>
     </parent>
     <artifactId>coeus-tool</artifactId>
     <packaging>jar</packaging>
@@ -43,16 +43,4 @@
         <maven.skip.packaging>true</maven.skip.packaging>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.kuali.coeus</groupId>
-            <artifactId>coeus-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kuali.rice</groupId>
-            <artifactId>rice-development-tools</artifactId>
-        </dependency>
-    </dependencies>
 </project>

@@ -30,18 +30,18 @@
 
     <context:annotation-config />
 
-    <util:list id="filtersToMap">
-        <value>BootstrapFilter</value>
-        <value>UserLoginFilter</value>
-        <value>UserPreferencesFilter</value>
-    </util:list>
-
-    <bean id="kcProposalDevelopmentConfigurer" class="org.kuali.coeus.sys.framework.config.KcConfigurer">
+    <bean id="kcProposalDevelopmentConfigurer" parent="apiConfigurer-parentBean">
         <property name="moduleName" value="kc.pd"/>
         <property name="moduleTitle" value="KC Proposal Development"/>
         <property name="dispatchServletName" value="kc-pd-krad"/>
-        <property name="filtersToMap" ref="filtersToMap"/>
+        <!-- always map auth filters for KRAD contexts -->
+        <property name="mapFilters" value="true"/>
         <property name="bootstrapSpringFile" value="classpath:org/kuali/coeus/propdev/impl/PropDevComponentSpringBeans.xml"/>
+        <property name="dispatchServletMappings">
+            <list>
+                <value>kc-pd-krad</value>
+            </list>
+        </property>
     </bean>
 
 </beans>

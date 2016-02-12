@@ -19,6 +19,7 @@
 package org.kuali.coeus.propdev.impl.core;
 
 import org.apache.commons.lang3.StringUtils;
+import org.kuali.coeus.coi.framework.*;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
 import org.kuali.coeus.common.framework.compliance.core.SaveDocumentSpecialReviewEvent;
 import org.kuali.coeus.common.framework.compliance.exemption.ExemptionType;
@@ -29,6 +30,7 @@ import org.kuali.coeus.common.notification.impl.bo.NotificationTypeRecipient;
 import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
 import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
 import org.kuali.coeus.propdev.impl.auth.perm.ProposalDevelopmentPermissionsService;
+import org.kuali.coeus.propdev.impl.coi.CoiConstants;
 import org.kuali.coeus.propdev.impl.datavalidation.ProposalDevelopmentDataValidationConstants;
 import org.kuali.coeus.propdev.impl.docperm.ProposalRoleTemplateService;
 import org.kuali.coeus.propdev.impl.docperm.ProposalUserRoles;
@@ -36,6 +38,7 @@ import org.kuali.coeus.propdev.impl.keyword.PropScienceKeyword;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationContext;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationRenderer;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
+import org.kuali.coeus.propdev.impl.person.ProposalPersonCoiIntegrationService;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyService;
 import org.kuali.coeus.propdev.impl.questionnaire.ProposalDevelopmentQuestionnaireHelper;
@@ -44,6 +47,7 @@ import org.kuali.coeus.propdev.impl.specialreview.ProposalSpecialReviewExemption
 import org.kuali.coeus.sys.framework.controller.KcCommonControllerService;
 import org.kuali.coeus.sys.framework.controller.UifExportControllerService;
 import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.framework.validation.AuditHelper;
 import org.kuali.coeus.sys.impl.validation.DataValidationItem;
 import org.kuali.kra.infrastructure.Constants;
@@ -79,6 +83,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.*;
 
 public abstract class ProposalDevelopmentControllerBase {
@@ -88,7 +93,8 @@ public abstract class ProposalDevelopmentControllerBase {
     public static final String ERROR_CERTIFICATION_PERSON_ALREADY_ANSWERED = "error.certification.person.alreadyAnswered";
     public static final String ERROR_CERTIFICATION_ALREADY_ANSWERED = "error.certification.alreadyAnswered";
     public static final String DEVELOPMENT_PROPOSAL_NUMBER = "developmentProposal.proposalNumber";
-
+    public static final String COI_DISCLOSURE_REQUIRED_ACTION_TYPE_CODE = "109";
+    public static final String COI_DISCLOSURE_REQUIRED_NOTIFICATION = "COI disclosure required notification";
     @Autowired
     @Qualifier("uifExportControllerService")
     private UifExportControllerService uifExportControllerService;
@@ -189,14 +195,40 @@ public abstract class ProposalDevelopmentControllerBase {
     @Qualifier("dateTimeService")
     private DateTimeService dateTimeService;
 
+    @Autowired
+    @Qualifier("propDevProjectRetrievalService")
+    private ProjectRetrievalService propDevProjectRetrievalService;
+    
+    @Autowired
+    @Qualifier("proposalPersonCoiIntegrationService")
+    ProposalPersonCoiIntegrationService proposalPersonCoiIntegrationService;
+
+    @Autowired
+    @Qualifier("proposalTypeService")
+    private ProposalTypeService proposalTypeService;
+
+    private ProjectPublisher projectPublisher;
+
+    public ProjectPublisher getProjectPublisher() {
+        //since COI is loaded last and @Lazy does not work, we have to use the ServiceLocator
+        if (projectPublisher == null) {
+            projectPublisher = KcServiceLocator.getService(ProjectPublisher.class);
+        }
+
+        return projectPublisher;
+    }
+
+    public void setProjectPublisher(ProjectPublisher projectPublisher) {
+        this.projectPublisher = projectPublisher;
+    }
+
     protected DocumentFormBase createInitialForm(HttpServletRequest request) {
         return new ProposalDevelopmentDocumentForm();
     }
     
     @ModelAttribute(value = "KualiForm")
     public UifFormBase initForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        UifFormBase form =  getKcCommonControllerService().initForm(this.createInitialForm(request), request, response);
-        return form;
+        return  getKcCommonControllerService().initForm(this.createInitialForm(request), request, response);
     }
      
     /**
@@ -249,6 +281,9 @@ public abstract class ProposalDevelopmentControllerBase {
          }
          if (StringUtils.equalsIgnoreCase(form.getPageId(), ProposalDevelopmentDataValidationConstants.DETAILS_PAGE_ID)) {
              handleSponsorChange(proposalDevelopmentDocument);
+             if (proposalDevelopmentDocument.getDevelopmentProposal().getS2sOpportunity() != null) {
+                 handleProposalTypeChange(proposalDevelopmentDocument.getDevelopmentProposal());
+             }
          }
 
          preSave(proposalDevelopmentDocument);
@@ -279,7 +314,7 @@ public abstract class ProposalDevelopmentControllerBase {
              ((ProposalDevelopmentViewHelperServiceImpl)form.getViewHelperService()).populateQuestionnaires(form);
          }
          String pageId = form.getActionParamaterValue(UifParameters.NAVIGATE_TO_PAGE_ID);
-         ModelAndView view = null;
+         final ModelAndView view;
          if (StringUtils.isNotBlank(pageId) && getGlobalVariableService().getMessageMap().hasNoErrors()) {
         	 form.setDirtyForm(false);
              view = getModelAndViewService().getModelAndView(form, pageId);
@@ -289,17 +324,24 @@ public abstract class ProposalDevelopmentControllerBase {
 
          if (form.getProposalDevelopmentDocument().getDevelopmentProposal() != null
                  && form.getProposalDevelopmentDocument().getDevelopmentProposal().getPropSpecialReviews() != null) {
-             for (ProposalSpecialReview specialReview : form.getProposalDevelopmentDocument().getDevelopmentProposal().getPropSpecialReviews()) {
-                 if (!specialReview.isLinkedToProtocol()) {
-                     form.getSpecialReviewHelper().prepareProtocolLinkViewFields(specialReview);
-                 }
-             }
+             form.getProposalDevelopmentDocument().getDevelopmentProposal().getPropSpecialReviews().stream()
+                     .filter(specialReview -> !specialReview.isLinkedToProtocol())
+                     .forEach(specialReview -> form.getSpecialReviewHelper().prepareProtocolLinkViewFields(specialReview));
          }
-         
+         getProjectPublisher().publishProject(getPropDevProjectRetrievalService().retrieveProject(form.getProposalDevelopmentDocument().getDevelopmentProposal().getProposalNumber()));
+
          return view;
      }
 
-     public ModelAndView save(@ModelAttribute("KualiForm") DocumentFormBase form, BindingResult result,
+    private void handleProposalTypeChange(DevelopmentProposal developmentProposal) {
+        if (developmentProposal.getS2sOpportunity() != null) {
+            String defaultS2sSubmissionTypeCode = getProposalTypeService().getDefaultSubmissionTypeCode(developmentProposal.getProposalTypeCode());
+            developmentProposal.getS2sOpportunity().setS2sSubmissionTypeCode(defaultS2sSubmissionTypeCode);
+            getDataObjectService().wrap(developmentProposal.getS2sOpportunity()).fetchRelationship("s2sSubmissionType");
+        }
+    }
+
+    public ModelAndView save(@ModelAttribute("KualiForm") DocumentFormBase form, BindingResult result,
              HttpServletRequest request, HttpServletResponse response, Class<? extends DocumentEventBase> eventClazz) throws Exception {
          ProposalDevelopmentDocumentForm pdForm = (ProposalDevelopmentDocumentForm) form;
          ProposalDevelopmentDocument proposalDevelopmentDocument = (ProposalDevelopmentDocument) pdForm.getDocument();
@@ -307,7 +349,6 @@ public abstract class ProposalDevelopmentControllerBase {
                  proposalDevelopmentDocument);
          proposalDevelopmentService.initializeProposalSiteNumbers(
                  proposalDevelopmentDocument);
-         ModelAndView view = null;
 
          saveAnswerHeaders(pdForm,request.getParameter(UifParameters.PAGE_ID));
 
@@ -320,6 +361,7 @@ public abstract class ProposalDevelopmentControllerBase {
          populateAdHocRecipients(pdForm.getProposalDevelopmentDocument());
 
          String pageId = form.getActionParamaterValue(UifParameters.NAVIGATE_TO_PAGE_ID);
+         final ModelAndView view;
          if (StringUtils.isNotBlank(pageId) && getGlobalVariableService().getMessageMap().hasNoErrors()) {
         	 form.setDirtyForm(false);
              view = getModelAndViewService().getModelAndView(form, pageId);
@@ -329,12 +371,11 @@ public abstract class ProposalDevelopmentControllerBase {
 
          if (pdForm.getProposalDevelopmentDocument().getDevelopmentProposal() != null
                  && pdForm.getProposalDevelopmentDocument().getDevelopmentProposal().getPropSpecialReviews() != null) {
-             for (ProposalSpecialReview specialReview : pdForm.getProposalDevelopmentDocument().getDevelopmentProposal().getPropSpecialReviews()) {
-                 if (!specialReview.isLinkedToProtocol()) {
-                     pdForm.getSpecialReviewHelper().prepareProtocolLinkViewFields(specialReview);
-                 }
-             }
+             pdForm.getProposalDevelopmentDocument().getDevelopmentProposal().getPropSpecialReviews().stream()
+                     .filter(specialReview -> !specialReview.isLinkedToProtocol())
+                     .forEach(specialReview -> pdForm.getSpecialReviewHelper().prepareProtocolLinkViewFields(specialReview));
          }
+         getProjectPublisher().publishProject(getPropDevProjectRetrievalService().retrieveProject(pdForm.getProposalDevelopmentDocument().getDevelopmentProposal().getProposalNumber()));
 
          return view;
      }
@@ -384,7 +425,7 @@ public abstract class ProposalDevelopmentControllerBase {
         if(form.getEditableCollectionLines().containsKey(selectedCollectionPath)) {
             updateEditableCollectionLines(form, selectedCollectionPath);
         } else {
-            List<String> newKeyList = new ArrayList<String>();
+            List<String> newKeyList = new ArrayList<>();
             newKeyList.add("0");
             form.getEditableCollectionLines().put(selectedCollectionPath,newKeyList);
         }
@@ -392,7 +433,7 @@ public abstract class ProposalDevelopmentControllerBase {
     }
 
     public void updateEditableCollectionLines(ProposalDevelopmentDocumentForm form, String selectedCollectionPath){
-        List<String> indexes = new ArrayList<String>();
+        List<String> indexes = new ArrayList<>();
         indexes.add("0");
         for (String index : form.getEditableCollectionLines().get(selectedCollectionPath)) {
             Integer newIndex= Integer.parseInt(index) + 1;
@@ -506,7 +547,10 @@ public abstract class ProposalDevelopmentControllerBase {
                         if (isComplete && !wasComplete) {
                             person.setCertifiedBy(getGlobalVariableService().getUserSession().getPrincipalId());
                             person.setCertifiedTime(getDateTimeService().getCurrentTimestamp());
-
+                            if (getParameterService().getParameterValueAsBoolean(Constants.KC_GENERIC_PARAMETER_NAMESPACE,Constants.KC_ALL_PARAMETER_DETAIL_TYPE_CODE, Constants.PROP_PERSON_COI_STATUS_FLAG) &&
+                                    !getProposalPersonCoiIntegrationService().getProposalPersonCoiStatus(person).equals(CoiConstants.DISCLOSURE_NOT_REQUIRED)) {
+                            	sendCoiDisclosureRequiredNotification(developmentProposal,person);
+                            }
                         } else if (wasComplete && !isComplete) {
                             person.setCertifiedBy(null);
                             person.setCertifiedTime(null);
@@ -532,6 +576,24 @@ public abstract class ProposalDevelopmentControllerBase {
         }
     }
 
+    protected void sendCoiDisclosureRequiredNotification(DevelopmentProposal developmentProposal,ProposalPerson person) {
+    	ProposalDevelopmentNotificationContext context = new ProposalDevelopmentNotificationContext(developmentProposal, COI_DISCLOSURE_REQUIRED_ACTION_TYPE_CODE, COI_DISCLOSURE_REQUIRED_NOTIFICATION);
+        ((ProposalDevelopmentNotificationRenderer) context.getRenderer()).setDevelopmentProposal(developmentProposal);
+    	KcNotification notification = getKcNotificationService().createNotificationObject(context);
+        if (notification.getMessage() != null) {
+           getKcNotificationService().sendNotification(context,notification,createRecipientFromPerson(person));
+        }
+    }
+    
+    protected List<NotificationTypeRecipient> createRecipientFromPerson(ProposalPerson person) {
+    	List<NotificationTypeRecipient> notificationRecipients = new ArrayList<>();
+        NotificationTypeRecipient recipient = new NotificationTypeRecipient();
+        recipient.setPersonId(person.getPersonId());
+        recipient.setFullName(person.getFullName());
+        notificationRecipients.add(recipient);
+        return notificationRecipients;
+    }
+    
     private void saveUpdateQuestionnaireAnswerHeaders(ProposalDevelopmentQuestionnaireHelper questionnaireHelper, String pageId) {
         boolean requiresUpdate = false;
         for (AnswerHeader answerHeader : questionnaireHelper.getAnswerHeaders()) {
@@ -558,10 +620,7 @@ public abstract class ProposalDevelopmentControllerBase {
 
     private AnswerHeader retrieveCurrentAnswerHeader(Long id) {
         if (id != null) {
-            Map<String, Object> criteria = new HashMap<>();
-            criteria.put("id", id);
-            AnswerHeader currentAnswerHeader = getBusinessObjectService().findByPrimaryKey(AnswerHeader.class, criteria);
-            return currentAnswerHeader;
+            return getBusinessObjectService().findByPrimaryKey(AnswerHeader.class, Collections.singletonMap("id", id));
         }
 
         return null;
@@ -641,7 +700,8 @@ public abstract class ProposalDevelopmentControllerBase {
 
         public String getAsText() {
             if (this.getValue() != null) {
-                Collection<PropScienceKeyword> keywords = (Collection<PropScienceKeyword>) this.getValue();
+                @SuppressWarnings("unchecked")
+                final Collection<PropScienceKeyword> keywords = (Collection<PropScienceKeyword>) this.getValue();
                 StringBuilder result = new StringBuilder();
                 for(PropScienceKeyword keyword : keywords) {
                     result.append(keyword.getScienceKeyword().getCode());
@@ -650,6 +710,8 @@ public abstract class ProposalDevelopmentControllerBase {
 
                 if (result.length() > 0) {
                     return result.substring(0, result.length() - 1);
+                } else {
+                	return "";
                 }
             }
             return null;
@@ -674,7 +736,8 @@ public abstract class ProposalDevelopmentControllerBase {
 
         public String getAsText() {
             if (this.getValue() != null) {
-                Collection<ProposalSpecialReviewExemption> exemptions = (Collection<ProposalSpecialReviewExemption>) this.getValue();
+                @SuppressWarnings("unchecked")
+                final Collection<ProposalSpecialReviewExemption> exemptions = (Collection<ProposalSpecialReviewExemption>) this.getValue();
                 StringBuilder result = new StringBuilder();
                 for(ProposalSpecialReviewExemption exemption : exemptions) {
                     result.append(exemption.getExemptionTypeCode());
@@ -690,7 +753,7 @@ public abstract class ProposalDevelopmentControllerBase {
  	}
 
     protected ExemptionType getExemptionType(Object element) {
- 	   return (ExemptionType) getDataObjectService().findUnique(ExemptionType.class, QueryByCriteria.Builder.forAttribute("code", element).build());
+ 	   return getDataObjectService().findUnique(ExemptionType.class, QueryByCriteria.Builder.forAttribute("code", element).build());
     }
 
     public AuditHelper.ValidationState getValidationState(ProposalDevelopmentDocumentForm form) {
@@ -898,4 +961,30 @@ public abstract class ProposalDevelopmentControllerBase {
     public void setDateTimeService(DateTimeService dateTimeService) {
         this.dateTimeService = dateTimeService;
     }
+
+    public ProjectRetrievalService getPropDevProjectRetrievalService() {
+        return propDevProjectRetrievalService;
+    }
+
+    public void setPropDevProjectRetrievalService(ProjectRetrievalService propDevProjectRetrievalService) {
+        this.propDevProjectRetrievalService = propDevProjectRetrievalService;
+    }
+    
+    public ProposalPersonCoiIntegrationService getProposalPersonCoiIntegrationService() {
+		return proposalPersonCoiIntegrationService;
+	}
+
+	public void setProposalPersonCoiIntegrationService(
+			ProposalPersonCoiIntegrationService proposalPersonCoiIntegrationService) {
+		this.proposalPersonCoiIntegrationService = proposalPersonCoiIntegrationService;
+	}
+    public ProposalTypeService getProposalTypeService() {
+        return proposalTypeService;
+    }
+
+    public void setProposalTypeService(ProposalTypeService proposalTypeService) {
+        this.proposalTypeService = proposalTypeService;
+    }
+
+
 }

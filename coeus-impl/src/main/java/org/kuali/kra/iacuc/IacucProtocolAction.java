@@ -21,6 +21,7 @@ package org.kuali.kra.iacuc;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.kuali.coeus.coi.framework.ProjectRetrievalService;
 import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
@@ -70,6 +71,8 @@ public class IacucProtocolAction extends ProtocolActionBase {
     public static final String IACUC_PROTOCOL_MEDUSA = "medusa";
     public static final String IACUC_PROTOCOL_PROCEDURES = "iacucProtocolProcedures";
     public static final String IACUC_PROTOCOL_HISTORY_HOOK = "iacucProtocolHistory";
+
+    private transient ProjectRetrievalService projectRetrievalService;
 
     public ActionForward threeRs(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         return branchToPanelOrNotificationEditor(mapping, (ProtocolFormBase)form, IACUC_PROTOCOL_THREE_RS);
@@ -250,5 +253,18 @@ public class IacucProtocolAction extends ProtocolActionBase {
     public ActionForward edit(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
         response.sendRedirect(buildForwardUrl(((IacucProtocolForm)form).getDocId()));
         return null;
+    }
+
+    @Override
+    public ProjectRetrievalService getProjectRetrievalService() {
+        if (projectRetrievalService == null) {
+            projectRetrievalService = KcServiceLocator.getService("iacucProjectRetrievalService");
+        }
+
+        return projectRetrievalService;
+    }
+
+    public void setProjectRetrievalService(ProjectRetrievalService projectRetrievalService) {
+        this.projectRetrievalService = projectRetrievalService;
     }
 }

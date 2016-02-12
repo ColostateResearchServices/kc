@@ -1,25 +1,26 @@
 package org.kuali.coeus.sys.impl.mq.rest;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kuali.coeus.sys.framework.auth.AuthConstants;
 import org.kuali.coeus.sys.framework.mq.rest.RestRequest;
+import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 import javax.jms.*;
 
 import java.lang.IllegalStateException;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
@@ -30,15 +31,19 @@ import java.util.Map;
 @Component("restMessageConsumer")
 public class RestMessageConsumer implements MessageListener {
 
-    private static Log LOG = LogFactory.getLog(RestMessageProducer.class);
+    private static Log LOG = LogFactory.getLog(RestMessageConsumer.class);
 
     @Autowired
     @Qualifier("restDestinationRegistry")
     private RestDestinationRegistry restDestinationRegistry;
 
     @Autowired
-    @Qualifier("consumerRestOperations")
+    @Qualifier("restOperations")
     private RestOperations consumerRestOperations;
+
+    @Autowired
+    @Qualifier("kualiConfigurationService")
+    private ConfigurationService configurationService;
 
     @Override
     public void onMessage(Message message) {
@@ -57,14 +62,21 @@ public class RestMessageConsumer implements MessageListener {
         if (StringUtils.isBlank(url)) {
             throw new IllegalStateException("url not found for destination " + request.getDestination());
         }
-        final Map<String, Collection<String>> params = request.getParams() != null ? request.getParams() : Collections.emptyMap();
-        final HttpEntity<String> entity = StringUtils.isNotBlank(request.getBody()) ? new HttpEntity<>(request.getBody()): HttpEntity.EMPTY;
+        final Map<String, List<String>> params = request.getParams() != null ? request.getParams() : Collections.emptyMap();
+        final HttpHeaders headers = new HttpHeaders();
+        if (request.getHeaders() != null) {
+            headers.putAll(request.getHeaders());
+        }
+
+        headers.put("Authorization", Collections.singletonList("Bearer " + getConfigurationService().getPropertyValueAsString(AuthConstants.AUTH_SYSTEM_TOKEN_PARAM)));
+
+        final HttpEntity<String> entity = StringUtils.isNotBlank(request.getBody()) ? new HttpEntity<>(request.getBody(), headers): HttpEntity.EMPTY;
         final HttpMethod method = HttpMethod.valueOf(request.getMethod().name());
 
         makeCall(url, params, entity, method);
     }
 
-    protected void makeCall(String url, Map<String, Collection<String>> params, HttpEntity<String> entity, HttpMethod method) {
+    protected void makeCall(String url, Map<String, List<String>> params, HttpEntity<String> entity, HttpMethod method) {
         try {
             ResponseEntity<Void> response = consumerRestOperations.exchange(url, method, entity, Void.class, params);
             if (LOG.isDebugEnabled()) {
@@ -83,7 +95,7 @@ public class RestMessageConsumer implements MessageListener {
         }
     }
 
-    protected String createSentMsg(String url, Map<String, Collection<String>> params, HttpEntity<String> entity, HttpMethod method) {
+    protected String createSentMsg(String url, Map<String, List<String>> params, HttpEntity<String> entity, HttpMethod method) {
         return "REST request sent for url: " + url + " method " + method + " body " + entity + " parameters " + params;
     }
 
@@ -101,5 +113,13 @@ public class RestMessageConsumer implements MessageListener {
 
     public void setConsumerRestOperations(RestOperations consumerRestOperations) {
         this.consumerRestOperations = consumerRestOperations;
+    }
+
+    public ConfigurationService getConfigurationService() {
+        return configurationService;
+    }
+
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 }

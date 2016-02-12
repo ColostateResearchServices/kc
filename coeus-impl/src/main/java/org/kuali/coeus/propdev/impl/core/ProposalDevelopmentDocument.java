@@ -26,7 +26,6 @@ import org.kuali.coeus.common.framework.custom.DocumentCustomData;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocValue;
 import org.kuali.coeus.common.permissions.impl.PermissionableKeys;
 import org.kuali.coeus.propdev.api.core.ProposalDevelopmentDocumentContract;
-import org.kuali.coeus.propdev.impl.budget.ProposalBudgetStatusService;
 import org.kuali.coeus.propdev.impl.state.ProposalStateService;
 import org.kuali.coeus.common.framework.auth.perm.Permissionable;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
@@ -38,6 +37,7 @@ import org.kuali.coeus.common.budget.framework.core.BudgetParentDocument;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.kra.infrastructure.RoleConstants;
+import org.kuali.kra.institutionalproposal.home.InstitutionalProposal;
 import org.kuali.kra.institutionalproposal.service.InstitutionalProposalService;
 import org.kuali.kra.krms.KcKrmsConstants;
 import org.kuali.coeus.common.framework.krms.KrmsRulesContext;
@@ -53,6 +53,7 @@ import org.kuali.rice.coreservice.framework.parameter.ParameterConstants.NAMESPA
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.action.ActionTaken;
 import org.kuali.rice.kew.api.action.WorkflowDocumentActionsService;
 import org.kuali.rice.kew.framework.postprocessor.ActionTakenEvent;
@@ -114,9 +115,7 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
 	
     @Transient
     private transient WorkflowDocumentActionsService  workflowDocumentActionsService;
-    
-    @Transient
-    private transient ProposalBudgetStatusService proposalBudgetStatusService;
+
     
     @Transient
     private transient DataDictionaryService dataDictionaryService  ;
@@ -151,13 +150,12 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
     @Transient
     private transient Boolean certifyViewOnly = false;
 
-    
 	public ProposalDevelopmentDocument() {
         super();
         DevelopmentProposal newProposal = new DevelopmentProposal();
         newProposal.setProposalDocument(this);
         developmentProposal = newProposal;
-        customDataList = new ArrayList<CustomAttributeDocValue>();
+        customDataList = new ArrayList<>();
     }
     @Override
     public DevelopmentProposal getDevelopmentProposal() {
@@ -215,13 +213,6 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
 			workflowDocumentActionsService = KewApiServiceLocator.getWorkflowDocumentActionsService();
 		}
 		return workflowDocumentActionsService;
-	}
-
-	protected ProposalBudgetStatusService getProposalBudgetStatusService() {
-		if (proposalBudgetStatusService == null){
-			proposalBudgetStatusService = KcServiceLocator.getService(ProposalBudgetStatusService.class);
-		}
-		return proposalBudgetStatusService;
 	}
 
 	protected DataDictionaryService getDataDictionaryService() {
@@ -291,7 +282,7 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
                 }
             }
             String pCode = getDevelopmentProposal().getProposalStateTypeCode();
-            getDevelopmentProposal().setProposalStateTypeCode(getProposalStateService().getProposalStateTypeCode(this, getKcDocumentRejectionService().isDocumentOnInitialNode(this.getDocumentHeader().getWorkflowDocument())));
+            getDevelopmentProposal().setProposalStateTypeCode(getProposalStateService().getProposalStateTypeCode(this, hasProposalBeenRejected(getDocumentHeader().getWorkflowDocument())));
             if (!StringUtils.equals(pCode, getDevelopmentProposal().getProposalStateTypeCode())) {
                 getDataObjectService().save(getDevelopmentProposal());
                 getDevelopmentProposal().refreshReferenceObject("proposalState");
@@ -304,10 +295,14 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
                 }
             }
             if (isLastSubmitterApprovalAction(event.getActionTaken()) && shouldAutogenerateInstitutionalProposal()) {
-            	String proposalNumber = getInstitutionalProposalService().createInstitutionalProposal(this.getDevelopmentProposal(), this.getDevelopmentProposal().getFinalBudget());
-                this.setInstitutionalProposalNumber(proposalNumber);
+                final InstitutionalProposal institutionalProposal = getInstitutionalProposalService().createInstitutionalProposal(this.getDevelopmentProposal(), this.getDevelopmentProposal().getFinalBudget());
+                this.setInstitutionalProposalNumber(institutionalProposal.getProposalNumber());
             }
         }
+    }
+
+    private boolean hasProposalBeenRejected(WorkflowDocument document) {
+        return getKcDocumentRejectionService().isDocumentOnInitialNode(document);
     }
 
     private boolean isLastSubmitterApprovalAction(ActionTaken actionTaken) {
@@ -369,7 +364,6 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
         documentHeader = getDocumentHeaderService().saveDocumentHeader(documentHeader);
 
         if (!isProposalDeleted()) {
-            getProposalBudgetStatusService().saveBudgetFinalVersionStatus(this);
             List<? extends Budget> versions = getBudgetParent().getBudgets();
             if (versions != null) {
                 updateBudgetDescriptions(versions);
@@ -381,14 +375,13 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
     public void processAfterRetrieve() {
         super.processAfterRetrieve();
         if (!isProposalDeleted()) {
-            getProposalBudgetStatusService().loadBudgetStatus(this.getDevelopmentProposal());
             getDevelopmentProposal().updateProposalChangeHistory();
         }
     }
 
     public Boolean getAllowsNoteAttachments() {
         if (allowsNoteAttachments == null) {
-            DocumentEntry entry = (DocumentEntry) getDataDictionaryService().getDataDictionary().getDocumentEntry(getClass().getName());
+            DocumentEntry entry = getDataDictionaryService().getDataDictionary().getDocumentEntry(getClass().getName());
             allowsNoteAttachments = entry.getAllowsNoteAttachments();
         }
         return allowsNoteAttachments;
@@ -400,7 +393,7 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
 
     @Override
     public List<String> getRoleNames() {
-        List<String> roleNames = new ArrayList<String>();
+        List<String> roleNames = new ArrayList<>();
         roleNames.add(RoleConstants.AGGREGATOR);
         roleNames.add(RoleConstants.BUDGET_CREATOR);
         roleNames.add(RoleConstants.NARRATIVE_WRITER);
@@ -468,8 +461,7 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
             }
 
             public List<String> getRoleNames() {
-                List<String> roleNames = new ArrayList<String>();
-                return roleNames;
+                return new ArrayList<>();
             }
 
             public String getNamespace() {
@@ -521,7 +513,6 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
      * Close to hack.  called by holdingpageaction
      * Different document type may have different routing set up, so each document type
      * can implement its own isProcessComplete
-     * @return
      */
     public boolean isProcessComplete() {
         boolean isComplete = false;

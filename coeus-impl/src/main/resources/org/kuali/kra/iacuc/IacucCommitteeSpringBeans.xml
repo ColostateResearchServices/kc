@@ -208,8 +208,14 @@
 	</bean>
 	
 	<bean id="iacucProtocolBatchCorrespondencePrint" class="org.kuali.kra.iacuc.committee.print.IacucProtocolBatchCorrespondencePrint" scope="prototype" parent="templatePrint">
-		<property name="xmlStream" ref="iacucRenewalReminderStream" />
+		<property name="xmlStream" ref="iacucBatchCorrespondenceXmlStream" />
 		<property name="protocolCorrespondenceTemplateService" ref="iacucProtocolCorrespondenceTemplateService" />
+	</bean>
+	
+	<bean id="iacucBatchCorrespondenceXmlStream" class="org.kuali.kra.iacuc.actions.print.IacucBatchCorrespondenceXmlStream" scope="prototype">
+		<property name="renewalReminderStream" ref="iacucRenewalReminderStream"/>
+		<property name="correspondenceXmlStream" ref="iacucCorrespondenceXmlStream"/>
+    	<property name="parameterService" ref="parameterService" />
 	</bean>
 	
 	 <bean id="iacucCommitteeBatchCorrespondenceService" class="org.kuali.kra.iacuc.committee.service.impl.IacucCommitteeBatchCorrespondenceServiceImpl">
@@ -235,14 +241,12 @@
 	<bean id="iacucScheduleXmlStream" class="org.kuali.kra.iacuc.committee.print.IacucScheduleXmlStream" parent="printBaseXmlStream" scope="prototype">
 		<property name="printXmlUtilService" ref="iacucPrintXmlUtilService" />
 		<property name="committeeMembershipService" ref="iacucCommitteeMembershipService" />
-		<property name="kcPersonService" ref="kcPersonService" />
 	</bean>
 	
 	<bean id="iacucPrintXmlUtilService" class="org.kuali.kra.iacuc.committee.print.service.impl.IacucPrintXmlUtilServiceImpl">
 		<property name="dateTimeService" ref="dateTimeService" />
 		<property name="reviewCommentsService" ref="iacucReviewCommentsService" />
 		<property name="businessObjectService" ref="businessObjectService" />
-		<property name="protocolAmendRenewService" ref="iacucProtocolAmendRenewService" />
 	</bean>
 	
 	

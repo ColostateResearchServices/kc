@@ -21,6 +21,7 @@ package org.kuali.coeus.common.budget.framework.rate;
 import org.kuali.coeus.common.budget.framework.core.Budget;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 
+import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -88,4 +89,13 @@ public interface BudgetRatesService {
     boolean isVacationOnLabAllocation(String rateClassCode, String rateTypeCode);
 
     boolean isEmployeeBenefitOnLabAllocation(String rateClassCode, String rateTypeCode);
-}
+
+    boolean isOverhead(String rateClassTypeCode);
+    
+    /**
+     * Get the effective salary start date for the budget. 
+     * @return the earliest effective date for all persons listed on the budget or null if none exist
+     */
+    Date getBudgetPersonSalaryEffectiveDate(Budget budget);
+
+    }

@@ -120,7 +120,7 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
         List<ProtocolSubmissionBase> protocolSubmissions = protocolFinderDao.findProtocolSubmissions(protocolNumber, submissionNumber);
 
         for (ProtocolSubmissionBase protocolSubmission : protocolSubmissions) {
-            if (protocolSubmission.getCommitteeScheduleMinutes() != null) {
+            if (protocolNumber.equals(protocolSubmission.getProtocolNumber()) && protocolSubmission.getCommitteeScheduleMinutes() != null) {
                 // search table directly as ProtocolBase Submission is not refreshed as commit happens later
                 Map fieldValues = new HashMap();
                 fieldValues.put("protocolIdFk", protocolSubmission.getProtocolId());
@@ -418,6 +418,18 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
         reviewComments.clear();
     }
 
+    @Override
+    @SuppressWarnings({ "rawtypes"})
+    public void updateScheduleForReviewComments(ProtocolBase protocol, List<CommitteeScheduleMinuteBase> reviewComments) {
+    	ProtocolSubmissionBase protocolSubmission = getSubmission(protocol);
+    	Long scheduleIdFk = protocolSubmission.getScheduleIdFk();
+    	for (CommitteeScheduleMinuteBase reviewComment : reviewComments) {
+            if (scheduleIdFk != null) {
+            	reviewComment.setScheduleIdFk(scheduleIdFk);
+            }
+        }
+    }
+    
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void saveReviewComments(List<CommitteeScheduleMinuteBase> reviewComments, List<CommitteeScheduleMinuteBase> deletedReviewComments) {
         for (CommitteeScheduleMinuteBase reviewComment : reviewComments) {

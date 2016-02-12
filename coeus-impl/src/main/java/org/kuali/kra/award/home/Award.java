@@ -268,6 +268,11 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     private Unit leadUnit;
     private String unitNumber;
 
+    /* 
+     * This is just to provide lookup tool for investigator.
+     * We need to set this to satisfy DD validation.
+     */
+    private transient KcPerson investigator;
     private KcPerson ospAdministrator;
     private String principalInvestigatorName;
 
@@ -305,6 +310,9 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     private List<AwardCgb> awardCgbList;
     
     private transient Integer indexOfAwardAmountInfoForDisplay;
+    private String fainId;
+    private Integer fedAwardYear;
+    private Date fedAwardDate;
 
     public Award() {
         super();
@@ -393,6 +401,10 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
 
     public AwardAmountInfo getLastAwardAmountInfo() {
         return awardAmountInfos.get(getIndexOfLastAwardAmountInfo());
+    }
+    
+    public AwardAmountInfo getAwardAmountInfoForDisplay() throws WorkflowException {
+    	return awardAmountInfos.get(getIndexOfAwardAmountInfoForDisplay());
     }
 
     public int getIndexOfAwardAmountInfoForDisplay() throws WorkflowException {
@@ -2257,6 +2269,10 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
         }
         return centralAdminContacts;
     }
+    
+    public void setCentralAdminContacts(List<AwardUnitContact> centralAdminContacts) {
+    	this.centralAdminContacts = centralAdminContacts;
+    }
 
     /**
      * Builds the list of central admin contacts based on the lead unit of this
@@ -2471,7 +2487,7 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
         return this.getTitle();
     }
 
-    public String getIsOwnedByUnit() {
+    public String getOwnedByUnitNumber() {
         return this.getLeadUnitName();
     }
 
@@ -2502,7 +2518,7 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
         AwardFandaRate currentFandaRate = rates.stream()
                 .filter(rate -> Integer.parseInt(rate.getFiscalYear()) == currentYear)
                 .max(Comparator.comparing(AwardFandaRate::getApplicableFandaRate))
-                .orElseGet(null);
+                .orElse(null);
 
         return currentFandaRate;
     }
@@ -2751,6 +2767,30 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
 				.collect(Collectors.toList());
 	}
 
+    public String getFainId() {
+        return fainId;
+    }
+
+    public void setFainId(String fainId) {
+        this.fainId = fainId;
+    }
+
+    public Integer getFedAwardYear() {
+        return fedAwardYear;
+    }
+
+    public void setFedAwardYear(Integer fedAwardYear) {
+        this.fedAwardYear = fedAwardYear;
+    }
+
+    public Date getFedAwardDate() {
+        return fedAwardDate;
+    }
+
+    public void setFedAwardDate(Date fedAwardDate) {
+        this.fedAwardDate = fedAwardDate;
+    }
+
     public SystemAuthorizationService getSystemAuthorizationService() {
         if (systemAuthorizationService == null) {
             systemAuthorizationService = KcServiceLocator.getService(SystemAuthorizationService.class);
@@ -2809,4 +2849,8 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     public void setUnitService(UnitService unitService) {
         this.unitService = unitService;
     }
+
+	public KcPerson getInvestigator() {
+		return investigator;
+	}
 }

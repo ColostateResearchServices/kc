@@ -18,10 +18,7 @@
  */
 package org.kuali.kra.institutionalproposal.web.struts.action;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.kuali.coeus.coi.framework.*;
 import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.coeus.common.framework.person.KcPersonService;
 import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
@@ -68,6 +66,8 @@ public class InstitutionalProposalAction extends KcTransactionalDocumentActionBa
     public static final String DISABLE_ATTACHMENT_REMOVAL = "disableAttachmentRemoval";
 
     private KcNotificationService notificationService;
+    private ProjectPublisher projectPublisher;
+    private ProjectRetrievalService projectRetrievalService;
 
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -159,17 +159,18 @@ public class InstitutionalProposalAction extends KcTransactionalDocumentActionBa
         return KcServiceLocator.getService(KcPersonService.class);
     }
 
-    
     @Override
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        ActionForward forward = mapping.findForward(Constants.MAPPING_BASIC);
         InstitutionalProposalForm institutionalProposalForm = (InstitutionalProposalForm) form;
-        forward = super.save(mapping, form, request, response);
+        ActionForward forward = super.save(mapping, form, request, response);
             if (institutionalProposalForm.getMethodToCall().equals("save") && institutionalProposalForm.isAuditActivated()) {
                 forward = mapping.findForward(Constants.MAPPING_INSTITUTIONAL_PROPOSAL_ACTIONS_PAGE);
             }
-       
+
+        getProjectPublisher().publishProject(
+                getProjectRetrievalService().retrieveProject(
+                        institutionalProposalForm.getInstitutionalProposalDocument().getInstitutionalProposal().getProposalId().toString()));
 
         return forward;
     }
@@ -445,4 +446,27 @@ public class InstitutionalProposalAction extends KcTransactionalDocumentActionBa
         return rulesService.processUnitValidations(ipDoc.getLeadUnitNumber(), ipDoc);
     }
 
+    public ProjectPublisher getProjectPublisher() {
+        if (projectPublisher == null) {
+            projectPublisher = KcServiceLocator.getService(ProjectPublisher.class);
+        }
+
+        return projectPublisher;
+    }
+
+    public void setProjectPublisher(ProjectPublisher projectPublisher) {
+        this.projectPublisher = projectPublisher;
+    }
+
+    public ProjectRetrievalService getProjectRetrievalService() {
+        if (projectRetrievalService == null) {
+            projectRetrievalService = KcServiceLocator.getService("instPropProjectRetrievalService");
+        }
+
+        return projectRetrievalService;
+    }
+
+    public void setProjectRetrievalService(ProjectRetrievalService projectRetrievalService) {
+        this.projectRetrievalService = projectRetrievalService;
+    }
 }

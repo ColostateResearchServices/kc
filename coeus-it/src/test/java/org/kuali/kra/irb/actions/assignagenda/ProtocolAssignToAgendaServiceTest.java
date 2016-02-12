@@ -41,13 +41,14 @@ import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.krad.UserSession;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.DocumentService;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
+
 import org.kuali.rice.krad.service.LegacyDataAdapter;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,7 @@ public class ProtocolAssignToAgendaServiceTest extends KcIntegrationTestBase {
         protocolDocument.getProtocol().getProtocolSubmissions().add(submission);
         ProtocolForm form = new ProtocolForm();
         ActionHelper actionHelper = new ActionHelper(form);
+        actionHelper.initializeProtocolActions();
         ProtocolAssignToAgendaBean actionBean = (ProtocolAssignToAgendaBean) actionHelper.getAssignToAgendaBean();
         actionBean.setComments("this is a comment");
         actionBean.setCommitteName("committee name");
@@ -215,27 +217,29 @@ public class ProtocolAssignToAgendaServiceTest extends KcIntegrationTestBase {
         
         ProtocolDocument protocolDocument = ProtocolFactory.createProtocolDocument();
         ProtocolSubmission submission = createSubmission(protocolDocument.getProtocol(), ProtocolSubmissionStatus.SUBMITTED_TO_COMMITTEE);
+        String passedInCommitteeName = "testCommitteeName";
         
         Committee com = new Committee();
         com.setCommitteeId("1");
         com.setHomeUnitNumber("000001");
         com.setCommitteeTypeCode("1");
+        com.setAdvancedSubmissionDaysRequired(1);
         com.setReviewTypeCode("1");
-        String passedInCommitteeName = "testCommitteeName";
+        com.setMaxProtocols(1);
+        com.setMinimumMembersRequired(1);
         com.setCommitteeName(passedInCommitteeName);
         submission.setCommittee(com);
         
-        CommitteeDocument cd = (CommitteeDocument) KRADServiceLocatorWeb.getDocumentService().getNewDocument(CommitteeDocument.class);
+        CommitteeDocument cd = (CommitteeDocument) documentService.getNewDocument(CommitteeDocument.class);
         cd.setCommittee(com);
-        cd.setDocumentNumber("1");
         cd.getDocumentHeader().setDocumentDescription("super cool description");
         cd.setUpdateTimestamp(new Timestamp(20100305));
         cd.setUpdateUser("quickstart");
         cd.setVersionNumber(new Long(1));
         com.setCommitteeDocument(cd);
-        
-        businessObjectService.save(cd);
-        legacyDataAdapter.save(com);
+
+        documentService.saveDocument(cd);
+        documentService.blanketApproveDocument(cd, "Test Committee", Collections.emptyList());
         
         protocolDocument.getProtocol().getProtocolSubmissions().add(submission);
         
@@ -260,6 +264,8 @@ public class ProtocolAssignToAgendaServiceTest extends KcIntegrationTestBase {
         com.setAdvancedSubmissionDaysRequired(new Integer(1));
         String passedInCommitteeName = "testCommitteeName";
         com.setCommitteeName(passedInCommitteeName);
+        com.setMaxProtocols(1);
+        com.setMinimumMembersRequired(1);
         submission.setCommittee(com);
         
         CommitteeSchedule cs = new CommitteeSchedule();
@@ -278,16 +284,17 @@ public class ProtocolAssignToAgendaServiceTest extends KcIntegrationTestBase {
         committeeSchedules.add(cs);
         com.setCommitteeSchedules(committeeSchedules);
 
-        CommitteeDocument cd = (CommitteeDocument) KRADServiceLocatorWeb.getDocumentService().getNewDocument(CommitteeDocument.class);
+        CommitteeDocument cd = (CommitteeDocument) documentService.getNewDocument(CommitteeDocument.class);
         cd.setCommittee(com);
-        cd.setDocumentNumber("1");
+
         cd.getDocumentHeader().setDocumentDescription("super cool description");
         cd.setUpdateTimestamp(new Timestamp(20100305));
         cd.setUpdateUser("quickstart");
         cd.setVersionNumber(new Long(1));
         com.setCommitteeDocument(cd);
         
-        businessObjectService.save(cd);
+        documentService.saveDocument(cd);
+        documentService.blanketApproveDocument(cd, "Test Committee", Collections.emptyList());
         legacyDataAdapter.save(com);
         legacyDataAdapter.save(cs);
         

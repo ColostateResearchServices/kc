@@ -33,6 +33,7 @@ import org.kuali.kra.subaward.bo.SubAward;
 import org.kuali.kra.subaward.bo.SubAwardAmountInfo;
 import org.kuali.kra.subaward.bo.SubAwardAmountReleased;
 import org.kuali.kra.subaward.bo.SubAwardFundingSource;
+import org.kuali.kra.subaward.dao.SubAwardDao;
 import org.kuali.kra.subaward.document.SubAwardDocument;
 import org.kuali.kra.subaward.service.SubAwardService;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
@@ -50,6 +51,7 @@ public class SubAwardServiceImpl implements SubAwardService {
 
     private static final Log LOG = LogFactory.getLog(SubAwardServiceImpl.class);
     public static final String SUB_AWARD_ID = "subAwardId";
+    public static final String SUB_AWARD_CODE = "subAwardCode";
     public static final String SUB_AWARD_SEQUENCE_STATUS = "subAwardSequenceStatus";
     public static final String SUBAWARD_FOLLOW_UP = "Subaward Follow Up";
     public static final String AWARD_AWARD_NUMBER = "award.awardNumber";
@@ -60,38 +62,37 @@ public class SubAwardServiceImpl implements SubAwardService {
     private DocumentService documentService;
     private SequenceAccessorService sequenceAccessorService;
     private ParameterService parameterService;
+    private SubAwardDao subAwardDao;
 
-    public SubAwardDocument createNewSubAwardVersion(
-    SubAwardDocument subAwardDocument) throws
-    VersionException, WorkflowException {
+    public SubAwardDocument createNewSubAwardVersion(SubAwardDocument subAwardDocument) throws VersionException, WorkflowException {
 
-        SubAward newVersion = getVersioningService().
-        createNewVersion(subAwardDocument.getSubAward());
-
-        SubAwardDocument newSubAwardDocument =
-        (SubAwardDocument) getDocumentService().
-        getNewDocument(SubAwardDocument.class);
-        newSubAwardDocument.getDocumentHeader().
-        setDocumentDescription(subAwardDocument.
-        getDocumentHeader().getDocumentDescription());
+        SubAward newVersion = getVersioningService().createNewVersion(subAwardDocument.getSubAward());
+        incrementVersionNumberIfCanceledVersionsExist(newVersion);//Canceled versions retain their own version number.
+        newVersion.getSubAwardAmountInfoList().clear();
+        SubAwardDocument newSubAwardDocument = (SubAwardDocument) getDocumentService().getNewDocument(SubAwardDocument.class);
+        newSubAwardDocument.getDocumentHeader().setDocumentDescription(subAwardDocument.getDocumentHeader().getDocumentDescription());
         newSubAwardDocument.setSubAward(newVersion);
         newVersion.setSubAwardDocument(newSubAwardDocument);
         return newSubAwardDocument;
     }
 
-	@Override
-    public void updateSubAwardSequenceStatus(
-    SubAward subAward, VersionStatus status) {
-        if (status.equals(VersionStatus.ACTIVE)) {
-            archiveCurrentActiveSubAward(subAward.getSubAwardId());
-        }
-        subAward.setSubAwardSequenceStatus(status.toString());
-       getBusinessObjectService().save(subAward);
+    protected void incrementVersionNumberIfCanceledVersionsExist(SubAward subAward) {
+        int sequenceNumber = subAwardDao.getNextSequenceNumber(subAward.getSubAwardCode());
+        subAward.setSequenceNumber(sequenceNumber);
     }
 
-    protected void archiveCurrentActiveSubAward(Long subAwardId) {
+	@Override
+    public void updateSubAwardSequenceStatus(SubAward subAward, VersionStatus status) {
+        if (status.equals(VersionStatus.ACTIVE)) {
+            archiveCurrentActiveSubAward(subAward.getSubAwardCode());
+        }
+        subAward.setSubAwardSequenceStatus(status.toString());
+        getBusinessObjectService().save(subAward);
+    }
+
+    protected void archiveCurrentActiveSubAward(String subAwardCode) {
         Map<String, Object> values = new HashMap<String, Object>();
-        values.put(SUB_AWARD_ID, Long.toString(subAwardId));
+        values.put(SUB_AWARD_CODE, subAwardCode);
         values.put(SUB_AWARD_SEQUENCE_STATUS, VersionStatus.ACTIVE.name());
         Collection<SubAward> subAwards = getBusinessObjectService().
         findMatching(SubAward.class, values);
@@ -124,7 +125,7 @@ public class SubAwardServiceImpl implements SubAwardService {
 
     public SubAward getAmountInfo(SubAward subAward) {
 
-        List<SubAwardAmountInfo> subAwardAmountInfoList = subAward.getSubAwardAmountInfoList();
+        List<SubAwardAmountInfo> subAwardAmountInfoList = subAward.getAllSubAwardAmountInfos();
         List<SubAwardAmountReleased> subAwardAmountReleasedList = subAward.getSubAwardAmountReleasedList();
         ScaleTwoDecimal totalObligatedAmount = new ScaleTwoDecimal(0.00);
         ScaleTwoDecimal totalAnticipatedAmount = new ScaleTwoDecimal(0.00);
@@ -162,7 +163,7 @@ public class SubAwardServiceImpl implements SubAwardService {
                     totalAmountReleased = subAward.getTotalAmountReleased();
                 }
             }
-            SubAwardAmountInfo amountInfo = subAward.getSubAwardAmountInfoList().get(subAward.getSubAwardAmountInfoList().size()-1);
+            SubAwardAmountInfo amountInfo = subAward.getAllSubAwardAmountInfos().get(subAward.getAllSubAwardAmountInfos().size()-1);
             amountInfo.setAnticipatedAmount(totalAnticipatedAmount);
             amountInfo.setObligatedAmount(totalObligatedAmount);
         }
@@ -291,5 +292,13 @@ public class SubAwardServiceImpl implements SubAwardService {
 
     public void setParameterService(ParameterService parameterService) {
         this.parameterService = parameterService;
+    }
+
+    public SubAwardDao getSubAwardDao() {
+        return this.subAwardDao;
+    }
+
+    public void setSubAwardDao(SubAwardDao subAwardDao) {
+        this.subAwardDao = subAwardDao;
     }
 }

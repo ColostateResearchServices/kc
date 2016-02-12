@@ -22,20 +22,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kuali.coeus.common.budget.framework.core.AbstractBudget;
-import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItem;
-import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItemCalculatedAmount;
-import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetRateAndBase;
-import org.kuali.coeus.common.budget.framework.period.BudgetPeriod;
-import org.kuali.coeus.common.budget.framework.personnel.BudgetPerson;
-import org.kuali.coeus.common.budget.framework.personnel.BudgetPersonnelCalculatedAmount;
-import org.kuali.coeus.common.budget.framework.personnel.BudgetPersonnelDetails;
-import org.kuali.coeus.common.budget.framework.personnel.BudgetPersonnelRateAndBase;
-import org.kuali.coeus.common.budget.framework.rate.BudgetLaRate;
-import org.kuali.coeus.common.budget.framework.rate.BudgetRate;
 import org.kuali.coeus.common.framework.unit.Unit;
 import org.kuali.coeus.common.framework.unit.UnitService;
-import org.kuali.coeus.propdev.impl.budget.ProposalBudgetStatus;
 import org.kuali.coeus.propdev.impl.budget.ProposalDevelopmentBudgetExt;
 import org.kuali.coeus.propdev.impl.location.ProposalSite;
 import org.kuali.coeus.common.framework.auth.SystemAuthorizationService;
@@ -63,8 +51,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static org.kuali.rice.core.api.criteria.PredicateFactory.*;
 
 @Component("proposalDevelopmentService")
 public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentService {
@@ -102,6 +88,10 @@ public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentServic
     @Autowired
     @Qualifier("systemAuthorizationService")
     private SystemAuthorizationService systemAuthorizationService;
+
+    @Autowired
+    @Qualifier("proposalTypeService")
+    private ProposalTypeService proposalTypeService;
 
     /**
      * This method gets called from the "save" action. It initializes the applicant org. on the first save; it also sets the
@@ -212,48 +202,12 @@ public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentServic
     @Override
     public ProposalDevelopmentDocument deleteProposal(ProposalDevelopmentDocument proposalDocument) throws WorkflowException {
 
-        final DevelopmentProposal developmentProposal = proposalDocument.getDevelopmentProposal();
-        final String proposalNumber = developmentProposal.getProposalNumber();
-
-        cleanupBudgetObjects(developmentProposal);
-        getDataObjectService().deleteMatching(ProposalDevelopmentBudgetExt.class, QueryByCriteria.Builder.andAttributes(Collections.singletonMap("developmentProposal.proposalNumber", proposalNumber)).build());
-        developmentProposal.setBudgets(new ArrayList<>());
-        developmentProposal.setFinalBudget(null);
-
-        getDataObjectService().deleteMatching(ProposalBudgetStatus.class, QueryByCriteria.Builder.andAttributes(Collections.singletonMap("proposalNumber", proposalNumber)).build());
+        dataObjectService.delete(proposalDocument.getDevelopmentProposal());
         proposalDocument.setDevelopmentProposal(null);
         proposalDocument.setProposalDeleted(true);
 
         proposalDocument = (ProposalDevelopmentDocument)getDocumentService().saveDocument(proposalDocument);
         return (ProposalDevelopmentDocument) getDocumentService().cancelDocument(proposalDocument, "Delete Proposal");
-    }
-
-    /**
-     * BudgetRate, BudgetLaRate, BudgetPeriods will not cascade delete for some reason.  Manually cleaning them up here to avoid
-     * a constraint violation normally JPA's orphanRemoval should automatically take care of these deletes
-     */
-    protected void cleanupBudgetObjects(DevelopmentProposal developmentProposal) {
-        final Collection<Long> budgetIds = CollectionUtils.collect(developmentProposal.getBudgets(), AbstractBudget::getBudgetId);
-        //this should be in the budgets list but including it just to be safe
-        if (developmentProposal.getFinalBudget() != null) {
-            budgetIds.add(developmentProposal.getFinalBudget().getBudgetId());
-        }
-
-        if (!budgetIds.isEmpty()) {
-            final QueryByCriteria budgetIdsCriteria = QueryByCriteria.Builder.fromPredicates(in("budgetId", budgetIds));
-            getDataObjectService().deleteMatching(BudgetRate.class, budgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetLaRate.class, budgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetPersonnelCalculatedAmount.class, budgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetPersonnelRateAndBase.class, budgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetPersonnelDetails.class, budgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetLineItemCalculatedAmount.class, budgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetRateAndBase.class, budgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetLineItem.class, budgetIdsCriteria);
-
-            final QueryByCriteria anonBudgetIdsCriteria = QueryByCriteria.Builder.fromPredicates(in("budget.budgetId", budgetIds));
-            getDataObjectService().deleteMatching(BudgetPeriod.class, anonBudgetIdsCriteria);
-            getDataObjectService().deleteMatching(BudgetPerson.class, anonBudgetIdsCriteria);
-        }
     }
 
     protected DocumentService getDocumentService() {
@@ -278,7 +232,9 @@ public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentServic
         Collection<ProposalAdminDetails> proposalAdminDetails = getBusinessObjectService().findMatching(ProposalAdminDetails.class,values);
 
         for (ProposalAdminDetails pad : proposalAdminDetails) {
-            return getBusinessObjectService().findBySinglePrimaryKey(InstitutionalProposal.class, pad.getInstProposalId());
+        	if (pad.getInstProposalId() != null) {
+        		return getBusinessObjectService().findBySinglePrimaryKey(InstitutionalProposal.class, pad.getInstProposalId());
+        	}
         }
         return null;
     }
@@ -318,7 +274,38 @@ public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentServic
     	return getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT, 
                 ParameterConstants.DOCUMENT_COMPONENT, KeyConstants.AUTOGENERATE_INSTITUTIONAL_PROPOSAL_PARAM);
     }
-    
+
+    @Override
+    public String getIPGenerateOption(DevelopmentProposal developmentProposal) {
+        if( isProposalTypeChangeCorrected(developmentProposal.getProposalTypeCode())) {
+            return ProposalDevelopmentConstants.ResubmissionOptions.GENERATE_NEW_VERSION_OF_ORIGINAL_IP;
+        }else{
+            return ProposalDevelopmentConstants.ResubmissionOptions.GENERATE_NEW_IP;
+        }
+    }
+
+    @Override
+    public boolean isProposalReniewedOrChangeCorrected(DevelopmentProposal developmentProposal) {
+       return (getProposalTypeService().getContinuationProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
+           || getProposalTypeService().getRenewProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
+           || getProposalTypeService().getResubmissionProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
+           || getProposalTypeService().getRevisionProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
+           || isProposalTypeChangeCorrected(developmentProposal.getProposalTypeCode())
+           || isSubmissionChangeCorrected(developmentProposal));
+    }
+
+    private boolean isSubmissionChangeCorrected(DevelopmentProposal developmentProposal) {
+        return developmentProposal.getS2sOpportunity() != null && getProposalTypeService().getS2SSubmissionChangeCorrectedCode().equals(developmentProposal.getS2sOpportunity().getS2sSubmissionTypeCode());
+    }
+
+    private boolean isProposalTypeChangeCorrected(String proposalTypeCode) {
+        return (getProposalTypeService().getNewChangedOrCorrectedProposalTypeCode().equals(proposalTypeCode)
+            || getProposalTypeService().getRenewalChangedOrCorrectedProposalTypeCode().equals(proposalTypeCode)
+            || getProposalTypeService().getResubmissionChangedOrCorrectedProposalTypeCode().equals(proposalTypeCode)
+            || getProposalTypeService().getSupplementChangedOrCorrectedProposalTypeCode().equals(proposalTypeCode)
+            || getProposalTypeService().getBudgetSowUpdateProposalTypeCode().equals(proposalTypeCode));
+    }
+
     protected void addDescendantUnits(Unit parentUnit, Set<Unit> units) {
         List<Unit> subunits = getUnitService().getActiveSubUnits(parentUnit.getUnitNumber());
         if (CollectionUtils.isNotEmpty(subunits)) {
@@ -382,5 +369,13 @@ public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentServic
 
     public void setKcPersistenceStructureService(KcPersistenceStructureService kcPersistenceStructureService) {
         this.kcPersistenceStructureService = kcPersistenceStructureService;
+    }
+
+    public ProposalTypeService getProposalTypeService() {
+        return proposalTypeService;
+    }
+
+    public void setProposalTypeService(ProposalTypeService proposalTypeService) {
+        this.proposalTypeService = proposalTypeService;
     }
 }

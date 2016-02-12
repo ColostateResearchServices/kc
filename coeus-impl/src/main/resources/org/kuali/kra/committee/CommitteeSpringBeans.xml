@@ -63,8 +63,6 @@
 		<property name="businessObjectService" ref="businessObjectService" />
 		<property name="dateTimeService" ref="dateTimeService" />
 		<property name="reviewCommentsService" ref="reviewCommentsService" />
-		<property name="protocolAmendRenewService" ref="protocolAmendRenewService" />
-		
 	</bean>
 
 	<bean id="templatePrint" class="org.kuali.kra.committee.print.TemplatePrint"
@@ -89,9 +87,15 @@
 	<bean id="protocolBatchCorrespondencePrint"
 		class="org.kuali.kra.committee.print.ProtocolBatchCorrespondencePrint"
 		scope="prototype" parent="templatePrint">
-		<property name="xmlStream" ref="renewalReminderStream" />
+		<property name="xmlStream" ref="irbBatchCorrespondenceXmlStream" />
 	</bean>
 
+	<bean id="irbBatchCorrespondenceXmlStream" class="org.kuali.kra.irb.actions.print.IrbBatchCorrespondenceXmlStream" scope="prototype">
+		<property name="renewalReminderStream" ref="renewalReminderStream"/>
+		<property name="correspondenceXmlStream" ref="correspondenceXmlStream"/>
+    	<property name="parameterService" ref="parameterService" />
+	</bean>
+	
 	<bean id="committeeRosterPrint" class="org.kuali.kra.committee.print.CommitteeRosterPrint"
 		scope="prototype" parent="templatePrint">
 		<property name="xmlStream" ref="committeeXmlStream" />
@@ -119,9 +123,6 @@
 		</property>
 		<property name="committeeMembershipService">
 			<ref bean="committeeMembershipService" />
-		</property>
-		<property name="kcPersonService">
-			<ref bean="kcPersonService" />
 		</property>
 	</bean>
 	

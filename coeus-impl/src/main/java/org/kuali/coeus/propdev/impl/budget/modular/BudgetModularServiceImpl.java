@@ -20,9 +20,11 @@ package org.kuali.coeus.propdev.impl.budget.modular;
 
 import org.kuali.coeus.sys.api.model.AbstractDecimal;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
+import org.kuali.coeus.common.budget.api.rate.RateClassType;
 import org.kuali.coeus.common.budget.framework.calculator.BudgetCalculationService;
 import org.kuali.coeus.common.budget.framework.core.Budget;
 import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItem;
+import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItemCalculatedAmount;
 import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetRateAndBase;
 import org.kuali.coeus.common.budget.framework.period.BudgetPeriod;
 import org.kuali.kra.infrastructure.Constants;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component("budgetModularService")
 public class BudgetModularServiceImpl implements BudgetModularService {
@@ -43,7 +46,7 @@ public class BudgetModularServiceImpl implements BudgetModularService {
     private static final String RATE_CLASS_PROPERTY_NAME = "rateClass";
     private static final String RATE_NUMBER_PROPERTY_NAME = "rateNumber";
     private static final ScaleTwoDecimal TDC_NEXT_INCREMENT = new ScaleTwoDecimal(25000);
-
+    
     @Autowired
     @Qualifier("budgetCalculationService")
     private BudgetCalculationService budgetCalculationService;
@@ -102,7 +105,6 @@ public class BudgetModularServiceImpl implements BudgetModularService {
 
     private void calculateAllTotalsAfterSync(BudgetModular budgetModular) {
     	budgetModular.calculateTotalDirectCost();
-        budgetModular.calculateTotalRequestedCost();
                
         final ScaleTwoDecimal fnaRequested = budgetModular.getBudgetModularIdcs().stream()
                 .map(BudgetModularIdc::getFundsRequested)
@@ -110,6 +112,7 @@ public class BudgetModularServiceImpl implements BudgetModularService {
                 .reduce(ScaleTwoDecimal.ZERO, AbstractDecimal::add);
 
         budgetModular.setTotalFnaRequested(fnaRequested);
+        budgetModular.calculateTotalRequestedCost();
     }
     
     public void synchModularBudget(Budget budget) {
@@ -141,9 +144,10 @@ public class BudgetModularServiceImpl implements BudgetModularService {
                         Budget.class, Constants.PARAMETER_FNA_COST_ELEMENTS);
 
                 //is cost direct or indirect? Add cost to correct variable.
-                if (consortiumFnaCostElements.contains(budgetLineItem.getCostElement())) {
-                    consortiumFna = consortiumFna.add(budgetLineItem.getDirectCost());
-                } else {
+				if (consortiumFnaCostElements.contains(budgetLineItem.getCostElement())) {
+					consortiumFna = consortiumFna.add(budgetLineItem.getLineItemCost());
+					directCostLessConsortiumFna = directCostLessConsortiumFna.add(calculateDirectCostLessConsortiumFna(budgetLineItem));
+				} else {
                     directCostLessConsortiumFna = directCostLessConsortiumFna.add(budgetLineItem.getDirectCost());
                 }
                 //for every indirect cost do this.
@@ -164,7 +168,9 @@ public class BudgetModularServiceImpl implements BudgetModularService {
                         budgetModularIdc.setDescription(budgetRateAndBase.getRateClassCode());
                         budgetModularIdc.setIdcRate(budgetRateAndBase.getAppliedRate());
                         budgetModularIdc.setFundsRequested(budgetRateAndBase.getCalculatedCost());  
-                        budgetModularIdc.setIdcBase(budgetRateAndBase.getBaseCost());
+                        if (getApplyRateFlag(budgetLineItem, budgetRateAndBase)) {
+                        	budgetModularIdc.setIdcBase(budgetRateAndBase.getBaseCost());
+                        }
                         budgetModularIdc.setBudgetModular(budgetModular);
                         budgetModular.addNewBudgetModularIdc(budgetModularIdc);
                     }
@@ -179,6 +185,17 @@ public class BudgetModularServiceImpl implements BudgetModularService {
             budgetModular.setConsortiumFna(consortiumFna);
    		 	calculateAllTotalsAfterSync(budgetModular);
         }
+    }
+
+	private ScaleTwoDecimal calculateDirectCostLessConsortiumFna(BudgetLineItem budgetLineItem) {
+		return budgetLineItem.getBudgetCalculatedAmounts().stream().filter(budgetLineItemCalculatedAmount -> !budgetLineItemCalculatedAmount.getRateClass().
+				getRateClassTypeCode().equals(RateClassType.OVERHEAD.getRateClassType())).map(BudgetLineItemCalculatedAmount::getCalculatedCost).
+				reduce(ScaleTwoDecimal.ZERO, AbstractDecimal::add);
+	}
+    
+    private boolean getApplyRateFlag(BudgetLineItem budgetLineItem, BudgetRateAndBase budgetRateAndBase) {
+    	 return budgetLineItem.getBudgetCalculatedAmounts().stream().anyMatch(budgetCalculatedAmounts -> budgetCalculatedAmounts.getRateClassCode().
+          		equals(budgetRateAndBase.getRateClassCode()) && budgetCalculatedAmounts.getApplyRateFlag());
     }
 
     public ParameterService getParameterService() {

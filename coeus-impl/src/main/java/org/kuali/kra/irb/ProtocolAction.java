@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.kuali.coeus.coi.framework.ProjectRetrievalService;
 import org.kuali.coeus.common.framework.module.CoeusSubModule;
 import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
@@ -94,6 +95,8 @@ public abstract class ProtocolAction extends ProtocolActionBase {
     private static final ActionForward RESPONSE_ALREADY_HANDLED = null;
     public static final String TEMPLATE = "template";
     public static final String SEQUENCE_NUMBER = "sequenceNumber";
+
+    private transient ProjectRetrievalService projectRetrievalService;
 
     protected ProtocolSubmissionBeanBase getSubmissionBean(ActionForm form, String submissionActionType) {
         ProtocolSubmissionBeanBase submissionBean = null;
@@ -418,5 +421,17 @@ public abstract class ProtocolAction extends ProtocolActionBase {
             getProtocolActionRequestService().createProtocol(protocolForm);
         }
     }
-    
+
+    @Override
+    public ProjectRetrievalService getProjectRetrievalService() {
+        if (projectRetrievalService == null) {
+            projectRetrievalService = KcServiceLocator.getService("irbProjectRetrievalService");
+        }
+
+        return projectRetrievalService;
+    }
+
+    public void setProjectRetrievalService(ProjectRetrievalService projectRetrievalService) {
+        this.projectRetrievalService = projectRetrievalService;
+    }
 }

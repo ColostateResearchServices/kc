@@ -1001,7 +1001,7 @@
 	<class-descriptor class="org.kuali.coeus.common.framework.org.audit.OrganizationAudit" table="ORGANIZATION_AUDIT">
 		<field-descriptor name="fiscalYear" column="FISCAL_YEAR" jdbc-type="CHAR" primarykey="true"/>
 		<field-descriptor name="organizationId" column="ORGANIZATION_ID" jdbc-type="VARCHAR" primarykey="true"/>
-		<field-descriptor name="auditAccepted" column="AUDIT_ACCEPTED" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="auditAcceptedCode" column="AUDIT_ACCEPTED" jdbc-type="VARCHAR" />
 		<field-descriptor name="auditComment" column="AUDIT_COMMENT" jdbc-type="VARCHAR"/>
 		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
 		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
@@ -1009,8 +1009,21 @@
 		<reference-descriptor name="organization" class-ref="org.kuali.coeus.common.framework.org.Organization" auto-retrieve="true" auto-update="none" auto-delete="none"> 
 			<foreignkey field-ref="organizationId"/> 
 		</reference-descriptor>
+
+		<reference-descriptor name="auditAcceptedType" class-ref="org.kuali.coeus.common.framework.org.audit.OrganizationAuditAcceptedType" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="auditAcceptedCode" />
+		</reference-descriptor>
 	</class-descriptor>
-	
+
+	<class-descriptor class="org.kuali.coeus.common.framework.org.audit.OrganizationAuditAcceptedType" table="ORGANIZATION_AUDIT_ACC_TYPE">
+		<field-descriptor name="code" column="CODE" jdbc-type="VARCHAR" primarykey="true"/>
+		<field-descriptor name="active" column="ACTIVE_FLAG" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR"/>
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" nullable="false" />
+	</class-descriptor>
+
 	<class-descriptor class="org.kuali.coeus.common.framework.org.OrganizationYnq" table="ORGANIZATION_YNQ">
 		<field-descriptor name="organizationId" column="ORGANIZATION_ID" jdbc-type="VARCHAR" primarykey="true"/>
 		<field-descriptor name="questionId" column="QUESTION_ID" jdbc-type="VARCHAR" primarykey="true"/>
@@ -1207,11 +1220,11 @@
 
 <class-descriptor class="org.kuali.kra.institutionalproposal.proposaladmindetails.ProposalAdminDetails" table="PROPOSAL_ADMIN_DETAILS">
     <field-descriptor name="proposalAdminDetailId" column="PROPOSAL_ADMIN_DETAIL_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="SEQ_PROPOSAL_ADMIN_DETAILS_ID" />
-    <field-descriptor name="dateSubmittedByDept" column="DATE_SUBMITTED_BY_DEPT" jdbc-type="DATE" />
-	<field-descriptor name="dateReturnedToDept" column="DATE_RETURNED_TO_DEPT" jdbc-type="DATE" />
-	<field-descriptor name="dateApprovedByOsp" column="DATE_APPROVED_BY_OSP" jdbc-type="DATE" />
-	<field-descriptor name="dateSubmittedToAgency" column="DATE_SUBMITTED_TO_AGENCY" jdbc-type="DATE" />
-	<field-descriptor name="instPropCreateDate" column="INST_PROP_CREATE_DATE" jdbc-type="DATE" />
+    <field-descriptor name="dateSubmittedByDept" column="DATE_SUBMITTED_BY_DEPT" jdbc-type="TIMESTAMP" />
+	<field-descriptor name="dateReturnedToDept" column="DATE_RETURNED_TO_DEPT" jdbc-type="TIMESTAMP" />
+	<field-descriptor name="dateApprovedByOsp" column="DATE_APPROVED_BY_OSP" jdbc-type="TIMESTAMP" />
+	<field-descriptor name="dateSubmittedToAgency" column="DATE_SUBMITTED_TO_AGENCY" jdbc-type="TIMESTAMP" />
+	<field-descriptor name="instPropCreateDate" column="INST_PROP_CREATE_DATE" jdbc-type="TIMESTAMP" />
 	<field-descriptor name="instPropCreateUser" column="INST_PROP_CREATE_USER" jdbc-type="VARCHAR" />
 	<field-descriptor name="signedBy" column="SIGNED_BY" jdbc-type="VARCHAR" />
 	<field-descriptor name="submissionType" column="SUBMISSION_TYPE" jdbc-type="VARCHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
@@ -1219,8 +1232,6 @@
     <field-descriptor name="instProposalId" column="INST_PROPOSAL_ID" jdbc-type="BIGINT" nullable="true" />
     <field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
 	<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
-	<field-descriptor name="createTimestamp" column="CREATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
-	<field-descriptor name="createUser" column="CREATE_USER" jdbc-type="VARCHAR" />
 	<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
 	<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
 </class-descriptor>
@@ -1260,7 +1271,7 @@
 	</class-descriptor>
 	
 	<class-descriptor class="org.kuali.coeus.common.framework.print.watermark.Watermark" table="WATERMARK">
-		<field-descriptor name="watermarkId" column="WATERMARK_ID" jdbc-type="BIGINT" primarykey="true" sequence-name="SEQUENCE_WATERMARK_ID" autoincrement="true"/>
+		<field-descriptor name="watermarkId" column="WATERMARK_ID" jdbc-type="BIGINT" primarykey="true" sequence-name="SEQ_WATERMARK_ID" autoincrement="true"/>
 		<field-descriptor name="statusCode" column="STATUS_CODE" jdbc-type="VARCHAR" />
 		<field-descriptor name="watermarkText" column="WATERMARK_TEXT" jdbc-type="VARCHAR" />
 		<field-descriptor name="watermarkStatus" column="WATERMARK_STATUS" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />

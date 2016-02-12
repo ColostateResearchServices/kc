@@ -82,7 +82,7 @@
 
     <filter>
         <filter-name>UserLoginFilter</filter-name>
-        <filter-class>org.kuali.rice.krad.web.filter.UserLoginFilter</filter-class>
+        <filter-class>org.kuali.coeus.sys.framework.auth.AuthServiceUserLoginFilter</filter-class>
     </filter>
 
     <filter>
@@ -174,11 +174,22 @@
         <servlet-name>krad</servlet-name>
     </filter-mapping>
     <!-- Rice content End -->
-
+    
+    <filter-mapping>
+        <filter-name>BootstrapFilter</filter-name>
+        <url-pattern>/schemaspy/*</url-pattern>
+    </filter-mapping>
+    
     <filter-mapping>
         <filter-name>UserLoginFilter</filter-name>
         <url-pattern>/schemaspy/*</url-pattern>
     </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>BootstrapFilter</filter-name>
+        <url-pattern>/monitoring/*</url-pattern>
+    </filter-mapping>
+    
 
     <filter-mapping>
         <filter-name>UserLoginFilter</filter-name>
@@ -297,6 +308,10 @@
         <init-param>
             <param-name>config-kew</param-name>
             <param-value>/WEB-INF/dwr-kew.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>config-krlc</param-name>
+            <param-value>/WEB-INF/dwr-krlc.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

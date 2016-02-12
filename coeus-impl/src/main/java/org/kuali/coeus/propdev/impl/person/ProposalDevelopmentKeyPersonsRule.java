@@ -30,7 +30,6 @@ import org.kuali.coeus.propdev.impl.person.creditsplit.ProposalUnitCreditSplit;
 import org.kuali.coeus.sys.framework.rule.KcTransactionalDocumentRuleBase;
 import org.kuali.coeus.common.framework.person.attr.DegreeType;
 import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.coeus.propdev.impl.person.creditsplit.CalculateCreditSplitRule;
 import org.kuali.rice.core.api.util.RiceKeyConstants;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
@@ -59,7 +58,6 @@ public class ProposalDevelopmentKeyPersonsRule extends KcTransactionalDocumentRu
 
     private static final Log LOG = LogFactory.getLog(ProposalDevelopmentKeyPersonsRule.class);
 
-    private static final int FIELD_ERA_COMMONS_USERNAME_MIN_LENGTH = 6;
     private static final String ADD_KEY_PERSON_HELPER_PARAMETER_MAP_KEY_PERSON_PROJECT_ROLE = "addKeyPersonHelper.parameterMap['keyPersonProjectRole']";
     private static final String KEY_PERSON_S_ROLE = "Key Person's Role";
     private KcPersonService kcPersonService;
@@ -124,11 +122,6 @@ public class ProposalDevelopmentKeyPersonsRule extends KcTransactionalDocumentRu
                     || person.getPercentageEffort().isGreaterThan(new ScaleTwoDecimal(100)))){
                 GlobalVariables.getMessageMap().putError("document.developmentProposalList[0].proposalPersons[" + personIndex + "].percentageEffort", ERROR_PERCENTAGE,
                         new String[] {"Percentage Effort" });
-            }
-            
-            if(StringUtils.isNotBlank(person.getEraCommonsUserName()) && person.getEraCommonsUserName().length() < FIELD_ERA_COMMONS_USERNAME_MIN_LENGTH){
-                GlobalVariables.getMessageMap().putError("document.developmentProposalList[0].proposalPersons[" + personIndex + "].eraCommonsUserName", KeyConstants.ERROR_MINLENGTH,
-                        new String[] {"eRA Commons User Name" , ""+ FIELD_ERA_COMMONS_USERNAME_MIN_LENGTH});
             }
             
             personIndex++;

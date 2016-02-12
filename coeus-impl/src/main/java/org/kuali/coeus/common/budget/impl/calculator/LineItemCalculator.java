@@ -70,20 +70,18 @@ public class LineItemCalculator extends AbstractBudgetCalculator {
 
     public void populateCalculatedAmountLineItems() {
         if (bli.getBudgetLineItemCalculatedAmounts().size() <= 0) {
-            setCalculatedAmounts(budget,bli);
+            setCalculatedAmounts(bli);
         }
 
-        if(getBudgetRateService().performSyncFlag(budget)){
+        if(performSync()){
             Long versionNumber = null;
             if (CollectionUtils.isNotEmpty(bli.getBudgetLineItemCalculatedAmounts())) {
                 versionNumber = bli.getBudgetLineItemCalculatedAmounts().get(0).getVersionNumber();
             }
             //Save applyRateFlag to set it back on the new Calculated Amounts
             Map<String, Boolean> applyRateFlags = saveApplyRateFlagsForReset();
-
-            bli.setBudgetLineItemCalculatedAmounts(new ArrayList<BudgetLineItemCalculatedAmount>());
             
-            setCalculatedAmounts(budget,bli);
+            setCalculatedAmounts(bli);
             
             for(BudgetLineItemCalculatedAmount budgetLineItemCalculatedAmount : bli.getBudgetLineItemCalculatedAmounts()){
                 if (versionNumber != null) {
@@ -96,8 +94,15 @@ public class LineItemCalculator extends AbstractBudgetCalculator {
             }
         }
          
-    }    
+    }
 
+    protected boolean performSync() {
+        return getBudgetRateService().performSyncFlag(budget);
+    }
+
+    protected BudgetCalculationService getBudgetCalculationService() {
+        return budgetCalculationService;
+    }
     /*
      * unitcost = (totalcost/totalnumofdays)*actualnumofdays
      * 
@@ -112,7 +117,7 @@ public class LineItemCalculator extends AbstractBudgetCalculator {
         ScaleTwoDecimal costSharingRequested = ScaleTwoDecimal.ZERO;
         if(!personnelDetailsList.isEmpty()){
             for (BudgetPersonnelDetails budgetPersonnelDetails : personnelDetailsList) {
-                budgetCalculationService.calculateBudgetLineItem(budget, budgetPersonnelDetails);
+                getBudgetCalculationService().calculateBudgetLineItem(budget, budgetPersonnelDetails);
                 salaryRequested = salaryRequested.add(budgetPersonnelDetails.getSalaryRequested());
                 costSharingRequested = costSharingRequested.add(budgetPersonnelDetails.getCostSharingAmount());
             }

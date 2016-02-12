@@ -198,7 +198,7 @@ public class SubAwardHomeAction extends SubAwardAction{
             forward = mapping.findForward(Constants.MAPPING_SUBAWARD_PAGE);            
         } else {
             initializeFormWithSubAward(subAwardForm, (SubAward) foundPending.getSequenceOwner());
-            response.sendRedirect(buildForwardUrl(subAwardForm.getDocId()));
+            response.sendRedirect(buildForwardUrl(subAwardForm.getSubAwardDocument().getDocumentNumber()));
             forward = null;
         }
         return forward;
@@ -223,8 +223,7 @@ public class SubAwardHomeAction extends SubAwardAction{
      * @return ActionForward
      * @throws Exception
      */
-    private ActionForward createAndSaveNewSubAwardVersion(
-    HttpServletResponse response, SubAwardForm subAwardForm,
+    private ActionForward createAndSaveNewSubAwardVersion(HttpServletResponse response, SubAwardForm subAwardForm,
        SubAwardDocument subAwardDocument, SubAward subAward) throws Exception {
        subAwardForm.getSubAwardDocument().getSubAward().setNewVersion(true);
        SubAwardDocument newSubAwardDocument = getSubAwardService().createNewSubAwardVersion(subAwardForm.getSubAwardDocument());
