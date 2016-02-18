@@ -2,7 +2,7 @@
 -- DDL for new CGB maint tables 
 -------------------------------------------------
 
- SET DELIMITER /
+DELIMITER /
  
 --------------------------------------------------------
 --   CG_BILL_FREQUENCY_T
@@ -163,5 +163,5 @@ ALTER TABLE AWARD_CGB ADD COLUMN LOC_FUND_CODE VARCHAR(15)
 ALTER TABLE AWARD_CGB ADD COLUMN BILLING_FREQ_ID DECIMAL(22)
 /
 
-  	       
+DELIMITER ;     
    
