@@ -71,6 +71,13 @@ import org.kuali.kra.external.sponsor.SponsorDTO;
     "excludedFromInvoicingReason",
     "sequenceNumber",
     "sequenceStatus",
+    "locFund",
+    "locFundCode",
+    "locFundStartDate",
+    "locFundExpirationDate",
+    "locFundAmount",
+    "locFundGroup",
+    "locFundGroupCode",
     "awardAccounts"
 })
 public class AwardDTO implements Serializable {
@@ -115,6 +122,15 @@ public class AwardDTO implements Serializable {
     private FrequencyDto invoiceBillingFrequency;
     private String sequenceNumber;
     private String sequenceStatus;
+
+    private String locFund;
+    private String locFundCode;
+    private Date locFundStartDate;
+    private Date locFundExpirationDate;
+    private BigDecimal locFundAmount;
+    private String locFundGroup;
+    private String locFundGroupCode;
+    
     private List<AwardAccountDTO> awardAccounts;
 
 
@@ -351,5 +367,47 @@ public class AwardDTO implements Serializable {
 	}
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	public String getLocFund() {
+		return locFund;
+	}
+	public void setLocFund(String locFund) {
+		this.locFund = locFund;
+	}
+	public String getLocFundCode() {
+		return locFundCode;
+	}
+	public void setLocFundCode(String locFundCode) {
+		this.locFundCode = locFundCode;
+	}
+	public Date getLocFundStartDate() {
+		return locFundStartDate;
+	}
+	public void setLocFundStartDate(Date locFundStartDate) {
+		this.locFundStartDate = locFundStartDate;
+	}
+	public Date getLocFundExpirationDate() {
+		return locFundExpirationDate;
+	}
+	public void setLocFundExpirationDate(Date locFundExpirationDate) {
+		this.locFundExpirationDate = locFundExpirationDate;
+	}
+	public BigDecimal getLocFundAmount() {
+		return locFundAmount;
+	}
+	public void setLocFundAmount(BigDecimal locFundAmount) {
+		this.locFundAmount = locFundAmount;
+	}
+	public String getLocFundGroup() {
+		return locFundGroup;
+	}
+	public void setLocFundGroup(String locFundGroup) {
+		this.locFundGroup = locFundGroup;
+	}
+	public String getLocFundGroupCode() {
+		return locFundGroupCode;
+	}
+	public void setLocFundGroupCode(String locFundGroupCode) {
+		this.locFundGroupCode = locFundGroupCode;
 	}
 }

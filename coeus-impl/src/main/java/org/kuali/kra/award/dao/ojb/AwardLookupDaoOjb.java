@@ -70,6 +70,15 @@ public class AwardLookupDaoOjb extends LookupDaoOjb  implements AwardLookupDao{
         return awardList;    
     }
 
+    
+    public List<? extends BusinessObject> getBaseNodeAwardSearchResults(Map fieldValues, boolean usePrimaryKeys) {
+
+    	List<Award> awardList = (List<Award>)getAwardSearchResults( fieldValues,  usePrimaryKeys);
+    	return awardList;
+    	
+    }
+
+    
     private boolean checkAwardHasActiveTnMDocument(Award awardSearckBo) {
         
         Map<String, Object> fieldValues = new HashMap<String, Object>();

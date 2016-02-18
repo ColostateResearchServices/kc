@@ -50,10 +50,21 @@
 		<field-descriptor name="invoiceDocumentStatus" column="INVOICE_DOCUMENT_STATUS" jdbc-type="VARCHAR"/>
 		<field-descriptor name="locCreationType" column="LOC_CREATION_TYPE" jdbc-type="VARCHAR"/>
 		<field-descriptor name="suspendInvoicing" column="SUSPEND_INVOICING" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="locFundCode" column="LOC_FUND_CODE" jdbc-type="VARCHAR"/>
+		<field-descriptor name="billFreqId" column="BILLING_FREQ_ID" jdbc-type="BIGINT"/>
 		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
 		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
+
+ 		<reference-descriptor name="locFund" class-ref="org.kuali.kra.award.cgb.LetterOfCreditFund" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="locFundCode"/>
+		</reference-descriptor>
+
+ 		<reference-descriptor name="billingFrequency" class-ref="org.kuali.kra.award.cgb.CgbBillingFrequency" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="billFreqId"/>
+		</reference-descriptor>
+
 	</class-descriptor>
 
 	<class-descriptor class="org.kuali.kra.award.home.Award" table="AWARD">
@@ -1693,5 +1704,36 @@
 	</class-descriptor>
 	
 	
+		<class-descriptor class="org.kuali.kra.award.cgb.LetterOfCreditFund" table="CG_LTRCR_FND_T">
+		  <field-descriptor column="CG_LTRCR_FND_CD" index="true" jdbc-type="VARCHAR" name="fundCode" primarykey="true"/>
+		  <field-descriptor column="OBJ_ID" index="true" jdbc-type="VARCHAR" name="objectId"/>
+		  <field-descriptor column="VER_NBR" jdbc-type="BIGINT" locking="true" name="versionNumber"/>
+		  <field-descriptor column="CG_LTRCR_FND_DESC" jdbc-type="VARCHAR" name="description"/>
+		  <field-descriptor column="CG_LTRCR_FNDGRP_CD" jdbc-type="VARCHAR" name="groupCode"/>
+		  <field-descriptor column="CG_LTRCR_AMT" conversion="org.kuali.coeus.sys.framework.persistence.OjbScaleTwoDecimalFieldConversion" jdbc-type="DECIMAL" name="amount"/>
+		  <field-descriptor column="CG_LTRCR_START_DT" jdbc-type="DATE" name="startDate"/>
+		  <field-descriptor column="CG_LTRCR_EXPIRATION_DT" jdbc-type="DATE" name="expirationDate"/>
+		  <field-descriptor column="ACTV_IND" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" jdbc-type="VARCHAR" name="active"/>
+ 		  <reference-descriptor auto-delete="none" auto-retrieve="true" auto-update="none" class-ref="org.kuali.kra.award.cgb.LetterOfCreditFundGroup" name="fundGroup" proxy="true">
+		    <foreignkey field-ref="groupCode"/>
+		  </reference-descriptor>
+		</class-descriptor>
+
+		<class-descriptor class="org.kuali.kra.award.cgb.LetterOfCreditFundGroup" table="CG_LTRCR_FNDGRP_T">
+		  <field-descriptor column="CG_LTRCR_FNDGRP_CD" index="true" jdbc-type="VARCHAR" name="groupCode" primarykey="true"/>
+		  <field-descriptor column="OBJ_ID" index="true" jdbc-type="VARCHAR" name="objectId"/>
+		  <field-descriptor column="VER_NBR" jdbc-type="BIGINT" locking="true" name="versionNumber"/>
+		  <field-descriptor column="LTRCR_FNDGRP_DESC" jdbc-type="VARCHAR" name="description"/>
+		  <field-descriptor column="ROW_ACTV_IND" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" jdbc-type="VARCHAR" name="active"/>
+		</class-descriptor>
+
+		<class-descriptor class="org.kuali.kra.award.cgb.CgbBillingFrequency" table="CG_BILL_FREQUENCY_T">
+		  <field-descriptor column="BILL_FREQ_ID" index="true" jdbc-type="BIGINT" access="readonly" name="id" primarykey="true"/>
+		  <field-descriptor column="CODE" jdbc-type="VARCHAR" name="code"/>
+		  <field-descriptor column="DESCRIPTION" jdbc-type="VARCHAR" name="description"/>
+		  <field-descriptor column="OBJ_ID" index="true" jdbc-type="VARCHAR" name="objectId"/>
+		  <field-descriptor column="VER_NBR" jdbc-type="BIGINT" locking="true" name="versionNumber"/>
+		  <field-descriptor column="ACTV_IND" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" jdbc-type="VARCHAR" name="active"/>
+		</class-descriptor>	
 	
 </descriptor-repository>

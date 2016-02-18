@@ -59,6 +59,18 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 	@Override
 	public AwardDTO buildDto(Award award) {
 		if (award != null) {
+			List<String> orderList = new ArrayList<String>();
+			Map<String, AwardHierarchy>  hierarchyMap =  getAwardHierarchyService().getAwardHierarchy(award.getAwardNumber(), orderList);
+			
+			return buildDto(award,hierarchyMap, orderList);
+		} else {
+			return null;
+		}
+	}
+
+	
+	public AwardDTO buildDto(Award award, Map<String, AwardHierarchy>  hierarchyMap, List<String> orderList) {
+		if (award != null) {
 			AwardDTO dto = new AwardDTO();
 			dto.setAwardId(award.getAwardId());
 			dto.setAwardNumber(award.getAwardNumber());
@@ -93,6 +105,16 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 			dto.setSequenceNumber(award.getSequenceNumber().toString());
 			dto.setSequenceStatus(award.getAwardSequenceStatus());
 
+			if (award.getAwardCgb().getLocFund() != null) {
+				dto.setLocFund(award.getAwardCgb().getLocFund().getDescription());
+				dto.setLocFundAmount(award.getAwardCgb().getLocFund().getAmount() != null ? award.getAwardCgb().getLocFund().getAmount().bigDecimalValue() : null );
+				dto.setLocFundCode(award.getAwardCgb().getLocFund().getFundCode());
+				dto.setLocFundExpirationDate(award.getAwardCgb().getLocFund().getExpirationDate());
+				dto.setLocFundStartDate(award.getAwardCgb().getLocFund().getStartDate());
+				dto.setLocFundGroup(award.getAwardCgb().getLocFund().getFundGroup().getDescription());
+				dto.setLocFundGroupCode(award.getAwardCgb().getLocFund().getGroupCode());
+			}
+			
 			if (StringUtils.isNotEmpty(award.getMethodOfPaymentCode())) {
 				AwardMethodOfPayment awardMethodOfPayment = getBusinessObjectService().findBySinglePrimaryKey(AwardMethodOfPayment.class, award.getMethodOfPaymentCode());
 			    dto.setMethodOfPayment(awardMethodOfPaymentDtoService.buildDto(awardMethodOfPayment));
@@ -121,15 +143,15 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 					dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(reportItem.getFrequency()));
 				}
 			}
-						
-			dto.setAwardAccounts(getAwardAccounts(award));
-			
+
+			dto.setAwardAccounts(getAwardAccountsHierarchy(hierarchyMap, orderList));
 			return dto;
 		} else {
 			return null;
 		}
 	}
-
+	
+	
 	protected BusinessObjectService getBusinessObjectService() {
 		return businessObjectService;
 	}
@@ -182,22 +204,22 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 		this.frequencyDtoService = frequencyDtoService;
 	}
 	
-	protected List<AwardAccountDTO> getAwardAccounts(Award award) {
+	protected List<AwardAccountDTO> getAwardAccountsHierarchy(Map<String, AwardHierarchy>  hierarchyMap, List<String> orderList ) {
 		
 		List<AwardAccountDTO> awardAccounts = new ArrayList<AwardAccountDTO>();
-
-		List<String> orderList = new ArrayList<String>();
-		Map<String, AwardHierarchy>  hierarchyMap =  getAwardHierarchyService().getAwardHierarchy(award.getAwardNumber(), orderList);
-		
-		for (String awardNum : orderList) {
-			AwardAccountDTO awardAccountDto = new AwardAccountDTO();
-			Award awardFromHierarchy = hierarchyMap.get(awardNum).getAward();
-			awardAccountDto = getAwardAccountDtoService().buildDto(awardFromHierarchy);
-			awardAccounts.add(awardAccountDto);			
-		 }
+		if (hierarchyMap != null && orderList != null && !orderList.isEmpty()) {
+		  for (String awardNum : orderList) {
+			  AwardAccountDTO awardAccountDto = new AwardAccountDTO();
+			  Award awardFromHierarchy = hierarchyMap.get(awardNum).getAward();
+			  awardAccountDto = getAwardAccountDtoService().buildDto(awardFromHierarchy);
+			  awardAccounts.add(awardAccountDto);			
+		   }
+		}
 		
 		return awardAccounts;
 	}
+	
+	
 	
 	public AwardHierarchyService getAwardHierarchyService() {
 		return awardHierarchyService;

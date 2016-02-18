@@ -38,4 +38,7 @@ public interface AwardWebService {
 
 	public AwardBillingUpdateStatusDto updateAwardBillingStatus(@WebParam(name = "searchDto") AwardFieldValuesDto searchDto,
 																@WebParam(name = "billingUpdate") AwardBillingUpdateDto updateDto);
+	
+//	public List<AwardDTO> searchBaseNodeAwards(@WebParam(name = "searchDto") AwardSearchCriteriaDto searchDto);
+	
 }

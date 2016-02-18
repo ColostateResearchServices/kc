@@ -43,6 +43,11 @@ public class AwardCgb extends AwardAssociate {
     private String locCreationType;
     private String invoiceDocumentStatus;
     private boolean suspendInvoicing;
+    private String locFundCode;
+    private LetterOfCreditFund locFund;
+    private Long billFreqId;
+    private CgbBillingFrequency billingFrequency;
+    
     
     public AwardCgb() { }
     
@@ -181,5 +186,37 @@ public class AwardCgb extends AwardAssociate {
 
 	public void setSuspendInvoicing(boolean suspendInvoicing) {
 		this.suspendInvoicing = suspendInvoicing;
+	}
+
+	public LetterOfCreditFund getLocFund() {
+		return locFund;
+	}
+
+	public void setLocFund(LetterOfCreditFund locFund) {
+		this.locFund = locFund;
+	}
+
+	public String getLocFundCode() {
+		return locFundCode;
+	}
+
+	public void setLocFundCode(String locFundCode) {
+		this.locFundCode = locFundCode;
+	}
+
+	public Long getBillFreqId() {
+		return billFreqId;
+	}
+
+	public void setBillFreqId(Long billFreqId) {
+		this.billFreqId = billFreqId;
+	}
+
+	public CgbBillingFrequency getBillingFrequency() {
+		return billingFrequency;
+	}
+
+	public void setBillingFrequency(CgbBillingFrequency billingFrequency) {
+		this.billingFrequency = billingFrequency;
 	}
 }

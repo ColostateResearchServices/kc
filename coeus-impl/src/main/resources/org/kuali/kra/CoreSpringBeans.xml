@@ -963,6 +963,10 @@
                 <value>classpath:org/kuali/coeus/common/impl/LineItemTableCommon.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/AwardCgb.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/krad/common/DummyLoginOverrides.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/LetterOfCreditFundGroup.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/LetterOfCreditFund.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/CgbBillingFrequency.xml</value>
+
             </list>
         </property>
         <property name="databaseRepositoryFilePaths">

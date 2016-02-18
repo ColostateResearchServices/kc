@@ -21,6 +21,8 @@
 <%@ include file="/WEB-INF/jsp/kraTldHeader.jsp"%>
 
 <c:set var="cgbAttributes" value="${DataDictionary.AwardCgb.attributes}" />
+<c:set var="locFundGroupAttributes" value="${DataDictionary.LetterOfCreditFundGroup.attributes}" />
+<c:set var="locFundAttributes" value="${DataDictionary.LetterOfCreditFund.attributes}" />
 <c:set var="awardCommentAttributes" value="${DataDictionary.AwardComment.attributes}" />
 
 <kul:tab tabTitle="Contract And Grants Billing" defaultOpen="false" tabErrorKey="document.awardList[0].awardCgb*">	
@@ -145,6 +147,43 @@
 		<tr>
 			<th>
 				<div style="text-align:right;">
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.locFundCode}"/>
+				</div>
+			</th>
+			<td >
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.locFundCode" attributeEntry="${cgbAttributes.locFundCode}" readOnly="${cgbReadOnly}" readOnlyAlternateDisplay="${KualiForm.awardDocument.award.awardCgb.locFund.description}"/>
+				</div>
+			</td>
+			<div class="loc-fund-grp-cols" id="locFundGroupDisplay">
+			<th>
+				<div style="text-align:right;">
+					<c:out value="Letter Of Credit Fund Group:"/>
+				</div>
+			</th>
+			<td >
+				<div style="text-align:left;">
+					  <kul:htmlControlAttribute property="${cgbPath}.awardCgb.locFund.fundGroup.description" attributeEntry="${locFundGroupAttributes.description}" 
+        	                     readOnly="true" />
+				</div>
+			</td>
+			</div>
+		</tr>	
+		<tr>
+			<th>
+				<div style="text-align:right;">
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.billFreqId}"/>
+				</div>
+			</th>
+			<td >
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.billFreqId" attributeEntry="${cgbAttributes.billFreqId}" readOnly="${cgbReadOnly}" readOnlyAlternateDisplay="${KualiForm.awardDocument.award.awardCgb.billingFrequency.description}"/>
+				</div>
+			</td>		
+		</tr>
+		<tr>
+			<th>
+				<div style="text-align:right;">
 					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.stopWork}"  />
 				</div>
 			</th>
@@ -211,6 +250,11 @@
 				</div>
 			</td>
 		</tr>			
+
+
+
+
+
 	</table>
 	</div>
 </kul:tab>

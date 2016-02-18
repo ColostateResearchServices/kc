@@ -44,6 +44,8 @@
         <ref bean="AwardCgb-locCreationType"/>
         <ref bean="AwardCgb-invoiceDocumentStatus" />
         <ref bean="AwardCgb-suspendInvoicing" />
+        <ref bean="AwardCgb-locFundCode" />
+        <ref bean="AwardCgb-billFreqId" />
       </list>
     </property>
   </bean>
@@ -203,6 +205,79 @@
 		<property name="label" value="Exclude from Invoicing" />
 		<property name="shortLabel" value="Exclude from Invoicing" />
 		<property name="required" value="false" />
-	</bean>       
+	</bean>      
+	
+    <bean id="AwardCgb-locFundCode" parent="AwardCgb-locFundCode-parentBean"/>
+    <bean id="AwardCgb-locFundCode-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="locFundCode"/>
+        <property name="forceUppercase" value="false"/>
+        <property name="label" value="Letter Of Credit Fund"/>
+        <property name="shortLabel" value="Letter Of Credit Fund"/>
+        <property name="maxLength" value="15"/>
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true"/>
+    </property>
+    <property name="validCharactersConstraint">
+      <bean parent="AnyCharacterPatternConstraint" p:allowWhitespace="true"/>
+    </property>
+        <property name="required" value="false"/>
+        <property name="control">
+            <bean parent="SelectControlDefinition" p:businessObjectClass="org.kuali.kra.award.cgb.LetterOfCreditFund"
+                  p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+                  p:includeKeyInLabel="false" p:includeBlankRow="false" p:keyAttribute="fundCode"
+                  p:labelAttribute="description"/>
+        </property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder">
+                <property name="businessObjectClass" value="org.kuali.kra.award.cgb.LetterOfCreditFund"/>
+                <property name="includeKeyInDescription" value="false"/>
+                <property name="includeBlankRow" value="false"/>
+                <property name="keyAttributeName" value="fundCode"/>
+                <property name="labelAttributeName" value="description"/>
+            </bean>
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-DropdownControl"/>
+        </property>
+        <property name="summary" value="Letter Of Credit Fund"/>
+        <property name="description" value="Letter Of Credit Fund"/>
+    </bean>	
+	
+    <bean id="AwardCgb-billFreqId" parent="AwardCgb-billFreqId-parentBean"/>
+    <bean id="AwardCgb-billFreqId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="billFreqId"/>
+        <property name="forceUppercase" value="false"/>
+        <property name="label" value="CGB Billing Frequency"/>
+        <property name="shortLabel" value="CGB Billing Frequency"/>
+        <property name="maxLength" value="19"/>
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true"/>
+    </property>
+    <property name="validCharactersConstraint">
+      <bean parent="AnyCharacterPatternConstraint" p:allowWhitespace="true"/>
+    </property>
+        <property name="required" value="false"/>
+        <property name="control">
+            <bean parent="SelectControlDefinition" p:businessObjectClass="org.kuali.kra.award.cgb.CgbBillingFrequency"
+                  p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+                  p:includeKeyInLabel="false" p:includeBlankRow="false" p:keyAttribute="id"
+                  p:labelAttribute="description"/>
+        </property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder">
+                <property name="businessObjectClass" value="org.kuali.kra.award.cgb.CgbBillingFrequency"/>
+                <property name="includeKeyInDescription" value="false"/>
+                <property name="includeBlankRow" value="false"/>
+                <property name="keyAttributeName" value="id"/>
+                <property name="labelAttributeName" value="description"/>
+            </bean>
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-DropdownControl"/>
+        </property>
+        <property name="summary" value="CGB Billing Frequency"/>
+        <property name="description" value="CGB Billing Frequency"/>
+    </bean>		
+	 
 </beans>
 
