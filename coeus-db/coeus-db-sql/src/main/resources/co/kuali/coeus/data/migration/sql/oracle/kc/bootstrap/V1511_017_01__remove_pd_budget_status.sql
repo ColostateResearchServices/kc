@@ -17,4 +17,4 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 
-DELETE FROM KRCR_PARM_T WHERE NMSPC_CD = 'KC-B' and CMPNT_CD = 'Document' and APPL_ID = 'KC' and PARM_NM = 'proposalBudgetStatusHelpUrl';
+DROP TABLE EPS_PROPOSAL_BUDGET_STATUS;
