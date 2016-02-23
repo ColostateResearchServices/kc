@@ -967,6 +967,8 @@
                 <value>classpath:org/kuali/kra/datadictionary/LetterOfCreditFund.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/CgbBillingFrequency.xml</value>
 
+                <value>classpath:org/kuali/kra/datadictionary/docs/LetterOfCreditFundGroupMaintenanceDocument.xml</value>
+
             </list>
         </property>
         <property name="databaseRepositoryFilePaths">

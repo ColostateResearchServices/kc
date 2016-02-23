@@ -26,12 +26,16 @@
 
   <bean id="LetterOfCreditFundGroup-parentBean" abstract="true" parent="BusinessObjectEntry">
     <property name="businessObjectClass" value="org.kuali.kra.award.cgb.LetterOfCreditFundGroup" />
-		<property name="objectLabel" value="Letter Of Credit Fund" />    
+	<property name="objectLabel" value="Letter Of Credit Fund" />    
+		<property name="lookupDefinition" >
+			<ref bean="LetterOfCreditFundGroup-lookupDefinition" />
+		</property>
     <property name="titleAttribute" value="code" />
     <property name="attributes" >
       <list>
         <ref bean="LetterOfCreditFundGroup-description" />
         <ref bean="LetterOfCreditFundGroup-active" />
+        <ref bean="LetterOfCreditFundGroup-groupCode" />
       </list>
     </property>
   </bean>
@@ -57,6 +61,68 @@
       <property name="shortLabel" value="Active" />
       <property name="required" value="false"/>
     </bean>       
+
+    <bean id="LetterOfCreditFundGroup-groupCode" parent="LetterOfCreditFundGroup-groupCode-parentBean" />
+    <bean id="LetterOfCreditFundGroup-groupCode-parentBean" abstract="true" parent="AttributeDefinition">
+      <property name="name" value="groupCode"/>
+	  <property name="label" value="GroupCode" />
+      <property name="shortLabel" value="GroupCode" />
+      <property name="required" value="true"/>
+      <property name="maxLength" value="4" />
+      <property name="control" >
+        <bean parent="TextControlDefinition"
+              p:size="4" />
+      </property>      
+    </bean>  
+
+	<!-- Business Object Lookup Definition -->
+	<bean id="LetterOfCreditFundGroup-lookupDefinition" parent="LetterOfCreditFundGroup-lookupDefinition-parentBean" />
+    <bean id="LetterOfCreditFundGroup-LookupView" parent="LetterOfCreditFundGroup-LookupView-parentBean"/>
+  
+	<bean id="LetterOfCreditFundGroup-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="LOC Fund Group Lookup" />
+		<property name="defaultSort" >
+           <bean parent="SortDefinition"/>
+		</property>
+	    <property name="helpDefinition" >
+          <bean parent="HelpDefinition" p:parameterNamespace="KC-M" p:parameterName="LetterOfCreditFundGroupMaintenanceHelp" p:parameterDetailType="Document"/>
+        </property>
+		<property name="lookupFields" >
+		<list>
+          <bean parent="FieldDefinition" p:attributeName="groupCode" p:forceInquiry="true"/>
+          <bean parent="FieldDefinition" p:attributeName="description"/>
+        </list>
+        </property>
+        
+    <property name="resultFields">
+      <list>
+        <bean parent="FieldDefinition" p:attributeName="groupCode" p:forceInquiry="true"/>
+        <bean parent="FieldDefinition" p:attributeName="description"/>
+        <bean parent="FieldDefinition" p:attributeName="active"/>
+      </list>
+    </property>
+    
+  </bean>
+
+  <bean id="LetterOfCreditFundGroup-LookupView-parentBean" abstract="true" parent="Uif-LookupView">
+    <property name="dataObjectClassName" value="org.kuali.kra.award.cgb.LetterOfCreditFundGroup"/>
+    <property name="headerText" value="LOC Fund Group Lookup"/>
+    <property name="criteriaFields">
+      <list>
+        <bean p:propertyName="groupCode" parent="Uif-LookupCriteriaInputField"/>
+        <bean p:propertyName="description" parent="Uif-LookupCriteriaInputField"/>
+        <bean p:propertyName="active" parent="Uif-DataField"/>
+			</list>
+		</property>
+		<property name="resultFields" >
+			<list>
+        <bean p:propertyName="groupCode" parent="Uif-DataField"/>
+        <bean p:propertyName="description" parent="Uif-DataField"/>
+        <bean p:propertyName="active" parent="Uif-DataField"/>
+			</list>
+		</property>
+	</bean>
+     
 
 </beans>
 
