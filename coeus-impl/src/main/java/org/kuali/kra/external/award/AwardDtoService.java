@@ -27,13 +27,12 @@ import org.kuali.coeus.common.framework.sponsor.Sponsor;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchy;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchyService;
 import org.kuali.kra.award.cgb.AwardCgbConstants;
+import org.kuali.kra.award.cgb.CgbBillingFrequency;
 import org.kuali.kra.award.contacts.AwardUnitContact;
 import org.kuali.kra.award.document.AwardDocument;
 import org.kuali.kra.award.home.Award;
-import org.kuali.kra.award.home.AwardConstants;
 import org.kuali.kra.award.home.AwardMethodOfPayment;
 import org.kuali.kra.award.paymentreports.Frequency;
-import org.kuali.kra.award.paymentreports.awardreports.AwardReportTerm;
 import org.kuali.kra.external.awardpayment.AwardMethodOfPaymentDTO;
 import org.kuali.kra.external.frequency.FrequencyDto;
 import org.kuali.kra.external.service.KcDtoService;
@@ -52,7 +51,7 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 	private KcDtoService<ProposalDTO, InstitutionalProposal> proposalDtoService;
 	private KcDtoService<SponsorDTO, Sponsor> sponsorDtoService;
 	private KcDtoService<AwardMethodOfPaymentDTO, AwardMethodOfPayment> awardMethodOfPaymentDtoService;
-	private KcDtoService<FrequencyDto, Frequency> frequencyDtoService;
+	private KcDtoService<FrequencyDto, CgbBillingFrequency> frequencyDtoService;
 	private AwardAccountDtoService awardAccountDtoService;
 	private AwardHierarchyService awardHierarchyService;
 	
@@ -113,6 +112,7 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 				dto.setLocFundStartDate(award.getAwardCgb().getLocFund().getStartDate());
 				dto.setLocFundGroup(award.getAwardCgb().getLocFund().getFundGroup().getDescription());
 				dto.setLocFundGroupCode(award.getAwardCgb().getLocFund().getGroupCode());
+
 			}
 			
 			if (StringUtils.isNotEmpty(award.getMethodOfPaymentCode())) {
@@ -137,12 +137,13 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 					dto.setFundManagerId(contact.getPersonId());
 				}
 			}
-			String invoiceReportDesc =  getParameterService().getParameterValueAsString(AwardDocument.class, AwardConstants.INVOICE_REPORT_DESC_PARAM);
+/*			String invoiceReportDesc =  getParameterService().getParameterValueAsString(AwardDocument.class, AwardConstants.INVOICE_REPORT_DESC_PARAM);
 			for (AwardReportTerm reportItem : award.getAwardReportTermItems()) {
 				if (StringUtils.equals(invoiceReportDesc, reportItem.getReport().getDescription())) {
 					dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(reportItem.getFrequency()));
 				}
-			}
+			}*/
+			dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(award.getAwardCgb().getBillingFrequency()));
 
 			dto.setAwardAccounts(getAwardAccountsHierarchy(hierarchyMap, orderList));
 			return dto;
@@ -195,12 +196,12 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 		this.awardMethodOfPaymentDtoService = awardMethodOfPaymentDtoService;
 	}
 
-	public KcDtoService<FrequencyDto, Frequency> getFrequencyDtoService() {
+	public KcDtoService<FrequencyDto, CgbBillingFrequency> getFrequencyDtoService() {
 		return frequencyDtoService;
 	}
 
 	public void setFrequencyDtoService(
-			KcDtoService<FrequencyDto, Frequency> frequencyDtoService) {
+			KcDtoService<FrequencyDto, CgbBillingFrequency> frequencyDtoService) {
 		this.frequencyDtoService = frequencyDtoService;
 	}
 	
