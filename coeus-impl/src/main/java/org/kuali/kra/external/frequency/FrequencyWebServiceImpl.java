@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.jws.WebParam;
 
+import org.kuali.kra.award.cgb.CgbBillingFrequency;
 import org.kuali.kra.award.paymentreports.Frequency;
 import org.kuali.kra.external.service.KcDtoService;
 import org.kuali.rice.krad.service.BusinessObjectService;
@@ -31,13 +32,13 @@ import org.kuali.rice.krad.service.BusinessObjectService;
 public class FrequencyWebServiceImpl implements FrequencyWebService {
 	
 	private BusinessObjectService businessObjectService;
-	private KcDtoService<FrequencyDto, Frequency> frequencyDtoService;
+	private KcDtoService<FrequencyDto, CgbBillingFrequency> frequencyDtoService;
 	
 
 	@Override
 	public FrequencyDto getFrequency(
 			@WebParam(name = "frequencyCode") String frequencyCode) {
-		return frequencyDtoService.buildDto(getBusinessObjectService().findBySinglePrimaryKey(Frequency.class, frequencyCode));
+		return frequencyDtoService.buildDto(getBusinessObjectService().findBySinglePrimaryKey(CgbBillingFrequency.class, frequencyCode));
 	}
 
 	@Override
@@ -51,12 +52,12 @@ public class FrequencyWebServiceImpl implements FrequencyWebService {
 		if (description != null) {
 			values.put("description", description);
 		}
-		return frequencyDtoService.buildDtoList(getBusinessObjectService().findMatching(Frequency.class, values));
+		return frequencyDtoService.buildDtoList(getBusinessObjectService().findMatching(CgbBillingFrequency.class, values));
 	}
 
 	@Override
 	public List<FrequencyDto> findAll() {
-		return frequencyDtoService.buildDtoList(getBusinessObjectService().findAll(Frequency.class));
+		return frequencyDtoService.buildDtoList(getBusinessObjectService().findAll(CgbBillingFrequency.class));
 	}
 
 	public BusinessObjectService getBusinessObjectService() {
@@ -67,12 +68,12 @@ public class FrequencyWebServiceImpl implements FrequencyWebService {
 		this.businessObjectService = businessObjectService;
 	}
 
-	public KcDtoService<FrequencyDto, Frequency> getFrequencyDtoService() {
+	public KcDtoService<FrequencyDto, CgbBillingFrequency> getFrequencyDtoService() {
 		return frequencyDtoService;
 	}
 
 	public void setFrequencyDtoService(
-			KcDtoService<FrequencyDto, Frequency> frequencyDtoService) {
+			KcDtoService<FrequencyDto, CgbBillingFrequency> frequencyDtoService) {
 		this.frequencyDtoService = frequencyDtoService;
 	}
 

@@ -111,7 +111,7 @@
       <list>
         <bean p:propertyName="groupCode" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="description" parent="Uif-LookupCriteriaInputField"/>
-        <bean p:propertyName="active" parent="Uif-DataField"/>
+        <bean p:propertyName="active" parent="Uif-LookupCriteriaInputField"/>
 			</list>
 		</property>
 		<property name="resultFields" >

@@ -28,8 +28,12 @@
     <property name="businessObjectClass" value="org.kuali.kra.award.cgb.LetterOfCreditFund" />
 		<property name="objectLabel" value="Letter Of Credit Fund" />    
     <property name="titleAttribute" value="code" />
+	<property name="lookupDefinition" >
+		<ref bean="LetterOfCreditFund-lookupDefinition" />
+	</property>
     <property name="attributes" >
       <list>
+        <ref bean="LetterOfCreditFund-fundCode" />
         <ref bean="LetterOfCreditFund-description" />
         <ref bean="LetterOfCreditFund-startDate" />
         <ref bean="LetterOfCreditFund-expirationDate" />
@@ -39,6 +43,20 @@
       </list>
     </property>
   </bean>
+    
+    
+    <bean id="LetterOfCreditFund-fundCode" parent="LetterOfCreditFund-fundCode-parentBean" />
+    <bean id="LetterOfCreditFund-fundCode-parentBean" abstract="true" parent="AttributeDefinition">
+      <property name="name" value="fundCode" />
+      <property name="label" value="Fund Code" />
+      <property name="shortLabel" value="Description" />
+      <property name="maxLength" value="15" />
+      <property name="required" value="false"/>
+      <property name="control" >
+        <bean parent="TextControlDefinition"
+              p:size="15" />
+      </property>      
+    </bean>
     
     
     <bean id="LetterOfCreditFund-description" parent="LetterOfCreditFund-description-parentBean" />
@@ -54,7 +72,7 @@
       </property>      
     </bean>
     
-    <bean id="LetterOfCreditFund-startDate" parent="LetterOfCreditFund-startDate-parentBean" />
+     <bean id="LetterOfCreditFund-startDate" parent="LetterOfCreditFund-startDate-parentBean" />
     <bean id="LetterOfCreditFund-startDate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
       <property name="name" value="startDate"/>
 	  <property name="label" value="Start Date" />
@@ -112,6 +130,60 @@
               p:size="4" />
       </property>      
     </bean>     
-     
+
+	<!-- Business Object Lookup Definition -->
+	<bean id="LetterOfCreditFund-lookupDefinition" parent="LetterOfCreditFund-lookupDefinition-parentBean" />
+    <bean id="LetterOfCreditFund-LookupView" parent="LetterOfCreditFund-LookupView-parentBean"/>
+  
+	<bean id="LetterOfCreditFund-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="LOC Fund Lookup" />
+		<property name="defaultSort" >
+           <bean parent="SortDefinition"/>
+		</property>
+	    <property name="helpDefinition" >
+          <bean parent="HelpDefinition" p:parameterNamespace="KC-M" p:parameterName="LetterOfCreditFundMaintenanceHelp" p:parameterDetailType="Document"/>
+        </property>
+		<property name="lookupFields" >
+		<list>
+          <bean parent="FieldDefinition" p:attributeName="fundCode" p:forceInquiry="true"/>
+          <bean parent="FieldDefinition" p:attributeName="groupCode" />
+          <bean parent="FieldDefinition" p:attributeName="description"/>
+        </list>
+        </property>
+        
+    <property name="resultFields">
+      <list>
+        <bean parent="FieldDefinition" p:attributeName="fundCode" p:forceInquiry="true"/>
+        <bean parent="FieldDefinition" p:attributeName="groupCode" />
+        <bean parent="FieldDefinition" p:attributeName="description"/>
+        <bean parent="FieldDefinition" p:attributeName="active"/>
+      </list>
+    </property>
+    
+  </bean>
+
+  <bean id="LetterOfCreditFund-LookupView-parentBean" abstract="true" parent="Uif-LookupView">
+    <property name="dataObjectClassName" value="org.kuali.kra.award.cgb.LetterOfCreditFund"/>
+    <property name="headerText" value="LOC Fund  Lookup"/>
+    <property name="criteriaFields">
+      <list>
+        <bean p:propertyName="fundCode" parent="Uif-LookupCriteriaInputField"/>
+        <bean p:propertyName="groupCode" parent="Uif-LookupCriteriaInputField"/>
+        <bean p:propertyName="description" parent="Uif-LookupCriteriaInputField"/>
+        <bean p:propertyName="active" parent="Uif-LookupCriteriaInputField"/>
+			</list>
+		</property>
+		<property name="resultFields" >
+			<list>
+        <bean p:propertyName="fundCode" parent="Uif-DataField"/>
+        <bean p:propertyName="groupCode" parent="Uif-DataField"/>
+        <bean p:propertyName="description" parent="Uif-DataField"/>
+        <bean p:propertyName="amount" parent="Uif-DataField"/>
+        <bean p:propertyName="startDate" parent="Uif-DataField"/>
+        <bean p:propertyName="expirationDate" parent="Uif-DataField"/>
+        <bean p:propertyName="active" parent="Uif-DataField"/>
+			</list>
+		</property>
+	</bean>     
 
 </beans>
