@@ -1345,6 +1345,42 @@
         </property>
     </bean>
 
+    <bean id="letterOfCreditFundGroupDtoService" class="org.kuali.kra.external.locfund.LetterOfCreditFundGroupDtoService"/>
+    
+    <bean id="letterOfCreditFundDtoService" class="org.kuali.kra.external.locfund.LetterOfCreditFundDtoService">
+        <property name="locFundGroupDtoService" ref="letterOfCreditFundGroupDtoService" />
+    </bean>
+
+    <bean id="letterOfCreditFundWebService" class="org.kuali.kra.external.locfund.LetterOfCreditFundWebServiceImpl">
+        <property name="businessObjectService" ref="businessObjectService" />
+        <property name="locFundDtoService" ref="letterOfCreditFundDtoService" />
+        <property name="locFundGroupDtoService" ref="letterOfCreditFundGroupDtoService" />
+    </bean>
+
+    <bean id="letterOfCreditFundWebServiceJavaExporter" class="org.kuali.rice.ksb.api.bus.support.ServiceBusExporter">
+        <property name="serviceDefinition">
+            <bean class="org.kuali.rice.ksb.api.bus.support.JavaServiceDefinition"
+                  p:service-ref="letterOfCreditFundWebService"
+                  p:serviceNameSpaceURI-ref="kc.integrationServiceNamespace"
+                  p:localServiceName="letterOfCreditFundWebService"
+                  p:serviceInterface="org.kuali.kra.external.locfund.LetterOfCreditFundWebService"
+                  p:busSecurity="${fin.system.integration.bus.security.on}"
+                  p:retryAttempts="1" />
+        </property>
+    </bean>
+    <bean id="letterOfCreditFundWebServiceSoapExporter" class="org.kuali.rice.ksb.api.bus.support.ServiceBusExporter">
+        <property name="serviceDefinition">
+            <bean class="org.kuali.rice.ksb.api.bus.support.SoapServiceDefinition"
+                  p:service-ref="letterOfCreditFundWebService"
+                  p:serviceNameSpaceURI-ref="kc.integrationServiceNamespace"
+                  p:localServiceName="letterOfCreditFundWebService"
+                  p:busSecurity="${fin.system.integration.bus.security.on}"
+                  p:jaxWsService="true" />
+        </property>
+    </bean>
+
+
+
     <bean id="customerCreationClient" class="org.kuali.kra.external.customercreation.CustomerCreationClientFactoryBean">
         <property name="sharedRice" value="${shared.rice}" />
         <property name="parameterService" ref="parameterService" />
