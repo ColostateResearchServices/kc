@@ -1,6 +1,6 @@
 package org.kuali.kra.external.locfund;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,19 +25,13 @@ public class LetterOfCreditFundWebServiceImpl implements
 
 	@Override
 	public List<LetterOfCreditFundDto> findMatchingFund(String fundCode,
-			String description,  Date startDate, Date expirationDate) {
+			String description) {
 		Map<String, String> values = new HashMap<String, String>();
 		if (!StringUtils.isEmpty(fundCode)) {
 			values.put("fundCode", fundCode);
 		}
 		if (!StringUtils.isEmpty(description)) {
 			values.put("description", description);
-		}
-		if (startDate != null) {
-			values.put("startDate", startDate.toString());
-		}
-		if (expirationDate != null) {
-			values.put("expirationDate", expirationDate.toString());
 		}
 		
 		return locFundDtoService.buildDtoList(getBusinessObjectService()

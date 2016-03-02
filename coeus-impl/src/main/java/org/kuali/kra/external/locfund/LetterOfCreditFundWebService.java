@@ -1,6 +1,6 @@
 package org.kuali.kra.external.locfund;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebParam;
@@ -18,9 +18,7 @@ public interface LetterOfCreditFundWebService {
 	
 	
 	public List<LetterOfCreditFundDto> findMatchingFund(@WebParam(name = "fundCode") String fundCode, 
-			                                            @WebParam(name = "description") String description, 
-			                                            @WebParam(name = "startDate") Date startDate,
-			                                            @WebParam(name = "expirationDate") Date expirationDate);
+			                                            @WebParam(name = "description") String description);
 	
 	public List<LetterOfCreditFundDto> allLocFunds();	
 
