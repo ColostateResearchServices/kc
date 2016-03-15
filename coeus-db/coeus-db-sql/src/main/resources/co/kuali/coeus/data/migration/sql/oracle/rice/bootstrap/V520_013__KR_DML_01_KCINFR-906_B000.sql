@@ -17,5 +17,12 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 
-Insert into KRCR_PARM_T (NMSPC_CD,CMPNT_CD,PARM_NM,OBJ_ID,VER_NBR,PARM_TYP_CD,VAL,PARM_DESC_TXT,EVAL_OPRTR_CD,APPL_ID) values 
-('KR-WKFLW','All','KIM_PRIORITY_ON_DOC_TYP_PERMS_IND',SYS_GUID(),2,'CONFG','N','Flag for enabling disabling document type permission checks to use KIM Permissions as priority over Document Type policies.','A','KC');
+begin
+  Insert into KRCR_PARM_T (NMSPC_CD,CMPNT_CD,PARM_NM,OBJ_ID,VER_NBR,PARM_TYP_CD,VAL,PARM_DESC_TXT,EVAL_OPRTR_CD,APPL_ID) values
+    ('KR-WKFLW','All','KIM_PRIORITY_ON_DOC_TYP_PERMS_IND',SYS_GUID(),2,'CONFG','N','Flag for enabling disabling document type permission checks to use KIM Permissions as priority over Document Type policies.','A','KC');
+  exception
+  when DUP_VAL_ON_INDEX then
+  update krcr_parm_t set val = 'N' where appl_id = 'KC' and nmspc_cd = 'KR-WKFLW' and parm_nm = 'KIM_PRIORITY_ON_DOC_TYP_PERMS_IND' and cmpnt_cd = 'All';
+end;
+/
+
