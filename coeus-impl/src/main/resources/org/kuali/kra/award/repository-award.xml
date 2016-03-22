@@ -56,6 +56,18 @@
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
 	</class-descriptor>
 
+	<!-- CSU Customizations -->
+	<class-descriptor class="edu.colostate.kc.award.AwardExtension" table="CSU_AWARD_EXT_T">
+		<field-descriptor name="awardId" column="AWARD_ID" jdbc-type="BIGINT" primarykey="true"  index="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<reference-descriptor name="award" class-ref="org.kuali.kra.award.home.Award" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="awardId"/>
+		</reference-descriptor>
+
+	</class-descriptor>
+	<!-- End CSU Customizations -->
+
 	<class-descriptor class="org.kuali.kra.award.home.Award" table="AWARD">
 		<field-descriptor name="awardId" column="AWARD_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="SEQUENCE_AWARD_ID" />		
 		<field-descriptor id="1" name="awardNumber" column="AWARD_NUMBER" jdbc-type="VARCHAR" />
@@ -262,9 +274,14 @@
 		<collection-descriptor name="awardCgbList" proxy="true" element-class-ref="org.kuali.kra.award.cgb.AwardCgb" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
 			<inverse-foreignkey field-ref="awardId"/>
 		</collection-descriptor>
+		<!-- CSU Customization -->
+		<reference-descriptor name="extension" class-ref="edu.colostate.kc.award.AwardExtension" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false">
+			<foreignkey field-ref="awardId" />
+		</reference-descriptor>
+		<!-- End CSU Customization -->
 
 	</class-descriptor>
-	
+
 	<class-descriptor class="org.kuali.kra.award.contacts.AwardPerson" table="AWARD_PERSONS">
 		<field-descriptor name="awardContactId" column="AWARD_PERSON_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="SEQUENCE_AWARD_ID" />
 		

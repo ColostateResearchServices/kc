@@ -80,6 +80,8 @@ import org.kuali.rice.krms.api.engine.Facts;
 
 import java.util.*;
 
+import edu.colostate.kc.award.AwardExtension;
+
 /**
  * 
  * This class represents the Award Document Object.

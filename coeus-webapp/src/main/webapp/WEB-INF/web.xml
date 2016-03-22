@@ -33,7 +33,7 @@
     <!-- Change this if you want to use a different Spring file -->
     <context-param>
         <param-name>web.bootstrap.spring.file</param-name>
-        <param-value>classpath:KcBootstrapSpringBeans.xml</param-value>
+        <param-value>classpath:KcBootstrapSpringBeans.xml;classpath:kc-custom-springbeans.xml</param-value>
     </context-param>
 
     <!-- Change this if you want to use a different config file, can be overridden with a system property-->
