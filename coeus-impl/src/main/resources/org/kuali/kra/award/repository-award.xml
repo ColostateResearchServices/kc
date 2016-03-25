@@ -1705,7 +1705,8 @@
 	
 	
 		<class-descriptor class="org.kuali.kra.award.cgb.LetterOfCreditFund" table="CG_LTRCR_FND_T">
-		  <field-descriptor column="CG_LTRCR_FND_CD" index="true" jdbc-type="VARCHAR" name="fundCode" primarykey="true"/>
+		  <field-descriptor column="FUND_ID" index="true" jdbc-type="BIGINT" name="fundId" primarykey="true" access="readonly"/>
+		  <field-descriptor column="CG_LTRCR_FND_CD" index="true" jdbc-type="VARCHAR" name="fundCode"/>
 		  <field-descriptor column="OBJ_ID" index="true" jdbc-type="VARCHAR" name="objectId"/>
 		  <field-descriptor column="VER_NBR" jdbc-type="BIGINT" locking="true" name="versionNumber"/>
 		  <field-descriptor column="CG_LTRCR_FND_DESC" jdbc-type="VARCHAR" name="description"/>
@@ -1720,11 +1721,12 @@
 		</class-descriptor>
 
 		<class-descriptor class="org.kuali.kra.award.cgb.LetterOfCreditFundGroup" table="CG_LTRCR_FNDGRP_T">
-		  <field-descriptor column="CG_LTRCR_FNDGRP_CD" index="true" jdbc-type="VARCHAR" name="groupCode" primarykey="true"/>
+		  <field-descriptor column="FNDGRP_ID" index="true" jdbc-type="BIGINT" name="groupId" primarykey="true" access="readonly"/>
+		  <field-descriptor column="CG_LTRCR_FNDGRP_CD" index="true" jdbc-type="VARCHAR" name="groupCode"/>
 		  <field-descriptor column="OBJ_ID" index="true" jdbc-type="VARCHAR" name="objectId"/>
 		  <field-descriptor column="VER_NBR" jdbc-type="BIGINT" locking="true" name="versionNumber"/>
 		  <field-descriptor column="LTRCR_FNDGRP_DESC" jdbc-type="VARCHAR" name="description"/>
-		  <field-descriptor column="ROW_ACTV_IND" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" jdbc-type="VARCHAR" name="active"/>
+		  <field-descriptor column="ACTV_IND" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" jdbc-type="VARCHAR" name="active"/>
 		</class-descriptor>
 
 		<class-descriptor class="org.kuali.kra.award.cgb.CgbBillingFrequency" table="CG_BILL_FREQUENCY_T">

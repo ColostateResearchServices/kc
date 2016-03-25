@@ -4,6 +4,8 @@ import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
 
 public class LetterOfCreditFundGroup extends KcPersistableBusinessObjectBase {
 
+	private Long groupId;
+
 	private String groupCode;
 	private String description;
 	private boolean active;
@@ -27,6 +29,12 @@ public class LetterOfCreditFundGroup extends KcPersistableBusinessObjectBase {
 	}
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	public Long getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(Long groupId) {
+		this.groupId = groupId;
 	}
 	
 	

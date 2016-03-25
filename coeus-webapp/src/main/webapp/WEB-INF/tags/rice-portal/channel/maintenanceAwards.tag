@@ -49,7 +49,7 @@
   	<li><portal:portalLink displayTitle="true" title="Sponsor Terms" url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.coeus.common.framework.sponsor.term.SponsorTerm&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888" /></li>
   	<li><portal:portalLink displayTitle="true" title="Award Transaction Type" url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.kra.timeandmoney.transactions.AwardTransactionType&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888" /></li>
 
-    <c:if test="${financialIntegration }">
+    <c:if test="${financialIntegration}">
     	<li><portal:portalLink displayTitle="true" title="Award LOC Fund" url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.kra.award.cgb.LetterOfCreditFund&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888" /></li>
     	<li><portal:portalLink displayTitle="true" title="Award LOC Fund Group" url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.kra.award.cgb.LetterOfCreditFundGroup&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888" /></li>
     </c:if>
