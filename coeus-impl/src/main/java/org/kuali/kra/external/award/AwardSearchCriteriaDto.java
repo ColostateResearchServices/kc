@@ -32,6 +32,8 @@ public class AwardSearchCriteriaDto {
 	private String endDateLowerBound;
 	private String billingFrequency;
 	private String awardTotal;
+	private String letterOfCreditFundCode;
+	private String letterOfCreditFundGroupCode;
 
 	public String getAwardId() {
 		return awardId;
@@ -104,5 +106,17 @@ public class AwardSearchCriteriaDto {
 	}
 	public void setEndDateLowerBound(String endDateLowerBound) {
 		this.endDateLowerBound = endDateLowerBound;
+	}
+	public String getLetterOfCreditFundCode() {
+		return letterOfCreditFundCode;
+	}
+	public void setLetterOfCreditFundCode(String letterOfCreditFundCode) {
+		this.letterOfCreditFundCode = letterOfCreditFundCode;
+	}
+	public String getLetterOfCreditFundGroupCode() {
+		return letterOfCreditFundGroupCode;
+	}
+	public void setLetterOfCreditFundGroupCode(String letterOfCreditFundGroupCode) {
+		this.letterOfCreditFundGroupCode = letterOfCreditFundGroupCode;
 	}
 }

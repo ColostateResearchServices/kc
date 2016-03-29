@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 import org.kuali.kra.award.cgb.AwardCgb;
+import org.kuali.kra.award.cgb.LetterOfCreditFund;
 import org.kuali.kra.award.contacts.AwardUnitContact;
 import org.kuali.kra.award.home.Award;
 import org.kuali.kra.award.home.AwardConstants;
@@ -82,6 +83,32 @@ public class AwardWebServiceImpl implements AwardWebService {
 		String invoiceReportDesc =  getParameterService().getParameterValueAsString(Award.class, AwardConstants.INVOICE_REPORT_DESC_PARAM);
 		values.put("awardReportTermItems.report.description", invoiceReportDesc);
 		values.put("awardReportTermItems.frequencyCode", searchDto.getBillingFrequency());
+		
+		String locFundCodes = "";
+		if (StringUtils.isNotEmpty(searchDto.getLetterOfCreditFundGroupCode())) {
+			String [] groupCodes = searchDto.getLetterOfCreditFundGroupCode().split("\\|");
+			for (String groupCode: groupCodes) {
+				Map<String, String> locValues = new HashMap<String, String>();
+				locValues.put("groupCode", groupCode);
+				List<LetterOfCreditFund> funds =  (List<LetterOfCreditFund>) getBusinessObjectService().findMatching(LetterOfCreditFund.class, locValues);
+				for (LetterOfCreditFund fund : funds) {
+					if (!locFundCodes.isEmpty()) {
+						locFundCodes = locFundCodes.concat("|");
+					}
+					locFundCodes = locFundCodes.concat(fund.getFundCode());
+				}
+			}
+			
+			// if user specified bogus group code(s) with no referencing fund(s) return the still empty results.
+			if (StringUtils.isEmpty(locFundCodes)) {
+				return results;
+			}
+			values.put("awardCgbList.locFundCode", locFundCodes);
+
+		} else if (StringUtils.isNotEmpty(searchDto.getLetterOfCreditFundCode())) {
+		   values.put("awardCgbList.locFundCode", searchDto.getLetterOfCreditFundCode());
+		}
+
 		
 		List<Award> awards = (List<Award>) getAwardLookupDao().getAwardSearchResults(values, false);
 		if (awards != null && !awards.isEmpty()) {

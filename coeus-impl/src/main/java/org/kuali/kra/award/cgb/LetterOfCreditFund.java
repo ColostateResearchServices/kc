@@ -8,7 +8,6 @@ import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
 public class LetterOfCreditFund extends KcPersistableBusinessObjectBase  {
 
 
-	private Long fundId;
 	private String fundCode;
 
 	private String description;
@@ -83,14 +82,5 @@ public class LetterOfCreditFund extends KcPersistableBusinessObjectBase  {
 	public void setFundGroup(LetterOfCreditFundGroup fundGroup) {
 		this.fundGroup = fundGroup;
 	}
-
-	public Long getFundId() {
-		return fundId;
-	}
-
-	public void setFundId(Long fundId) {
-		this.fundId = fundId;
-	}
-		
 
 }
