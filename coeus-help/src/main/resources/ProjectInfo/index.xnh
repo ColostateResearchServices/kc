@@ -6144,7 +6144,7 @@
     </item>
     <item name="NSF Code" id="1018">
         <topics>
-            <topic url="Documents/nsfcode.htm" window="right">NSF Code</topic>
+            <topic url="Documents/nsfcode.htm" window="right">Field of Research</topic>
         </topics>
     </item>
     <item name="NSF CoverPage V1.3" id="1349">
@@ -6164,7 +6164,7 @@
     </item>
     <item name="NSF Science Code" id="1795">
         <topics>
-            <topic url="Documents/gloss_nsfsciencecode.htm" window="d2hWnd_SecondaryPopup">NSF Science Code</topic>
+            <topic url="Documents/gloss_nsfsciencecode.htm" window="d2hWnd_SecondaryPopup">Field of Research</topic>
         </topics>
     </item>
     <item name="NSF Suggested Reviewers V1.1" id="1352">

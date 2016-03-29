@@ -21,7 +21,7 @@
   <bean id="NsfCode" parent="NsfCode-parentBean" />
   <bean id="NsfCode-parentBean" abstract="true" parent="BusinessObjectEntry">
     <property name="businessObjectClass" value="org.kuali.kra.bo.NsfCode" />
-		<property name="objectLabel" value="Nsf Code" />
+		<property name="objectLabel" value="Field of Research" />
     <property name="inquiryDefinition" >
       <ref bean="NsfCode-inquiryDefinition" />
     </property>
@@ -70,8 +70,8 @@
   <bean id="NsfCode-nsfCode-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="name" value="nsfCode" />
     <property name="forceUppercase" value="false" />
-    <property name="label" value="NSF Science Code" />
-    <property name="shortLabel" value="NSF Science Code" />
+    <property name="label" value="Field of Research" />
+    <property name="shortLabel" value="Field of Research" />
     <property name="maxLength" value="15" />
     <property name="validationPattern" >
       <bean parent="AnyCharacterValidationPattern" />
@@ -85,8 +85,8 @@
     <property name="controlField">
       <bean p:size="10" parent="Uif-TextControl"/>
     </property>
-    <property name="summary" value="NSF Science Code" />
-    <property name="description" value="NSF Science Code" />
+    <property name="summary" value="Field of Research" />
+    <property name="description" value="Field of Research" />
   </bean>
 
   <bean id="NsfCode-description" parent="NsfCode-description-parentBean"/>
@@ -97,11 +97,11 @@
   <bean id="NsfCode-inquiryDefinition" parent="NsfCode-inquiryDefinition-parentBean" />
   <bean id="NsfCode-InquiryView" parent="NsfCode-InquiryView-parentBean"/>
   <bean id="NsfCode-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
-    <property name="title" value="NSF Code" />
+    <property name="title" value="Field of Research" />
     <property name="inquirySections" >
       <list>
         <bean parent="InquirySectionDefinition">
-          <property name="title" value="NSF Code" />
+          <property name="title" value="Field of Research" />
           <property name="numberOfColumns" value="1" />
           <property name="inquiryFields" >
             <list>
@@ -115,12 +115,12 @@
   </bean>
 
   <bean id="NsfCode-InquiryView-parentBean" abstract="true" parent="Uif-InquiryView">
-    <property name="headerText" value="NSF Code"/>
+    <property name="headerText" value="Field of Research"/>
     <property name="dataObjectClassName" value="org.kuali.kra.bo.NsfCode"/>
     <property name="items">
       <list>
         <bean parent="Uif-Disclosure-GridSection">
-          <property name="headerText" value="NSF Code"/>
+          <property name="headerText" value="Field of Research"/>
           <property name="layoutManager.numberOfColumns" value="2"/>
           <property name="items">
             <list>
@@ -137,7 +137,7 @@
   <bean id="NsfCode-lookupDefinition" parent="NsfCode-lookupDefinition-parentBean" />
   <bean id="NsfCode-LookupView" parent="NsfCode-LookupView-parentBean"/>
   <bean id="NsfCode-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
-    <property name="title" value="NSF Science Code Lookup" /><property name="defaultSort" >
+    <property name="title" value="Field of Research Lookup" /><property name="defaultSort" >
       <bean parent="SortDefinition"/>
     </property>
     <property name="lookupFields" >
@@ -156,7 +156,7 @@
 
   <bean id="NsfCode-LookupView-parentBean" abstract="true" parent="Uif-LookupView">
     <property name="dataObjectClassName" value="org.kuali.kra.bo.NsfCode"/>
-    <property name="headerText" value="NSF Science Code Lookup"/>
+    <property name="headerText" value="Field of Research Lookup"/>
     <property name="criteriaFields">
       <list>
         <bean p:propertyName="nsfCode" parent="Uif-LookupCriteriaInputField"/>

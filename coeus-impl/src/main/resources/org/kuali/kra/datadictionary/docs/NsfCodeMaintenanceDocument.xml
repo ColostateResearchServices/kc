@@ -18,6 +18,7 @@
    - along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -->
 
+  <!-- CSU Customizations Applied: Changed "NSF (?:Science )?Codes?" to "Field of Research" where part of the displayed UI -->
   <bean id="NsfCodeMaintenanceDocument" parent="NsfCodeMaintenanceDocument-parentBean"/>
 
   <bean id="NsfCodeMaintenanceDocument-parentBean" abstract="true" parent="KcMaintenanceDocumentEntry">
@@ -51,8 +52,8 @@
   <bean id="NsfCodeMaintenanceDocument-EditNSFCodes" parent="NsfCodeMaintenanceDocument-EditNSFCodes-parentBean"/>
 
   <bean id="NsfCodeMaintenanceDocument-EditNSFCodes-parentBean" abstract="true" parent="MaintainableSectionDefinition">
-    <property name="id" value="Edit NSF Codes"/>
-    <property name="title" value="Edit NSF Codes"/>
+    <property name="id" value="Edit Field of Research"/>
+    <property name="title" value="Edit Field of Research"/>
     <property name="maintainableItems">
       <list>
         <bean parent="MaintainableFieldDefinition" p:name="nsfSequenceNumber"/>

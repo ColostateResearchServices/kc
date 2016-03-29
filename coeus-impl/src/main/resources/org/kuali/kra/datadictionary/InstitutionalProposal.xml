@@ -916,8 +916,8 @@
     <bean id="InstitutionalProposal-nsfCode-parentBean" abstract="true" parent="AttributeDefinition" >
         <property name="name" value="nsfCode" />
         <property name="forceUppercase" value="false" />
-        <property name="label" value="NSF Science Code" />
-        <property name="shortLabel" value="NSF Code" />
+        <property name="label" value="Field of Research" />
+        <property name="shortLabel" value="Field of Research" />
         <property name="maxLength" value="15"/>
     	<property name="validationPattern">
    			<bean parent="AnyCharacterValidationPattern"/>
@@ -941,8 +941,8 @@
     <property name="controlField">
       <bean parent="Uif-DropdownControl"/>
     	</property>
-        <property name="summary" value="NSF Code" />
-        <property name="description" value="NSF Code" />
+        <property name="summary" value="Field of Research" />
+        <property name="description" value="Field of Research" />
     </bean>
 
     <bean id="InstitutionalProposal-primeSponsorCode" parent="InstitutionalProposal-primeSponsorCode-parentBean" />

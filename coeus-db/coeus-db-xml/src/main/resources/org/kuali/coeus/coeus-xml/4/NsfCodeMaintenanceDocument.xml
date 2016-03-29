@@ -21,8 +21,8 @@
 	<documentTypes xmlns="ns:workflow/DocumentType" xsi:schemaLocation="ns:workflow/DocumentType resource:DocumentType">
 		<documentType>
 			<name>NsfCodeMaintenanceDocument</name>
-			<description>Create a New NSF Code</description>
-			<label>NSF Code</label>
+			<description>Create a New Field of Research</description>
+			<label>Field of Research</label>
 			<parent>KcSharedMaintenanceDocument</parent>
 			<helpDefinitionURL>default.htm?turl=Documents/nsfcode.htm</helpDefinitionURL>
 		</documentType>

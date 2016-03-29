@@ -650,8 +650,8 @@
     <bean id="Award-nsfCode-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="name" value="nsfCode"/>
         <property name="forceUppercase" value="false"/>
-        <property name="label" value="NSF Science Code"/>
-        <property name="shortLabel" value="NSF Science Code"/>
+        <property name="label" value="Field of Research"/>
+        <property name="shortLabel" value="Field of Research"/>
         <property name="maxLength" value="15"/>
         <property name="validationPattern">
             <bean parent="AnyCharacterValidationPattern"/>
@@ -678,9 +678,9 @@
         <property name="controlField">
             <bean parent="Uif-DropdownControl"/>
         </property>
-        <property name="summary" value="The NSF Science Code for this Proposal."/>
+        <property name="summary" value="The Field of Research for this Proposal."/>
         <property name="description"
-                  value="A number used to indicate the type of research activity as defined by the National Science Foundation. NSF codes are not specific for NSF proposals and/or awards."/>
+                  value="A number used to indicate the type of research activity as defined by the National Science Foundation. Codes are not specific for NSF proposals and/or awards."/>
     </bean>
 
     <bean id="Award-accountNumber" parent="Award-accountNumber-parentBean"/>
