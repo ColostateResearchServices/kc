@@ -1,0 +1,177 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="AwardAccount" parent="AwardAccount-parentBean" />
+
+  <bean id="AwardAccount-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="edu.colostate.kc.award.reservation.AwardAccount" />
+		<property name="objectLabel" value="AwardAccount" />
+    <property name="inquiryDefinition" >
+      <ref bean="AwardAccount-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="AwardAccount-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="accountNumber" />
+    <property name="helpDefinition" >
+      <bean parent="HelpDefinition"
+            p:parameterNamespace="KC-AWARD"
+            p:parameterName="awardAccountReservationHelpUrl"
+            p:parameterDetailType="Document" />
+    </property>
+    <property name="attributes" >
+      <list>
+      	<ref bean="AwardAccount-fullAccountNumber" />
+      	<ref bean="AwardAccount-reservationUser" />
+      	<ref bean="AwardAccount-reservationDate" />
+        <ref bean="AwardAccount-accountUsed" />
+        <ref bean="AwardAccount-selectAccount" />
+        <ref bean="AwardAccount-updateUser" />
+        <ref bean="AwardAccount-updateTimestamp" /> 
+      </list>
+    </property>
+  </bean>
+
+  <bean id="AwardAccount-fullAccountNumber" parent="AwardAccount-fullAccountNumber-parentBean" />
+  <bean id="AwardAccount-fullAccountNumber-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="fullAccountNumber" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Account Number" />
+    <property name="shortLabel" value="Account Number" />
+    <property name="maxLength" value="10" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="20" />
+    </property>
+    <property name="summary" value="Account Number" />
+    <property name="description" value="Account Number" />
+  </bean>
+
+   
+  <bean id="AwardAccount-reservationUser" parent="AwardAccount-reservationUser-parentBean" />
+  <bean id="AwardAccount-reservationUser-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="reservationUser" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Reservation User" />
+    <property name="shortLabel" value="Reservation User" />
+    <property name="maxLength" value="60" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="60" />
+    </property>
+    <property name="summary" value="Reservation User" />
+    <property name="description" value="Reservation User" />
+  </bean>
+ 
+  
+  	<bean id="AwardAccount-reservationDate" parent="AwardAccount-reservationDate-parentBean" />
+	<bean id="AwardAccount-reservationDate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
+	    <property name="name" value="reservationDate" />
+	    <property name="label" value="Reservation Date" />
+	    <property name="shortLabel" value="Reservation Date" />
+	    <property name="required" value="false" />
+	    <property name="summary" value="Reservation Date" />
+	    <property name="description" value="Reservation Date" />
+  	</bean>
+  	
+  	<bean id="AwardAccount-accountUsed" parent="AwardAccount-accountUsed-parentBean" />
+ 	<bean id="AwardAccount-accountUsed-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="accountUsed" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Account Used" />
+    <property name="shortLabel" value="Account Used" />
+    <property name="maxLength" value="1" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="CheckboxControlDefinition" />
+    </property>
+    <property name="summary" value="Account Used" />
+    <property name="description" value="Account Used" />
+  </bean>
+  
+    <bean id="AwardAccount-selectAccount" parent="AwardAccount-selectAccount-parentBean" />
+  <bean id="AwardAccount-selectAccount-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="selectAccount" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Select Account" />
+    <property name="shortLabel" value="Select Account" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" />
+    </property>
+    <property name="control" >
+      <bean parent="CheckboxControlDefinition" />
+    </property>
+    <property name="summary" value="Select Account" />
+    <property name="description" value="Select Account" />
+  </bean>
+ 
+    <bean id="AwardAccount-updateUser" parent="AwardAccount-updateUser-parentBean" />
+	<bean id="AwardAccount-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="AwardAccount-updateTimestamp" parent="AwardAccount-updateTimestamp-parentBean" />
+	<bean id="AwardAccount-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+	  
+    <bean id="AwardAccount-inquiryDefinition" parent="AwardAccount-inquiryDefinition-parentBean" />
+
+  <bean id="AwardAccount-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Award Account" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Award Account" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="fullAccountNumber" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="AwardAccount-lookupDefinition" parent="AwardAccount-lookupDefinition-parentBean" />
+  	<bean id="AwardAccount-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Award Account Lookup" />
+		<property name="lookupableID" value="awardAccountLookupable" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="fullAccountNumber" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+			  	<bean p:attributeName="fullAccountNumber" parent="FieldDefinition" />
+			  	<bean p:attributeName="reservationUser" parent="FieldDefinition" />
+			  	<bean p:attributeName="reservationDate" parent="FieldDefinition" />
+			    <bean p:attributeName="accountUsed" parent="FieldDefinition" />	
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

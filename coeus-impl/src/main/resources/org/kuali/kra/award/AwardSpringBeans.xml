@@ -1472,5 +1472,24 @@
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.award.subcontracting.reporting.SubcontractingExpenditureCategoryAmounts" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.award.subcontracting.reporting.SubcontractingExpenditureCategoryAmountsInDateRange" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.award.subcontracting.reporting.SubcontractingExpenditureCategoryDetails" />
+    <!-- CSU customizations -->
+    <bean id="unreservedAccountLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
+        <property name="lookupableHelperService" ref="unreservedAccountLookupableHelperService" />
+    </bean>
+
+    <bean id="unreservedAccountLookupableHelperService" class="edu.colostate.kc.award.reservation.service.impl.UnreservedAccountLookupableHelperServiceImpl"
+          parent="parentLookupableHelperService" scope="prototype">
+        <!-- <property name="awardPersonDao" ref="awardPersonDao" /> -->
+    </bean>
+
+    <bean id="availableAccountLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
+        <property name="lookupableHelperService" ref="availableAccountLookupableHelperService" />
+    </bean>
+
+    <bean id="availableAccountLookupableHelperService" class="edu.colostate.kc.award.reservation.service.impl.AvailableAccountLookupableHelperServiceImpl"
+          parent="parentLookupableHelperService" scope="prototype">
+    </bean>
+    <!-- END CSU customizations -->
+
 
 </beans>

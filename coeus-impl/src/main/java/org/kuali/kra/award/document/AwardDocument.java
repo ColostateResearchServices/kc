@@ -1,5 +1,5 @@
 /*
- * Kuali Coeus, a comprehensive research administration system for higher education.
+} * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
  * Copyright 2005-2015 Kuali, Inc.
  * 

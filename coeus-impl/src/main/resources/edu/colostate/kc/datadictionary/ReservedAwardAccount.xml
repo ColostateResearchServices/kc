@@ -1,0 +1,99 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ReservedAwardAccount" parent="ReservedAwardAccount-parentBean" />
+
+  <bean id="ReservedAwardAccount-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="edu.colostate.kc.award.reservation.ReservedAwardAccount" />
+		<property name="objectLabel" value="ReservedAwardAccount" />
+    <property name="inquiryDefinition" >
+      <ref bean="ReservedAwardAccount-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ReservedAwardAccount-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="accountNumber" />
+    <property name="helpDefinition" >
+      <bean parent="HelpDefinition"
+            p:parameterNamespace="KC-AWARD"
+            p:parameterName="awardAccountReservationHelpUrl"
+            p:parameterDetailType="Document" />
+    </property>
+    <property name="attributes" >
+      <list>
+      	<ref bean="ReservedAwardAccount-fullAccountNumber" />
+      	<ref bean="ReservedAwardAccount-reservationUser" />
+      	<ref bean="ReservedAwardAccount-reservationDate" />
+        <ref bean="ReservedAwardAccount-accountUsed" />
+        <ref bean="ReservedAwardAccount-selectAccount" />
+        <ref bean="ReservedAwardAccount-updateUser" />
+        <ref bean="ReservedAwardAccount-updateTimestamp" /> 
+      </list>
+    </property>
+  </bean>
+
+  <bean id="ReservedAwardAccount-fullAccountNumber" parent="AwardAccount-fullAccountNumber-parentBean" />
+   
+  <bean id="ReservedAwardAccount-reservationUser" parent="AwardAccount-reservationUser-parentBean" />
+  
+  	<bean id="ReservedAwardAccount-reservationDate" parent="AwardAccount-reservationDate-parentBean" />
+  	
+  	<bean id="ReservedAwardAccount-accountUsed" parent="AwardAccount-accountUsed-parentBean" />
+  
+    <bean id="ReservedAwardAccount-selectAccount" parent="AwardAccount-selectAccount-parentBean" />
+ 
+    <bean id="ReservedAwardAccount-updateUser" parent="AwardAccount-updateUser-parentBean" />
+	
+  	<bean id="ReservedAwardAccount-updateTimestamp" parent="AwardAccount-updateTimestamp-parentBean" />
+	  
+    <bean id="ReservedAwardAccount-inquiryDefinition" parent="ReservedAwardAccount-inquiryDefinition-parentBean" />
+
+  <bean id="ReservedAwardAccount-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Reserved Award Account" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Reserved Award Account" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="fullAccountNumber" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ReservedAwardAccount-lookupDefinition" parent="ReservedAwardAccount-lookupDefinition-parentBean" />
+  	<bean id="ReservedAwardAccount-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Reserved Award Account Lookup" />
+		<property name="lookupableID" value="kraLookupable" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="fullAccountNumber" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+			  	<bean p:attributeName="fullAccountNumber" parent="FieldDefinition" />
+			  	<bean p:attributeName="reservationUser" parent="FieldDefinition" />
+			  	<bean p:attributeName="reservationDate" parent="FieldDefinition" />
+			    <bean p:attributeName="accountUsed" parent="FieldDefinition" />	
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

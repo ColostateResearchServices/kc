@@ -1,0 +1,94 @@
+<descriptor-repository version="1.0">
+	<class-descriptor class="edu.colostate.kc.award.reservation.document.AwardAccountReservationDocument" table="CSU_AWD_ACCT_DOCUMENT_T">			
+		<field-descriptor name="documentNumber" column="DOCUMENT_NUMBER" jdbc-type="VARCHAR" primarykey="true" />		
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+    	<collection-descriptor name="awardAccountReservationList" proxy="true" element-class-ref="edu.colostate.kc.award.reservation.AwardAccountReservation" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+        	<inverse-foreignkey field-ref="documentNumber" />
+    	</collection-descriptor>
+    	<reference-descriptor name="documentHeader" class-ref="org.kuali.rice.krad.bo.DocumentHeader" auto-retrieve="true" auto-update="object" auto-delete="object">
+        	<foreignkey field-ref="documentNumber" />
+    	</reference-descriptor>   	
+	</class-descriptor>
+	
+	<class-descriptor class="edu.colostate.kc.award.reservation.AwardAccountReservation" table="CSU_AWD_ACCT_RESERVATION_T">			
+		<field-descriptor name="reservationUser" column="RESERVATION_USER" jdbc-type="VARCHAR" primarykey="true" />	
+		<field-descriptor name="documentNumber" column="DOCUMENT_NUMBER" jdbc-type="VARCHAR" access="anonymous" />	
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+    	<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
+    	
+    	<reference-descriptor name="awardAccountReservationDocument" class-ref="edu.colostate.kc.award.reservation.document.AwardAccountReservationDocument" auto-retrieve="true" auto-update="none" auto-delete="none">
+            <foreignkey field-ref="documentNumber" />
+        </reference-descriptor>
+    	
+    	<collection-descriptor name="reservedAccounts" proxy="true" element-class-ref="edu.colostate.kc.award.reservation.AwardAccount" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+        	<inverse-foreignkey field-ref="reservationUser" />
+    	</collection-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="edu.colostate.kc.award.reservation.AwardAccount" table="CSU_AWD_RESERVED_ACCTS_T">
+		<field-descriptor name="accountReservationNumber" column="ACCOUNT_RESERVATION_NUMBER" jdbc-type="BIGINT" primarykey="true" sequence-name="CSU_AWD_RES_NBR_S" autoincrement="true" />
+		<field-descriptor name="fullAccountNumber" column="FULL_ACCOUNT_NUMBER" jdbc-type="VARCHAR" />			
+		<field-descriptor name="reservationUser" column="RESERVATION_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="reservationDate" column="RESERVATION_DATE" jdbc-type="DATE" />
+		<field-descriptor name="accountUsed" column="ACCOUNT_USED_IND" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+    	<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
+    	<reference-descriptor name="accountReservation" class-ref="edu.colostate.kc.award.reservation.AwardAccountReservation" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="reservationUser"/>
+		</reference-descriptor>
+		<reference-descriptor name="researchAccount" class-ref="edu.colostate.kc.award.reservation.ResearchAccount" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="fullAccountNumber"/>
+		</reference-descriptor> 	
+	</class-descriptor>
+	
+	<class-descriptor class="edu.colostate.kc.award.reservation.ResearchAccount" table="CSU_AWD_RESEARCH_ACCTS_T">
+		<field-descriptor name="fullAccountNumber" column="FULL_ACCOUNT_NUMBER" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="accountNumber" column="ACCOUNT_NUMBER" jdbc-type="VARCHAR" />
+		<field-descriptor name="coaCode" column="COA_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="accountUsed" column="ACCOUNT_USED_IND" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+    	<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
+    	<collection-descriptor name="awardAccountList" proxy="true" element-class-ref="edu.colostate.kc.award.reservation.AwardAccount" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="none" auto-delete="none">
+    		<inverse-foreignkey field-ref="fullAccountNumber"/>
+    	</collection-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="edu.colostate.kc.award.reservation.ReservedAwardAccount" table="CSU_AWD_RESERVED_ACCTS_T">
+		<field-descriptor name="accountReservationNumber" column="ACCOUNT_RESERVATION_NUMBER" jdbc-type="BIGINT" primarykey="true" sequence-name="CSU_AWD_RES_NBR_S" autoincrement="true" />
+		<field-descriptor name="fullAccountNumber" column="FULL_ACCOUNT_NUMBER" jdbc-type="VARCHAR" />			
+		<field-descriptor name="reservationUser" column="RESERVATION_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="reservationDate" column="RESERVATION_DATE" jdbc-type="DATE" />
+		<field-descriptor name="accountUsed" column="ACCOUNT_USED_IND" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+    	<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
+		<reference-descriptor name="researchAccount" class-ref="edu.colostate.kc.award.reservation.AvailableResearchAccount" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="fullAccountNumber"/>
+		</reference-descriptor> 	
+	</class-descriptor>
+	
+	<class-descriptor class="edu.colostate.kc.award.reservation.AvailableResearchAccount" table="CSU_AWD_RESEARCH_ACCTS_T">
+		<field-descriptor name="fullAccountNumber" column="FULL_ACCOUNT_NUMBER" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="accountNumber" column="ACCOUNT_NUMBER" jdbc-type="VARCHAR" />
+		<field-descriptor name="coaCode" column="COA_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="accountUsed" column="ACCOUNT_USED_IND" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+    	<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
+    	<collection-descriptor name="awardAccountList" proxy="true" element-class-ref="edu.colostate.kc.award.reservation.ReservedAwardAccount" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+    		<inverse-foreignkey field-ref="fullAccountNumber"/>
+    	</collection-descriptor>
+	</class-descriptor>
+	
+</descriptor-repository>

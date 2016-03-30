@@ -61,6 +61,11 @@
 		<field-descriptor name="awardId" column="AWARD_ID" jdbc-type="BIGINT" primarykey="true"  index="true" />
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="fullAccountNumber" column="FULL_ACCOUNT_NUMBER" jdbc-type="VARCHAR" />
+		<reference-descriptor name="researchAccount" class-ref="edu.colostate.kc.award.reservation.AvailableResearchAccount" auto-retrieve="true" auto-update="object" auto-delete="none">
+			<foreignkey field-ref="fullAccountNumber"/>
+		</reference-descriptor>
+
 		<reference-descriptor name="award" class-ref="org.kuali.kra.award.home.Award" auto-retrieve="true" auto-update="none" auto-delete="none">
 			<foreignkey field-ref="awardId"/>
 		</reference-descriptor>
