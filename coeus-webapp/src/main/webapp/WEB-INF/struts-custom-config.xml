@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd" [
+	<!ENTITY protocol_forwards SYSTEM "struts_protocol_forwards.xml">
+	]>
+
+<struts-config>
+	<form-beans>
+		 <form-bean name="AwardAccountReservationForm" type="edu.colostate.kc.award.reservation.web.struts.form.AwardAccountReservationForm" />
+	</form-beans>
+	
+    <data-sources />
+
+     <action-mappings>
+	<action path="/awardAccountReservation" name="AwardAccountReservationForm" input="/WEB-INF/jsp/award/reservation/AwardAccountReservation.jsp" type="edu.colostate.kc.award.reservation.web.struts.action.AwardAccountReservationAction" scope="request" parameter="methodToCall" validate="true" attribute="KualiForm">
+		<forward name="basic" path="/WEB-INF/jsp/award/reservation/AwardAccountReservation.jsp" />
+		<forward name="home" path="/WEB-INF/jsp/award/reservation/AwardAccountReservation.jsp" />
+	</action>
+	</action-mappings>
+ </struts-config>
