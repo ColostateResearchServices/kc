@@ -97,6 +97,16 @@
 		<tr>
 			<th>
 				<div style="text-align:right;">
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.billFreqId}"/>
+				</div>
+			</th>
+			<td >
+				<div style="text-align:left;">
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.billFreqId" attributeEntry="${cgbAttributes.billFreqId}" readOnly="${cgbReadOnly}" readOnlyAlternateDisplay="${KualiForm.awardDocument.award.awardCgb.billingFrequency.description}"/>
+				</div>
+			</td>		
+			<th>
+				<div style="text-align:right;">
 					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.invoicingOption}"  />
 				</div>
 			</th>
@@ -105,22 +115,7 @@
 					<kul:htmlControlAttribute property="${cgbPath}.awardCgb.invoicingOption" attributeEntry="${cgbAttributes.invoicingOption}" readOnly="${cgbReadOnly}"/>
 				</div>
 			</td>
-			<th>
-				<div style="text-align:right;">
-					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.dunningCampaignId}"  />
-				</div>
-			</th>
-			<td>
-				<div style="text-align:left;">
-					<kul:htmlControlAttribute property="${cgbPath}.awardCgb.dunningCampaignId" attributeEntry="${cgbAttributes.dunningCampaignId}" readOnly="${cgbReadOnly}"/>
-					<c:if test="${cgbReadOnly}">
-						<kul:lookup boClassName="org.kuali.kra.external.dunningcampaign.DunningCampaign"
-                                fieldConversions="campaignID:${cgbPath}.awardCgb.dunningCampaignId"
-                                lookupParameters="${cgbPath}.awardCgb.dunningCampaignId:campaignID"
-                                anchor="${tabKey}" />
-                    </c:if>
-				</div>
-			</td>			
+		
 		</tr>
 		<tr>
 			<th>
@@ -172,12 +167,18 @@
 		<tr>
 			<th>
 				<div style="text-align:right;">
-					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.billFreqId}"/>
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.dunningCampaignId}"  />
 				</div>
 			</th>
-			<td >
+			<td>
 				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.billFreqId" attributeEntry="${cgbAttributes.billFreqId}" readOnly="${cgbReadOnly}" readOnlyAlternateDisplay="${KualiForm.awardDocument.award.awardCgb.billingFrequency.description}"/>
+					<kul:htmlControlAttribute property="${cgbPath}.awardCgb.dunningCampaignId" attributeEntry="${cgbAttributes.dunningCampaignId}" readOnly="${cgbReadOnly}"/>
+					<c:if test="${!cgbReadOnly}">
+						<kul:lookup boClassName="org.kuali.kra.external.dunningcampaign.DunningCampaign"
+                                fieldConversions="campaignID:${cgbPath}.awardCgb.dunningCampaignId"
+                                lookupParameters="${cgbPath}.awardCgb.dunningCampaignId:campaignID"
+                                anchor="${tabKey}" />
+                    </c:if>
 				</div>
 			</td>		
 		</tr>

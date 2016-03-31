@@ -123,16 +123,16 @@
     <bean id="AwardCgb-finalBill" parent="AwardCgb-finalBill-parentBean" />
     <bean id="AwardCgb-finalBill-parentBean" abstract="true" parent="AttributeReferenceDummy-genericBoolean">
       <property name="name" value="finalBill"/>
-	  <property name="label" value="Final Billed Indicator" />
-      <property name="shortLabel" value="Final Billed Indicator" />
+	  <property name="label" value="CGB Final Billed Indicator" />
+      <property name="shortLabel" value="CGB Final Billed Indicator" />
       <property name="required" value="false"/>
     </bean>
     
     <bean id="AwardCgb-lastBilledDate" parent="AwardCgb-lastBilledDate-parentBean" />
     <bean id="AwardCgb-lastBilledDate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
       <property name="name" value="lastBilledDate"/>
-	  <property name="label" value="Last Billed Date" />
-      <property name="shortLabel" value="Last Billed Date" />
+	  <property name="label" value="CGB Last Billed Date" />
+      <property name="shortLabel" value="CGB Last Billed Date" />
       <property name="required" value="false"/>
     </bean>
     
