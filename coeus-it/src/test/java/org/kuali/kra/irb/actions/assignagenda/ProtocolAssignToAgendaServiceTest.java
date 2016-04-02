@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -88,18 +88,6 @@ public class ProtocolAssignToAgendaServiceTest extends KcIntegrationTestBase {
         protocolAssignToAgendaServiceImpl = null;
         GlobalVariables.setUserSession(null);
     }
-    @Test
-    public void testSetDocumentService() {
-        protocolAssignToAgendaServiceImpl.setDocumentService(documentService);
-        assertTrue(true);
-    }
-
-    @Test
-    public void testSetProtocolActionService() {
-        protocolAssignToAgendaServiceImpl.setProtocolActionService(protocolActionService);
-        assertTrue(true);
-    }
-
     
     @Test
     public void testAssignToAgenda() throws Exception {
@@ -112,6 +100,7 @@ public class ProtocolAssignToAgendaServiceTest extends KcIntegrationTestBase {
         submission.setCommitteeId(committee.getCommitteeId());
         protocolDocument.getProtocol().getProtocolSubmissions().add(submission);
         ProtocolForm form = new ProtocolForm();
+        form.setDocument(protocolDocument);
         ActionHelper actionHelper = new ActionHelper(form);
         actionHelper.initializeProtocolActions();
         ProtocolAssignToAgendaBean actionBean = (ProtocolAssignToAgendaBean) actionHelper.getAssignToAgendaBean();

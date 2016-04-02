@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,8 +24,8 @@
 /* These override styles exist to get the new look. Eventually this may need to be cleaned up. */
 
 .navbar .nav a.brand {
-	background-image: url('../static/images/KualiCo.png');
-	background-size: 155px;
+	background-image: url('../static/images/KualiLogo.png');
+	background-size: 125px;
 	background-repeat: no-repeat;
 }
 
