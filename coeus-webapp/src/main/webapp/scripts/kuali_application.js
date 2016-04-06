@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -1810,7 +1810,7 @@ function displayReviewers(protocolId) {
     var protocolReviewTypeCode = dwr.util.getValue('actionHelper.protocolSubmitAction.protocolReviewTypeCode');
     
     // we suppress the reviewer display if a committee is not selected, or if a schedule is not selected in case of a non-expedited review type
-    if ( ((scheduleId === "") && (protocolReviewTypeCode != '2')) || (committeeId === "") ) {
+    if ( ((scheduleId === "") && (protocolReviewTypeCode != '2' && protocolReviewTypeCode != '3')) || (committeeId === "") ) {
     	document.getElementById("reviewers").style.display = 'none';
     }
     else {

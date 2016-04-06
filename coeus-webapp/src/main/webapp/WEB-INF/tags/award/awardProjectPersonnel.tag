@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -198,8 +198,9 @@
     			</tr>
     			</tbody>
     			</c:if>
-    			
-    			<c:forEach var="awardContact" items="${KualiForm.document.awardList[0].projectPersons}" varStatus="awardContactRowStatus">
+
+                <c:set var="displayCoiDisclosureStatus" value="${KualiForm.displayCoiDisclosureStatus}" />
+                <c:forEach var="awardContact" items="${KualiForm.document.awardList[0].projectPersons}" varStatus="awardContactRowStatus">
     				<tr>
     					<th class="infoline" scope="row" rowspan="4">
     						<c:out value="${awardContactRowStatus.index + 1}" />
@@ -273,7 +274,18 @@
     						</div>
     	                </td>
     	            </tr>
-    	            
+                    <c:choose>
+                        <c:when test="${displayCoiDisclosureStatus}">
+                    <tr>
+                        <td colspan="1" nowrap class="tab-subhead">
+                            Coi Disclosure Status:
+                        </td>
+                        <td colspan="5" nowrap class="tab-subhead">
+                            ${awardContact.disclosureStatus}
+                        </td>
+                    </tr>
+                        </c:when>
+                    </c:choose>
     	            <tr>
     	            	<td colspan="6">
     	            		<kra-a:awardProjectPersonnelPersonDetails awardContact="${awardContact}" awardContactRowStatusIndex="${awardContactRowStatus.index}" />

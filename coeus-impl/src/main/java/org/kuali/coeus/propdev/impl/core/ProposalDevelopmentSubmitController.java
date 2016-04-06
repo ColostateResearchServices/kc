@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,8 @@ package org.kuali.coeus.propdev.impl.core;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.kuali.coeus.common.framework.krms.KrmsRulesExecutionService;
-import org.kuali.coeus.common.notification.impl.bo.NotificationType;
 import org.kuali.coeus.common.view.wizard.framework.WizardControllerService;
 import org.kuali.coeus.common.budget.framework.core.Budget;
 import org.kuali.coeus.common.framework.ruleengine.KcBusinessRulesEngine;
@@ -63,7 +64,6 @@ import org.kuali.rice.coreservice.framework.parameter.ParameterConstants;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.actionrequest.ActionRequestValue;
 import org.kuali.rice.kew.actionrequest.service.ActionRequestService;
-import org.kuali.rice.kew.actiontaken.ActionTakenValue;
 import org.kuali.rice.kew.actiontaken.service.ActionTakenService;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.WorkflowDocument;
@@ -102,6 +102,8 @@ public class ProposalDevelopmentSubmitController extends
 
     public static final String ANOTHER_USER_APPROVED_ACTION_TYPE_CODE = "501";
     public static final String ANOTHER_USER_APPROVED_NOTIFICATION = "Another User Approved Notification";
+    public static final String PROPOSAL_NUMBER = "proposalNumber";
+    public static final String PROPOSAL_STATE = "proposalState";
 
     private final Logger LOGGER = Logger.getLogger(ProposalDevelopmentSubmitController.class);
 
@@ -295,16 +297,19 @@ public class ProposalDevelopmentSubmitController extends
            String recallExplanation = form.getDialogExplanations().get(KRADConstants.QUESTION_ACTION_RECALL_REASON);
            getDocumentService().recallDocument(document, recallExplanation, false);
            successMessageKey = RiceKeyConstants.MESSAGE_ROUTE_RECALLED;
+           final ProposalDevelopmentDocument proposalDevelopmentDocument = (ProposalDevelopmentDocument) document;
+           proposalDevelopmentDocument.getDevelopmentProposal().setProposalStateTypeCode(ProposalState.REVISIONS_REQUESTED);
+           DevelopmentProposal developmentProposal = getDataObjectService().save(proposalDevelopmentDocument.getDevelopmentProposal());
+           developmentProposal.refreshReferenceObject(PROPOSAL_STATE);
        }
        if (successMessageKey != null) {
            getGlobalVariableService().getMessageMap().putInfo(KRADConstants.GLOBAL_MESSAGES, successMessageKey);
        }
-       form.setCanEditView(null);
-       form.setEvaluateFlagsAndModes(true);
-       return getModelAndViewService().getModelAndView(form);
-  } 
-  
-   @Transactional @RequestMapping(value = "/proposalDevelopment", params="methodToCall=disapproveProposal")
+
+       return getTransactionalDocumentControllerService().reload(form);
+   }
+
+    @Transactional @RequestMapping(value = "/proposalDevelopment", params="methodToCall=disapproveProposal")
    public  ModelAndView disapproveProposal(@ModelAttribute("KualiForm") ProposalDevelopmentDocumentForm form)throws Exception {
 	   String applicationUrl = getConfigurationService().getPropertyValueAsString(KRADConstants.APPLICATION_URL_KEY);
 	   form.setReturnLocation(applicationUrl);
@@ -485,7 +490,7 @@ public class ProposalDevelopmentSubmitController extends
                 proposalDevelopmentDocument.getDevelopmentProposal().refresh();
                 getDataObjectService().save(proposalDevelopmentDocument.getDevelopmentProposal());
             }
-            
+
             updateProposalAdminDetailsForSubmitToSponsor(proposalDevelopmentDocument.getDevelopmentProposal());
     
             if (autogenerateInstitutionalProposal()) {
@@ -616,7 +621,7 @@ public class ProposalDevelopmentSubmitController extends
     }
     
     private Long getActiveProposalId(String proposalNumber) {
-        Collection<InstitutionalProposal> ips = getLegacyDataAdapter().findMatching(InstitutionalProposal.class, Collections.singletonMap("proposalNumber", proposalNumber));
+        Collection<InstitutionalProposal> ips = getLegacyDataAdapter().findMatching(InstitutionalProposal.class, Collections.singletonMap(PROPOSAL_NUMBER, proposalNumber));
         return ((InstitutionalProposal) ips.toArray()[0]).getProposalId();
     }
     
@@ -706,8 +711,8 @@ public class ProposalDevelopmentSubmitController extends
             }
         }
 
-        List<NotificationTypeRecipient> recipients = getApproversInCurrentRequest(globalVariableService.getUserSession().getLoggedInUserPrincipalId(),
-                                                                                    form, Boolean.TRUE);
+        List<NotificationTypeRecipient> recipients = getRelatedApproversFromActionRequest(form.getProposalDevelopmentDocument().getDocumentNumber(), globalVariableService.getUserSession().getPrincipalId()).stream()
+    			.map(this::createRecipientFromPerson).collect(toList());
         getTransactionalDocumentControllerService().performWorkflowAction(form, UifConstants.WorkflowAction.APPROVE);
         if (recipients.size() != 0) {
             sendAnotherUserApprovedNotification(form, recipients);
@@ -819,7 +824,9 @@ public class ProposalDevelopmentSubmitController extends
     public ModelAndView reject(@ModelAttribute("KualiForm") ProposalDevelopmentDocumentForm form) throws Exception{
         ProposalDevelopmentRejectionBean bean = form.getProposalDevelopmentRejectionBean();
         if (new ProposalDevelopmentRejectionRule().proccessProposalDevelopmentRejection(bean)){
-            List<NotificationTypeRecipient> recipients = getApproversInCurrentRequest(globalVariableService.getUserSession().getPrincipalId(), form, Boolean.FALSE);
+            List<NotificationTypeRecipient> recipients = 
+            		getAllCurrentApprovers(form.getProposalDevelopmentDocument().getDocumentNumber(), globalVariableService.getUserSession().getPrincipalId()).stream()
+            			.map(this::createRecipientFromPerson).collect(toList());
             getProposalHierarchyService().rejectProposalDevelopmentDocument(form.getDevelopmentProposal().getProposalNumber(), bean.getRejectReason(),
                     getGlobalVariableService().getUserSession().getPrincipalId(),bean.getRejectFile());
             updateProposalAdminDetailsForReject(form.getDevelopmentProposal());
@@ -855,40 +862,48 @@ public class ProposalDevelopmentSubmitController extends
         return recipient;
     }
 
-    protected List<NotificationTypeRecipient> getApproversInCurrentRequest(String loggedInUser, ProposalDevelopmentDocumentForm form, boolean checkFirstOrAll) {
-        HashSet<String> otherApprovers = filterApproversFromActionRequest(form.getProposalDevelopmentDocument().getDocumentNumber(), loggedInUser, checkFirstOrAll);
-        List<NotificationTypeRecipient> recipients = otherApprovers.stream().map(otherApprover -> createRecipientFromPerson(otherApprover)).collect(toList());
-        return recipients;
-
-    }
-
-    protected HashSet<String> filterApproversFromActionRequest(String documentNumber, String loggedInUser, boolean checkFirstOrAll) {
-        List<ActionTakenValue> actionsTaken = getActionsTakenByDocumentId(documentNumber);
-        final HashSet<String> actionTakenSet = actionsTaken.stream().map(ActionTakenValue::getActionTakenId).collect(toCollection(HashSet::new));
-
-        List<ActionRequestValue> allActionRequests = getAllActionRequestsByDocumentId(documentNumber);
-        HashSet<String> users = allActionRequests.stream().filter(
-                actionRequestValue -> getOtherCurrentlyActiveRequests(loggedInUser, actionTakenSet, actionRequestValue, checkFirstOrAll)
-                ).map(ActionRequestValue::getPrincipalId).collect(toCollection(HashSet::new));
+    protected HashSet<String> getRelatedApproversFromActionRequest(String documentNumber, String loggedInUser) {
+        final List<ActionRequestValue> allActionRequestsByDocumentId = getAllActionRequestsByDocumentId(documentNumber);
+        HashSet<String> users = allActionRequestsByDocumentId.stream()
+        		.filter(actionRequestValue -> loggedInUser.equals(actionRequestValue.getPrincipalId()))
+        		.flatMap(this::getRelatedActionRequests)
+        		.flatMap(this::getActionAndChildren)
+        		.filter(ActionRequestValue::isActive)
+        		.map(ActionRequestValue::getPrincipalId)
+        		.filter(principalId -> principalId != null && !principalId.equals(loggedInUser))
+        		.collect(toCollection(HashSet::new));
 
         return users;
     }
-
-    protected boolean getOtherCurrentlyActiveRequests(String loggedInUser, HashSet<String> actionTakenSet, ActionRequestValue actionRequestValue, boolean checkFirstOrAll) {
-        return !actionTakenSet.contains(actionRequestValue.getActionTakenId()) &&
-                ActionRequestStatus.ACTIVATED.getCode().equalsIgnoreCase(actionRequestValue.getStatus()) &&
-                !loggedInUser.equalsIgnoreCase(actionRequestValue.getPrincipalId()) &&
-                checkFirstOrAllPolicy(actionRequestValue, checkFirstOrAll);
+    
+    protected HashSet<String> getAllCurrentApprovers(String documentNumber, String loggedInUser) {
+    	final List<ActionRequestValue> allActionRequestsByDocumentId = getAllActionRequestsByDocumentId(documentNumber);
+    	return allActionRequestsByDocumentId.stream()
+    		.filter(ActionRequestValue::isActive)
+    		.map(ActionRequestValue::getPrincipalId)
+    		.filter(principalId -> principalId != null && !principalId.equals(loggedInUser))
+    		.collect(toCollection(HashSet::new));
     }
-
-    protected boolean checkFirstOrAllPolicy(ActionRequestValue actionRequestValue, boolean checkFirstOrAll) {
-        return checkFirstOrAll ? ActionRequestPolicy.FIRST.getCode().equalsIgnoreCase(actionRequestValue.getApprovePolicy()) : Boolean.TRUE;
+    
+    protected Stream<ActionRequestValue> getActionAndChildren(ActionRequestValue actionRequestValue) {
+    	List<ActionRequestValue> actions = new ArrayList<>();
+    	actions.addAll(actionRequestValue.getChildrenRequests());
+    	actions.add(actionRequestValue);
+    	return actions.stream();
     }
-
-    public List<ActionTakenValue> getActionsTakenByDocumentId(String documentNumber) {
-        return (List<ActionTakenValue>) actionTakenService.findByDocumentId(documentNumber);
-    }
-
+    
+    protected Stream<ActionRequestValue> getRelatedActionRequests(ActionRequestValue actionRequestValue) {
+		List<ActionRequestValue> relatedActionRequests = new ArrayList<>();
+		if (ActionRequestPolicy.FIRST.getCode().equalsIgnoreCase(actionRequestValue.getApprovePolicy()) 
+				&& actionRequestValue.getParentActionRequest() != null) {
+			relatedActionRequests.addAll(getRelatedActionRequests(actionRequestValue.getParentActionRequest()).collect(Collectors.toList()));
+			relatedActionRequests.addAll(actionRequestValue.getParentActionRequest().getChildrenRequests());
+		} else {
+			relatedActionRequests.add(actionRequestValue);
+		}
+		return relatedActionRequests.stream();
+	}
+    
     public List<ActionRequestValue> getAllActionRequestsByDocumentId(String documentNumber) {
         return actionRequestService.findAllActionRequestsByDocumentId(documentNumber);
     }

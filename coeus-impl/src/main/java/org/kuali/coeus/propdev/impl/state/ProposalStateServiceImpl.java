@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,11 +37,10 @@ public class ProposalStateServiceImpl implements ProposalStateService {
     @Autowired
     @Qualifier("kcWorkflowService")
     private KcWorkflowService kcWorkflowService;
-    
+
     @Override
     public String getProposalStateTypeCode(ProposalDevelopmentDocument proposalDevelopmentDocument, boolean isRejectAction) {
         final WorkflowDocument wd = proposalDevelopmentDocument.getDocumentHeader().getWorkflowDocument();
-        
         if (wd.isInitiated()) {
             return ProposalState.IN_PROGRESS;
         } else if (wd.isSaved()) {

@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -31,7 +31,7 @@
 
     <bean id="grlImporter" abstract="true" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean" p:singleton="true" p:mustExist="true" />
     <bean id="institutionalProposalService" parent="grlImporter" p:serviceName="institutionalProposalService" />
-    <bean id="specialReviewService" parent="grlImporter" p:serviceName="specialReviewService"/> 
+    <bean id="specialReviewService" parent="grlImporter" p:serviceName="specialReviewService"/>
 
     <!-- SYS -->
 
