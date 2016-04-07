@@ -68,10 +68,6 @@
                 <bean parent="Uif-Image"
                       p:source="@{#ConfigProperties['kra.externalizable.images.url']}CSURamRightWhite.png"
                       p:altText="Colorado State University" p:cssClasses="pull-right kc-footer-img"/>
-                <bean parent="Uif-Message" p:messageText="Copyright 2005-2016 Kuali, Inc. All rights reserved.[br]
-                    <bean parent="Uif-Image"
-                          p:source="@{#ConfigProperties['kra.externalizable.images.url']}CSURamRightWhite.png"
-                          p:altText="Colorado State University" p:cssClasses="pull-right kc-footer-img"/>
                 <bean parent="Uif-Message" p:messageText="Copyright 2005-2015 Kuali, Inc. All rights reserved.[br]
 Portions of Kuali are copyrighted by other parties as described in the [link='@{#ConfigProperties['application.url']}/acknowledgments.jsp']Acknowledgments[/link] screen.
 [br][css='kc-applicationFooter-version']@{#ConfigProperties['version']} @{#ConfigProperties['datasource.ojb.platform']}[/css]"
