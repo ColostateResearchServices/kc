@@ -211,7 +211,7 @@ body#Uif-Application {
 @media(min-width: 768px) {
     .navbar-nav>li>a {
         padding-top: 30px;
-        padding-bottom: 30px
+        padding-bottom: 30px;
     }
 
 }
@@ -257,7 +257,7 @@ body#Uif-Application {
 
 #Uif-GlobalApplicationHeader div:first-child .nav.navbar-nav {
 	float: left !important;
-	margin-left: 150px;
+	margin-left: 190px;
 }
 
 #Uif-GlobalApplicationHeader #upils8b {
