@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -164,13 +164,13 @@ public class QuestionnaireXmlStream implements XmlStream {
         Questionnaire questionnaireType = questionnaireDocument.addNewQuestionnaire();
         
         String documentNumber = (String)params.get(DOCUMENT_NUMBER);
-        Long questionnaireSeqenceId= Long.parseLong(params.get(QuestionnaireConstants.QUESTIONNAIRE_SEQUENCE_ID_PARAMETER_NAME).toString());
+        Object questionnaireSeqenceId= params.get(QuestionnaireConstants.QUESTIONNAIRE_SEQUENCE_ID_PARAMETER_NAME);
         org.kuali.coeus.common.questionnaire.framework.core.Questionnaire questionnaire =
                 (org.kuali.coeus.common.questionnaire.framework.core.Questionnaire)params.get(QUESTIONNAIRE);
         if (questionnaire == null) {
             if (questionnaireSeqenceId != null) { 
                 Map<String,Long> qParam = new HashMap<String,Long>();
-                qParam.put(QuestionnaireConstants.QUESTIONNAIRE_SEQUENCE_ID_PARAMETER_NAME, questionnaireSeqenceId);
+                qParam.put(QuestionnaireConstants.QUESTIONNAIRE_SEQUENCE_ID_PARAMETER_NAME, Long.parseLong(questionnaireSeqenceId.toString()));
                 List<org.kuali.coeus.common.questionnaire.framework.core.Questionnaire> questionnaires =
                     (List)businessObjectService.findMatchingOrderBy(
                             org.kuali.coeus.common.questionnaire.framework.core.Questionnaire.class, qParam, ID, false);

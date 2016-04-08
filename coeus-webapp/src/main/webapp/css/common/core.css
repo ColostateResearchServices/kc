@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,8 +20,7 @@
 /* These override styles exist to get the new look. Eventually these rules will be
    placed in a more appropriate place. */
 .logoBrand .actionImage {
-	width: 195px;
-	padding-left: 9px;
+	width: 204px;
 }
 
 #DummyLoginView #u1rttg5q > div:first-child {
@@ -32,25 +31,25 @@
 	-moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.08) inset;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.08) inset;
 	float: inherit !important;
-	background-image: url('../images/KualiCo.png');
-	background-size: 32px;
+	background-image: url('../images/CSURamHead.png');
+	background-size: 64px;
 	background-repeat: no-repeat;
-	background-position: 50px 30px;
+	background-position: 34px 14px;
 	margin-top: 25px;
 }
 
 #Rice-LoginButton.btn-primary {
 	color: #ffffff;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-	background-color: #217a98;
-	background-image: -moz-linear-gradient(top, #2587a9, #1c667f);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#2587a9), to(#1c667f));
-	background-image: -webkit-linear-gradient(top, #2587a9, #1c667f);
-	background-image: -o-linear-gradient(top, #2587a9, #1c667f);
-	background-image: linear-gradient(to bottom, #2587a9, #1c667f);
+	background-color: #2a5135;
+	background-image: -moz-linear-gradient(top, #3f694b, #1a371a);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3f694b), to(#1a371a));
+	background-image: -webkit-linear-gradient(top, #3f694b, #1a371a);
+	background-image: -o-linear-gradient(top, #3f694b, #1a371a);
+	background-image: linear-gradient(to bottom, #3f694b, #1a371a);
 	background-repeat: repeat-x;
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff2587a9', endColorstr='#ff1c667f', GradientType=0);
-	border-color: #1c667f #1c667f #0e3340;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3f694b', endColorstr='#ff1a371a', GradientType=0);
+	border-color: #3f694b #3f694b #1a371a;
 	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 	padding: 2px 10px;
@@ -187,14 +186,14 @@ body#Uif-Application {
 #Uif-GlobalApplicationHeader nav.navbar,
 #Uif-GlobalApplicationHeader .navbar a:hover,
 #Uif-GlobalApplicationHeader .navbar a:focus {
-	background-color: #2587a9 !important;
+	background-color: #2a5135 !important;
 }
 
 #Uif-GlobalApplicationHeader .navbar .nav .open > a:focus,
 #Uif-GlobalApplicationHeader .navbar .nav .open > a:active,
 #Uif-GlobalApplicationHeader .navbar .nav .open > a:hover,
 #Uif-GlobalApplicationHeader .navbar .nav .open > a {
-	background-color: #1f708c !important;
+	background-color: #2a5135 !important;
 }
 
 #Uif-GlobalApplicationHeader .navbar .nav a.dropdown-toggle {
@@ -209,6 +208,16 @@ body#Uif-Application {
 	display: none;
 }
 
+@media(min-width: 768px) {
+    .navbar-nav>li>a {
+        padding-top: 30px;
+        padding-bottom: 30px
+    }
+
+}
+
+
+
 .toolbar .uif-listLayout .pull-right {
 	float: initial !important;
 	display: inline-block;
@@ -217,7 +226,7 @@ body#Uif-Application {
 .toolbar .uif-listLayout .pull-right:first-child {
 	position: absolute;
 	right: 0;
-	top: -39px;
+	top: -53px;
 	z-index: 999;
 	text-transform: uppercase;
 }
@@ -243,22 +252,22 @@ body#Uif-Application {
 
 .toolbar .uif-listLayout .pull-right > a:hover,
 .toolbar .uif-listLayout .pull-right > a:focus {
-	background-color: #8e9d31;
+	background-color: #5e9933;
 }
 
 #Uif-GlobalApplicationHeader div:first-child .nav.navbar-nav {
 	float: left !important;
-	margin-left: 200px;
+	margin-left: 150px;
 }
 
 #Uif-GlobalApplicationHeader #upils8b {
-	background-color: #b1c04b;
-	background-image: linear-gradient(to bottom, #bccb59, #a0b037);
-	border: 1px solid #768128;
+	background-color: #b3890a;
+	background-image: linear-gradient(to bottom, #cca10a, #9a710a);
+	border: 1px solid #81590a;
 }
 
 #Uif-GlobalApplicationHeader > .container-fluid:first-child {
-	border-bottom: 1px solid #154e62;
+	border-bottom: 1px solid #024814;
 }
 /* End new styles */
 
@@ -294,7 +303,7 @@ body#Uif-Application {
     border-top: 1px solid #aaa;
     border-right: 1px solid #aaa;
     border-bottom: 1px solid #aaa;
-    color: #1150b0;
+    color: #0281b2;
     border-color: #cccccc;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -440,7 +449,7 @@ input[type="checkbox"] {
 }
 
 .uif-actionBar .dataOverride {
-    color: orange;
+    color: #e58f1c;
 }
 
 /** ie specific fix **/
@@ -509,7 +518,7 @@ input[type="checkbox"] {
 
 a.paginate_active {
     color: white;
-    background-color: #07C;
+    background-color: #b3890a;
 }
 
 /** z-index fix for blocking element for component refreshes **/
@@ -565,7 +574,7 @@ div.medusa-node-value a {
     display:inline-block;
     line-height:16px;
     height:16px;
-    color: #07c;
+    color: #0281b2;
     white-space:nowrap;
     text-decoration:none;
     padding:1px 2px;
@@ -607,16 +616,16 @@ section.medusa div.btn a:hover{
 }
 
 .kc-applicationFooter {
-    background-color: #2587a9;
+    background-color: #2a5135;
     color: #FFF;
     bottom: 0px;
     width: 100%;
     text-align: center;
-    padding-top: 20px;
-    padding-bottom: 12px;
+    padding-top: 34px;
+    padding-bottom: 26px;
     background-repeat: no-repeat;
     background-position: right 5px;
-    height: 80px;
+    height: 127px;
 }
 
 .kc-applicationFooter a {
@@ -629,8 +638,9 @@ section.medusa div.btn a:hover{
 }
 
 .kc-applicationFooter .kc-footer-img {
-	height : 50px;
-	width : 50px;
+    margin-top : -14px;
+	height : 87px;
+	width : 275px;
 }
 
 .fluidInputField {

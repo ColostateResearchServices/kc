@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,4 +37,5 @@ public interface KraLookupDao extends LookupDao {
     @SuppressWarnings("unchecked")
     Collection findCollectionUsingWildCard(Class businessObjectClass, String field, String wildCard, boolean unbounded);
 
+    Collection findCollectionUsingWildCardWithSorting(Class businessObjectClass, String field, String wildCard, String sortProprtyName,boolean ascending,boolean unbounded);
 }

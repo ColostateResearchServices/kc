@@ -17,6 +17,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/lincenses/>.
 --
 
+
 CREATE TABLE AWARD_ACCOUNT(
 ID BIGINT(19) NOT NULL PRIMARY KEY,
 ACCOUNT_NUMBER VARCHAR(15) NOT NULL UNIQUE,
