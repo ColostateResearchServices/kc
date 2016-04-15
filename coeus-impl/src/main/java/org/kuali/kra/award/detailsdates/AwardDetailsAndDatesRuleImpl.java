@@ -32,6 +32,7 @@ import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.krad.util.ObjectUtils;
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
 
 import java.util.HashMap;
 import java.util.List;
@@ -156,11 +157,23 @@ public class AwardDetailsAndDatesRuleImpl extends KcTransactionalDocumentRuleBas
      *  it checks if the combination of account number and chart code is valid.
      *  Only if the financial system integration parameter is on,
      *  use the financial system service to verify if the account number is valid.
+     *
+     * NOTE: CSU Version allows override during our partially integrated KC
+     * deploy/go-live mode window.
+     *
      * @param award
      * @return
      */
     protected boolean isValidAccountNumber(AwardDocument awardDocument) {
         boolean isValid = true;
+
+        ParameterService localParamSvc = getParameterService();
+        boolean performAccountIDValidation = localParamSvc.getParameterValueAsBoolean(
+                Constants.MODULE_NAMESPACE_AWARD,
+                Constants.PARAMETER_COMPONENT_DOCUMENT,
+                CSUKeyConstants.PERFORM_INTEGRATION_MODE_AWARD_ACCOUNT_ID_VALIDATION);
+
+        if (performAccountIDValidation) {
         Award award = awardDocument.getAward();
       
         String accountNumber = award.getAccountNumber();
@@ -195,7 +208,8 @@ public class AwardDetailsAndDatesRuleImpl extends KcTransactionalDocumentRuleBas
                     }
                 }
             }   
-        } 
+        }
+        }
         return isValid;
     }
     

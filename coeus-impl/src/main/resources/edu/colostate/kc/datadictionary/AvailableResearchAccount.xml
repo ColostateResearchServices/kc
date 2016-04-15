@@ -1,0 +1,154 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="AvailableResearchAccount" parent="AvailableResearchAccount-parentBean"/>
+
+    <bean id="AvailableResearchAccount-parentBean" abstract="true" parent="BusinessObjectEntry">
+        <property name="businessObjectClass" value="edu.colostate.kc.award.reservation.AvailableResearchAccount"/>
+        <property name="objectLabel" value="AvailableResearchAccount"/>
+        <property name="inquiryDefinition">
+            <ref bean="AvailableResearchAccount-inquiryDefinition"/>
+        </property>
+        <property name="lookupDefinition">
+            <ref bean="AvailableResearchAccount-lookupDefinition"/>
+        </property>
+
+        <property name="titleAttribute" value="accountNumber"/>
+        <property name="helpDefinition">
+            <bean parent="HelpDefinition"
+                  p:parameterNamespace="KC-AWARD"
+                  p:parameterName="awardAccountReservationHelpUrl"
+                  p:parameterDetailType="Document"/>
+        </property>
+        <property name="attributes">
+            <list>
+                <ref bean="AvailableResearchAccount-fullAccountNumber"/>
+                <ref bean="AvailableResearchAccount-accountNumber"/>
+                <ref bean="AvailableResearchAccount-coaCode"/>
+                <ref bean="AvailableResearchAccount-accountUsed"/>
+                <ref bean="AvailableResearchAccount-awardAccount.reservationUser"/>
+                <ref bean="AvailableResearchAccount-awardAccountList.reservationUser"/>
+                <ref bean="AvailableResearchAccount-selectAccount"/>
+                <ref bean="AvailableResearchAccount-updateUser"/>
+                <ref bean="AvailableResearchAccount-updateTimestamp"/>
+            </list>
+        </property>
+        <property name="collections">
+            <list>
+                <bean parent="CollectionDefinition" p:name="awardAccountList" p:label="Reserved Accounts"
+                      p:shortLabel="Reserved Accounts" p:elementLabel="Reserved Account"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="AvailableResearchAccount-fullAccountNumber" parent="ResearchAccount-fullAccountNumber-parentBean"/>
+
+    <bean id="AvailableResearchAccount-accountNumber" parent="ResearchAccount-accountNumber-parentBean"/>
+
+    <bean id="AvailableResearchAccount-coaCode" parent="ResearchAccount-coaCode-parentBean"/>
+
+    <bean id="AvailableResearchAccount-accountUsed" parent="ResearchAccount-accountUsed-parentBean"/>
+    <!--
+    <bean id="AvailableResearchAccount-awardAccount.reservationUser" parent="ResearchAccount-awardAccount.reservationUser" />
+    -->
+
+    <bean id="AvailableResearchAccount-awardAccount.reservationUser"
+          parent="AvailableResearchAccount-awardAccount.reservationUser-parentBean"/>
+    <bean id="AvailableResearchAccount-awardAccount.reservationUser-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="name" value="awardAccount.reservationUser"/>
+        <property name="forceUppercase" value="false"/>
+        <property name="label" value="Reservation User"/>
+        <property name="shortLabel" value="Reservation User"/>
+        <property name="maxLength" value="60"/>
+        <property name="control">
+            <bean parent="TextControlDefinition"
+                  p:size="60"/>
+        </property>
+        <property name="summary" value="Reservation User"/>
+        <property name="description" value="Reservation User"/>
+    </bean>
+
+    <bean id="AvailableResearchAccount-awardAccountList.reservationUser"
+          parent="AvailableResearchAccount-awardAccountList.reservationUser-parentBean"/>
+    <bean id="AvailableResearchAccount-awardAccountList.reservationUser-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="name" value="awardAccountList.reservationUser"/>
+        <property name="forceUppercase" value="false"/>
+        <property name="label" value="Reservation User"/>
+        <property name="shortLabel" value="Reservation User"/>
+        <property name="required" value="false"/>
+        <property name="maxLength" value="60"/>
+        <property name="control">
+            <bean parent="TextControlDefinition"
+                  p:size="60"/>
+        </property>
+        <property name="summary" value="Reservation User"/>
+        <property name="description" value="Reservation User"/>
+    </bean>
+
+    <bean id="AvailableResearchAccount-selectAccount" parent="ResearchAccount-selectAccount-parentBean"/>
+
+    <bean id="AvailableResearchAccount-updateUser" parent="ResearchAccount-updateUser-parentBean"/>
+
+    <bean id="AvailableResearchAccount-updateTimestamp" parent="ResearchAccount-updateTimestamp-parentBean"/>
+
+    <bean id="AvailableResearchAccount-inquiryDefinition"
+          parent="AvailableResearchAccount-inquiryDefinition-parentBean"/>
+
+    <bean id="AvailableResearchAccount-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+        <property name="title" value="Award Account"/>
+        <property name="inquirySections">
+            <list>
+                <bean parent="InquirySectionDefinition">
+                    <property name="title" value="Award Account"/>
+                    <property name="numberOfColumns" value="1"/>
+                    <property name="inquiryFields">
+                        <list>
+                            <bean p:attributeName="accountNumber" p:forceInquiry="true" parent="FieldDefinition"/>
+                            <bean p:attributeName="coaCode" parent="FieldDefinition"/>
+                            <bean p:attributeName="accountUsed" parent="FieldDefinition"/>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Business Object Lookup Definition -->
+    <bean id="AvailableResearchAccount-lookupDefinition" parent="AvailableResearchAccount-lookupDefinition-parentBean"/>
+    <bean id="AvailableResearchAccount-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+        <property name="title" value="Award Account Lookup"/>
+        <property name="lookupableID" value="availableAccountLookupable"/>
+        <property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;"/>
+
+        <property name="defaultSort">
+            <bean parent="SortDefinition">
+                <property name="attributeNames">
+                    <list>
+                        <value>accountNumber</value>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="lookupFields">
+            <list>
+                <bean p:attributeName="accountNumber" parent="FieldDefinition"/>
+                <bean p:attributeName="coaCode" parent="FieldDefinition"/>
+                <bean p:attributeName="awardAccountList.reservationUser" parent="FieldDefinition"/>
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean p:attributeName="accountNumber" parent="FieldDefinition"/>
+                <bean p:attributeName="coaCode" parent="FieldDefinition"/>
+                <bean p:attributeName="awardAccount.reservationUser" parent="FieldDefinition"/>
+            </list>
+        </property>
+        <property name="resultSetLimit" value="50"/>
+    </bean>
+
+</beans>

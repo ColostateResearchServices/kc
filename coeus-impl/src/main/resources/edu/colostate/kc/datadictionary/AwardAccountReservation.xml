@@ -1,0 +1,129 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="AwardAccountReservation" parent="AwardAccountReservation-parentBean" />
+
+  <bean id="AwardAccountReservation-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="edu.colostate.kc.award.reservation.AwardAccountReservation" />
+		<property name="objectLabel" value="AwardAccountReservation" />
+    <property name="inquiryDefinition" >
+      <ref bean="AwardAccountReservation-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="AwardAccountReservation-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="reservationUser" />
+    <property name="helpDefinition" >
+      <bean parent="HelpDefinition"
+            p:parameterNamespace="KC-AWARD"
+            p:parameterName="awardAccountReservationHelpUrl"
+            p:parameterDetailType="Document" />
+    </property>
+    <property name="attributes" >
+      <list>
+      	<ref bean="AwardAccountReservation-reservationUser" />
+      	<ref bean="AwardAccountReservation-updateUser" />
+        <ref bean="AwardAccountReservation-updateTimestamp" /> 
+        <ref bean="AwardAccountReservation-documentStatus" />
+      </list>
+    </property>
+    <property name="collections">
+    	<list>
+			<bean parent="CollectionDefinition" p:name="reservedAccounts" p:label="Reserved Accounts" p:shortLabel="Reserved Accounts" p:elementLabel="Reserved Account" />
+        </list>
+    </property>
+  </bean>
+
+  <bean id="AwardAccountReservation-reservationUser" parent="AwardAccountReservation-reservationUser-parentBean" />
+  <bean id="AwardAccountReservation-reservationUser-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="reservationUser" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Reservation User" />
+    <property name="shortLabel" value="Reservation User" />
+    <property name="maxLength" value="60" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="60" />
+    </property>
+    <property name="summary" value="Reservation User" />
+    <property name="description" value="Reservation User" />
+  </bean>
+  
+    <bean id="AwardAccountReservation-updateUser" parent="AwardAccountReservation-updateUser-parentBean" />
+	<bean id="AwardAccountReservation-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="AwardAccountReservation-updateTimestamp" parent="AwardAccountReservation-updateTimestamp-parentBean" />
+	<bean id="AwardAccountReservation-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+	
+	<bean id="AwardAccountReservation-documentStatus" parent="AwardAccountReservation-documentStatus-parentBean" />
+	<bean id="AwardAccountReservation-documentStatus-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="documentStatus" />
+		<property name="label" value="Routing Status" />
+		<property name="shortLabel" value="Routing Status" />
+    <property name="maxLength" value="10" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="10" />
+    </property>
+		<property name="summary" value="Label for export control project header fields" />
+		<property name="description" value="Label for export control project header fields" />
+	</bean>
+  
+    <bean id="AwardAccountReservation-inquiryDefinition" parent="AwardAccountReservation-inquiryDefinition-parentBean" />
+
+  <bean id="AwardAccountReservation-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Award Account Reservation" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Award Account Reservation" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="reservationUser" p:forceInquiry="true" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="AwardAccountReservation-lookupDefinition" parent="AwardAccountReservation-lookupDefinition-parentBean" />
+  	<bean id="AwardAccountReservation-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Award Account Reservation Lookup" />
+		<property name="lookupableID" value="awardLookupable" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="reservationUser" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="reservationUser" parent="FieldDefinition" />	
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

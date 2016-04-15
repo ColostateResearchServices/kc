@@ -36,21 +36,6 @@
                            http://www.springframework.org/schema/util
                            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
                            
-    <!--<bean id="customModuleConfiguration" parent="customModuleConfiguration-parentBean" />-->
-    
-<!--
-    <bean id="customModuleConfiguration-parentBean" class="org.kuali.rice.krad.bo.ModuleConfiguration" abstract="true">
-        <property name="initializeDataDictionary" value="true"/>
-        <property name="dataDictionaryPackages">
-			<list>
-				<value>org/kuali/kra/custom/datadictionary</value>
-			</list>
-		</property>
-    </bean>
--->
-
-
-    
     <bean id="parameterService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="parameterService" />
     </bean>
@@ -63,15 +48,6 @@
         <property name="serviceName" value="sponsorHierarchyDao" />
     </bean>
         
-
-<!--
-    <bean id="csuSponsorService" class="edu.colostate.kc.service.impl.CsuSponsorServiceImpl">
-        <property name="businessObjectService" ref="businessObjectService" />
-        <property name="parameterService" ref="parameterService" />
-        <property name="sponsorHierarchyDao" ref="sponsorHierarchyDao" />
-    </bean>
--->
-
 
     <bean id="rice.ksb.serviceBus" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="rice.ksb.serviceBus"/>
@@ -88,13 +64,6 @@
 		p:serviceNameSpaceURI-ref="kc.serviceNamespace" />
 		
 		       
-<!--
-    <bean id="csuSponsorServiceCallback" parent="kcCallbackService"
-		p:callbackService-ref="csuSponsorService" 
-		p:localServiceName="csuSponsorService" 
-		p:serviceInterface="edu.colostate.kc.service.CsuSponsorService"/>
--->
-
     <bean id="dbPlatform" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="dbPlatform" />
     </bean>		
@@ -117,36 +86,6 @@
     <bean id="dateTimeService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="dateTimeService" />
     </bean>
-<!--
-    <bean id="coiDisclosureDao" parent="platformAwareDao"
-		class="org.kuali.kra.coi.lookup.dao.ojb.CoiDisclosureDaoOjb" />
-     <bean id="krmsRulesExecutionService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
-        <property name="serviceName" value="krmsRulesExecutionService" />
-    </bean>
-        
-    <bean id="coiDisclosureUndisclosedEventsDao" parent="platformAwareDao"
-		class="org.kuali.kra.coi.lookup.dao.ojb.CoiDisclosureUndisclosedEventsDaoOjb" />
-
-    <bean id="csuWorkProjectLookupSvc" class="edu.colostate.kc.coi.CsuWorkDisclosureProjectLookupServiceImpl">
-        <property name="businessObjectService" ref="businessObjectService" />
-    </bean>
-
-
-     <bean id="coiDisclosureService" class="org.kuali.kra.coi.disclosure.CoiDisclosureServiceImpl">
-        <property name="businessObjectService" ref="businessObjectService" />
-        <property name="kcPersonService" ref="kcPersonService" />
-        <property name="financialEntityService" ref="financialEntityService" />
-        <property name="protocolFinderDao" ref="protocolFinderDao" />
-        <property name="versioningService" ref="versioningService" />
-        <property name="parameterService" ref="parameterService" />
-        <property name="dateTimeService" ref="dateTimeService" />
-        <property name="coiDisclosureDao" ref="coiDisclosureDao" />
-        <property name="krmsRulesExecutionService" ref="krmsRulesExecutionService" />
-        <property name="coiDisclosureUndisclosedEventsDao" ref="coiDisclosureUndisclosedEventsDao" />
-        <property name="csuWorkProjectLookupSvc" ref="csuWorkProjectLookupSvc" />
-    </bean>		
--->
-
 
     <bean id="documentService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="documentService" />
@@ -163,16 +102,5 @@
    <bean id="pessimisticLockService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="pessimisticLockService" />
     </bean>
-
-<!--
-   <bean id="csuCoiDisclosureActionService" class="edu.colostate.kc.coi.CsuCoiDisclosureActionServiceImpl">
-        <property name="businessObjectService" ref="businessObjectService" />
-        <property name="documentService" ref="documentService" />
-        <property name="kcNotificationService" ref="kcNotificationService" />
-        <property name="questionnaireAnswerService" ref="questionnaireAnswerService" />        
-        <property name="pessimisticLockService" ref="pessimisticLockService" />        
-        <property name="dateTimeService" ref="dateTimeService" />        
-    </bean>
--->
 
 </beans>

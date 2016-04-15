@@ -48,7 +48,7 @@
 							<td class="infoline">
 							
 								<div align="center">				
-										<kul:htmlControlAttribute property="document.award.accountNumber"  attributeEntry="${awardCreateAccountAttributes.accountNumber}" readOnly="false"/>								
+										<kul:htmlControlAttribute property="document.award.accountNumber"  attributeEntry="${awardCreateAccountAttributes.accountNumber}" readOnly="true"/>
 								</div>
 							</td>
 							<td class="infoline">

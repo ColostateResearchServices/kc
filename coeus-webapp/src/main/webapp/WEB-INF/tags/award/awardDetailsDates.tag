@@ -131,7 +131,11 @@
     		<div align="right"><kul:htmlAttributeLabel attributeEntry="${awardAttributes.accountNumber}" /></div>
       	</th>
     	<td align="left" valign="middle">
-    		<kul:htmlControlAttribute property="document.awardList[0].accountNumber" attributeEntry="${awardAttributes.accountNumber}" />
+    		<kul:htmlControlAttribute property="document.awardList[0].accountNumber" attributeEntry="${awardAttributes.accountNumber}" readOnly="true" />
+    		<c:if test="${!readOnly}">
+    			<kul:lookup boClassName="edu.colostate.kc.award.reservation.AvailableResearchAccount" fieldConversions="accountNumber:document.awardList[0].accountNumber,coaCode:document.awardList[0].financialChartOfAccountsCode" anchor="${tabKey}" />
+	            <html:image property="methodToCall.clearAccountInfo.anchor${tabKey}" src="${ConfigProperties.kr.externalizable.images.url}tinybutton-clear1.gif" title="Clear Account Info" alt="Clear Account Info" styleClass="tinybutton" />
+    		</c:if>
     	</td>
     	</kra:section>
     	<th>
@@ -151,7 +155,7 @@
       		</div>
       	</th>
     	<td colspan="3">
-    		<kul:htmlControlAttribute property="document.awardList[0].financialChartOfAccountsCode" attributeEntry="${awardAttributes.financialChartOfAccountsCode}" />
+    		<kul:htmlControlAttribute property="document.awardList[0].financialChartOfAccountsCode" attributeEntry="${awardAttributes.financialChartOfAccountsCode}" readOnly="true" />
       	</td>
      </tr>
     </kra:section>
