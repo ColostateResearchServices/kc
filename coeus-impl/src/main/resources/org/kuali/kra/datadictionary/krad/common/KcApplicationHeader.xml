@@ -68,10 +68,6 @@
                 <bean parent="Uif-Image"
                       p:source="@{#ConfigProperties['kra.externalizable.images.url']}CSURamRightWhite.png"
                       p:altText="Colorado State University" p:cssClasses="pull-right kc-footer-img"/>
-                <bean parent="Uif-Message" p:messageText="Copyright 2005-2016 Kuali, Inc. All rights reserved.[br]
-                    <bean parent="Uif-Image"
-                          p:source="@{#ConfigProperties['kra.externalizable.images.url']}CSURamRightWhite.png"
-                          p:altText="Colorado State University" p:cssClasses="pull-right kc-footer-img"/>
                 <bean parent="Uif-Message" p:messageText="Copyright 2005-2015 Kuali, Inc. All rights reserved.[br]
 Portions of Kuali are copyrighted by other parties as described in the [link='@{#ConfigProperties['application.url']}/acknowledgments.jsp']Acknowledgments[/link] screen.
 [br][css='kc-applicationFooter-version']@{#ConfigProperties['version']} @{#ConfigProperties['datasource.ojb.platform']}[/css]"
@@ -1011,6 +1007,23 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </list>
                     </property>
                 </bean>
+                <bean parent="Uif-HorizontalBoxSection" p:order="40">
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-Message" p:messageText="Account Reservations" p:order="10"/>
+                            <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                                  p:iconClass="icon-plus" p:order="20">
+                                <property name="actionUrl.requestParameters">
+                                    <map>
+                                        <entry key="href"
+                                               value="@{#ConfigProperties['application.url']}/awardAccountReservation.do?methodToCall=docHandler&amp;command=initiate&amp;docTypeName=AwardAccountReservationDocument&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true"/>
+                                    </map>
+                                </property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+
             </list>
         </property>
 
@@ -1536,8 +1549,10 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </map>
                     </property>
                 </bean>
-                <bean parent="Uif-MenuAction" p:actionLabel="Logout" p:actionUrl.baseUrl="@{#ConfigProperties['application.url']}/kc-krad"
-                	p:actionUrl.viewId="Kc-LandingPage-DefaultView" p:actionUrl.controllerMapping="/landingPage" p:actionUrl.methodToCall="logout"/>
+                <bean parent="Uif-MenuAction" p:actionLabel="Logout"
+                      p:actionUrl.baseUrl="@{#ConfigProperties['application.url']}/kc-krad"
+                      p:actionUrl.viewId="Kc-LandingPage-DefaultView" p:actionUrl.controllerMapping="/landingPage"
+                      p:actionUrl.methodToCall="logout"/>
             </list>
         </property>
     </bean>

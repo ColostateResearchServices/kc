@@ -9,21 +9,21 @@ import edu.colostate.kc.award.reservation.*;
 import edu.colostate.kc.award.reservation.document.AwardAccountReservationDocument;
 
 import org.kuali.kra.authorization.KraAuthorizationConstants;
-import org.kuali.kra.bo.versioning.VersionHistory;
-import org.kuali.kra.common.customattributes.CustomDataHelperBase;
-import org.kuali.kra.common.notification.web.struts.form.NotificationHelper;
-import org.kuali.kra.common.permissions.web.struts.form.PermissionsForm;
-import org.kuali.kra.common.permissions.web.struts.form.PermissionsHelperBase;
+import org.kuali.coeus.common.framework.version.history.VersionHistory ;
+import org.kuali.coeus.common.framework.custom.CustomDataHelperBase ;
+import org.kuali.coeus.common.notification.impl.NotificationHelper ;
+import org.kuali.coeus.common.permissions.impl.web.struts.form.PermissionsForm ;
+import org.kuali.coeus.common.permissions.impl.web.struts.form.PermissionsHelperBase ;
 import org.kuali.kra.external.award.web.AccountCreationPresentationHelper;
 import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.infrastructure.KraServiceLocator;
-import org.kuali.kra.medusa.MedusaBean;
-import org.kuali.kra.service.VersionHistoryService;
-import org.kuali.kra.web.struts.form.Auditable;
-import org.kuali.kra.web.struts.form.BudgetVersionFormBase;
-import org.kuali.kra.web.struts.form.CustomDataDocumentForm;
-import org.kuali.kra.web.struts.form.KraTransactionalDocumentFormBase;
-import org.kuali.kra.web.struts.form.MultiLookupFormBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
+import org.kuali.coeus.common.framework.medusa.MedusaBean ;
+import org.kuali.coeus.common.framework.version.history.VersionHistoryService;
+import org.kuali.coeus.sys.framework.validation.Auditable ;
+import org.kuali.coeus.common.budget.framework.core.BudgetVersionFormBase ;
+import org.kuali.coeus.common.framework.custom.CustomDataDocumentForm ;
+import org.kuali.coeus.sys.framework.model.KcTransactionalDocumentFormBase ;
+import org.kuali.coeus.sys.framework.model.MultiLookupForm ;
 import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
@@ -49,15 +49,15 @@ import java.util.*;
  * 
  * This class represents the AwardAccountReservation Form Struts class.
  */
-public class AwardAccountReservationForm extends KraTransactionalDocumentFormBase 
-                                        implements MultiLookupFormBase,
+public class AwardAccountReservationForm extends KcTransactionalDocumentFormBase
+                                        implements MultiLookupForm,
                                                     Auditable,
                                                     PermissionsForm {
 	
 	private static final long serialVersionUID = -8033452344282425721L;
 	private String lookupResultsSequenceNumber;
 	private String lookupResultsBOClassName;
-//	KeyValuesService keyValuesService = (KeyValuesService) KraServiceLocator.getService("keyValuesService");
+//	KeyValuesService keyValuesService = (KeyValuesService) KcServiceLocator.getService("keyValuesService");
     private boolean auditActivated;
     private AwardAccountReservationsBean awardAccountReservationsBean = new AwardAccountReservationsBean(this);
     /*
@@ -97,11 +97,11 @@ public class AwardAccountReservationForm extends KraTransactionalDocumentFormBas
 	}
 	
 	private DocumentService getDocumentService() {
-		return KraServiceLocator.getService(DocumentService.class);
+		return KcServiceLocator.getService(DocumentService.class);
 	}
 
     private BusinessObjectService getBusinessObjectService() {
-        return KraServiceLocator.getService(BusinessObjectService.class);
+        return KcServiceLocator.getService(BusinessObjectService.class);
     }
     
 	@Override
@@ -230,7 +230,7 @@ public class AwardAccountReservationForm extends KraTransactionalDocumentFormBas
     }
     
     protected VersionHistoryService getVersionHistoryService() {
-        return KraServiceLocator.getService(VersionHistoryService.class);
+        return KcServiceLocator.getService(VersionHistoryService.class);
     }
 	
     /**

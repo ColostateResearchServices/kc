@@ -8,13 +8,13 @@ import java.util.List;
 import java.sql.Date;
 
 import org.drools.core.util.StringUtils;
-import org.kuali.kra.bo.KraPersistableBusinessObjectBase;
-import org.kuali.kra.bo.ScienceKeyword;
-import org.kuali.kra.document.KeywordsManager;
+import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
+import org.kuali.coeus.common.framework.keyword.ScienceKeyword;
+import org.kuali.coeus.common.framework.keyword.KeywordsManager;
 import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.infrastructure.KraServiceLocator;
-import org.kuali.kra.service.KeywordsService;
-import org.kuali.kra.web.struts.form.MultiLookupFormBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
+import org.kuali.coeus.common.framework.keyword.KeywordsService;
+import org.kuali.coeus.sys.framework.model.MultiLookupForm;
 import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -23,7 +23,7 @@ import org.springframework.util.AutoPopulatingList;
 import edu.colostate.kc.award.reservation.document.AwardAccountReservationDocument;
 import edu.colostate.kc.award.reservation.web.struts.form.AwardAccountReservationForm;
 
-public class AwardAccountReservation extends KraPersistableBusinessObjectBase {
+public class AwardAccountReservation extends KcPersistableBusinessObjectBase {
 
 	/**
 	 * 
@@ -88,7 +88,7 @@ public class AwardAccountReservation extends KraPersistableBusinessObjectBase {
 		getReservedAccounts().remove(oldAccount);
 	}
 	
-    public void addAccounts(MultiLookupFormBase multiLookUpForm) {
+    public void addAccounts(MultiLookupForm multiLookUpForm) {
         try{
             // check to see if we are coming back from a lookup
 //            if (Constants.MULTIPLE_VALUE.equals(multiLookUpForm.getRefreshCaller())) {

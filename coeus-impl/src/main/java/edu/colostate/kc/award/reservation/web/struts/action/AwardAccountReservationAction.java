@@ -24,17 +24,18 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.drools.core.util.StringUtils;
+import org.kuali.coeus.sys.impl.validation.AuditHelperImpl;
 import org.kuali.kra.award.AwardForm;
 import org.kuali.kra.award.home.Award;
-import org.kuali.kra.bo.versioning.VersionStatus;
-import org.kuali.kra.common.notification.service.KcNotificationService;
+import org.kuali.coeus.common.framework.version.VersionStatus ;
+import org.kuali.coeus.common.notification.impl.service.KcNotificationService ;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
-import org.kuali.kra.infrastructure.KraServiceLocator;
-import org.kuali.kra.service.VersionHistoryService;
-import org.kuali.kra.web.struts.action.AuditActionHelper;
-import org.kuali.kra.web.struts.action.AuditActionHelper.ValidationState;
-import org.kuali.kra.web.struts.action.KraTransactionalDocumentActionBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
+import org.kuali.coeus.common.framework.version.history.VersionHistoryService ;
+import org.kuali.coeus.sys.framework.validation.AuditHelper ;
+import org.kuali.coeus.sys.framework.validation.AuditHelper.ValidationState;
+import org.kuali.coeus.sys.framework.controller.KcTransactionalDocumentActionBase ;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kns.question.ConfirmationQuestion;
@@ -42,7 +43,7 @@ import org.kuali.rice.kns.util.KNSGlobalVariables;
 import org.kuali.rice.kns.web.struts.form.KualiDocumentFormBase;
 import org.kuali.rice.kns.web.struts.form.KualiForm;
 import org.kuali.rice.krad.bo.DocumentHeader;
-import org.kuali.rice.krad.rules.rule.event.KualiDocumentEvent;
+import org.kuali.rice.krad.rules.rule.event.DocumentEvent;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.service.KualiRuleService;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -57,14 +58,13 @@ import edu.colostate.kc.award.reservation.web.struts.form.AwardAccountReservatio
 /**
  * This class is ActionClass for AwardAccountReservation...
  */
-public class AwardAccountReservationAction extends KraTransactionalDocumentActionBase{
+public class AwardAccountReservationAction extends KcTransactionalDocumentActionBase{
 
     private static final Log LOG = LogFactory.getLog(AwardAccountReservationAction.class);
     private static final String DOCUMENT_ROUTE_QUESTION="DocRoute";
 
     /**
-     * @see org.kuali.kra.web.struts.action.
-     * KraTransactionalDocumentActionBase#execute(
+     * @see org.kuali.coeus.sys.framework.controller.KcTransactionalDocumentActionBase#execute(
      * org.apache.struts.action.ActionMapping,
      * org.apache.struts.action.ActionForm,
      * javax.servlet.http.HttpServletRequest,
@@ -79,14 +79,14 @@ public class AwardAccountReservationAction extends KraTransactionalDocumentActio
         /*
         if (awardAccountReservationForm.getAwardAccountReservation() != null) {
             AwardAccountReservation awardAccountReservation = 
-                KraServiceLocator.getService(AwardAccountReservationService.class).getAmountInfo(awardAccountReservationForm.getAwardAccountReservation());
+                KcServiceLocator.getService(AwardAccountReservationService.class).getAmountInfo(awardAccountReservationForm.getAwardAccountReservation());
         }
         */
         
         ActionForward actionForward = super.execute(mapping, form, request, response);
         
-        if (KNSGlobalVariables.getAuditErrorMap().isEmpty()) {
-            new AuditActionHelper().auditConditionally((AwardAccountReservationForm) form);
+        if (GlobalVariables.getAuditErrorMap().isEmpty()) {
+            new AuditHelperImpl().auditConditionally((AwardAccountReservationForm) form);
         }
 /*        
         if(awardAccountReservationForm.getAwardAccountReservationDocument().getAwardAccountReservationList() != null) {
@@ -95,19 +95,19 @@ public class AwardAccountReservationAction extends KraTransactionalDocumentActio
                 if(awardAccountReservationAttachmentsList != null && !awardAccountReservationAttachmentsList.isEmpty()) {
                      for(AwardAccountReservationAttachment awardAccountReservationAttachments:awardAccountReservationAttachmentsList) {
                             if(awardAccountReservationAttachments.getFileId() != null) {
-                                String printAttachmentTypeInclusion=KraServiceLocator.getService(ParameterService.class).getParameterValueAsString(Constants.MODULE_NAMESPACE_SUBAWARD, ParameterConstants.DOCUMENT_COMPONENT, Constants.PARAMETER_PRINT_ATTACHMENT_TYPE_INCLUSION);
+                                String printAttachmentTypeInclusion=KcServiceLocator.getService(ParameterService.class).getParameterValueAsString(Constants.MODULE_NAMESPACE_SUBAWARD, ParameterConstants.DOCUMENT_COMPONENT, Constants.PARAMETER_PRINT_ATTACHMENT_TYPE_INCLUSION);
                                 String[] attachmentTypeCode=printAttachmentTypeInclusion.split("\\,");
                                 for(int typeCode=0;typeCode<attachmentTypeCode.length;typeCode++) {
                                     if(awardAccountReservationAttachments.getAwardAccountReservationAttachmentType().equals(attachmentTypeCode[typeCode])) {
                                         String[] fileNameSplit=awardAccountReservationAttachments.getFileId().toString().split("\\.pdf");
-                                        AwardAccountReservationPrintingService printService = KraServiceLocator.getService(AwardAccountReservationPrintingService.class);
+                                        AwardAccountReservationPrintingService printService = KcServiceLocator.getService(AwardAccountReservationPrintingService.class);
                                             if(printService.isPdf(awardAccountReservationAttachments.getAttachmentContent())) {
                                             awardAccountReservationAttachments.setFileNameSplit(fileNameSplit[0]);
                                             }
                                      }
                                  }
                              }
-                            AwardAccountReservationAttachmentType awardAccountReservationAttachmentTypeValue =  KraServiceLocator.getService(BusinessObjectService.class).findBySinglePrimaryKey(AwardAccountReservationAttachmentType.class, awardAccountReservationAttachments.getAwardAccountReservationAttachmentType());
+                            AwardAccountReservationAttachmentType awardAccountReservationAttachmentTypeValue =  KcServiceLocator.getService(BusinessObjectService.class).findBySinglePrimaryKey(AwardAccountReservationAttachmentType.class, awardAccountReservationAttachments.getAwardAccountReservationAttachmentType());
                             awardAccountReservationAttachments.setTypeAttachment(awardAccountReservationAttachmentTypeValue);
                      }
                 }
@@ -118,7 +118,7 @@ public class AwardAccountReservationAction extends KraTransactionalDocumentActio
         return actionForward;
     }
     /**
-     * @see org.kuali.core.web.struts.action.KualiDocumentActionBase#docHandler(
+     * @see org.kuali.coeus.sys.framework.controller.KcTransactionalDocumentActionBase#docHandler(
      * org.apache.struts.action.ActionMapping,
      *  org.apache.struts.action.ActionForm,
      * javax.servlet.http.HttpServletRequest,
@@ -201,7 +201,7 @@ public class AwardAccountReservationAction extends KraTransactionalDocumentActio
    }
 
     /**
-     * @see org.kuali.kra.web.struts.action.KraTransactionalDocumentActionBase#loadDocument(
+     * @see org.kuali.coeus.sys.framework.controller.KcTransactionalDocumentActionBase#loadDocument(
      * org.kuali.rice.kns.web.struts.form.KualiDocumentFormBase)
      */
     protected void loadDocument(KualiDocumentFormBase kualiForm)
@@ -230,7 +230,7 @@ public class AwardAccountReservationAction extends KraTransactionalDocumentActio
     }
     
     /**
-     * @see org.kuali.kra.web.struts.action.KraTransactionalDocumentActionBase
+     * @see org.kuali.coeus.sys.framework.controller.KcTransactionalDocumentActionBase
      * #save(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
@@ -321,7 +321,7 @@ public class AwardAccountReservationAction extends KraTransactionalDocumentActio
  * @return
  */
 protected VersionHistoryService getVersionHistoryService() {
-    return KraServiceLocator.getService(VersionHistoryService.class);
+    return KcServiceLocator.getService(VersionHistoryService.class);
 }
 
 /**.
@@ -333,7 +333,7 @@ protected VersionHistoryService getVersionHistoryService() {
 /*
 public AwardAccountReservationService getAwardAccountReservationService() {
     if (awardAccountReservationService == null) {
-        awardAccountReservationService = KraServiceLocator.getService(AwardAccountReservationService.class);
+        awardAccountReservationService = KcServiceLocator.getService(AwardAccountReservationService.class);
     }
     return awardAccountReservationService;
 }
@@ -360,7 +360,7 @@ public ActionForward route(ActionMapping mapping, ActionForm form, HttpServletRe
 
     AwardAccountReservationForm awardAccountReservationForm = (AwardAccountReservationForm) form;
     awardAccountReservationForm.setAuditActivated(false);
-    ValidationState status = new AuditActionHelper().isValidSubmission(awardAccountReservationForm, true);
+    ValidationState status = new AuditHelperImpl().isValidSubmission(awardAccountReservationForm, true);
     Object question = request.getParameter(KRADConstants.QUESTION_INST_ATTRIBUTE_NAME);
     Object buttonClicked = request.getParameter(KRADConstants.QUESTION_CLICKED_BUTTON);
     String methodToCall = ((KualiForm) form).getMethodToCall();
@@ -395,7 +395,7 @@ public ActionForward blanketApprove(ActionMapping mapping,
     AwardAccountReservationForm awardAccountReservationForm = (AwardAccountReservationForm) form;
 
     awardAccountReservationForm.setAuditActivated(false);
-    ValidationState status = new AuditActionHelper().
+    ValidationState status = new AuditHelperImpl().
     isValidSubmission(awardAccountReservationForm, true);
     if ((status == ValidationState.OK) || (status == ValidationState.WARNING)) {
         super.blanketApprove(mapping, form, request, response);
@@ -416,7 +416,7 @@ public ActionForward blanketApprove(ActionMapping mapping,
    HttpServletResponse response) throws Exception {
       AwardAccountReservationForm awardAccountReservationForm = (AwardAccountReservationForm) form;
       ActionForward forward = mapping.findForward(Constants.MAPPING_BASIC);
-      ValidationState status = new AuditActionHelper().
+      ValidationState status = new AuditHelperImpl().
       isValidSubmission(awardAccountReservationForm, true);
 
       if ((status == ValidationState.OK) || (status == ValidationState.WARNING)) {
@@ -457,8 +457,8 @@ public ActionForward blanketApprove(ActionMapping mapping,
    * @param event the event to process
    * @return true if success; false if there was a validation error
    */
-  protected final boolean applyRules(KualiDocumentEvent event) {
-      return KraServiceLocator.getService(KualiRuleService.class).applyRules(event);
+  protected final boolean applyRules(DocumentEvent event) {
+      return KcServiceLocator.getService(KualiRuleService.class).applyRules(event);
   }
 
 
@@ -479,7 +479,7 @@ public ActionForward blanketApprove(ActionMapping mapping,
 
   
   protected KcNotificationService getNotificationService() {
-      return KraServiceLocator.getService(KcNotificationService.class);
+      return KcServiceLocator.getService(KcNotificationService.class);
   }
    
 }

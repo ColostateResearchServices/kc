@@ -85,6 +85,9 @@
         <property name="databaseRepositoryFilePaths">
             <list>
                 <value>org/kuali/kra/award/repository-award.xml</value>
+                <!-- CSU Customization -->
+                <value>edu/colostate/kc/repository-AwardAccountReservation.xml</value>
+                <!-- END CSU Customization -->
             </list>
         </property>
     </bean>

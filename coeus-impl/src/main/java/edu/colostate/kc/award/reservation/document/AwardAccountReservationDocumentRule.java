@@ -19,13 +19,15 @@ package edu.colostate.kc.award.reservation.document;
 
 import org.apache.commons.lang.ObjectUtils;
 import edu.colostate.kc.award.reservation.*;
-import org.kuali.kra.bo.Unit;
+import org.kuali.coeus.common.framework.unit.Unit ;
 import org.kuali.kra.infrastructure.KeyConstants;
-import org.kuali.kra.infrastructure.KraServiceLocator;
-import org.kuali.kra.rule.event.KraDocumentEventBaseExtension;
-import org.kuali.kra.rules.ResearchDocumentRuleBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
+import org.kuali.coeus.sys.framework.rule.KcBusinessRule;
+import org.kuali.coeus.sys.framework.rule.KcDocumentEventBaseExtension;
+import org.kuali.coeus.sys.framework.rule.KcTransactionalDocumentRuleBase ;
 import org.kuali.rice.core.api.util.type.KualiDecimal;
 import org.kuali.rice.krad.document.Document;
+import org.kuali.rice.krad.rules.rule.DocumentAuditRule;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.MessageMap;
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +39,9 @@ import java.util.Collections;
  * exconProjectDocumentRule is used...
  */
 public class AwardAccountReservationDocumentRule extends
-ResearchDocumentRuleBase implements AwardAccountReservationRule {
+        KcTransactionalDocumentRuleBase implements AwardAccountReservationRule,
+        KcBusinessRule,
+        DocumentAuditRule {
 
 
     private static final String NEW_EXCON_PROJECT = "document.exconProjectList[0]";
@@ -71,10 +75,10 @@ ResearchDocumentRuleBase implements AwardAccountReservationRule {
 
     @Override
     public boolean processRunAuditBusinessRules(Document document){
-        boolean retval = super.processRunAuditBusinessRules(document);
+        boolean retval = true; //super.processRunAuditBusinessRules(document);
         return retval;
     }
-    
+
     
     
     @Override
@@ -89,9 +93,9 @@ ResearchDocumentRuleBase implements AwardAccountReservationRule {
     }
     
     /**
-     * @see org.kuali.kra.rule.BusinessRuleInterface#processRules(org.kuali.kra.rule.event.KraDocumentEventBaseExtension)
+     * @see org.kuali.coeus.sys.framework.rule.KcBusinessRule#processRules(org.kuali.coeus.sys.framework.rule.KcDocumentEventBaseExtension)
      */
-    public boolean processRules(KraDocumentEventBaseExtension event) {
+    public boolean processRules(KcDocumentEventBaseExtension event) {
         boolean retVal = false;
         retVal = event.getRule().processRules(event);
         return retVal;

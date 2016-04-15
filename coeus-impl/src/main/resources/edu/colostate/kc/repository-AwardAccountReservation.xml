@@ -8,9 +8,6 @@
     	<collection-descriptor name="awardAccountReservationList" proxy="true" element-class-ref="edu.colostate.kc.award.reservation.AwardAccountReservation" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
         	<inverse-foreignkey field-ref="documentNumber" />
     	</collection-descriptor>
-    	<reference-descriptor name="documentHeader" class-ref="org.kuali.rice.krad.bo.DocumentHeader" auto-retrieve="true" auto-update="object" auto-delete="object">
-        	<foreignkey field-ref="documentNumber" />
-    	</reference-descriptor>   	
 	</class-descriptor>
 	
 	<class-descriptor class="edu.colostate.kc.award.reservation.AwardAccountReservation" table="CSU_AWD_ACCT_RESERVATION_T">			
@@ -82,7 +79,7 @@
 		<field-descriptor name="accountNumber" column="ACCOUNT_NUMBER" jdbc-type="VARCHAR" />
 		<field-descriptor name="coaCode" column="COA_CODE" jdbc-type="VARCHAR" />
 		<field-descriptor name="accountUsed" column="ACCOUNT_USED_IND" jdbc-type="VARCHAR" />
-		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
 		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
     	<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />

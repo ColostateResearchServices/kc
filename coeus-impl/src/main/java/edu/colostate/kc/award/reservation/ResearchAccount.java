@@ -3,10 +3,10 @@ package edu.colostate.kc.award.reservation;
 import java.sql.Date;
 import java.util.List;
 
-import org.kuali.kra.bo.KraPersistableBusinessObjectBase;
+import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase ;
 import org.springframework.util.AutoPopulatingList;
 
-public class ResearchAccount extends KraPersistableBusinessObjectBase implements Comparable<ResearchAccount> {
+public class ResearchAccount extends KcPersistableBusinessObjectBase implements Comparable<ResearchAccount> {
 
 	/**
 	 * 

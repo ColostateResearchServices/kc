@@ -22,22 +22,21 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kra.authorization.KraAuthorizationConstants;
-import org.kuali.kra.bo.DocumentCustomData;
-import org.kuali.kra.bo.versioning.VersionStatus;
-import org.kuali.kra.document.ResearchDocumentBase;
-import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.infrastructure.KraServiceLocator;
 import org.kuali.kra.krms.KcKrmsConstants;
-import org.kuali.kra.krms.KrmsRulesContext;
-import org.kuali.kra.krms.service.impl.KcKrmsFactBuilderServiceHelper;
-import org.kuali.kra.service.KraWorkflowService;
-import org.kuali.kra.service.ResearchDocumentService;
-import org.kuali.kra.service.VersionHistoryService;
+import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.subaward.bo.SubAward;
 
-import edu.colostate.kc.award.reservation.*;
+import org.kuali.coeus.common.framework.custom.DocumentCustomData;
+import org.kuali.coeus.sys.framework.model.KcTransactionalDocumentBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
+import org.kuali.coeus.common.framework.krms.KrmsRulesContext ;
+import org.kuali.coeus.common.impl.krms.KcKrmsFactBuilderServiceHelper ;
+import org.kuali.coeus.sys.framework.workflow.KcWorkflowService ;
+import org.kuali.coeus.sys.framework.controller.DocHandlerService;
+import org.kuali.coeus.common.framework.version.history.VersionHistoryService ;
 
 import org.kuali.rice.ken.util.NotificationConstants;
 import org.kuali.rice.kew.api.KewApiConstants;
@@ -49,10 +48,12 @@ import org.kuali.rice.krad.document.SessionDocument;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krms.api.engine.Facts.Builder;
 
+import edu.colostate.kc.award.reservation.*;
+
 /**
  * This class is for awardAccountReservationDocument...
  */
-public class AwardAccountReservationDocument extends ResearchDocumentBase
+public class AwardAccountReservationDocument extends KcTransactionalDocumentBase
 implements  Copyable, SessionDocument, KrmsRulesContext {
 
     private static final long serialVersionUID = 5454845646613256L;
@@ -150,7 +151,7 @@ implements  Copyable, SessionDocument, KrmsRulesContext {
     }
     
     protected PermissionService getPermissionService() {
-        return KraServiceLocator.getService(PermissionService.class);
+        return KcServiceLocator.getService(PermissionService.class);
     }
     
     protected void init() {
@@ -174,12 +175,12 @@ implements  Copyable, SessionDocument, KrmsRulesContext {
      * @return
      */
     protected VersionHistoryService getVersionHistoryService() {
-        return KraServiceLocator.getService(VersionHistoryService.class);
+        return KcServiceLocator.getService(VersionHistoryService.class);
     }
 
 /*
     protected AwardAccountReservationService getAwardAccountReservationService() {
-    	return KraServiceLocator.getService(AwardAccountReservationService.class);
+    	return KcServiceLocator.getService(AwardAccountReservationService.class);
     }
 */
     
@@ -204,7 +205,7 @@ implements  Copyable, SessionDocument, KrmsRulesContext {
              */
             if (getDocumentHeader().getWorkflowDocument().isFinal() 
                     || getDocumentHeader().getWorkflowDocument().isProcessed()
-                    || KraServiceLocator.getService(KraWorkflowService.class).hasPendingApprovalRequests(getDocumentHeader().getWorkflowDocument())) {
+                    || KcServiceLocator.getService(KcWorkflowService.class).hasPendingApprovalRequests(getDocumentHeader().getWorkflowDocument())) {
                 isComplete = true;
             }
         }
@@ -222,7 +223,7 @@ implements  Copyable, SessionDocument, KrmsRulesContext {
     
     /**
      * 
-     * @see org.kuali.core.bo.PersistableBusinessObjectBase#buildListOfDeletionAwareLists()
+     * @see org.kuali.rice.krad.bo.PersistableBusinessObjectBase#buildListOfDeletionAwareLists()
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -244,7 +245,7 @@ implements  Copyable, SessionDocument, KrmsRulesContext {
     
     @Override
     public void addFacts(Builder factsBuilder) {
-        KcKrmsFactBuilderServiceHelper fbService = KraServiceLocator.getService("awardAccountReservationFactBuilderService");
+        KcKrmsFactBuilderServiceHelper fbService = KcServiceLocator.getService("awardAccountReservationFactBuilderService");
         fbService.addFacts(factsBuilder, this);
     }
     @Override
@@ -253,7 +254,7 @@ implements  Copyable, SessionDocument, KrmsRulesContext {
     }
     
     public String buildForwardUrl() {
-        ResearchDocumentService researchDocumentService = KraServiceLocator.getService(ResearchDocumentService.class);
+        DocHandlerService researchDocumentService = KcServiceLocator.getService(DocHandlerService.class);
         String forward = researchDocumentService.getDocHandlerUrl(getDocumentNumber());
         forward = forward.replaceFirst(DEFAULT_TAB, ALTERNATE_OPEN_TAB);
         if (forward.indexOf("?") == -1) {
@@ -273,10 +274,10 @@ implements  Copyable, SessionDocument, KrmsRulesContext {
     }
     
     /**
-     * @see org.kuali.kra.document.ResearchDocumentBase#answerSplitNodeQuestion(java.lang.String)
+     * @see org.kuali.coeus.sys.framework.model.KcTransactionalDocumentBase#answerSplitNodeQuestion(java.lang.String)
      */
     @Override
-    public boolean answerSplitNodeQuestion( String routeNodeName ) throws Exception {
+    public boolean answerSplitNodeQuestion( String routeNodeName ) {
         //defer to the super class. ResearchDocumentBase will throw the UnsupportedOperationException
         //if no super class answers the question.
         return super.answerSplitNodeQuestion(routeNodeName);

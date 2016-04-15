@@ -3,10 +3,10 @@ package edu.colostate.kc.award.reservation;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
-import org.kuali.kra.bo.KraPersistableBusinessObjectBase;
+import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase ;
 
 
-public class AwardAccount extends KraPersistableBusinessObjectBase implements Comparable<AwardAccount> {
+public class AwardAccount extends KcPersistableBusinessObjectBase implements Comparable<AwardAccount> {
 
 	/**
 	 * 

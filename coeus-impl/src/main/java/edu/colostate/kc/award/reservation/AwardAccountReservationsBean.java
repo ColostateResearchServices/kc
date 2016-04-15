@@ -21,7 +21,7 @@ import edu.colostate.kc.award.reservation.document.AwardAccountReservationDocume
 
 import edu.colostate.kc.award.reservation.web.struts.form.AwardAccountReservationForm;
 
-import org.kuali.kra.infrastructure.KraServiceLocator;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.rice.krad.service.BusinessObjectService;
 
 import java.io.Serializable;
@@ -109,7 +109,7 @@ public class AwardAccountReservationsBean implements Serializable {
      */
     protected BusinessObjectService getBusinessObjectService() {
         if(businessObjectService == null) {
-            businessObjectService = (BusinessObjectService) KraServiceLocator.getService(BusinessObjectService.class); 
+            businessObjectService = (BusinessObjectService) KcServiceLocator.getService(BusinessObjectService.class);
         }
         return businessObjectService;
     }
