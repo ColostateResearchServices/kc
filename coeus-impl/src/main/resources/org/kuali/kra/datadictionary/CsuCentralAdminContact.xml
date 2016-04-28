@@ -1,0 +1,64 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="CsuCentralAdminContact" parent="CsuCentralAdminContact-parentBean" />
+	<bean id="CsuCentralAdminContact-parentBean" parent="AwardContact">
+		<property name="businessObjectClass"
+			value="edu.colostate.kc.award.contacts.CsuCentralAdminContact" />
+		<property name="objectLabel" value="Central Admin Contact Contact" />
+		<property name="titleAttribute" value="unitContact" />
+		<property name="attributes">
+			<list>
+				<ref bean="CsuCentralAdminContact-unitAdministratorTypeCode" />
+				<ref bean="CsuCentralAdminContact-fullName" />
+			</list>
+		</property>
+		<property name="lookupDefinition">
+			<ref bean="CsuCentralAdminContact-lookupDefinition" />
+		</property>
+	</bean>
+
+	<bean id="CsuCentralAdminContact-unitAdministratorTypeCode" parent="CsuCentralAdminContact-unitAdministratorTypeCode-parentBean" />
+	<bean id="CsuCentralAdminContact-unitAdministratorTypeCode-parentBean"
+		abstract="true" parent="AttributeDefinition">
+		<property name="name" value="unitAdministratorTypeCode" />
+		<property name="forceUppercase" value="false" />
+		<property name="label" value="Project Role" />
+		<property name="shortLabel" value="Project Role" />
+		<property name="maxLength" value="3" />
+		<property name="validationPattern">
+			<bean parent="AlphaNumericValidationPattern" />
+		</property>
+		<property name="required" value="true" />
+		<property name="control">
+			<bean parent="SelectControlDefinition"
+				p:valuesFinderClass="edu.colostate.kc.award.contacts.CentralAdminContactsValuesFinder" />
+		</property>
+		<property name="summary" value="Project Role" />
+		<property name="description" value="Project Role" />
+	</bean>
+
+	<bean id="CsuCentralAdminContact-fullName" parent="CsuCentralAdminContact-fullName-parentBean" />
+	<bean id="CsuCentralAdminContact-fullName-parentBean" abstract="true"
+		parent="AwardContact-fullName">
+		<property name="name" value="fullName" />
+	</bean>
+
+	<bean id="CsuCentralAdminContact-lookupDefinition" parent="CsuCentralAdminContact-lookupDefinition-parentBean" />
+	<bean id="CsuCentralAdminContact-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Award Unit Contact Lookup" />
+		<property name="lookupFields">
+			<list>
+				<bean p:attributeName="unitAdministratorTypeCode" parent="FieldDefinition" />
+				<bean p:attributeName="fullName" parent="FieldDefinition" />
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean p:attributeName="fullName" parent="FieldDefinition" />
+			</list>
+		</property>
+	</bean>
+</beans>

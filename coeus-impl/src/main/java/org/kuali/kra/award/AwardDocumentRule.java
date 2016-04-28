@@ -90,6 +90,7 @@ import java.util.List;
 import static org.kuali.kra.infrastructure.KeyConstants.AWARD_ATTACHMENT_FILE_REQUIRED;
 import static org.kuali.kra.infrastructure.KeyConstants.AWARD_ATTACHMENT_TYPE_CODE_REQUIRED;
 
+import edu.colostate.kc.award.contacts.AwardUnitContactsAuditRule;
 
 
 /**
