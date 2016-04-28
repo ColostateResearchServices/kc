@@ -30,9 +30,10 @@
 
 <%-- kra:section permission="modifyAward" --%>
 <kul:tab defaultOpen="false"
-	tabItemCount="${KualiForm.unitContactsBean.unitContactsCount}"
+	tabItemCount="${KualiForm.unitContactsBean.unitContactsCount}" useRiceAuditMode="true"
 	tabTitle="Unit Contacts"
-	tabErrorKey="unitContactsBean.newAwardContact.*,unitContactsBean.unitContact.unitAdministratorTypeCode,document.awardList[0].awardUnitContacts*">
+	tabErrorKey="unitContactsBean.newAwardContact.*,unitContactsBean.unitContact.unitAdministratorTypeCode,document.awardList[0].awardUnitContacts*"
+	auditCluster="contactsAuditErrors" tabAuditKey="document.awardList[0].awardUnitContacts*">
 	<div class="tab-container" align="center">
 	<h3><span class="subhead-left">Unit Contacts</span>  		
 	<span class="subhead-right"><kul:help parameterNamespace="KC-AWARD" parameterDetailType="Document" parameterName="awardUnitContactsHelpUrl" altText="help"/></span>

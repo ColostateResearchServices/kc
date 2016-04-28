@@ -47,4 +47,5 @@ public final class CSUKeyConstants {
     public static final String ERROR_PROTOCOL_ATTACHMENT_FILE_NULL="The attachment file is null.";
 
 	public static final String HIDE_AND_DEFAULT_NEGOTIATION_DOC_DESC_PARAM = "HIDE_AND_DEFAULT_NEGOTIATION_DOC_DESC_PARAM";
+
 }
