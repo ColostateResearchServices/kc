@@ -49,12 +49,29 @@ public class SponsorWebServiceImpl implements SponsorWebService {
 		Collection<Sponsor> sponsors;
 		if (ObjectUtils.isNull(searchCriteria) ||
 				(StringUtils.isEmpty(searchCriteria.getSponsorCode())
-				&& StringUtils.isEmpty(searchCriteria.getCustomerNumber()))) {
+				&& StringUtils.isEmpty(searchCriteria.getCustomerNumber())
+				&& StringUtils.isEmpty(searchCriteria.getDunsPlusFourNumber())
+				&& StringUtils.isEmpty(searchCriteria.getSponsorName())
+				&& StringUtils.isEmpty(searchCriteria.getActive()))
+				) {
 			sponsors = getBusinessObjectService().findAll(Sponsor.class);
 		} else if (StringUtils.isNotEmpty(searchCriteria.getSponsorCode())) {
             sponsors = legacyDataAdapter.findCollectionBySearchHelper(Sponsor.class, Collections.singletonMap("sponsorCode", searchCriteria.getSponsorCode()), Collections.<String>emptyList(), true, false, 0);
 		} else {
-			sponsors = legacyDataAdapter.findCollectionBySearchHelper(Sponsor.class, Collections.singletonMap("customerNumber", searchCriteria.getCustomerNumber()), Collections.<String>emptyList(), true, false, 0);
+			Map<String,String> criteria = new HashMap<String,String>();
+			if (StringUtils.isNotEmpty(searchCriteria.getCustomerNumber())){
+				criteria.put("customerNumber", searchCriteria.getCustomerNumber());
+			}
+			if (StringUtils.isNotEmpty(searchCriteria.getDunsPlusFourNumber())){
+				criteria.put("dunsPlusFourNumber", searchCriteria.getDunsPlusFourNumber());
+			}
+			if (StringUtils.isNotEmpty(searchCriteria.getSponsorName())){
+				criteria.put("sponsorName", searchCriteria.getSponsorName());
+			}
+			if (StringUtils.isNotEmpty(searchCriteria.getActive())) {
+				criteria.put("active", searchCriteria.getActive());
+			}
+			sponsors = legacyDataAdapter.findCollectionBySearchHelper(Sponsor.class, criteria, Collections.<String>emptyList(), true, false, 0);
 		}
 		if (sponsors != null && !sponsors.isEmpty()) {
 			for (Sponsor sponsor : sponsors) {
