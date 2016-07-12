@@ -199,6 +199,7 @@
               <bean parent="FieldDefinition" p:attributeName="sponsorType.description" />
               <bean parent="FieldDefinition" p:attributeName="state" />
               <bean parent="FieldDefinition" p:attributeName="dunningCampaignId"/>
+              <bean parent="FieldDefinition" p:attributeName="customerNumber"/>
               <bean parent="FieldDefinition" p:attributeName="active" />
             </list>
           </property>
@@ -308,6 +309,7 @@
         <bean parent="FieldDefinition" p:attributeName="rolodex.state" />
         <bean parent="FieldDefinition" p:attributeName="rolodex.countryCode" />
         <bean parent="FieldDefinition" p:attributeName="dunningCampaignId"/>
+        <bean parent="FieldDefinition" p:attributeName="customerNumber"/>
         <bean parent="FieldDefinition" p:attributeName="active" />
       </list>
     </property>

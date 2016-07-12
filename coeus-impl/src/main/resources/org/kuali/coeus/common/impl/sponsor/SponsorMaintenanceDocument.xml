@@ -63,6 +63,8 @@
         <bean parent="MaintainableFieldDefinition" p:name="dodacNumber"/>
         <bean parent="MaintainableFieldDefinition" p:name="dunAndBradstreetNumber"/>
         <bean parent="MaintainableFieldDefinition" p:name="dunsPlusFourNumber"/>
+        <bean parent="MaintainableFieldDefinition" p:name="dunningCampaignId"/>
+        <bean parent="MaintainableFieldDefinition" p:name="customerNumber"/>
         <bean parent="MaintainableFieldDefinition" p:name="ownedByUnit" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="sponsorName" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="sponsorTypeCode" p:required="true"/>

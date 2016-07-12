@@ -21,19 +21,20 @@ package org.kuali.kra.external.cgbbillingfrequency;
 
 import java.util.List;
 
-import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
+import org.kuali.kfs.module.external.kc.dto.BillingFrequencyDTO;
 import org.kuali.kra.infrastructure.Constants;
 
 @WebService(name = "cgbBillingFrequencyWebService", targetNamespace = Constants.FINANCIAL_INTEGRATION_KC_SERVICE_NAMESPACE)
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
 public interface CgbBillingFrequencyService {
 
-/*	public CgbBillingFrequencyDto getFrequency(@WebParam(name = "frequencyCode") String frequencyCode);
 	
-	public List<CgbBillingFrequencyDto> findMatching(@WebParam(name = "frequencyCode") String frequencyCode, @WebParam(name = "description") String description);
+	public List<BillingFrequencyDTO> findActive();
 	
-	public List<CgbBillingFrequencyDto> findAll();*/
+	public List<BillingFrequencyDTO> findAll();
+	
+	public BillingFrequencyDTO getBillingFrequency(String billingFrequencyCode);
 }

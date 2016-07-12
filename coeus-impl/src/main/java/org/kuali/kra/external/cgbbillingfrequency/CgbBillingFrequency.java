@@ -1,13 +1,13 @@
-package org.kuali.kra.award.cgb;
+package org.kuali.kra.external.cgbbillingfrequency;
 
-import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
+import org.kuali.rice.krad.bo.BusinessObject;
 
-public class CgbBillingFrequency extends KcPersistableBusinessObjectBase {
+public class CgbBillingFrequency implements BusinessObject {
 
-    private Long id;
 	private String description;
 	private boolean active;
 	private String code;
+	private int gracePeriodDays;
 	
 	
 	public String getDescription() {
@@ -28,14 +28,15 @@ public class CgbBillingFrequency extends KcPersistableBusinessObjectBase {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	public Long getId() {
-		return id;
+	public int getGracePeriodDays() {
+		return gracePeriodDays;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setGracePeriodDays(int gracePeriodDays) {
+		this.gracePeriodDays = gracePeriodDays;
 	}
 
 
-
+	@Override
+	public void refresh() {	}
 
 }

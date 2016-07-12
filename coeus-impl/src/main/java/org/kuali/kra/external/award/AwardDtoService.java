@@ -27,13 +27,13 @@ import org.kuali.coeus.common.framework.sponsor.Sponsor;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchy;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchyService;
 import org.kuali.kra.award.cgb.AwardCgbConstants;
-import org.kuali.kra.award.cgb.CgbBillingFrequency;
 import org.kuali.kra.award.contacts.AwardUnitContact;
 import org.kuali.kra.award.document.AwardDocument;
 import org.kuali.kra.award.home.Award;
 import org.kuali.kra.award.home.AwardMethodOfPayment;
 import org.kuali.kra.award.paymentreports.Frequency;
 import org.kuali.kra.external.awardpayment.AwardMethodOfPaymentDTO;
+import org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency;
 import org.kuali.kra.external.frequency.FrequencyDto;
 import org.kuali.kra.external.service.KcDtoService;
 import org.kuali.kra.external.service.KcDtoServiceBase;
@@ -143,7 +143,7 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 					dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(reportItem.getFrequency()));
 				}
 			}*/
-			dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(award.getAwardCgb().getBillingFrequency()));
+		//	dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(award.getAwardCgb().getBillingFrequency()));
 
 			dto.setAwardAccounts(getAwardAccountsHierarchy(hierarchyMap, orderList));
 			return dto;

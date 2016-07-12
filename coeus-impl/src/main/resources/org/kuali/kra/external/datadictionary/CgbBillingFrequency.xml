@@ -1,0 +1,160 @@
+<!--
+   - Kuali Coeus, a comprehensive research administration system for higher education.
+   - 
+   - Copyright 2005-2016 Kuali, Inc.
+   - 
+   - This program is free software: you can redistribute it and/or modify
+   - it under the terms of the GNU Affero General Public License as
+   - published by the Free Software Foundation, either version 3 of the
+   - License, or (at your option) any later version.
+   - 
+   - This program is distributed in the hope that it will be useful,
+   - but WITHOUT ANY WARRANTY; without even the implied warranty of
+   - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   - GNU Affero General Public License for more details.
+   - 
+   - You should have received a copy of the GNU Affero General Public License
+   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="CgbBillingFrequency" parent="CgbBillingFrequency-parentBean" />
+
+  <bean id="CgbBillingFrequency-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency" />
+	<property name="objectLabel" value="Cgb Billing Frequency" />    
+    <property name="inquiryDefinition" >
+      <ref bean="CgbBillingFrequency-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="CgbBillingFrequency-lookupDefinition" />
+    </property>	
+    <property name="titleAttribute" value="code" />
+    <property name="attributes" >
+      <list>
+        <ref bean="CgbBillingFrequency-description" />
+        <ref bean="CgbBillingFrequency-active" />
+        <ref bean="CgbBillingFrequency-code" />
+        <ref bean="CgbBillingFrequency-gracePeriodDays" />
+      </list>
+    </property>
+  </bean>
+    
+    
+    <bean id="CgbBillingFrequency-description" parent="CgbBillingFrequency-description-parentBean" />
+    <bean id="CgbBillingFrequency-description-parentBean" abstract="true" parent="AttributeDefinition">
+      <property name="name" value="description" />
+      <property name="label" value="Description" />
+      <property name="shortLabel" value="Description" />
+      <property name="maxLength" value="60" />
+      <property name="required" value="false"/>
+      <property name="control" >
+        <bean parent="TextControlDefinition"
+              p:size="60" />
+      </property>      
+    </bean>
+    
+
+  
+
+    <bean id="CgbBillingFrequency-active" parent="CgbBillingFrequency-active-parentBean" />
+    <bean id="CgbBillingFrequency-active-parentBean" abstract="true" parent="AttributeReferenceDummy-genericBoolean">
+      <property name="name" value="active"/>
+	  <property name="label" value="Active" />
+      <property name="shortLabel" value="Active" />
+      <property name="required" value="false"/>
+    </bean>    
+     
+
+    <bean id="CgbBillingFrequency-code" parent="CgbBillingFrequency-code-parentBean" />
+    <bean id="CgbBillingFrequency-code-parentBean" abstract="true" parent="AttributeDefinition">
+      <property name="name" value="code" />
+      <property name="label" value="Frequency Code" />
+      <property name="shortLabel" value="Frequency Code" />
+      <property name="maxLength" value="30" />
+      <property name="required" value="false"/>
+      <property name="control" >
+        <bean parent="TextControlDefinition"
+              p:size="30" />
+      </property>      
+    </bean>     
+
+    <bean id="CgbBillingFrequency-gracePeriodDays" parent="CgbBillingFrequency-gracePeriodDays-parentBean" />
+    <bean id="CgbBillingFrequency-gracePeriodDays-parentBean" abstract="true" parent="AttributeDefinition">
+      <property name="name" value="gracePeriodDays" />
+      <property name="label" value="Grace Period Days" />
+      <property name="shortLabel" value="Grace Period Days" />
+      <property name="maxLength" value="3" />
+      <property name="required" value="false"/>
+      <property name="control" >
+        <bean parent="TextControlDefinition"
+              p:size="3" />
+      </property>      
+    </bean>  
+
+  <bean id="CgbBillingFrequency-inquiryDefinition" parent="CgbBillingFrequency-inquiryDefinition-parentBean" />
+  <bean id="CgbBillingFrequency-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="CgbBillingFrequency" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="CgbBillingFrequency" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+              <bean parent="FieldDefinition" p:attributeName="code" />
+              <bean parent="FieldDefinition" p:attributeName="description" />
+              <bean parent="FieldDefinition" p:attributeName="gracePeriodDays" />
+              <bean parent="FieldDefinition" p:attributeName="active" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="CgbBillingFrequency-lookupDefinition" parent="CgbBillingFrequency-lookupDefinition-parentBean" />
+
+  <bean id="CgbBillingFrequency-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+    <property name="title" value="Cgb Billing Frequency Lookup" />
+    <property name="lookupableID" value="cgbBillingFrequencyLookupable" />
+    <property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+    <property name="defaultSort">
+      <bean parent="SortDefinition">
+        <property name="attributeNames">
+          <list>
+            <value>code</value>
+          </list>
+        </property>
+        <property name="sortAscending" value="false"/>
+      </bean>
+    </property>
+    
+    <property name="lookupFields" >
+      <list>
+        <bean parent="FieldDefinition" p:attributeName="code" />
+        <bean parent="FieldDefinition" p:attributeName="description" />
+        <bean parent="FieldDefinition" p:attributeName="gracePeriodDays" />
+        <bean parent="FieldDefinition" p:attributeName="active" />
+      </list>
+    </property>
+    <property name="resultFields" >
+      <list>
+        <bean parent="FieldDefinition" p:attributeName="code" />
+        <bean parent="FieldDefinition" p:attributeName="description" />
+        <bean parent="FieldDefinition" p:attributeName="gracePeriodDays" />
+        <bean parent="FieldDefinition" p:attributeName="active" />
+      </list>
+    </property>
+    
+    <property name="resultSetLimit" value="50" />
+    
+  </bean>
+     
+     
+</beans>

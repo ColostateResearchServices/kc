@@ -1,0 +1,126 @@
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://kfs.kuali.org/kc-kfs/v2_0"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http"
+	name="billingFrequencyServiceSOAP" targetNamespace="http://kfs.kuali.org/kc-kfs/v2_0">
+	<wsdl:types>
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://kfs.kuali.org/kc-kfs/v2_0" elementFormDefault="unqualified"
+			targetNamespace="http://kfs.kuali.org/kc-kfs/v2_0" version="1.0">
+			<xs:element name="getActive" type="tns:getActive" />
+			<xs:element name="getActiveResponse" type="tns:getActiveResponse" />
+			<xs:element name="getAll" type="tns:getAll" />
+			<xs:element name="getAllResponse" type="tns:getAllResponse" />
+			<xs:element name="getBillingFrequency" type="tns:getBillingFrequency" />
+			<xs:element name="getBillingFrequencyResponse" type="tns:getBillingFrequencyResponse" />
+			<xs:complexType name="getAll">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="getAllResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:billingFrequencyDTO" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="billingFrequencyDTO">
+				<xs:sequence>
+					<xs:element name="active" type="xs:boolean" />
+					<xs:element minOccurs="0" name="frequency" type="xs:string" />
+					<xs:element minOccurs="0" name="frequencyDescription"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="gracePeriodDays" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getActive">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="getActiveResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="return"
+						type="tns:billingFrequencyDTO" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getBillingFrequency">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="frequency" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getBillingFrequencyResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="tns:billingFrequencyDTO" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="getAll">
+		<wsdl:part element="tns:getAll" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getAllResponse">
+		<wsdl:part element="tns:getAllResponse" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getActive">
+		<wsdl:part element="tns:getActive" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getActiveResponse">
+		<wsdl:part element="tns:getActiveResponse" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBillingFrequency">
+		<wsdl:part element="tns:getBillingFrequency" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getBillingFrequencyResponse">
+		<wsdl:part element="tns:getBillingFrequencyResponse" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="billingFrequencyService">
+		<wsdl:operation name="getAll">
+			<wsdl:input message="tns:getAll" name="getAll"></wsdl:input>
+			<wsdl:output message="tns:getAllResponse" name="getAllResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getActive">
+			<wsdl:input message="tns:getActive" name="getActive"></wsdl:input>
+			<wsdl:output message="tns:getActiveResponse" name="getActiveResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getBillingFrequency">
+			<wsdl:input message="tns:getBillingFrequency" name="getBillingFrequency"></wsdl:input>
+			<wsdl:output message="tns:getBillingFrequencyResponse"
+				name="getBillingFrequencyResponse"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="billingFrequencyServiceSOAPSoapBinding"
+		type="tns:billingFrequencyService">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getAll">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getAll">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getAllResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getActive">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getActive">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getActiveResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getBillingFrequency">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getBillingFrequency">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getBillingFrequencyResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="billingFrequencyServiceSOAP">
+		<wsdl:port binding="tns:billingFrequencyServiceSOAPSoapBinding"
+			name="billingFrequencyServicePort">
+			<soap:address
+				location="https://dragons-stg.kuali.co/fin/remoting/billingFrequencyServiceSOAP" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

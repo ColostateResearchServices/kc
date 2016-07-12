@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.jws.WebParam;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kra.award.cgb.CgbBillingFrequency;
 import org.kuali.kra.award.cgb.LetterOfCreditFund;
 import org.kuali.kra.award.cgb.LetterOfCreditFundGroup;
+import org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency;
 import org.kuali.kra.external.service.KcDtoService;
 import org.kuali.rice.krad.service.BusinessObjectService;
 

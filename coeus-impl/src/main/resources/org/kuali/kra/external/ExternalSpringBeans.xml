@@ -59,6 +59,7 @@
             <list>
                 <value>classpath:org/kuali/kra/external/datadictionary/docs/SponsorMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/kra/external/datadictionary/DunningCampaign.xml</value>
+                <value>classpath:org/kuali/kra/external/datadictionary/CgbBillingFrequency.xml</value>
                 <value>classpath:org/kuali/kra/external/datadictionary/Sponsor.xml</value>
             </list>
         </property>
@@ -82,6 +83,20 @@
     <bean id="dunningCampaignLookupableHelperService" class="org.kuali.kra.external.dunningcampaign.DunningCampaignLookupable" 
           parent="parentLookupableHelperService" scope="prototype">
       <property name="dunningCampaignClient" ref="dunningCampaignClient"/>
+    </bean>
+
+   <bean id="cgbBillingFrequencyClient" class="org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequencyClientFactoryBean">
+        <property name="sharedRice" value="${shared.rice}" />
+        <property name="parameterService" ref="parameterService" />
+    </bean>
+    
+    <bean id="cgbBillingFrequencyLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
+        <property name="lookupableHelperService" ref="cgbBillingFrequencyLookupableHelperService" />
+    </bean>
+    
+    <bean id="cgbBillingFrequencyLookupableHelperService" class="org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequencyLookupable" 
+          parent="parentLookupableHelperService" scope="prototype">
+      <property name="cgbBillingFrequencyClient" ref="cgbBillingFrequencyClient"/>
     </bean>
     
   </beans>

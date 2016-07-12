@@ -966,7 +966,6 @@
 
                 <value>classpath:org/kuali/kra/datadictionary/LetterOfCreditFundGroup.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/LetterOfCreditFund.xml</value>
-                <value>classpath:org/kuali/kra/datadictionary/CgbBillingFrequency.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/docs/LetterOfCreditFundGroupMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/docs/LetterOfCreditFundMaintenanceDocument.xml</value>
 

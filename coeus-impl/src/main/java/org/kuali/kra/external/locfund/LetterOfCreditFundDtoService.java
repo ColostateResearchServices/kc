@@ -1,8 +1,8 @@
 package org.kuali.kra.external.locfund;
 
-import org.kuali.kra.award.cgb.CgbBillingFrequency;
 import org.kuali.kra.award.cgb.LetterOfCreditFund;
 import org.kuali.kra.award.cgb.LetterOfCreditFundGroup;
+import org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency;
 import org.kuali.kra.external.frequency.FrequencyDto;
 import org.kuali.kra.external.service.KcDtoService;
 import org.kuali.kra.external.service.KcDtoServiceBase;

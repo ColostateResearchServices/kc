@@ -97,14 +97,23 @@
 		<tr>
 			<th>
 				<div style="text-align:right;">
-					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.billFreqId}"/>
+					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.billFreqCode}"/>
 				</div>
 			</th>
 			<td >
 				<div style="text-align:left;">
-	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.billFreqId" attributeEntry="${cgbAttributes.billFreqId}" readOnly="${cgbReadOnly}" readOnlyAlternateDisplay="${KualiForm.awardDocument.award.awardCgb.billingFrequency.description}"/>
+	                <kul:htmlControlAttribute property="${cgbPath}.awardCgb.billFreqCode" attributeEntry="${cgbAttributes.billFreqCode}" readOnly="${cgbReadOnly}"/>
+	                    <c:if test="${!cgbReadOnly}">
+ 						<kul:lookup boClassName="org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency"
+                                fieldConversions="code:${cgbPath}.awardCgb.billFreqCode"
+                                lookupParameters="${cgbPath}.awardCgb.billFreqCode:code"
+                                anchor="${tabKey}" /> 
+                       </c:if>                      
 				</div>
 			</td>		
+
+
+
 			<th>
 				<div style="text-align:right;">
 					<kul:htmlAttributeLabel attributeEntry="${cgbAttributes.invoicingOption}"  />

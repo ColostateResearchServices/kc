@@ -24,8 +24,8 @@ import java.util.Map;
 
 import javax.jws.WebParam;
 
-import org.kuali.kra.award.cgb.CgbBillingFrequency;
 import org.kuali.kra.award.paymentreports.Frequency;
+import org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency;
 import org.kuali.kra.external.service.KcDtoService;
 import org.kuali.rice.krad.service.BusinessObjectService;
 
@@ -33,26 +33,12 @@ public class FrequencyWebServiceImpl implements FrequencyWebService {
 	
 	private BusinessObjectService businessObjectService;
 	private KcDtoService<FrequencyDto, CgbBillingFrequency> frequencyDtoService;
-	
 
 	@Override
-	public FrequencyDto getFrequency(
-			@WebParam(name = "frequencyCode") String frequencyCode) {
-		return frequencyDtoService.buildDto(getBusinessObjectService().findBySinglePrimaryKey(CgbBillingFrequency.class, frequencyCode));
-	}
-
-	@Override
-	public List<FrequencyDto> findMatching(
-			@WebParam(name = "frequencyCode") String frequencyCode,
-			@WebParam(name = "description") String description) {
-		Map<String, String> values = new HashMap<String, String>();
-		if (frequencyCode != null) {
-			values.put("frequencyCode", frequencyCode);
-		}
-		if (description != null) {
-			values.put("description", description);
-		}
-		return frequencyDtoService.buildDtoList(getBusinessObjectService().findMatching(CgbBillingFrequency.class, values));
+	public List<FrequencyDto> findActive() {
+		Map<String,String> fieldValues = new HashMap<String,String>();
+		fieldValues.put("active", "Y");
+		return frequencyDtoService.buildDtoList(getBusinessObjectService().findMatching(CgbBillingFrequency.class, fieldValues));
 	}
 
 	@Override

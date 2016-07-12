@@ -41,6 +41,8 @@
         <ref bean="Sponsor-dodacNumber" />
         <ref bean="Sponsor-dunAndBradstreetNumber" />
         <ref bean="Sponsor-dunsPlusFourNumber" />
+        <ref bean="Sponsor-dunningCampaignId" />
+        <ref bean="Sponsor-customerNumber" />        
         <ref bean="Sponsor-ownedByUnit" />
         <ref bean="Sponsor-unit.unitName" />
         <ref bean="Sponsor-postalCode" />
@@ -270,6 +272,56 @@
     </property>
     <property name="summary" value="DUNS Plus Four Number" />
     <property name="description" value="DUNS Plus Four Number" />
+  </bean>
+
+  <bean id="Sponsor-dunningCampaignId" parent="Sponsor-dunningCampaignId-parentBean"/>
+  <bean id="Sponsor-dunningCampaignId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="dunningCampaignId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Dunning Campaign Id" />
+    <property name="shortLabel" value="Dunning Campaign Id" />
+    <property name="maxLength" value="6" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true"/>
+    </property>
+    <property name="validCharactersConstraint">
+      <bean parent="AnyCharacterPatternConstraint">
+        <property name="allowWhitespace" value="true"/>
+      </bean>
+    </property>
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="6"/>
+    </property>
+    <property name="controlField">
+      <bean p:size="6" parent="Uif-TextControl"/>
+    </property>
+    <property name="summary" value="Dunning Campaign Id" />
+    <property name="description" value="Dunning Campaign Id" />
+  </bean>
+
+  <bean id="Sponsor-customerNumber" parent="Sponsor-customerNumber-parentBean"/>
+  <bean id="Sponsor-customerNumber-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="customerNumber" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Customer Number" />
+    <property name="shortLabel" value="Customer Number" />
+    <property name="maxLength" value="40" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true"/>
+    </property>
+    <property name="validCharactersConstraint">
+      <bean parent="AnyCharacterPatternConstraint">
+        <property name="allowWhitespace" value="true"/>
+      </bean>
+    </property>
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="20"/>
+    </property>
+    <property name="controlField">
+      <bean p:size="20" parent="Uif-TextControl"/>
+    </property>
+    <property name="summary" value="Customer Number" />
+    <property name="description" value="Customer Number" />
   </bean>
 
   <bean id="Sponsor-ownedByUnit" parent="Sponsor-ownedByUnit-parentBean"/>
@@ -645,6 +697,9 @@
         <bean parent="FieldDefinition" p:attributeName="ownedByUnit" />
         <bean parent="FieldDefinition" p:attributeName="rolodexId" />
         <bean parent="FieldDefinition" p:attributeName="active" p:defaultValue="Y" />
+        <bean parent="FieldDefinition" p:attributeName="customerNumber" />
+        <bean parent="FieldDefinition" p:attributeName="dunningCampaignId" />
+        
       </list>
     </property>
     <property name="resultFields" >
@@ -659,6 +714,8 @@
         <bean parent="FieldDefinition" p:attributeName="rolodex.state" />
         <bean parent="FieldDefinition" p:attributeName="rolodex.countryCode" />
         <bean parent="FieldDefinition" p:attributeName="active" />
+        <bean parent="FieldDefinition" p:attributeName="customerNumber" />
+        <bean parent="FieldDefinition" p:attributeName="dunningCampaignId" />
       </list>
     </property>
   </bean>

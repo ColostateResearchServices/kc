@@ -18,8 +18,7 @@
  */
 package org.kuali.kra.external.frequency;
 
-import org.kuali.kra.award.cgb.CgbBillingFrequency;
-import org.kuali.kra.award.paymentreports.Frequency;
+import org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency;
 import org.kuali.kra.external.service.KcDtoServiceBase;
 
 public class FrequencyDtoService extends KcDtoServiceBase<FrequencyDto, CgbBillingFrequency> {

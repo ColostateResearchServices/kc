@@ -20,6 +20,7 @@ package org.kuali.kra.award.cgb;
 
 import org.kuali.kra.award.AwardAssociate;
 import org.kuali.kra.award.home.Award;
+import org.kuali.kra.external.cgbbillingfrequency.CgbBillingFrequency;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 
 import java.math.BigDecimal;
@@ -45,8 +46,9 @@ public class AwardCgb extends AwardAssociate {
     private boolean suspendInvoicing;
     private String locFundCode;
     private LetterOfCreditFund locFund;
-    private Long billFreqId;
-    private CgbBillingFrequency billingFrequency;
+    private String billFreqCode;
+    
+   // transient private CgbBillingFrequency billingFrequency;
     
     
     public AwardCgb() { }
@@ -204,19 +206,19 @@ public class AwardCgb extends AwardAssociate {
 		this.locFundCode = locFundCode;
 	}
 
-	public Long getBillFreqId() {
-		return billFreqId;
-	}
-
-	public void setBillFreqId(Long billFreqId) {
-		this.billFreqId = billFreqId;
-	}
-
-	public CgbBillingFrequency getBillingFrequency() {
+/*	public CgbBillingFrequency getBillingFrequency() {
 		return billingFrequency;
 	}
 
 	public void setBillingFrequency(CgbBillingFrequency billingFrequency) {
 		this.billingFrequency = billingFrequency;
+	}*/
+
+	public String getBillFreqCode() {
+		return billFreqCode;
+	}
+
+	public void setBillFreqCode(String billFreqCode) {
+		this.billFreqCode = billFreqCode;
 	}
 }
