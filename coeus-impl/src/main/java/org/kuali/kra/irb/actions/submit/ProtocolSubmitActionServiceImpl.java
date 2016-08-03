@@ -19,19 +19,26 @@
 package org.kuali.kra.irb.actions.submit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.kuali.coeus.coi.framework.Project;
+import org.kuali.coeus.coi.framework.ProjectPublisher;
+import org.kuali.coeus.coi.framework.ProjectRetrievalService;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.committee.bo.CommitteeSchedule;
 import org.kuali.kra.irb.Protocol;
+import org.kuali.kra.irb.ProtocolDocument;
 import org.kuali.kra.irb.actions.ProtocolAction;
 import org.kuali.kra.irb.actions.ProtocolActionType;
 import org.kuali.kra.irb.actions.ProtocolStatus;
 import org.kuali.kra.irb.actions.ProtocolSubmissionBuilder;
 import org.kuali.kra.irb.actions.assignreviewers.ProtocolAssignReviewersService;
 import org.kuali.kra.meeting.CommitteeScheduleMinute;
+import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.krad.data.DataObjectService;
 import org.kuali.rice.krad.document.authorization.PessimisticLock;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.DocumentService;
 
+import java.sql.Timestamp;
 import java.sql.Date;
 import java.util.*;
 
@@ -49,38 +56,8 @@ public class ProtocolSubmitActionServiceImpl implements ProtocolSubmitActionServ
     private BusinessObjectService businessObjectService;
     private ProtocolAssignReviewersService protocolAssignReviewersService;
 	private DataObjectService dataObjectService;
-    
-    /**
-     * Set the Document Service.
-     * @param documentService
-     */
-    public void setDocumentService(DocumentService documentService) {
-        this.documentService = documentService;
-    }
-    
-    /**
-     * Set the Protocol Action Service.
-     * @param protocolActionService
-     */
-    public void setProtocolActionService(ProtocolActionService protocolActionService) {
-        this.protocolActionService = protocolActionService;
-    }
-
-    /**
-     * Set the Business Object Service.
-     * @param businessObjectService
-     */
-    public void setBusinessObjectService(BusinessObjectService businessObjectService) {
-        this.businessObjectService = businessObjectService;
-    }
-    
-    /**
-     * Set the Protocol Assign Reviewers Service.
-     * @param protocolAssignReviewersService
-     */
-    public void setProtocolAssignReviewersService(ProtocolAssignReviewersService protocolAssignReviewersService) {
-        this.protocolAssignReviewersService = protocolAssignReviewersService;
-    }
+    private ProjectRetrievalService projectRetrievalService;
+    private ProjectPublisher projectPublisher;
 
     @Override
     public int getTotalSubmissions(Protocol protocol) {
@@ -96,24 +73,22 @@ public class ProtocolSubmitActionServiceImpl implements ProtocolSubmitActionServ
         return totalSubmissions;
     }
 
-    @SuppressWarnings("unchecked")
     protected List<ProtocolSubmission> getProtocolSubmissions(String protocolNumber) {
-        Map<String, Object> fieldValues = new HashMap<String, Object>();
-        fieldValues.put(PROTOCOL_NUMBER, protocolNumber);
-        Collection<ProtocolSubmission> submissions = businessObjectService.findMatching(ProtocolSubmission.class, fieldValues);
+        Collection<ProtocolSubmission> submissions = businessObjectService.findMatching(ProtocolSubmission.class,
+                Collections.singletonMap(PROTOCOL_NUMBER, protocolNumber));
         
-        return new ArrayList<ProtocolSubmission>(submissions);
+        return new ArrayList<>(submissions);
     }
 
-    private List<ProtocolSubmission> getProtocolSubmissionsLookupList(String protocolNumber,List<ProtocolSubmission> protocolSubmissionList) throws Exception{
-           Collection<ProtocolSubmission> submissions = protocolSubmissionList;
-           List<ProtocolSubmission> protocolSubmissionLookupDataList = new ArrayList<ProtocolSubmission>();
-           for (ProtocolSubmission protocolSubmissionData : submissions) {
+    private List<ProtocolSubmission> getProtocolSubmissionsLookupList(String protocolNumber,List<ProtocolSubmission> protocolSubmissionList) {
+
+           List<ProtocolSubmission> protocolSubmissionLookupDataList = new ArrayList<>();
+           for (ProtocolSubmission protocolSubmissionData : protocolSubmissionList) {
                if(protocolNumber.equals(protocolSubmissionData.getProtocolNumber())){
                   protocolSubmissionLookupDataList.add(protocolSubmissionData);}
            }               
-           Set<Integer> submissionNumberList = new HashSet<Integer>();         
-           List<ProtocolSubmission> protocolSubmissionLookupResult = new ArrayList<ProtocolSubmission>();
+           Set<Integer> submissionNumberList = new HashSet<>();
+           List<ProtocolSubmission> protocolSubmissionLookupResult = new ArrayList<>();
            for (ProtocolSubmission protocolSubmissionResult : protocolSubmissionLookupDataList) {
                submissionNumberList.add(protocolSubmissionResult.getSubmissionNumber());
            }        
@@ -124,7 +99,7 @@ public class ProtocolSubmitActionServiceImpl implements ProtocolSubmitActionServ
                    if(protocolsubmissionData.getSubmissionNumber().equals(submissionNumber)){
                        if (protocolsubmissionData.getSequenceNumber() >= submissionSequenceNumber) {
                            submissionSequenceNumber=protocolsubmissionData.getSequenceNumber(); 
-                           submissionList=new ArrayList<ProtocolSubmission>(); 
+                           submissionList=new ArrayList<>();
                            submissionList.add(protocolsubmissionData);
                        }                       
                    }
@@ -133,27 +108,27 @@ public class ProtocolSubmitActionServiceImpl implements ProtocolSubmitActionServ
                    protocolSubmissionLookupResult.add(submissionList.get(0));
                }
            }
-           return new ArrayList<ProtocolSubmission>(protocolSubmissionLookupResult);
+           return new ArrayList<>(protocolSubmissionLookupResult);
        }
 
     @Override
-    public List<ProtocolSubmission> getProtocolSubmissionsLookupData(List<ProtocolSubmission> protocolSubmissionList) throws Exception{        
-        Collection<ProtocolSubmission> submissions = protocolSubmissionList;
-        List<ProtocolSubmission> protocolSubmissionsLookupResult = new ArrayList<ProtocolSubmission>();
-        Set<String> submissionProtocolNumberList = new HashSet<String>();       
+    public List<ProtocolSubmission> getProtocolSubmissionsLookupData(List<ProtocolSubmission> protocolSubmissionList) {
+
+        List<ProtocolSubmission> protocolSubmissionsLookupResult = new ArrayList<>();
+        Set<String> submissionProtocolNumberList = new HashSet<>();
         
-        for (ProtocolSubmission protocolSubmissionData : submissions) {
+        for (ProtocolSubmission protocolSubmissionData : protocolSubmissionList) {
             submissionProtocolNumberList.add(protocolSubmissionData.getProtocolNumber());
         }        
         for(String submissionProtocolNumber : submissionProtocolNumberList){
-            List<ProtocolSubmission> protocolSubmissionLookupList=null;
-            protocolSubmissionLookupList = getProtocolSubmissionsLookupList(submissionProtocolNumber,protocolSubmissionList);
+
+            List<ProtocolSubmission> protocolSubmissionLookupList = getProtocolSubmissionsLookupList(submissionProtocolNumber,protocolSubmissionList);
            
             if((protocolSubmissionLookupList!=null)&&(protocolSubmissionLookupList.size()>0)){
                 protocolSubmissionsLookupResult.addAll(protocolSubmissionLookupList);
             }
         }
-        return new ArrayList<ProtocolSubmission>(protocolSubmissionsLookupResult);
+        return new ArrayList<>(protocolSubmissionsLookupResult);
     }
     
     /**
@@ -163,66 +138,72 @@ public class ProtocolSubmitActionServiceImpl implements ProtocolSubmitActionServ
      * 
      * Also, for a submission, a Submission BO must be created.  It contains all of the relevant
      * data for a submission: type, checklists, reviewers, etc.
-     * @throws Exception 
      * 
-     * @see org.kuali.kra.irb.actions.submit.ProtocolSubmitActionService#submitToIrbForReview(org.kuali.kra.irb.Protocol, org.kuali.kra.irb.actions.submit.ProtocolSubmitAction)
+     * @see ProtocolSubmitActionService#submitToIrbForReview(ProtocolDocument, ProtocolSubmitAction, Timestamp)
      */
     @Override
-    public void submitToIrbForReview(Protocol protocol, ProtocolSubmitAction submitAction) throws Exception {
+    public void submitToIrbForReview(ProtocolDocument document, ProtocolSubmitAction submitAction, Timestamp actionDate) {
         
         /*
          * The submission is saved first so that its new primary key can be added
          * to the protocol action entry.
          */
-        String prevSubmissionStatus = protocol.getProtocolSubmission().getSubmissionStatusCode();
-        String submissionTypeCode = protocol.getProtocolSubmission().getSubmissionTypeCode();
-        ProtocolSubmission submission = createProtocolSubmission(protocol, submitAction);
+        String prevSubmissionStatus = document.getProtocol().getProtocolSubmission().getSubmissionStatusCode();
+        String submissionTypeCode = document.getProtocol().getProtocolSubmission().getSubmissionTypeCode();
+        ProtocolSubmission submission = createProtocolSubmission(document.getProtocol(), submitAction);
         
         /*
          * If this is an initial submission, then set the initial submission date.
          */
-        if (protocol.getInitialSubmissionDate() == null) {
-            protocol.setInitialSubmissionDate(new Date(submission.getSubmissionDate().getTime()));
+        if (document.getProtocol().getInitialSubmissionDate() == null) {
+            document.getProtocol().setInitialSubmissionDate(new Date(submission.getSubmissionDate().getTime()));
         }
         
         protocolAssignReviewersService.assignReviewers(submission, submitAction.getReviewers());
-        ProtocolAction protocolAction = new ProtocolAction(protocol, submission, ProtocolActionType.SUBMIT_TO_IRB);
+        ProtocolAction protocolAction = new ProtocolAction(document.getProtocol(), submission, ProtocolActionType.SUBMIT_TO_IRB, actionDate);
         protocolAction.setComments(SUBMIT_TO_IRB);
         //For the purpose of audit trail
-        protocolAction.setPrevProtocolStatusCode(protocol.getProtocolStatusCode());
+        protocolAction.setPrevProtocolStatusCode(document.getProtocol().getProtocolStatusCode());
         protocolAction.setPrevSubmissionStatusCode(prevSubmissionStatus);
         protocolAction.setSubmissionTypeCode(submissionTypeCode);
-        protocol.getProtocolActions().add(protocolAction);
+        document.getProtocol().getProtocolActions().add(protocolAction);
         
         //TODO this is for workflow testing, but we do need to plumb the status change in here somewhere.
         ProtocolStatus protocolStatus = new ProtocolStatus();
         protocolStatus.setProtocolStatusCode(ProtocolActionType.SUBMIT_TO_IRB);
         protocolStatus.setDescription(SUBMIT_TO_IRB);
-        protocol.setProtocolStatus(protocolStatus);
-        protocol.setProtocolStatusCode(ProtocolActionType.SUBMIT_TO_IRB);
+        document.getProtocol().setProtocolStatus(protocolStatus);
+        document.getProtocol().setProtocolStatusCode(ProtocolActionType.SUBMIT_TO_IRB);
         
-        protocolActionService.updateProtocolStatus(protocolAction, protocol);
+        protocolActionService.updateProtocolStatus(protocolAction, document.getProtocol());
         
         if (submission.getScheduleIdFk() != null) {
             updateDefaultSchedule(submission);
         }
         
-        List<PessimisticLock> locks = protocol.getProtocolDocument().getPessimisticLocks();
+        List<PessimisticLock> locks = document.getPessimisticLocks();
         if (locks != null) {
         	for(PessimisticLock lock : locks) {
         		dataObjectService.delete(lock);
         	}
         }
 
-        protocol.getProtocolDocument().getPessimisticLocks().clear();
-        documentService.saveDocument(protocol.getProtocolDocument());
-        
-        protocol.refresh();
+        document.getPessimisticLocks().clear();
+        final ProtocolDocument protocolDocument;
+        try {
+            protocolDocument = (ProtocolDocument) documentService.saveDocument(document);
+        } catch (WorkflowException e) {
+            throw new RuntimeException(e);
+        }
+        document.refresh();
+        final Project project = getProjectRetrievalService().retrieveProject(protocolDocument.getProtocol().getProtocolNumber());
+        if (project != null) {
+            getProjectPublisher().publishProject(project);
+        }
     }
-    
-    @SuppressWarnings("unchecked")
+
     protected void updateDefaultSchedule(ProtocolSubmission submission) {
-        Map<String, String> fieldValues = new HashMap<String, String>();
+        Map<String, String> fieldValues = new HashMap<>();
         fieldValues.put("protocolIdFk", submission.getProtocolId().toString());
         fieldValues.put("scheduleIdFk", CommitteeSchedule.DEFAULT_SCHEDULE_ID.toString());
         List<CommitteeScheduleMinute> minutes = (List<CommitteeScheduleMinute>) businessObjectService.findMatching(CommitteeScheduleMinute.class, fieldValues);
@@ -339,5 +320,58 @@ public class ProtocolSubmitActionServiceImpl implements ProtocolSubmitActionServ
     
     public void setDataObjectService(DataObjectService dataObjectService) {
         this.dataObjectService = dataObjectService;
+    }
+
+    public ProjectPublisher getProjectPublisher() {
+        //since COI is loaded last and @Lazy does not work, we have to use the ServiceLocator
+        if (projectPublisher == null) {
+            projectPublisher = KcServiceLocator.getService(ProjectPublisher.class);
+        }
+
+        return projectPublisher;
+    }
+
+    public void setProjectPublisher(ProjectPublisher projectPublisher) {
+        this.projectPublisher = projectPublisher;
+    }
+
+    public ProjectRetrievalService getProjectRetrievalService() {
+        return projectRetrievalService;
+    }
+
+    public void setProjectRetrievalService(ProjectRetrievalService projectRetrievalService) {
+        this.projectRetrievalService = projectRetrievalService;
+    }
+
+    public void setDocumentService(DocumentService documentService) {
+        this.documentService = documentService;
+    }
+
+    public void setProtocolActionService(ProtocolActionService protocolActionService) {
+        this.protocolActionService = protocolActionService;
+    }
+
+    public void setBusinessObjectService(BusinessObjectService businessObjectService) {
+        this.businessObjectService = businessObjectService;
+    }
+
+    public void setProtocolAssignReviewersService(ProtocolAssignReviewersService protocolAssignReviewersService) {
+        this.protocolAssignReviewersService = protocolAssignReviewersService;
+    }
+
+    public DocumentService getDocumentService() {
+        return documentService;
+    }
+
+    public ProtocolActionService getProtocolActionService() {
+        return protocolActionService;
+    }
+
+    public BusinessObjectService getBusinessObjectService() {
+        return businessObjectService;
+    }
+
+    public ProtocolAssignReviewersService getProtocolAssignReviewersService() {
+        return protocolAssignReviewersService;
     }
 }

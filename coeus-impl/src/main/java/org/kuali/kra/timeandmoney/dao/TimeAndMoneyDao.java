@@ -20,13 +20,18 @@ package org.kuali.kra.timeandmoney.dao;
 
 import org.kuali.kra.timeandmoney.document.TimeAndMoneyDocument;
 import org.kuali.kra.timeandmoney.history.TimeAndMoneyActionSummary;
+import org.kuali.kra.timeandmoney.history.TransactionDetail;
 
 import java.util.List;
 
 public interface TimeAndMoneyDao {
     
-    public List<TimeAndMoneyActionSummary> buildTimeAndMoneyActionSummaryForAward(String awardNumber);
+    List<TimeAndMoneyActionSummary> buildTimeAndMoneyActionSummaryForAward(String awardNumber);
     
-    public List<TimeAndMoneyDocument> getTimeAndMoneyDocumentForAwards(List<Long> awardIds);
+    List<TimeAndMoneyDocument> getTimeAndMoneyDocumentForAwards(List<Long> awardIds);
+
+    List<TransactionDetail> getTransactionDetailsForDocument(String documentNumber);
+
+    TimeAndMoneyDocument getTimeAndMoneyDocument(String documentNumber);
 
 }

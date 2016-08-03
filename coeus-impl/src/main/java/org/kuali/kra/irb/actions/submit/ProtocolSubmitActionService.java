@@ -19,7 +19,9 @@
 package org.kuali.kra.irb.actions.submit;
 
 import org.kuali.kra.irb.Protocol;
+import org.kuali.kra.irb.ProtocolDocument;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -36,18 +38,15 @@ public interface ProtocolSubmitActionService {
 
     /**
      * Submit a protocol to the IRB office for review.
-     * @param protocol the protocol
+     * @param document the protocol
      * @param submitAction the submission data
-     * @throws Exception 
+     * @param actionDate
      */
-    void submitToIrbForReview(Protocol protocol, ProtocolSubmitAction submitAction) throws Exception;
+    void submitToIrbForReview(ProtocolDocument document, ProtocolSubmitAction submitAction, Timestamp actionDate);
     
     /**
      * 
      * This method for getting ProtocolSubmissionsLookup from given protocolNumber...
-     * @return
-     * @throws Exception
      */
-   
-    public List<ProtocolSubmission> getProtocolSubmissionsLookupData(List<ProtocolSubmission> protocolSbmissionList) throws Exception;
+    List<ProtocolSubmission> getProtocolSubmissionsLookupData(List<ProtocolSubmission> protocolSbmissionList);
 }

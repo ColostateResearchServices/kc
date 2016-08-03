@@ -53,20 +53,6 @@
     <import resource="classpath:org/kuali/coeus/sys/framework/ImportEndpointSpringBeans.xml" />
     <import resource="classpath:org/kuali/coeus/sys/framework/ImportSimpleCrudRestSpringBeans.xml" />
 
-    <!-- configure SpringMVC for this module -->
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
-			</list>
-		</property>
-	</bean>
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
         p:prefix="/WEB-INF/client/" p:suffix=".html" />
     
@@ -116,11 +102,6 @@
     <bean id="unitLookupDao" class="org.kuali.coeus.common.impl.unit.UnitLookupDaoOjb" parent="platformAwareDao" />
 
     <bean id="rolodexDao" parent="platformAwareDao" class="org.kuali.coeus.common.impl.rolodex.RolodexDaoOjb" />
-
-    <bean id="versionHistoryLookupDao" parent="platformAwareDao" class="org.kuali.coeus.common.impl.version.history.VersionHistoryLookupDaoOjb">
-        <property name="lookupDao" ref="lookupDao" />
-        <property name="dataDictionaryService" ref="dataDictionaryService" />
-    </bean>
 
     <bean id="customAttributeDocumentLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
         <property name="lookupableHelperService" ref="customAttributeDocumentLookupableHelperService" />
@@ -258,13 +239,67 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="fileAttachmentConversionJob" class="org.kuali.coeus.common.impl.attachment.KcAttachmentDataDaoConversionImpl">
+		<property name="kcAttachmentDataDao" ref="kcAttachmentDataDao"/>
+    	<property name="tableName" value="ATTACHMENT_FILE"/>
+    	<property name="blobColumn" value="FILE_DATA"/>
+    	<property name="fileDataIdColumn" value="FILE_DATA_ID"/>
+    	<property name="primaryKeyColumn" value="FILE_ID"/>
+    	<property name="dataSource" ref="dataSource"/>
+    </bean>
     
+    <bean id="fileAttachmentConversionJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    	<property name="targetObject" ref="fileAttachmentConversionJob"/>
+    	<property name="targetMethod" value="execute" />
+    	<property name="concurrent" value="false" />
+    </bean>
+
+    <bean id="fileAttachmentConversionCronTrigger" class="org.kuali.coeus.sys.framework.scheduling.KcCronTriggerBean">
+        <property name="jobDetail" ref="fileAttachmentConversionJobDetail" />
+        <property name="parameterService" ref="parameterService" />
+        <property name="dateTimeService" ref="dateTimeService" />
+        <property name="cronExpressionParameterName" value="fileAttachmentConversion.cronExpression" />
+        <property name="triggerEnabledParameterName" value="fileAttachmentConversion.enabled" />
+        <property name="parameterNamespace" value="KC-SYS" />
+        <property name="parameterComponent" value="All" />
+    </bean>
+
+    <bean id="citiJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="citiJob"/>
+        <property name="targetMethod" value="execute" />
+        <property name="concurrent" value="false" />
+    </bean>
+
+    <bean id="citiCronTrigger" class="org.kuali.coeus.sys.framework.scheduling.KcCronTriggerBean">
+        <property name="jobDetail" ref="citiJobDetail" />
+        <property name="parameterService" ref="parameterService" />
+        <property name="dateTimeService" ref="dateTimeService" />
+        <property name="cronExpressionParameterName" value="citi.job.cronExpression" />
+        <property name="triggerEnabledParameterName" value="citi.job.enabled" />
+        <property name="parameterNamespace" value="KC-SYS" />
+        <property name="parameterComponent" value="All" />
+    </bean>
+
+    <bean id="kcCommonQuartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="exposeSchedulerInRepository" value="true" />
+        <property name="triggers">
+            <list merge="true">
+                <ref bean="fileAttachmentConversionCronTrigger" />
+                <ref bean="citiCronTrigger" />
+            </list>
+        </property>
+    </bean>
+    
+    <util:map id="tableBlobsToWatch">
+    	<entry key="attachment_file" value="file_data"/>
+    </util:map>
+
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.questionnaire.framework.answer.Answer" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.attachment.AttachmentFile" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.award.home.CFDA" p:camelCasePluralName="Cfdas" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.bo.CostShareType" />
-    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.bo.CreditType" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.custom.attr.CustomAttribute" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.custom.attr.CustomAttributeDataType" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.type.DeadlineType" />
@@ -285,10 +320,10 @@
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.org.type.OrganizationTypeList" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.attr.PersonAppointment" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.attr.PersonBiosketch" />
-    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.attr.PersonCustomData" p:camelCasePluralName="PersonCustomData" />
+    <bean parent="simpleReadOnlyMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.attr.PersonCustomData" p:camelCasePluralName="PersonCustomData" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.attr.PersonDegree" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.attr.PersonEditableField" />
-    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.personmasschange.bo.PersonMassChange" />
+    <bean parent="simpleReadOnlyMapBasedRestController" p:dataObjectClazz="org.kuali.kra.personmasschange.bo.PersonMassChange" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.signature.PersonSignature" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.signature.PersonSignatureModule" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.attr.PersonTraining" />
@@ -338,10 +373,10 @@
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.core.Budget" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.core.category.BudgetCategoryType" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetFormulatedCostDetail" />
-    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.rate.BudgetLaRate" />
+    <bean parent="simpleReadOnlyMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.rate.BudgetLaRate" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItem" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItemCalculatedAmount"/>
-    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.period.BudgetPeriod"/>
+    <bean parent="simpleReadOnlyMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.period.BudgetPeriod"/>
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.period.BudgetPeriodType"/>
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.personnel.BudgetPersonSalaryDetails"  p:camelCasePluralName="BudgetPersonSalaryDetails"/>
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.personnel.BudgetPersonnelCalculatedAmount"/>
@@ -382,6 +417,7 @@
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.meeting.ProtocolVoteRecused" p:camelCasePluralName="ProtocolRecusedVotes" />
 
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.impl.rpt.cust.CustRptDefaultParms" p:camelCasePluralName="CustomReportDefaultParameters" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.impl.rpt.cust.CustRptTypeDocument" p:camelCasePluralName="CustomReportTypeDocuments" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.rate.InstituteLaRate" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.version.history.VersionHistorySearchBo" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.org.OrganizationIndirectcost" p:camelCasePluralName="OrganizationIndirectCosts" />
@@ -397,12 +433,14 @@
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocument" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocValue" p:camelCasePluralName="CustomAttributeDocumentValues" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.org.audit.OrganizationAudit" />
-    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.impl.rpt.cust.CustRptTypeDocument" p:camelCasePluralName="CustomReportTypeDocuments" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.org.audit.OrganizationAuditAcceptedType" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.distribution.BudgetUnrecoveredFandA" p:camelCasePluralName="BudgetUnrecoveredFAndAs" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.ynq.YnqExplanation" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.core.category.BudgetCategoryMapping" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.sponsor.hierarchy.SponsorHierarchy" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.core.category.BudgetCategoryMap" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.budget.framework.calculator.ValidCalcType" p:camelCasePluralName="ValidCalculationTypes" />
-
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.citi.PersonTrainingCitiRecord" p:camelCasePluralName="PersonCitiTrainingRecords" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.citi.PersonTrainingCitiRecordError" p:camelCasePluralName="PersonCitiTrainingRecordErrors" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.person.citi.PersonTrainingCitiMap" p:camelCasePluralName="PersonCitiTrainingMappings" />
 </beans>

@@ -1,6 +1,1141 @@
 
 
 ##CURRENT
+* API endpoint to version awards. (#1870)
+
+* API endpoint to version awards.
+  * 
+* Review comments.
+  * Gayathri Athreya on Thu, 28 Jul 2016 12:56:56 -0700 [View Commit](../../commit/92d2a86370e1d49451c351dda6195195b1a91652)
+
+##coeus-1607.37
+* No Changes
+
+
+##coeus-1607.36
+* RESKC-1501: fixing attachments that are deleted in an amendment so that they are deleted when the amendment is merged into a new protocol after approval.  Steps to reproduce:
+
+  * Create and submit a protocol with an attachment
+  * Expedited approve it
+  * Create an amendment choosing to Add/Modify attachments
+  * Remove the attachment in the amendment
+  * Submit and approve the amendment
+  * The amendment is incorporate into the protocol but the deleted attachment is still there
+  * It should appear in history as removed but should no longer be an active attachment
+  * Travis Schneeberger on Fri, 22 Jul 2016 13:36:25 -0400 [View Commit](../../commit/3a2a4ee35519178bb1fd84d71a35b7e651fe233c)
+
+##coeus-1607.35
+* No Changes
+
+
+##coeus-1607.34
+* RESKC-1486: add warning dialog before approval
+  * Joe Williams on Mon, 25 Jul 2016 10:09:19 -0500 [View Commit](../../commit/2dd682dbe06a6e27b15f2d360c4fa5a9e9333f5e)
+
+##coeus-1607.33
+* RESKC-1488: fix issue where budget versions list disappears when completing a budget
+  * Joe Williams on Mon, 25 Jul 2016 08:21:10 -0500 [View Commit](../../commit/5cb506a32d960ce66cbaa00cc3cef76d68faf744)
+
+##coeus-1607.32
+* adding shaded s3 dependency
+  * Travis Schneeberger on Thu, 21 Jul 2016 12:02:42 -0400 [View Commit](../../commit/87ffc18fb4f1bf005ac9f4ee6d77d12aae5baf99)
+
+##coeus-1607.31
+* removing support until we clear up jackson conflict with aws client
+  * Travis Schneeberger on Wed, 20 Jul 2016 17:41:22 -0400 [View Commit](../../commit/48432d1892a8bc68c0210b675a6a17c236dab269)
+
+##coeus-1607.29
+* RESKC-1511: fixing versioning bug
+  * Travis Schneeberger on Wed, 20 Jul 2016 16:11:16 -0400 [View Commit](../../commit/4970d4df7fb7a077b08902f97552acae803d00b5)
+
+##coeus-1607.28
+* No Changes
+
+
+##coeus-1607.27
+* No Changes
+
+
+##coeus-1607.26
+* No Changes
+
+
+##coeus-1607.25
+* Including v2 endpoints in auth (#1868)
+
+  * Gayathri Athreya on Tue, 19 Jul 2016 10:57:20 -0700 [View Commit](../../commit/34f230531340a6922c7313d94cc0c6729d3ec4ce)
+* RESKC-1487:handle non employee proposal person conversion
+  * Joe Williams on Fri, 15 Jul 2016 09:24:21 -0500 [View Commit](../../commit/19afaa6a52eec6025cefca74dadf6d8b1464b24d)
+
+##coeus-1607.24
+* adding defaults for startup issues
+  * Travis Schneeberger on Tue, 19 Jul 2016 11:37:59 -0400 [View Commit](../../commit/342c9c64735ad9a7e99ac617ebafda34bf7b4c94)
+* creating quartz conversion job
+  * Travis Schneeberger on Thu, 14 Jul 2016 15:53:04 -0400 [View Commit](../../commit/4e6ae171a02e5675ed62343b2eecb080e2c195f0)
+* Reimplement KcAttachmentDataDao with S3 support
+  * Travis Schneeberger on Wed, 13 Jul 2016 16:14:50 -0400 [View Commit](../../commit/5b31444269607b6d745d3e5459b9134ab85e9c96)
+
+##coeus-1607.23
+* REOPS-944: Fix protocol delete. Protocol delete was not setting the status on the protocol, fixed it. (#1839)
+
+  * Add functionality to perform action 201 and fix code so expiration date saves.
+  * 
+  * Make action date on submission action configurable. Refactored so protocol services do not get the document from the protcol for saving since this causes a lot of elements to not be saved.  * Gayathri Athreya on Fri, 15 Jul 2016 14:19:13 -0700 [View Commit](../../commit/576649ac2ef44b0857df46f08cc8d1f089dbda49)
+
+##coeus-1607.22
+* RESKC-1463: Fix/add Canadian Provinces
+  * Terry Durkin on Thu, 14 Jul 2016 16:50:56 -0400 [View Commit](../../commit/8b8b3c89c67e955f8edb18e11fc364155ec26a9f)
+
+##coeus-1607.21
+* No Changes
+
+
+##coeus-1607.20
+* fix integration tests #no release (#1861)
+
+  * Gayathri Athreya on Thu, 14 Jul 2016 15:28:54 -0700 [View Commit](../../commit/a9d09cc4fd3a5ffe108f41657e8dfae223792260)
+* RESKC-1265: Adding ability to post information from time and money document. Added associated time and money API to pull information. (#1856)
+
+  * Gayathri Athreya on Thu, 14 Jul 2016 14:18:59 -0700 [View Commit](../../commit/72436d72c4860cc4b00b54bdae49ee019f958af0)
+
+##coeus-1607.19
+* No Changes
+
+
+##coeus-1607.18
+* RESKC-1487: fix migrated proposal person full names to match system generated names
+  * Joe Williams on Wed, 13 Jul 2016 11:37:48 -0500 [View Commit](../../commit/711bb5b038bdb015bd433e8587aa0db8b1591c02)
+
+##coeus-1607.17
+* No Changes
+
+
+##coeus-1607.16
+* RESKC-1263: Minor changes. (#1855)
+
+  * Gayathri Athreya on Tue, 12 Jul 2016 15:41:39 -0700 [View Commit](../../commit/108d266797f15329cd93bb9f7fd3c6b18e071c9a)
+
+##coeus-1607.15
+* Move financial API documentation into a new file. (#1853)
+
+  * Gayathri Athreya on Tue, 12 Jul 2016 13:17:19 -0700 [View Commit](../../commit/edcec11a1990d93e9865826ea7677cf9a6cd79f0)
+
+##coeus-1607.14
+* fix integration tests. (#1852)
+
+  * Gayathri Athreya on Tue, 12 Jul 2016 12:13:29 -0700 [View Commit](../../commit/5adeda2621fe2d969f1f21afc68fa09bd91c7f39)
+* first commit (#1847)
+
+* RESKC-1461: Adding budget API endpoints and new status.
+  * 
+* RESKC-1461: Adding documentation and moving methods to V2.
+  * Gayathri Athreya on Tue, 12 Jul 2016 08:54:09 -0700 [View Commit](../../commit/7aea9b92edeb38d19ce50e3b97fdc5182d9b387c)
+
+##coeus-1607.13
+* Handle s2s communication errors better (#1850)
+
+  * Handle the S2sCommunicationException to provide the user an error message instead of an exception page  * Douglas Pace on Mon, 11 Jul 2016 18:39:34 -0700 [View Commit](../../commit/29c4387572b30e484b62183130ae9ffcca7b1dce)
+
+##coeus-1607.12
+* RESKC-1477: Address performance issues when opening Subawards with many invoices (#1849)
+
+  * tdurkin on Mon, 11 Jul 2016 18:34:20 -0400 [View Commit](../../commit/98849adc181a55bfaee3b91b4e878f8f5964f84e)
+
+##coeus-1607.11
+* No Changes
+
+
+##coeus-1607.10
+* No Changes
+
+
+##coeus-1607.9
+* RESKC-1372: Questionnaire branching not working in some situations when question criteria is Contains Text (#1846)
+
+  * tdurkin on Fri, 8 Jul 2016 12:56:03 -0400 [View Commit](../../commit/a77a53fd4acc894781bf6a1481f29f6db46e002e)
+
+##coeus-1607.8
+* No Changes
+
+
+##coeus-1607.7
+* Fix integration tests. (#1845)
+
+  * Gayathri Athreya on Thu, 7 Jul 2016 17:07:54 -0700 [View Commit](../../commit/d40cde257194cfb5a5cefdb9f219f9d507dac2ea)
+* Fix sql files
+  * Gayathri Athreya on Thu, 7 Jul 2016 13:41:54 -0700 [View Commit](../../commit/bb01361eebc0359ebe6a6ba00eab045e5e66b0bc)
+* RESKC-1263: Adding award post functionality. (#1840)
+
+* RESKC-1263: Adding award post functionality.
+  * Currently, the system allows user to "create account" in the financial system via the API, or "Post" a submitted award budget to the API. We need to expand this post feature to award.
+  * User Story
+  * As a user with the ability to Post an Award,
+  * I need to be able to complete updates to an already existing award and then after that award is submitted and finalized, send those updates to the Financial API manually via a Post button. So that the Financial system shows the recent award changes.
+  * 
+* RESKC-1263: Refactored according to review comments.
+  * 
+* RESKC-1263: Renaming file to fix errors.
+  * Gayathri Athreya on Thu, 7 Jul 2016 12:21:12 -0700 [View Commit](../../commit/f638534557d6ffcb4e2d394d270b9332593423bf)
+
+##coeus-1607.6
+* RESKC-1383: fixing integration test by adding a null check
+  * Travis Schneeberger on Wed, 6 Jul 2016 16:50:39 -0400 [View Commit](../../commit/0535b4da1a2a43a7a010a378e0dcced7f24bc355)
+* RESKC-1431: Fixing descriptions.
+  * Removing the 4 digits codes from the heading options from the drop-down.
+  * Gayathri Athreya on Wed, 29 Jun 2016 11:51:09 -0700 [View Commit](../../commit/af666b6dc0536a90bb44deeba92e0aedb841a7b2)
+* RESKC-1383: When protocol is Submitted to IRB/IACUC the COI project is not pushed with an updated status.
+  * Travis Schneeberger on Wed, 29 Jun 2016 10:05:20 -0400 [View Commit](../../commit/774a4a81f25e3ebe135d917701053a3564907dc2)
+
+##coeus-1607.5
+* RESKC-1264: Integrate segment analyitcs into KNS and KRAD web resources (#1838)
+
+* RESKC-1264: Integrate segment analyitcs into KNS and KRAD web resources
+  * 
+* RESKC-1264: set up defaults for web analytics.
+  * tdurkin on Fri, 1 Jul 2016 16:24:18 -0400 [View Commit](../../commit/54873e5cbe5fba7609809970ab7d24925acde0a5)
+
+##coeus-1607.4
+* No Changes
+
+
+##coeus-1607.3
+* Update CITI.md (#1836)
+
+  * Removed references to CR Number and Curriculum being required for mapping, since we changed this in the code.  * Jen F on Fri, 1 Jul 2016 11:55:32 -0400 [View Commit](../../commit/c7ef6a1aeb9c96266cb3449f62fa526c2f4bb071)
+
+##coeus-1607.2
+* RESKC-1264: Integrate segment analyitcs into KNS and KRAD web resources (#1835)
+
+  * tdurkin on Fri, 1 Jul 2016 08:36:12 -0400 [View Commit](../../commit/f8bbbe1c588efcf46732bba358c2c70f526e43a3)
+
+##coeus-1607.1
+* No Changes
+
+
+##coeus-1606.68
+* Include query parameters when directing to core-auth for login (#1834)
+
+  * Douglas Pace on Thu, 30 Jun 2016 12:54:13 -0700 [View Commit](../../commit/cfbb9a4d49462836f6b64a869b5f1da20c939be7)
+
+##coeus-1606.67
+* citiprogram.com is a phishing site (#1833)
+
+  * tdurkin on Thu, 30 Jun 2016 13:45:40 -0400 [View Commit](../../commit/514b0c97e69b9da7fe94ecff2723e668b73e9c97)
+
+##coeus-1606.66
+* No Changes
+
+
+##coeus-1606.65
+* upgrade node and npm version (#1832)
+
+  * Douglas Pace on Wed, 29 Jun 2016 12:24:22 -0700 [View Commit](../../commit/7c9df009797e9ca523f6d3f65e6a86c8423ed993)
+
+##coeus-1606.64
+* No Changes
+
+
+##coeus-1606.63
+* Fix industrial printout related to summary personnel (#1829)
+
+  * Douglas Pace on Wed, 29 Jun 2016 10:06:27 -0700 [View Commit](../../commit/f7bf113edccffbfc832463d41dcbdd3108efc5ae)
+* RESKC-1436: Fix s2s validation errors.
+  * Gayathri Athreya on Tue, 28 Jun 2016 15:44:27 -0700 [View Commit](../../commit/590577a1b2b19664ad9181975546ae358fc7d87d)
+
+##coeus-1606.62
+* RESKC-1432: Actual questionnaire fix
+  * Gayathri Athreya on Tue, 28 Jun 2016 12:38:26 -0700 [View Commit](../../commit/1560400de01a9576e229aea00e6ad0fbe74512cd)
+
+##coeus-1606.61
+* RESKC-1432: Fix questionnaire.
+  * Gayathri Athreya on Tue, 28 Jun 2016 11:40:34 -0700 [View Commit](../../commit/7626eaf90a6dd11050cb8a972cf34752ec7ff8ae)
+
+##coeus-1606.60
+* RESKC-1409, RESKC-1422: adding some int tests, making CR number & curriculum not required, removing from course BO, renaming column and fields
+  * Travis Schneeberger on Mon, 27 Jun 2016 15:51:55 -0400 [View Commit](../../commit/6af751ba13aa592bc0234d3a8c3fffddcbf8eed6)
+
+##coeus-1606.59
+* RESKC-1418: Change Coi to COI on Award, IP, IRB, and IACUC Personnel Screens when displaying Disclosure and Disposition Status (#1815)
+
+  * tdurkin on Fri, 24 Jun 2016 12:57:28 -0400 [View Commit](../../commit/ead3c85784ba5dda47c7738b69f337f718562218)
+
+##coeus-1606.58
+* Fix integration tests.
+  * Gayathri Athreya on Fri, 24 Jun 2016 10:24:20 -0500 [View Commit](../../commit/3be337e3948b304c944078ce93c129f6bbada8c0)
+* RESKC-1432: Child questionnaire answers fix.
+  * If the user selects an answer to a question which then requires a child question to be answered, if the user then backtracks and answers the question in reverse (so that a child question is not required) then the child answer still appears as the initial answer on the form pages.
+  * Gayathri Athreya on Thu, 23 Jun 2016 13:31:14 -0500 [View Commit](../../commit/ca79e2e4b30c47575cf691c7078e5a919fa31d94)
+* RESKC-1401: fixing merge issue by working around deepCopy behavior with a list.  To reproduce:
+
+  * Created Amendment of Protocol (IRB or IACUC) and added a 4 attachments. Then  approved the amendment and the amendment merged into the main protocol but the attachments did not merge.
+  * Additionally, when looking at the amendment, it now displays all the attachments doubled.
+  * Travis Schneeberger on Thu, 23 Jun 2016 10:50:25 -0400 [View Commit](../../commit/2b18c8ab0fa4988501424fb2c42495a7f9097991)
+
+##coeus-1606.57
+* Use budget line item id as part of key to avoid ignoring multiple summary line items
+  * blackcathacker on Wed, 22 Jun 2016 11:08:43 -0700 [View Commit](../../commit/8836b23fdd0ab17a7ee1ee5149c233a5a74ce216)
+* Use budget details rate and base when summary personnel line item
+  * blackcathacker on Wed, 22 Jun 2016 10:27:53 -0700 [View Commit](../../commit/64ef520a2f2a9ec841dfc152d84431aa5e10cca5)
+
+##coeus-1606.56
+* No Changes
+
+
+##coeus-1606.55
+* No Changes
+
+
+##coeus-1606.53
+* No Changes
+
+
+##coeus-1606.52
+* Typo in evaluating hierarchies in KRMS rules (#1818)
+
+  * RESKC-1384: fix typo in hierarchy name, use constant
+  * tdurkin on Wed, 22 Jun 2016 14:49:16 -0400 [View Commit](../../commit/aacf084657faad673387c2de21267d1bbd28925e)
+* RESKC-1431: Update descriptions of FOTv3 arg value lookup elements.
+  * Gayathri Athreya on Wed, 22 Jun 2016 11:56:56 -0500 [View Commit](../../commit/bc4968cd508e889a7f2249f8ca55b20b28d4689f)
+
+##coeus-1606.51
+* Medusa icons (#1813)
+
+  * RESKC-1362: Display Award Status Icons on Medusa
+  * tdurkin on Wed, 22 Jun 2016 09:32:15 -0400 [View Commit](../../commit/e816c49e30b2212c0d9599fd1e47122731d599ea)
+
+##coeus-1606.50
+* RESKC-1423: Display follow-up date on CITI recrds in person training table (#1814)
+
+  * tdurkin on Tue, 21 Jun 2016 19:39:55 -0400 [View Commit](../../commit/f392be5e795d0f2855e19f3e4dbe4e734174aca2)
+
+##coeus-1606.49
+* No Changes
+
+
+##coeus-1606.48
+* Add modification number to award medusa view. (#1810)
+
+* [UITSRA-4461] adding the Modification ID to the award details in Medusa
+  * 
+* [UITRSA-4461] Adding field to Prop Dev KRAD version of Medusa
+  * 
+* [UITSRA-4461] Fixing layout error
+  * tdurkin on Tue, 21 Jun 2016 14:14:11 -0400 [View Commit](../../commit/722e1e380aed7fc7b5f85f76d804eaed3d222b3a)
+* RESKC-1419: add view disposition perm to coi admin role,refresh disclosure status and dispostion when navigating to contacts page
+  * Joe Williams on Tue, 21 Jun 2016 09:02:50 -0500 [View Commit](../../commit/3ba8453f5aa4a35fd9b9ed6f8cc2357e7be6bb9c)
+
+##coeus-1606.44
+* No Changes
+
+
+##coeus-1606.43
+* fix oracle (#1808)
+
+  * tdurkin on Mon, 20 Jun 2016 10:50:08 -0400 [View Commit](../../commit/ad5946331c3c473f27c5bdf112ec8fc8f1d87724)
+
+##coeus-1606.42
+* No Changes
+
+
+##coeus-1606.41
+* RESKC-1422: Change CITI to not require CR Number for course mapping. Also change … (#1800)
+
+  * RESKC-1422: change CITI to not require CR Number for course mapping. Also change to not delete current records if no endpoints are defined.  * tdurkin on Sun, 19 Jun 2016 16:08:19 -0400 [View Commit](../../commit/dcc5e069a43d8a72bfb330085f467be015b7e6df)
+* core impersonation (#1805)
+
+  * RESKC-1407: core impersonation logging will log a warning and save to a table when a user requests a resource while impersonating another user.  * tdurkin on Sun, 19 Jun 2016 16:07:39 -0400 [View Commit](../../commit/d79a4d19a0e248997951e6924661566dc8fd12ab)
+
+##coeus-1606.40
+* No Changes
+
+
+##coeus-1606.39
+* Fix failing test.
+  * Gayathri Athreya on Sun, 19 Jun 2016 00:05:22 -0700 [View Commit](../../commit/f3dad08f9ca860e8e432d829389fbdf2f4d2fa8a)
+* RESKC-935: S2S Form D: PHS 398 Cover Page Supplement 3.0 form update for 2016
+  * Gayathri Athreya on Thu, 9 Jun 2016 15:37:46 -0700 [View Commit](../../commit/482b6dd61537745e975a9ab7df0a4da7a7015819)
+
+##coeus-1606.38
+* No Changes
+
+
+##coeus-1606.37
+* No Changes
+
+
+##coeus-1606.36
+* Convert YNQ Explanations along with questions (#1794)
+
+  * Douglas Pace on Thu, 16 Jun 2016 12:37:49 -0700 [View Commit](../../commit/46db200964dd8c1477a5619e03b3bbc60a16f0cb)
+* fix spelling on parameter name
+  * noahuci on Sun, 5 Jun 2016 16:01:09 -0700 [View Commit](../../commit/eefb3826f829878ed8d11d03c224e0906b71f22f)
+* RESKC-662: Fix dynamic open/close of certification questionnaires.
+  * Terry Durkin on Thu, 16 Jun 2016 13:21:40 -0400 [View Commit](../../commit/74651687be576d3d052c4e9bde60c9b0cd7495a9)
+
+##coeus-1606.35
+* No Changes
+
+
+##coeus-1606.34
+* No Changes
+
+
+##coeus-1606.33
+* RESKC-1403: update award coi status on refresh
+  * Joe Williams on Wed, 15 Jun 2016 10:10:32 -0500 [View Commit](../../commit/43aba17c5686568d564d66798c39bbccf518e4d8)
+
+##coeus-1606.32
+* No Changes
+
+
+##coeus-1606.31
+* No Changes
+
+
+##coeus-1606.30
+* No Changes
+
+
+##coeus-1606.28
+* Populate last_update fields when they are null (#1790)
+
+  * Douglas Pace on Tue, 14 Jun 2016 14:40:04 -0700 [View Commit](../../commit/91d9b08f3d436554c9f7ecdd5df896ec027d3dd8)
+
+##coeus-1606.26
+* No Changes
+
+
+##coeus-1606.25
+* No Changes
+
+
+##coeus-1606.22
+* Fix Concurrent Modification Exception when saving IP Contacts (#1789)
+
+  * Remove potential ConcurrentModificationException on saving IP Persons.  * tdurkin on Mon, 13 Jun 2016 18:08:48 -0400 [View Commit](../../commit/13148aa2708061c51222796707ed1de25c4ffebd)
+
+##coeus-1606.21
+* RESKC-1343: putting the CITI maintenance links behind a feature flag
+  * Travis Schneeberger on Fri, 10 Jun 2016 16:43:04 -0400 [View Commit](../../commit/f3fb14312203a4dc3aed026a541fa588d324ceb7)
+* RESKC-1411: creating documentation for CITI
+  * Travis Schneeberger on Fri, 10 Jun 2016 16:11:19 -0400 [View Commit](../../commit/b2731706c3c52a0a57a9c4af7df187e48546f8c2)
+* RESKC-1377: creating CITI course lookup for group, curriculum, and stage for the CITI mapping maintenance and lookup, adding rules to mapping maintenance
+  * Travis Schneeberger on Fri, 10 Jun 2016 12:45:17 -0400 [View Commit](../../commit/2e0dfd3de28b77280c47563a294cf7a66fc865eb)
+* RESKC-1378: creating service to populate Person Training table from CITI data
+  * Travis Schneeberger on Thu, 9 Jun 2016 21:14:04 -0400 [View Commit](../../commit/87cba49df3e8bfb81a53ad3a23be5c884b3ccbbf)
+* RESKC-1340: removing old csv library in favor of a more robust one in preparation for CITI
+  * Travis Schneeberger on Thu, 9 Jun 2016 21:12:27 -0400 [View Commit](../../commit/ac84adf41af7362c97549ba5fdc06517b1deec9c)
+* RESKC-1341, RESKC-1343: creating quartz job for CITI integration and parameters to control quartz job
+  * Travis Schneeberger on Wed, 8 Jun 2016 17:27:58 -0400 [View Commit](../../commit/35878ee1baa42c595c39123a61f7cfbd7f3f2425)
+* RESKC-1378: creating service to populate Person Training table from CITI data
+  * Travis Schneeberger on Wed, 8 Jun 2016 15:39:30 -0400 [View Commit](../../commit/8e09848112c59bfbfdf583fcb6822a1b299003b6)
+* RESKC-1376, RESKC-1377: creating staging table, error table, mapping table, and all maintenance artifacts for CITI integration, also changing person training to record time information and not just date.  Time information helps disambiguate the same training by the same person in the same day but different times in the CITI feed.
+  * Travis Schneeberger on Wed, 8 Jun 2016 10:02:29 -0400 [View Commit](../../commit/6972bb87d6623342b0334d942ddc7ce94a836a1a)
+
+##coeus-1606.20
+* No Changes
+
+
+##coeus-1606.19
+* No Changes
+
+
+##coeus-1606.18
+* Fix permissions check when verifying changed lead unit in award (#1786)
+
+  * Douglas Pace on Fri, 10 Jun 2016 11:02:09 -0700 [View Commit](../../commit/cef2376cb4d6a52b4a1f1cf75505105a2537f480)
+* Fix SQL script
+  * Gayathri Athreya on Fri, 10 Jun 2016 10:47:11 -0700 [View Commit](../../commit/61e0cfa3f3fbf093fdabebb97b90560d62ba1f44)
+
+##coeus-1606.17
+* No Changes
+
+
+##coeus-1606.16
+* RESKC-1354: Adding disposition status to all modules.
+  * Gayathri Athreya on Tue, 7 Jun 2016 15:00:58 -0700 [View Commit](../../commit/747c6cf17a806d83fc8d31ee186ef1349b3af3f1)
+* RESKC-1354: Add coi disposition status to Development proposal.
+  * Gayathri Athreya on Thu, 2 Jun 2016 18:36:26 -0700 [View Commit](../../commit/f8e037985a31f15e2c84b14986daa8ccbf3f2ffb)
+
+##coeus-1606.14
+* RESKC-1408:Fix IP Contacts page problems (#1785)
+
+  * Fixing a potential conncurentmodificationexception related to credit split when adding new people.
+  * Fixing a potential NPE involving Central admins  * Douglas Pace on Thu, 9 Jun 2016 13:51:08 -0700 [View Commit](../../commit/6e9fc2eae805e3134559ecbc14feedd4822c2c86)
+
+##coeus-1606.13
+* No Changes
+
+
+##coeus-1606.11
+* RESKC-1406:Fix AFTs for adding persons during document creation (#1783)  * Douglas Pace on Wed, 8 Jun 2016 14:37:49 -0700 [View Commit](../../commit/a9b2c39903675f139e013d6b687721b0c196720e)
+
+##coeus-1606.10
+* RESKC-1406: Added new tests for valid save.
+  * Gayathri Athreya on Wed, 8 Jun 2016 11:32:03 -0700 [View Commit](../../commit/78c138deca7e5322ade26f80e8001ca97436bac5)
+* RESKC-1406: Award Contacts do not save on Award Contacts page
+  * Gayathri Athreya on Wed, 8 Jun 2016 10:20:51 -0700 [View Commit](../../commit/087cf4e5be86367ec5c55076b5eed2abb3d7f337)
+
+##coeus-1606.9
+* No Changes
+
+
+##coeus-1606.8
+* No Changes
+
+
+##coeus-1606.7
+* Fix project push when Development Proposal is deleted.
+  * Gayathri Athreya on Tue, 7 Jun 2016 15:42:34 -0700 [View Commit](../../commit/9592dca9d2ebdde739c9d42e1b3813caa3b905b2)
+* Add unit test for questionnairexmlstream
+  * blackcathacker on Mon, 6 Jun 2016 15:19:02 -0700 [View Commit](../../commit/3dbed52b1d8c32597a9a3f1b56148a4bf38a9b4f)
+* Fix to questionnaire print for not displaying conditional questions that weren't answered
+  * blackcathacker on Fri, 3 Jun 2016 17:51:47 -0700 [View Commit](../../commit/06140f4af3c3b17b0837f22cbd0b28689ad83ccb)
+* Fix to questionnaire print to use answered version and only use affirmative/negative versions if available
+  * blackcathacker on Fri, 3 Jun 2016 17:49:00 -0700 [View Commit](../../commit/80a8444228d7fb816d0b8282a03176482b36f10f)
+* Fix to ynq conversion process to fix incorrectly linked question number
+  * blackcathacker on Fri, 3 Jun 2016 17:46:56 -0700 [View Commit](../../commit/76a91e3719fc8bb3221dcc246b2b315d19a3e0e3)
+* RESKC-1383: during routing, changes to award, ip, irb, iacuc, and pd are not being pushed to COI
+  * Travis Schneeberger on Fri, 3 Jun 2016 16:19:31 -0400 [View Commit](../../commit/d70d67850b8e025daf21f6fceb4566009908f0e2)
+* RESKC-1364: Add award API and test
+  * Gayathri Athreya on Fri, 20 May 2016 16:04:47 -0700 [View Commit](../../commit/4ad9f1293e919704d8e38775769116b28d4200d3)
+
+##coeus-1606.6
+* RESKC-1388: fix ste when creating new budget
+
+  * Steps to Reproduce:
+  * 1.) create award budget and post
+  * 2.) change award start dates so that budget periods get recalculated when new budget is created (had to do this in the db not sure how it happens via the app).
+  * 3.) change rates so that code performs a rate sync (had to change code to get his to happen, not sure how it happens via the app)
+  * 4.) try to create a new budget.
+  * 5.) get STE below.
+  * Joe Williams on Thu, 2 Jun 2016 09:47:22 -0500 [View Commit](../../commit/6ce308ad4ceda0434fb83740dbce7de858e92314)
+
+##coeus-1606.5
+* RESKC-1385: fixing minor spacing issue in an error message.
+  * Travis Schneeberger on Wed, 1 Jun 2016 14:43:06 -0400 [View Commit](../../commit/32e20f5ba9b37f9bbbcf368c6e293e994adf0290)
+* RESKC-1385: After submitting Subaward documents, the last update is incorrectly displaying user kr instead of the correct person user in display mode.
+  * Travis Schneeberger on Wed, 1 Jun 2016 14:42:22 -0400 [View Commit](../../commit/7a9822ea866d0151be0659b92dc66bcd576183ff)
+
+##coeus-1606.4
+* No Changes
+
+
+##coeus-1606.3
+* HR Import support core-auth bearer tokens through AuthServiceFilter (#1774)  * Douglas Pace on Wed, 1 Jun 2016 22:15:38 -0700 [View Commit](../../commit/58e8c613298f5d29de40c880f97f082173d50713)
+
+##coeus-1606.2
+* No Changes
+
+
+##coeus-1606.1
+* RESKC-1386: Fix custom attribute resolve null comparisons
+  * Gayathri Athreya on Wed, 1 Jun 2016 09:36:31 -0700 [View Commit](../../commit/2e2aa03326f69acf319a2c2941642abd3d4ae6c0)
+
+##coeus-1605.46
+* RESKC-1374: Allow adding 0 as rate class exclusion / inclusion code.
+  * Gayathri Athreya on Tue, 31 May 2016 12:12:45 -0700 [View Commit](../../commit/3a29c15fbbea46c88ea0a93f0f0d1b0d8f722146)
+
+##coeus-1605.45
+* RESKC-1347: After submitting IP documents, the last update is incorrectly displaying user kr instead of the correct person user in display mode.
+  * Travis Schneeberger on Tue, 31 May 2016 11:16:00 -0400 [View Commit](../../commit/5693c1f2f10d321de5fb79d52314243c32f03a64)
+* RESKC-1318: Approve protocol when exemption granted.
+  * Gayathri Athreya on Fri, 27 May 2016 16:08:36 -0700 [View Commit](../../commit/df453e94fbc41b4aa8ef347787c29be3d2b6842f)
+
+##coeus-1605.44
+* RESKC-1157: code cleanup
+  * Travis Schneeberger on Fri, 27 May 2016 12:25:30 -0400 [View Commit](../../commit/e12a9a5b286743880ba44f52275fc2baa1e0b259)
+* KC-1319 STE if an attachment is added with a # symbol in the filename
+  * Ronald Gouldner on Thu, 4 Feb 2016 15:45:45 -1000 [View Commit](../../commit/8a44604dfa5f2e824518dcd4cc23651d6643df44)
+
+##coeus-1605.43
+* RESKC-1246: sorting and truncating the unit list in a way that displays correctly in the unit hierarchy UI.  Correcting client javascript errors.  Minor code cleanup.
+  * Travis Schneeberger on Wed, 25 May 2016 10:00:39 -0400 [View Commit](../../commit/325367cc46bb9110d4e4a9c7abec65786557eda7)
+
+##coeus-1605.42
+* No Changes
+
+
+##coeus-1605.41
+* RESKC-1363: fix duplicating change amount on creation of time and money document
+  * Joe Williams on Mon, 23 May 2016 14:24:35 -0500 [View Commit](../../commit/e1a468e960703bf3ed7b989baf2de1c11c81ffa0)
+* RESKC-1351 - Make Final the default sequence status for Award Searches (#1763)  * tdurkin on Wed, 25 May 2016 16:43:40 -0400 [View Commit](../../commit/b9019f5479b396ac80329e9e91da80a64e9946e1)
+
+##coeus-1605.39
+* fix integration tests
+  * Gayathri Athreya on Tue, 24 May 2016 17:51:33 -0700 [View Commit](../../commit/35c2631efe187008d5f37ec04bed39babc929e68)
+* RESKC-1367: Protocol document endpoint tests.
+  * Gayathri Athreya on Mon, 23 May 2016 13:42:57 -0700 [View Commit](../../commit/efc5bfab055be733dba0f5fb78d6553e2c61d0e5)
+
+##coeus-1605.38
+* Fix Oracle integration tests.
+  * Gayathri Athreya on Tue, 24 May 2016 12:39:13 -0700 [View Commit](../../commit/9ff417fc124be3e017d9e098f40ef4c712779f72)
+
+##coeus-1605.37
+* RESKC-1325: added error messages for several s2s generators, upgrade s2s
+  * Travis Schneeberger on Mon, 23 May 2016 16:46:24 -0400 [View Commit](../../commit/63fa79471aed80034d45fa523412c5a5534e5861)
+
+##coeus-1605.36
+* RESKC-1336: Adding tests and fixing proposal create issues.
+  * Gayathri Athreya on Mon, 23 May 2016 11:34:31 -0700 [View Commit](../../commit/ed63fe8ba3b1555696f9aeae50f793b9f739c637)
+
+##coeus-1605.35
+* RESKC-1269: update documentation
+  * Travis Schneeberger on Mon, 23 May 2016 13:08:40 -0400 [View Commit](../../commit/19636974d8b637cf03fb6bc32d6f5dcfef364173)
+* RESKC-1269: handle anonymous access fields for our rest endpoints, add required property editors, make existing property editors a little more flexible in regards to different incoming types, replace dynabean with BeanWrapper to support nested properties, abstract configuration of BeanWrapper into a service, abstract rest property editors into a spring map to replace duplication. Make supported method configurable and make all BOs with anonymous access fields read only
+  * Travis Schneeberger on Mon, 23 May 2016 13:08:13 -0400 [View Commit](../../commit/f89ee31ad943c1631dc8ff29770488f5d215f6f9)
+
+##coeus-1605.34
+* No Changes
+
+
+##coeus-1605.33
+* RESKC-1353: Change the default view when a user does not have the View Personnel Salaries permission from "0.0" to "restricted" (#1754)  * Travis Schneeberger on Fri, 20 May 2016 14:06:25 -0400 [View Commit](../../commit/4f7ea5cfc4a54ae079b88c65060e758ea52f1648)
+
+##coeus-1605.32
+* No Changes
+
+
+##coeus-1605.31
+* No Changes
+
+
+##coeus-1605.30
+* forcing JPA to flush immediately to find persistence issues.  Making the BudgetCategoryCode required in the DD as it should be.
+  * Travis Schneeberger on Wed, 18 May 2016 16:30:09 -0400 [View Commit](../../commit/6eaa645716a951155094a5cc85b5e0d787bf0925)
+* Fixing test
+  * Gayathri Athreya on Wed, 18 May 2016 13:13:26 -0700 [View Commit](../../commit/b75e32f8f537ee855e307a7987afc88663fd29e8)
+* RESKC-1202:Add rest endpoint to list proposals with person whose natural order does not match
+
+  * This endpoint will assist in identifying potential proposals whose personnel data may be unmatched based on a previous ordering bug.
+  * blackcathacker on Tue, 17 May 2016 14:24:26 -0700 [View Commit](../../commit/5dd2f2fab59433857a87b93f97522a722c2503d1)
+* RESKC-1335: Protocol document endpoints
+  * Gayathri Athreya on Thu, 12 May 2016 22:53:46 -0700 [View Commit](../../commit/22e82c2cb303c006c4e1badc0f39d1675c116260)
+* Fix random errors on IP save.
+  * Gayathri Athreya on Mon, 16 May 2016 17:33:41 -0700 [View Commit](../../commit/e0c71e41ad4d731ac76443983c052ca00d3136e3)
+* RESKC-1202:Resolve index differences between sorted list and page properties
+  * blackcathacker on Mon, 16 May 2016 17:00:34 -0700 [View Commit](../../commit/f74d92637f3e718ad9511cbcf7e7e3c8479df70b)
+* setting several sponsor fields as required.  Check to make sure a criteria is valid before looking up references
+  * Travis Schneeberger on Mon, 16 May 2016 14:29:36 -0400 [View Commit](../../commit/b1b02d1138cda8799dbbf2350933774e7f2f2e7c)
+
+##coeus-1605.29
+* No Changes
+
+
+##coeus-1605.28
+* handle date strings that are empty strings.
+  * Travis Schneeberger on Fri, 13 May 2016 20:41:58 -0400 [View Commit](../../commit/7e0cb8c41a0040ae062b5697476a98f2928e947d)
+
+##coeus-1605.27
+* RESKC-1332: change role member api to use the standard api/v1 path.  Also allow anything using SimpleCrudRestControllers to have mapped paths with subpaths
+  * Travis Schneeberger on Thu, 12 May 2016 14:15:18 -0400 [View Commit](../../commit/eb697daea5432a8408467d5811d6a2d4c554d8b6)
+
+##coeus-1605.26
+* No Changes
+
+
+##coeus-1605.25
+* No Changes
+
+
+##coeus-1605.24
+* adding custom-report-type-documents api
+  * Travis Schneeberger on Wed, 11 May 2016 17:37:50 -0400 [View Commit](../../commit/c671ef0e94f97f3003c677ceaa2208aef589deae)
+* adding organization audit accepted type api
+  * Travis Schneeberger on Wed, 11 May 2016 16:26:06 -0400 [View Commit](../../commit/60da25392df4827071fe1fa48670c3587f9a2d84)
+
+##coeus-1605.23
+* IP proposal log fixes
+  * Gayathri Athreya on Wed, 11 May 2016 11:30:50 -0700 [View Commit](../../commit/eddf6cb8d38f8106b7923f79f35dedb2a69fa400)
+
+##coeus-1605.22
+* RESKC-1248: When you create a new protocol, the PI doesn't render on the person page when the  KC-PROTOCOL/ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE is set to Y.
+  * Travis Schneeberger on Tue, 10 May 2016 16:54:05 -0400 [View Commit](../../commit/8b977cf2eb0fe600b2381befc1be471f656e917e)
+
+##coeus-1605.21
+* No Changes
+
+
+##coeus-1605.20
+* No Changes
+
+
+##coeus-1605.19
+* No Changes
+
+
+##coeus-1605.18
+* RESKC-1301:Fix problem embedded KRAD lookups and double headers in KNS portal
+  * blackcathacker on Sun, 8 May 2016 19:22:27 -0700 [View Commit](../../commit/a0c01d0190d8f9ec53936f71666dee382d8223cd)
+
+##coeus-1605.17
+* RESKC-1301:Correct for double headers using postMessage and window.location redirect
+  * blackcathacker on Fri, 6 May 2016 17:46:35 -0700 [View Commit](../../commit/fa7a01b810dd775b7ec3b06d3c38a022bbdea232)
+
+##coeus-1605.16
+* Fix proposal number error. Fix null pointer when using no custom data. Add ability to add rolodex people. (#1729)  * Gayathri Athreya on Fri, 6 May 2016 17:33:13 -0700 [View Commit](../../commit/0b6230fb0cb7488aa911aa7be838dec603ba3894)
+
+##coeus-1605.15
+* RESKC-1290:Add quartz based conversion job and api endpoint for status of conversion
+  * blackcathacker on Thu, 5 May 2016 19:31:22 -0700 [View Commit](../../commit/681a593b6ef88da7300d611247b9b969942f173f)
+* RESKC-1290:Prepare attachment file for moving attachments to central file_data
+  * blackcathacker on Thu, 5 May 2016 12:19:53 -0700 [View Commit](../../commit/575338b7911de2a4afbb3de825d675bf88591f80)
+
+##coeus-1605.14
+* RESKC-1316:Limit rest api authentication to '/api/v1/' urls
+  * blackcathacker on Fri, 6 May 2016 13:10:03 -0700 [View Commit](../../commit/691ce8d751e3c52ef6cc9ce8c23516a6a155b37c)
+
+##coeus-1605.13
+* No Changes
+
+
+##coeus-1605.12
+* RESKC-673: fix footer getting stuck in middle of page
+
+  * Losing access to some of the left-hand navigation buttons, including Delivery Info, Budget, Access, Summary/Submit, etc. when page footer floats and does not allow user to scroll past.
+  * I believe it IS happening consistently when both left nav sections that have sub sections are open; so when both Basics and Key Personnel are open and showing sub menu options.
+  * Only workaround we have identified is to keep clicking nav buttons toward the top of the list which refreshes the screen until the issue resolves.
+  * Joe Williams on Thu, 5 May 2016 14:37:28 -0500 [View Commit](../../commit/8e787e0d28c3af133b4be795105cac819637b8e7)
+
+##coeus-1605.11
+* RESKC-1308: Fix IP to Award data feed. (#1723)
+
+  * System is ignoring the parameter setting for All_Sponsor_Hierarchy_NIH_Multiple_PI = Y.
+  * While it presents and allows the user to select PI/Multiple in IP and Award, and appears to add that participant, the person is not fully saved in the record.
+  * Their section 'disappears' on the Contacts screen, but the validation for Credit Split persists if that feature is enabled.
+  * Fix must resolve the following:
+  * 1. IP should not ignore the All Sponsor PI Multiple parameter
+  * 2. Award should not ignore the All Sponsor PI Multiple parameeter
+  * 3. When IP fed as funding source to Award, system should not ignore PI Multiple.
+  * 
+  * In stage:
+  * Award created and added IP *3284 as funding source which brings in 2 contacts: PI Maher and PI/Multi Majumdar.
+  * Added required fields to save; added template.
+  * Contacts screen: found Maher as PI, but Majumdar imports as a Key Person (SHOULD BE PI/Multiple).
+  * Test 1: Actions > Submit - got validation error re: credit split not = 100.
+  * Returned to Contacts: Majumdar was no longer visible on screen. Stuck - cancelled award.
+  * Test 2: recreated the award with the same funding proposal.
+  * On Contacts: DELETED Majumdar key person. Searched and added back as PI/Multiple. Saved,
+  * Again - Majumdar info on Contact screen disappears.
+  * Cannot submit award due to persistent validation error for credit split - so the person is still in the record.  * Gayathri Athreya on Thu, 5 May 2016 12:03:47 -0700 [View Commit](../../commit/40d827095a73765ae8f2cc0c0e18b1c8a41798ea)
+
+##coeus-1605.10
+* No Changes
+
+
+##coeus-1605.9
+* making the java melody storage directory configurable.
+  * Travis Schneeberger on Wed, 4 May 2016 09:38:21 -0400 [View Commit](../../commit/36c4958861f9b74e372e6eb9a5f8920c5aacd470)
+
+##coeus-1605.8
+* No Changes
+
+
+##coeus-1605.7
+* RESKC-1281: Change Project push to use awardNumber for award, protocolNumber for irb and iacuc and proposalNumber for institutional proposal for the source identifier.  Only push the latest version according to sequence status number on award, irb, iacuc, and institutional proposal.  Do not push special versions for iacuc and irb (Amendment, Renewal, FYI, Continuation).  Do not push parent proposal development documents when in a hierarchy.  Added metadata to the json payload containing system specific information.  This information can be use for logging or auditing of projects being pushed.  So far the actual primary keys for the projects being pushed is the only metadata being included.
+  * Travis Schneeberger on Tue, 3 May 2016 09:55:01 -0400 [View Commit](../../commit/5b09fd79bcaad66175831f5b02334f697e65f4fa)
+
+##coeus-1605.6
+* RESKC-1298:Fix spring mappings for award lookup dao
+
+  * Due to a recent change to how the award lookup worked, it exposed incorrect spring mappings for the lookup doa. This corrects that and adds test to confirm.
+  * blackcathacker on Tue, 3 May 2016 11:46:08 -0700 [View Commit](../../commit/930e6d6472e2d561a0a57f5b4845b70942a1e1d9)
+
+##coeus-1605.5
+* RESKC-1292: Fixing award and protocol disclosure status display.
+  * Gayathri Athreya on Fri, 29 Apr 2016 15:14:39 -0700 [View Commit](../../commit/bfe6f73ce5688e6a644b977570a1e6779ee56e7f)
+
+##coeus-1605.4
+* Make fields required for CGB not required all the time.
+  * Gayathri Athreya on Mon, 2 May 2016 15:40:01 -0700 [View Commit](../../commit/9f86b93e2123d9c4d0a332484da417a96981da29)
+
+##coeus-1605.3
+* Added ability to edit top most unit in hierarchy. (#1713)  * Gayathri Athreya on Mon, 2 May 2016 15:54:12 -0700 [View Commit](../../commit/76fd6076bf65166e15f4c84d19c768401b5d29dc)
+
+##coeus-1605.2
+* fixes error when adding a sponsor code that is substring of a sponsor code already in a sponsor hierarchy
+  * Joe Williams on Mon, 2 May 2016 10:01:28 -0500 [View Commit](../../commit/f3c0313c13baca6417018164d0217d7d33f08156)
+
+##coeus-1605.1
+* RESKC-1283: Open protocol in edit mode.
+  * Gayathri Athreya on Fri, 29 Apr 2016 14:14:52 -0700 [View Commit](../../commit/b0ac4cd93e463f74bb479d69dd1f4a4045050e0d)
+
+##coeus-1604.51
+* RESKC-1188: Creating a values finder that only retrieve active negotiation activity types. (#1708)
+
+  * As a Negotiation Administrator, I only want active values to appear in the drop-down lists when I create or edit a negotiation so that I don't incorrectly select an inactive value.
+  * 
+  * Steps to recreate issue:
+  * 1. System Admin Portal > Negotiations > Negotiation Activity Type (or Negotiation Location)
+  * 2. Click to open the Lookup window
+  * 3. Click on "Both" for the Active field to locate all values (active & inactive)
+  * 4. Click search
+  * 5. Note any that are Inactive (Active column = "No") and if all are Active, edit one to make it Inactive
+  * 6. KRAD Porgal > Central Admin > Preaward > Negotations
+  * 7. When in the Negotiation Document, click show on Activities & Attachments panel.
+  * 8. Click Show to open the Add Activity.
+  * 9. Click on the drop down for Activity Type (or Location)
+  * RESULT: Inactive value is appearing in the drop-down list for Activity Type (or Location).
+  * EXPECTED RESULT: Only active values should appear in drop-down lists.  * Travis Schneeberger on Fri, 29 Apr 2016 21:43:21 -0400 [View Commit](../../commit/067b4a8a8d1f30ccddb65154200fc62ba5dc1edb)
+* RESKC-1211: IRB and IACUC FYI process enhancement
+
+  * Problem: IRB was not always easily able to keep track of all notify IRB (FYI) actions, because admin only needs to acknowledge. This does not support a process where IRB admins often need to go back and forth with PI/Dept Admin to get needed documentation.
+  * Contributed Solution:
+  * -Model a special routing for the FYI/ Notify IRB process to be similar to the amendment protocol process, except does not allow modification of the protocol itself other than notes and attachments.
+  * -IRB can now obtain more information and even approve/disapprove action.
+  * -Upon approve the attachments role into the notes and attachments history for tracking.
+  * -Parameterized.
+  * -IACUC is also addressed.
+  * This enhancement was discussed and approved by the KCC IRB subcommittee in 05/2014. Foundation Jira is KRAFDBCK-10691. Also, was shared with the IACUC Subcommittee.
+  * Travis Schneeberger on Thu, 28 Apr 2016 17:28:40 -0400 [View Commit](../../commit/6dbd3f39cab45655dfb4a33fc01f7884c6b5960a)
+
+##coeus-1604.50
+* No Changes
+
+
+##coeus-1604.49
+* No Changes
+
+
+##coeus-1604.48
+* RESKC-1277: Fix rate class maint doc delete action. (#1702)  * Gayathri Athreya on Thu, 28 Apr 2016 11:10:01 -0700 [View Commit](../../commit/78f9c7ad7e145f9189c2029f09501d1675182fd5)
+* RESKC-939: The uploaded subaward files are not being translated and inserted into budget line items for some forms such as PHS398 Budget Training Subaward.
+  * Travis Schneeberger on Wed, 27 Apr 2016 12:31:54 -0400 [View Commit](../../commit/8eee168e1e6c1a3f47cb2a793eebf7c166d0c26d)
+
+##coeus-1604.47
+* No Changes
+
+
+##coeus-1604.46
+* No Changes
+
+
+##coeus-1604.45
+* Update CONTRIBUTING.md
+
+  * Minor updates to represent current process. Change from KualiCo to Kuali, GRM to Research, etc...  * tdurkin on Wed, 27 Apr 2016 09:33:51 -0600 [View Commit](../../commit/5c5f385bd0fba56425754263b661a231628c1489)
+
+##coeus-1604.44
+* RESKC-1183: when an award or institutional proposal is versioned the field in the database that tracks the last update user is updating the old version's user to be whomever clicked the Edit button to create the new version (the update timestamp is not being updated).  Contribution: https://github.com/kuali/kc/pull/1608 (#1696)  * Travis Schneeberger on Wed, 27 Apr 2016 12:02:21 -0400 [View Commit](../../commit/7946cb4932c6be209a3febce42bde28f9acb5738)
+
+##coeus-1604.43
+* RESKC-1212:Code cleanup on contrib
+  * blackcathacker on Tue, 26 Apr 2016 12:12:46 -0700 [View Commit](../../commit/0c480439ec5ef5070264142d3eee5423229eebea)
+* RESKC-1212: Added 'Document Status' field to Award lookup and results
+  * rojlarge on Tue, 19 Jan 2016 13:35:15 -0500 [View Commit](../../commit/10aa6d8dbbdc910a9f751e67306ba49995c22a91)
+
+##coeus-1604.42
+* RESKC-1287:Fix NPE when no ValidCalcRates for LA rates
+
+  * When the Valid Calc Rate Types for LA rates are removed from the system budget pages will not load or throw the following NPE
+
+  * ```
+  * java.lang.NullPointerException at org.kuali.coeus.common.budget.impl.rate.BudgetRatesServiceImpl.isEmployeeBenefitOnLabAllocation(BudgetRatesServiceImpl.java:918) at org.kuali.coeus.common.budget.impl.calculator.BudgetCalculationServiceImpl.isEbonLAorVacationLA(BudgetCalculationServiceImpl.java:1215) at org.kuali.coeus.common.budget.impl.calculator.BudgetCalculationServiceImpl.isCalculatedDirectCostRate(BudgetCalculationServiceImpl.java:1201) at org.kuali.coeus.common.budget.impl.calculator.BudgetCalculationServiceImpl.getCalculateBudgetSummaryExpenseTotal(BudgetCalculationServiceImpl.java:11
+  * ```
+  * blackcathacker on Tue, 26 Apr 2016 15:22:03 -0700 [View Commit](../../commit/f9c5e3d453d98400cd8282e99bf64e00420b7e4b)
+
+##coeus-1604.41
+* Remove apis that are not useful. (#1680)  * Gayathri Athreya on Tue, 26 Apr 2016 14:09:15 -0700 [View Commit](../../commit/dbefd18e9da66ef9fc027f93204d1f136f45b629)
+
+##coeus-1604.40
+* RESKC-1286: Fixing null pointer in unit service api when delete is called on a unit.
+  * REST call to delete a unit using a URL like this
+  * http://127.0.0.1:8081/kc-dev/research-common/api/v1/units/TEST3
+  * generates an error message like this
+ {
+ "Error": {
+   "errors": [
+     "Unknown Error: java.lang.NullPointerException"
+   ]
+ }
+  * }
+  * Gayathri Athreya on Tue, 26 Apr 2016 10:44:16 -0700 [View Commit](../../commit/08caa184dc9a63423d38f1c4cb7df403c06f8253)
+
+##coeus-1604.39
+* No Changes
+
+
+##coeus-1604.38
+* RESKC-1279: Fix medusa for subaward. (#1690)
+
+  * When viewing the Medusa tab from either an Award or IP when there is a linked Subaward, the incorrect Subaward Data is displayed and the "open subaward" button opens the wrong Subaward.
+  * There are a few related JIRAs (774, 894, 743) but I do not see any that address the fact that the incorrect Subaward data is displayed and link is broken. This seems to only occur in Award and IP (in other modules incorrect ID is also displayed but link and info is correct).
+  * This occurs in Test Drive 1604.28 and our local 1512 environment.
+  * To duplicate this issue consistently. In the database, SUBAWARD_ID is actually a different value than Subaward ID in the application (Subaward ID in application = SUBAWARD_CODE in db). It appears as if Medusa tab for Award and IP display both values and the info displayed and open button are linked to the SUBAWARD_ID and not SUBAWARD_CODE in database.  * Gayathri Athreya on Mon, 25 Apr 2016 14:12:44 -0700 [View Commit](../../commit/d3d18780ecfc25c9a45a2fdd2d20be995f0b05fb)
+* RESKC-1182: Fix STE when adding non employee to IP contacts. (#1688)
+
+  * As an administrator of Institute Proposal, I may need to update or add personnel to an existing IP record.
+  * Currently, I can only add Employees, because adding a Non-Employee results in an STE.
+  * Reproducible on res-demo1 on 2/23 and res demo 2 as of 2/22.
+  * Steps:
+  * Open any institutional proposal record in edit mode.
+  * Go to the Contacts tab.
+  * Expand the Project Personnel section and click the search button next to 'Add Non-Employee'.
+  * Select any address book entry and return it.
+  * Back on the Contacts page, select any role for the non-employee and click the 'Add' button.
+  * A stack trace is thrown.  * Gayathri Athreya on Mon, 25 Apr 2016 14:12:16 -0700 [View Commit](../../commit/be78b11c6fdb50388931c6248bcff0cd3a8b94f0)
+* Fix budget rates build, misc bug fix and permission correction
+  * blackcathacker on Mon, 25 Apr 2016 12:23:12 -0700 [View Commit](../../commit/fc154efce363b2c3f134dccd759ae3aa3bec012b)
+* RESKC-1262: extending the project title length to 2000
+  * Travis Schneeberger on Mon, 25 Apr 2016 11:10:31 -0400 [View Commit](../../commit/86bb4ba90c4facb51213d5f7d838bdc8e5c37ac2)
+
+##coeus-1604.36
+* RESKC-1248: fix null pointer when adding protocol person with coi status enabled
+  * Joe Williams on Mon, 25 Apr 2016 10:22:50 -0500 [View Commit](../../commit/e7b37c05f0d4efff2e528d037fc9f6170445b864)
+
+##coeus-1604.35
+* No Changes
+
+
+##coeus-1604.34
+* No Changes
+
+
+##coeus-1604.33
+* No Changes
+
+
+##coeus-1604.32
+* initial research-user end point (#1682)  * jwillia on Thu, 21 Apr 2016 14:13:58 -0500 [View Commit](../../commit/0b22d98ac821613e31b3e496e2f81346d1082061)
+
+##coeus-1604.31
+* RESKC-1274: Removing questions and question answers from the NSF CoverPage 3.0 questionnaire that were not needed and incorrectly added.
+  * Travis Schneeberger on Thu, 21 Apr 2016 11:57:19 -0400 [View Commit](../../commit/1853156c895f2f76dd687d875a7200c4fb3a2282)
+
+##coeus-1604.30
+* No Changes
+
+
+##coeus-1604.29
+* Add parameter that disables adding the PI of protocols to the Approver role
+
+  * The PI is added to the approver role for protocols so that KEW allows the user to perform actions like cancel and disapprove that can be approriate at times during the protocol internal workflow. This parameter allows disabling this for back office usages to avoid action lists entries and reminders being sent to PIs when they shouldn't be interacting with protocols.
+  * blackcathacker on Wed, 20 Apr 2016 16:19:34 -0700 [View Commit](../../commit/1bf1cf0ed6b189371382f1a1577b684257bcb7c7)
+
+##coeus-1604.28
+* fix test (#1678)  * Gayathri Athreya on Wed, 20 Apr 2016 13:21:17 -0700 [View Commit](../../commit/542101398a7c4bf6d0e51af86bdb2571065b886e)
+* Audit logger addition.
+  * Gayathri Athreya on Tue, 19 Apr 2016 17:40:18 -0700 [View Commit](../../commit/bb25c97400865bbb7cf347f1b6de0fe50b0eefbc)
+* Endpoint for IP document creation. Added multiple routes, changed to use DTOs, added validations.
+  * Gayathri Athreya on Thu, 24 Mar 2016 09:37:18 -0700 [View Commit](../../commit/f3e30310379649f95ed3aca2b2012be6c50243b8)
+
+##coeus-1604.27
+* RESKC-1270: updating rest documentation
+  * Travis Schneeberger on Tue, 19 Apr 2016 14:37:01 -0400 [View Commit](../../commit/4de28cde9b44fe2e2e05f23098ecc3d7c4905766)
+* RESKC-1270: making sure api docs have the correct module path.  Adding parameter descriptions based on the data dictionary so parameters with show up in the api docs.
+  * Travis Schneeberger on Tue, 19 Apr 2016 13:20:21 -0400 [View Commit](../../commit/e9525bcca9e75049b489322617053fc1b1930df2)
+
+##coeus-1604.26
+* No Changes
+
+
+##coeus-1604.25
+* RESKC-1201: Budget Setting> On/Off/Default set to ALL ON or ALL OFF is not working as expected with existing budget line items. (#1670)
+
+  * IF:budget line items exist
+           WHEN: User sets On/Off/Default set to example: ALL OFF
+           THEN: All existing budget line items should be altered and use the OFF CAMPUS rates.
+           AND: All newly added line items should only utilize OFF campus rates.
+           Current behavior in 1602 demo (and reported 1601 on-prem):
+           WHEN: ALL OFF selected and line item exist
+           THEN: NO change of rates - all on campus line items retain on campus rate.
+           Only newly added line items are correctly off campus rate applied.
+  * 
+           1. Create a new budget on a proposal.
+           2. Create multiple personnel and non-personnel line items to the budget with ON campus settings with autocalculated periods.
+           3. Go into Budget Settings and update the On Campus Flag setting to "All Off".
+           4. Click Apply Changes.
+           5. Navigate to Personnel and check Details & Rates. All line items are still set to "On"
+           6. Click "Calculate Current Period" in Personnel panel - no change to the amounts.
+           7. Navigate to Non-Personnel and click Details on each line item. All the line items are still set to "Yes" in On Campus Flag field
+           Note: the On/Off campus checkbox per line item is read-only once ALL ON or ALL OFF is applied; as expected.  * Travis Schneeberger on Tue, 19 Apr 2016 12:03:47 -0400 [View Commit](../../commit/1bdf99ef75f0e701517ad78e217e7bc43dcaf718)
+
+##coeus-1604.24
+* No Changes
+
+
+##coeus-1604.23
+* No Changes
+
+
+##coeus-1604.22
+* Add new unit qualified peopleflow which uses unit as the role qualifier
+  * blackcathacker on Mon, 18 Apr 2016 17:23:11 -0700 [View Commit](../../commit/da166771c0be3d69bd144a3e4c8171e893d123aa)
+
+##coeus-1604.21
+* No Changes
+
+
+##coeus-1604.20
+* Use protocolsubmissionlite for protocol values finder to avoid loading extra data to get protocol number
+  * blackcathacker on Fri, 15 Apr 2016 14:05:52 -0700 [View Commit](../../commit/6b49db2a39bff7bd9a7ddaec82052789b4190541)
+
+##coeus-1604.19
+* No Changes
+
+
+##coeus-1604.18
+* No Changes
+
+
+##coeus-1604.17
+* No Changes
+
+
+##coeus-1604.16
+* No Changes
+
+
+##coeus-1604.15
+* No Changes
+
+
+##coeus-1604.14
+* No Changes
+
+
+##coeus-1604.13
+* RESKC-933: adding support for: S2S Form D: PHS 398 Career Development Award Supplemental Form 3.0 update for 2016.  fixing sql for oracle
+  * Travis Schneeberger on Wed, 13 Apr 2016 16:37:14 -0400 [View Commit](../../commit/4f642ad5ac7679e0c3f54b1e66d7580010585f80)
+
+##coeus-1604.12
+* RESKC-933: adding support for: S2S Form D: PHS 398 Career Development Award Supplemental Form 3.0 update for 2016 (#1656)  * Travis Schneeberger on Wed, 13 Apr 2016 13:34:30 -0400 [View Commit](../../commit/f82d6e25c51f429daf3b14ce2e4ee6072cab8a92)
+
+##coeus-1604.11
+* RESKC-1243: Change date fields to datetime to support extra data when provided by the app
+
+  * This is particularly necessary for the update_timestamp fields as they are always full java.sql.Timestamp but the data is truncated when the column is date.
+  * blackcathacker on Tue, 12 Apr 2016 15:43:00 -0700 [View Commit](../../commit/370a1eda56210f84bba7695999f75a963533274f)
+
+##coeus-1604.10
+* RESKC-1255: updating docs
+  * Travis Schneeberger on Mon, 11 Apr 2016 11:51:25 -0400 [View Commit](../../commit/0e522027978fd6cea0666cc597604047c9092679)
+* RESKC-1255: moved the Parameters section so it would display, added a schema sample.
+  * Travis Schneeberger on Mon, 11 Apr 2016 11:50:52 -0400 [View Commit](../../commit/6688437ad252568a71ae3faaf14af5880503fabd)
+
+##coeus-1604.9
+* No Changes
+
+
+##coeus-1604.8
+* No Changes
+
+
+##coeus-1604.7
+* Update CONTRIBUTING.md (#1648)
+
+* Update CONTRIBUTING.md
+  * 
+  * add func instructions to contrib file
+  * tdurkin on Thu, 7 Apr 2016 17:02:24 -0700 [View Commit](../../commit/49716e7a0c93fc3219465406616d827bdee09c01)
+
+##coeus-1604.6
+* No Changes
+
+
+##coeus-1604.5
+* RESKC-1208: fixing tests
+  * Travis Schneeberger on Thu, 7 Apr 2016 12:15:27 -0400 [View Commit](../../commit/d25616980e1a4dcd3d69a1edec49ee260d381a21)
+* RESKC-1252:fix wrong salary calculations when budget periods have multiple inflation rates effective in the same period
+  * Joe Williams on Wed, 6 Apr 2016 16:08:55 -0700 [View Commit](../../commit/599a40119963932f608f7d2336729d5eb44b7c56)
+* Update V1603_009__fix_new_form_support.sql  * tdurkin on Wed, 6 Apr 2016 08:25:01 -0700 [View Commit](../../commit/7978ec45ab7d0ffe0fc037b12bddfd7e2cf4e779)
+* RESKC-1208: removing unused BOs
+  * Travis Schneeberger on Mon, 4 Apr 2016 22:05:50 -0400 [View Commit](../../commit/3f9b1f546d6be6717daf95b9f565280b9d4bfa1b)
+* RESKC-1208: adding documentation for all rest apis
+  * Travis Schneeberger on Mon, 4 Apr 2016 19:58:55 -0400 [View Commit](../../commit/2d8dceb1e5251913093e425a72c81281b3f26c0c)
+* RESKC-1208: allowing blueprint docs to be retrieved with the "endpoints" api, cleaning up endpoints, upgrading dev dependencies for node packages
+  * Travis Schneeberger on Mon, 4 Apr 2016 19:58:05 -0400 [View Commit](../../commit/32f1b67e67437da1ed9af70ed848efaac0c67851)
+
+##coeus-1604.4
+* No Changes
+
+
+##coeus-1604.3
+* RESKC-1248: fix null point when displaying COI status
+  * Joe Williams on Fri, 1 Apr 2016 13:04:43 -0500 [View Commit](../../commit/3f611927bd2e12ee9ee42cb6335474496a7d0917)
+
+##coeus-1604.2
+* RESKC-1227: Question 149 is not entered properly. It is a child of Q 5.
+            It is supposed to be a child of Q6.
+            With this set-up, if user answers Yes - stem cells will be used, they MUST enter cell lines in Q149, else the questionnaire will not update to Complete.
+  * Travis Schneeberger on Thu, 31 Mar 2016 15:40:14 -0400 [View Commit](../../commit/7712b8e2391ff4c7c506e3a75035e3f8feba2e86)
+
+##coeus-1604.1
+* No Changes
+
+
+##coeus-1603.59
+* RESKC-1240: Fix for merging amendment back to original protocol after the response approval.
+  * It was not checking for RESPONSE_APPROVAL action type code while finiding last approval action. The check for GRANT_EXEMPTION was also not right. Fixed both issues by adding those action type codes in the lastApprovalAction method
+  * Geo Thomas on Thu, 31 Mar 2016 13:31:01 -0400 [View Commit](../../commit/51a89a6b255bff56bcdf9f12f5485601046517a6)
+
+##coeus-1603.58
+* RESKC-1236: adding ability to generate an api blueprint file.
+  * Travis Schneeberger on Thu, 31 Mar 2016 10:19:59 -0400 [View Commit](../../commit/ca0bfd4acc00d266a080410c13924cae25eb73e4)
+* RESKC-1236: cleanup generic rest api logic
+  * Travis Schneeberger on Mon, 28 Mar 2016 14:42:28 -0400 [View Commit](../../commit/f97b953531ad5a78f40cb143c51a162824011feb)
+
+##coeus-1603.57
+* RESKC-1235:Upgrade Rice to bring in backlocation security fix
+  * blackcathacker on Tue, 29 Mar 2016 09:10:20 -0700 [View Commit](../../commit/c5504417b6946d0f0f2c323c7cddf64587642711)
+* RESKC-1242:Create generic unit admin derived role
+
+  * The new generic kim type will qualify the unit administrators by the unit admin type whose description matches the role name. This will allow easier configuration of new unit admin types and plugging them into Peopleflow.
+  * blackcathacker on Tue, 29 Mar 2016 18:22:19 -0700 [View Commit](../../commit/238870112ee608da4d50e0c8a90c02306bfdda96)
+
+##coeus-1603.56
+* RESKC-28: Reskinned iacuc procedures.
+
+  * IACUC procedures summary screen needs UI clean up. Lines and labels are overlapping data and buttons. It is not really readable.
+  * To reproduce:
+  * Create IACUC protocol
+  * Enter Data required to save
+  * Go to Species/Groups tab
+  * Add a couple of groups with different species
+  * Save
+  * Go to Procedures Tab
+  * In Procedure Details panel in procedures subpanel, Check some Procedures categories
+  * Assign the procedures to the Groups, Add
+  * Save
+  * Got to Summary subpanel
+  * Gayathri Athreya on Wed, 30 Mar 2016 11:02:53 -0700 [View Commit](../../commit/7eda5f8b181bbab4781ca29750bfb44bcd2dc322)
+
+##coeus-1603.55
+* RESKC-1224: Fix time display on protocol history.
+  * Gayathri Athreya on Tue, 29 Mar 2016 13:08:01 -0700 [View Commit](../../commit/54ed0fcdf87ed0a39c4eb599c0fe45f2e094ea32)
+
+##coeus-1603.54
+* RESKC-1111:Bring in Rice change to process peopleflow by priority
+  * blackcathacker on Tue, 29 Mar 2016 14:08:12 -0700 [View Commit](../../commit/fad323dcf525725931b06392b6d8cc96b5137c0e)
+
+##coeus-1603.53
+* No Changes
+
+
+##coeus-1603.52
+* RESKC-1165, RESKC-1048: Adding Coi disclosure status to IRB and IACUC protocol persons.
+
+  * As a researcher or admin responsible for a protocol, I can see the COI disclosure status of project person to determine if the protocol can be approved as is or or if project personnel need to disclose to proceed.
+  * General Acceptance Criteria:
+  * Configurable in monolith so it is only displayed in a module if desired by the school.
+  * For each project person, display the latest status of the annual disclosure that includes that project.
+  * if the project is not on annual yet, display "Not yet disclosed"
+  * if a project is not required to disclose display "Disclosure Not Required"
+  * Acceptance Criteria:
+  * Admin can configure IRB to link with new COI module
+  * COI disclosure status for protocol project persons displays in IRB protocol based new module
+  * Design: display "COI Disclosure Status: [status]" in Person header
+  * Gayathri Athreya on Mon, 28 Mar 2016 14:24:36 -0700 [View Commit](../../commit/2cd0b68c303d7aa70958cf8e5f776fa8aa5e90cf)
+* Fix bug whereby un-qualified perms on KC Superuser role were ignored due to qualified role
+  * blackcathacker on Tue, 29 Mar 2016 09:23:58 -0700 [View Commit](../../commit/271b07d21eaf0a7ffb1779b065e9d605fa1b19a8)
+* RESKC-1165: Constant rename.
+  * Gayathri Athreya on Mon, 28 Mar 2016 10:25:26 -0700 [View Commit](../../commit/3c8a81ed9fa2d2d346b2b70fd95601e9037ca5d4)
+
+##coeus-1603.50
+* No Changes
+
+
+##coeus-1603.49
 * No Changes
 
 

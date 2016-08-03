@@ -21,6 +21,9 @@ package org.kuali.kra.award.document;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kuali.coeus.coi.framework.Project;
+import org.kuali.coeus.coi.framework.ProjectPublisher;
+import org.kuali.coeus.coi.framework.ProjectRetrievalService;
 import org.kuali.coeus.common.framework.custom.DocumentCustomData;
 import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.kuali.coeus.common.framework.version.history.VersionHistoryService;
@@ -42,6 +45,7 @@ import org.kuali.kra.award.home.AwardComment;
 import org.kuali.kra.award.home.AwardService;
 import org.kuali.kra.award.home.ContactRole;
 import org.kuali.kra.award.home.fundingproposal.AwardFundingProposal;
+import org.kuali.kra.award.infrastructure.AwardPermissionConstants;
 import org.kuali.kra.award.paymentreports.awardreports.AwardReportTerm;
 import org.kuali.kra.award.paymentreports.awardreports.AwardReportTermRecipient;
 import org.kuali.kra.award.specialreview.AwardSpecialReview;
@@ -116,7 +120,9 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
 
     private transient boolean documentSaveAfterVersioning;
     private transient AwardService awardService;
-    
+
+    private transient ProjectRetrievalService projectRetrievalService;
+    private transient ProjectPublisher projectPublisher;
 
     public AwardDocument(){        
         super();        
@@ -127,7 +133,6 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
      * 
      * This method is a convenience method for facilitating a 1:1 relationship between AwardDocument 
      * and Award to the outside world - aka a single Award field associated with AwardDocument
-     * @return
      */
     public Award getAward() {
         return awardList.size() > 0 ? awardList.get(0) : new Award();
@@ -137,7 +142,6 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
      * 
      * This method is a convenience method for facilitating a 1:1 relationship between AwardDocument 
      * and Award to the outside world - aka a single Award field associated with AwardDocument
-     * @param award
      */
     public void setAward(Award award) {
         awardList.set(0, award);
@@ -148,14 +152,11 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
         return awardList;
     }
 
-    /**
-     *
-     * @param awardList
-     */
     public void setAwardList(List<Award> awardList) {
         this.awardList = awardList;
     }
-    
+
+    @Override
     public String getDocumentTypeCode() {
         return DOCUMENT_TYPE_CODE;
     }
@@ -164,10 +165,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     public boolean isDocumentSaveAfterVersioning() {
         return documentSaveAfterVersioning;
     }
-    
-    /**
-     * @param documentSaveAfterVersioning
-     */
+
     public void setDocumentSaveAfterAwardLookupEditOrVersion(boolean documentSaveAfterVersioning) {
         this.documentSaveAfterVersioning = documentSaveAfterVersioning;
     }
@@ -195,7 +193,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
         managedLists.add(award.getAwardCloseoutItems());
         managedLists.add(award.getAwardAttachments());
         
-        List<AwardSpecialReviewExemption> specialReviewExemptions = new ArrayList<AwardSpecialReviewExemption>();
+        List<AwardSpecialReviewExemption> specialReviewExemptions = new ArrayList<>();
         for (AwardSpecialReview specialReview : getAward().getSpecialReviews()) {
             specialReviewExemptions.addAll(specialReview.getSpecialReviewExemptions());            
         }
@@ -203,7 +201,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
         managedLists.add(award.getSpecialReviews());
 
         List<AwardReportTerm> reportTerms = award.getAwardReportTermItems();
-        List<AwardReportTermRecipient> recipients = new ArrayList<AwardReportTermRecipient>();
+        List<AwardReportTermRecipient> recipients = new ArrayList<>();
         for (AwardReportTerm reportTerm: reportTerms) {
             recipients.addAll(reportTerm.getAwardReportTermRecipients());
         }
@@ -243,10 +241,17 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
             for (Award award : awardList) {
                 award.setAwardDocument(this);
             }
+
+            final Project project = getProjectRetrievalService().retrieveProject(getAward().getAwardNumber());
+            if (project != null) {
+                getProjectPublisher().publishProject(project);
+            }
+
             return null;
         });
     }
-    
+
+    @Override
     public void doRouteLevelChange(DocumentRouteLevelChange levelChangeEvent) {
         executeAsLastActionUser(() -> {
 
@@ -256,6 +261,10 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
             } else if (StringUtils.equalsIgnoreCase(levelChangeEvent.getNewNodeName(), Constants.AWARD_APPLY_SYNC_NODE_NAME)
                     && !getAward().getSyncChanges().isEmpty()) {
                 getAwardSyncService().applyAwardSyncChangesToHierarchy(getAward());
+            }
+            final Project project = getProjectRetrievalService().retrieveProject(getAward().getAwardNumber());
+            if (project != null) {
+                getProjectPublisher().publishProject(project);
             }
             return null;
         });
@@ -276,7 +285,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     }
     
     protected void init() {
-        awardList = new ArrayList<Award>();
+        awardList = new ArrayList<>();
         awardList.add(new Award());
         budgets = new ArrayList<>();
     }
@@ -325,13 +334,11 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     }
     
     private void updateFundedProposals() {
-        Set<String> modifiedProposals = new HashSet<String>();
-        List<AwardFundingProposal> pendingVersions = new ArrayList<AwardFundingProposal>();
+        Set<String> modifiedProposals = new HashSet<>();
         for (AwardFundingProposal afp : getAward().getFundingProposals()) {
             InstitutionalProposalBoLite proposal = afp.getProposal();
             if (!ProposalStatus.FUNDED.equals(proposal.getStatusCode())) {
                 modifiedProposals.add(proposal.getProposalNumber());
-                pendingVersions.add(afp);
             }
         }
         if (modifiedProposals.size() > 0) {
@@ -342,8 +349,8 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
 
     @SuppressWarnings("unchecked")
     private void addAwardPersonUnitsCollection(List managedLists, Award award) {
-        List<AwardPersonUnit> personUnits = new ArrayList<AwardPersonUnit>();
-        List<AwardPersonCreditSplit> personSplits = new ArrayList<AwardPersonCreditSplit>();
+        List<AwardPersonUnit> personUnits = new ArrayList<>();
+        List<AwardPersonCreditSplit> personSplits = new ArrayList<>();
         for(AwardPerson p: award.getProjectPersons()) {
             personUnits.addAll(p.getUnits());
             personSplits.addAll(p.getCreditSplits());
@@ -351,7 +358,24 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
         managedLists.add(personUnits);
         managedLists.add(personSplits);
     }
-    
+
+    public boolean isAuthorizedToPostAward(String principalId) {
+        return isPostAwardFeatureEnabled() && getDocumentHeader().getWorkflowDocument().isFinal()
+                && getAward().getAccountNumber() != null
+                && !getAward().isPosted()
+                && hasPostAwardPermission(principalId);
+    }
+
+    public boolean hasPostAwardPermission(String principalId) {
+        return getPermissionService().hasPermission(principalId, Constants.KC_SYS, AwardPermissionConstants.POST_AWARD.getAwardPermission());
+    }
+
+    protected boolean isPostAwardFeatureEnabled() {
+        return getParameterService().getParameterValueAsBoolean(
+                Constants.PARAMETER_MODULE_AWARD,
+                ParameterConstants.ALL_COMPONENT,
+                Constants.AWARD_POST_ENABLED);
+    }
 
     protected VersionHistoryService getVersionHistoryService() {
         return KcServiceLocator.getService(VersionHistoryService.class);
@@ -373,47 +397,56 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     	this.budgets = budgets;
     }
 
+    @Override
     public String getDocumentKey() {
         return PermissionableKeys.AWARD_KEY;
     }
 
+    @Override
     public String getDocumentNumberForPermission() {
         return getAward().getAwardId().toString();
     }
 
+    @Override
     public List<String> getRoleNames() {
-        List<String> roleNames = new ArrayList<String>();
-        return roleNames;
+        return new ArrayList<>();
     }
 
+    @Override
     public Permissionable getBudgetPermissionable(){
         return new Permissionable(){
 
+            @Override
             public String getDocumentKey() {
                 return PermissionableKeys.AWARD_BUDGET_KEY;
             }
 
+            @Override
             public String getDocumentNumberForPermission() {
                 return getAward().getAwardId().toString();
             }
 
+            @Override
             public List<String> getRoleNames() {
-                List<String> roleNames = new ArrayList<String>();
-                return roleNames;
+                return new ArrayList<>();
             }
-            
+
+            @Override
             public String getNamespace() {
                 return Constants.MODULE_NAMESPACE_AWARD;
             }
 
+            @Override
             public String getLeadUnitNumber() {
                 return getAward().getLeadUnitNumber();
             }
 
+            @Override
             public String getDocumentRoleTypeCode() {
                 return RoleConstants.AWARD_ROLE_TYPE;
             }
-            
+
+            @Override
             public void populateAdditionalQualifiedRoleAttributes(Map<String, String> qualifiedRoleAttributes) {
             }
         };
@@ -433,11 +466,6 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
         return returnToProposalButton;
     }
 
-    /**
-     * This method does what its name says
-     * @param buttonFileName
-     * @return
-     */
     private String buildExtraButtonSourceURI(String buttonFileName) {
         return lookupKualiConfigurationService().getPropertyValueAsString(KRA_EXTERNALIZABLE_IMAGES_URI_KEY) + buttonFileName;
     }
@@ -451,8 +479,9 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
         return getAward();
     }
 
+    @Override
     public Budget getBudgetDocumentVersion(int selectedLine) {
-        return ((Award)getBudgetParent()).getBudgets().get(selectedLine);
+        return getBudgetParent().getBudgets().get(selectedLine);
     }
 
     public Task getParentAuthZTask(String taskName) {
@@ -466,7 +495,6 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     
     /**
      * This method specifies if this document may be edited; i.e. it's only initiated or saved
-     * @return
      */
     public boolean isEditable() {
         WorkflowDocument workflowDoc = getDocumentHeader().getWorkflowDocument();
@@ -475,24 +503,27 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
 
     /**
      * Is document in Saved state?
-     * @return
      */
     public boolean isSaved() {
         return getDocumentHeader().getWorkflowDocument().isSaved();
     }
-    
+
+    @Override
     public String getDocumentBoNumber() {
         return getAward().getAwardNumber();
     }
 
+    @Override
     public String getNamespace() {
         return Constants.MODULE_NAMESPACE_AWARD;
     }
 
+    @Override
     public String getLeadUnitNumber() {
         return this.getAward().getLeadUnitNumber();
     }
 
+    @Override
     public String getDocumentRoleTypeCode() {
         return RoleConstants.AWARD_ROLE_TYPE;
     }
@@ -502,10 +533,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     } 
     
     public boolean getCanModify() {
-        Map<String,String> permissionDetails =new HashMap<String,String>();
-        permissionDetails.put("sectionName", "award");
-        permissionDetails.put("documentTypeName", "AwardDocument");
-        Map<String,String> qualifications =new HashMap<String,String>();
+        Map<String,String> qualifications =new HashMap<>();
         qualifications.put(KraAuthorizationConstants.QUALIFICATION_UNIT_NUMBER, this.getLeadUnitNumber());
         return getPermissionService().isAuthorized(
                 GlobalVariables.getUserSession().getPrincipalId(), 
@@ -521,7 +549,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     protected InstitutionalProposalService getInstitutionalProposalService() {
         return KcServiceLocator.getService(InstitutionalProposalService.class);
     }
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+
     public AwardBudgetExt getBudgetVersionOverview() {
     	AwardBudgetExt budget = new AwardBudgetExt();
         List<AwardBudgetExt> awardBudgetDocuments = this.getBudgetDocumentVersions();
@@ -536,8 +564,9 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     }
 
     public boolean isPlaceHolderDocument() {
-        if(getDocumentHeader() != null)
+        if (getDocumentHeader() != null) {
             return PLACEHOLDER_DOC_DESCRIPTION.equals(getDocumentHeader().getDocumentDescription());
+        }
         return false;
     }
     
@@ -546,7 +575,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
      * and revert them back to Pending.
      */
     private void revertFundedProposals() {
-        Set<String> proposalsToUpdate = new HashSet<String>();
+        Set<String> proposalsToUpdate = new HashSet<>();
         
         for (AwardFundingProposal awardFundingProposal : this.getAward().getFundingProposals()) {
             proposalsToUpdate.add(awardFundingProposal.getProposal().getProposalNumber());
@@ -572,8 +601,8 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
      * Close to hack.  called by holdingpageaction
      * Different document type may have different routing set up, so each document type
      * can implement its own isProcessComplete
-     * @return
      */
+    @Override
     public boolean isProcessComplete() {
         boolean isComplete = false;
         
@@ -611,12 +640,14 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     public void setAwardService(AwardService awardService) {
         this.awardService = awardService;
     }
-    
+
+    @Override
     public void populateContextQualifiers(Map<String, String> qualifiers) {
         qualifiers.put("namespaceCode", getNamespace());
         qualifiers.put("name", getRuleContextName());
     }
-    
+
+    @Override
     public void addFacts(Facts.Builder factsBuilder) {
         KcKrmsFactBuilderService fbService = KcServiceLocator.getService("awardFactBuilderService");
         fbService.addFacts(factsBuilder, this);
@@ -635,7 +666,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
         DocHandlerService researchDocumentService = KcServiceLocator.getService(DocHandlerService.class);
         String forward = researchDocumentService.getDocHandlerUrl(getDocumentNumber());
         forward = forward.replaceFirst(DEFAULT_TAB, ALTERNATE_OPEN_TAB);
-        if (forward.indexOf("?") == -1) {
+        if (!forward.contains("?")) {
             forward += "?";
         }
         else {
@@ -647,8 +678,7 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
             forward += "&" + KewApiConstants.BACKDOOR_ID_PARAMETER + "=" + GlobalVariables.getUserSession().getPrincipalName();
         }
         
-        String returnVal = "<a href=\"" + forward + "\"target=\"_blank\">" + documentNumber + "</a>";
-        return returnVal;
+        return "<a href=\"" + forward + "\"target=\"_blank\">" + documentNumber + "</a>";
     }
 
     @Override
@@ -659,5 +689,29 @@ public class AwardDocument extends BudgetParentDocument<Award> implements  Copya
     public boolean isCanceled() {
         WorkflowDocument workflow = getDocumentHeader().getWorkflowDocument();
         return workflow.isCanceled();
+    }
+
+    public ProjectPublisher getProjectPublisher() {
+        if (projectPublisher == null) {
+            projectPublisher = KcServiceLocator.getService(ProjectPublisher.class);
+        }
+
+        return projectPublisher;
+    }
+
+    public void setProjectPublisher(ProjectPublisher projectPublisher) {
+        this.projectPublisher = projectPublisher;
+    }
+
+    public ProjectRetrievalService getProjectRetrievalService() {
+        if (projectRetrievalService == null) {
+            projectRetrievalService = KcServiceLocator.getService("awardProjectRetrievalService");
+        }
+
+        return projectRetrievalService;
+    }
+
+    public void setProjectRetrievalService(ProjectRetrievalService projectRetrievalService) {
+        this.projectRetrievalService = projectRetrievalService;
     }
 }
