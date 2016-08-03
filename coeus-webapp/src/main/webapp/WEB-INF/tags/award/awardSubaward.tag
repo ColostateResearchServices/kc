@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -128,7 +128,14 @@
 						</td>
                  					<td>${awardLinkedSubawards.organizationName}&nbsp; </td>
                  					<td>${awardLinkedSubawards.subAwardCode}&nbsp; </td>
-                 					<td>${awardLinkedSubawards.subAwardAmountInfoList[0].obligatedChange}&nbsp;</td>                 					
+									<c:choose>
+										<c:when test="${awardLinkedSubawards.latestSubAwardAmountInfo != null}">
+											<td>${awardLinkedSubawards.latestSubAwardAmountInfo.obligatedAmount}&nbsp;</td>
+										</c:when>
+										<c:otherwise>
+											<td>0.00&nbsp;</td>
+										</c:otherwise>
+									</c:choose>
                  					<td>${awardLinkedSubawards.subAwardStatus.description}</td>
                   	</tr>
         			</c:forEach>

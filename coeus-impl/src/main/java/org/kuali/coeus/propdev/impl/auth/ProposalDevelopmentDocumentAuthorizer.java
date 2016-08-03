@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,13 +28,13 @@ import org.kuali.coeus.propdev.impl.attachment.NarrativeUserRights;
 import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentConstants;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
+import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentUtils;
 import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyException;
 import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyService;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.propdev.impl.state.ProposalState;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
 import org.kuali.coeus.common.framework.auth.perm.Permissionable;
-import org.kuali.coeus.propdev.impl.state.ProposalStateConstants;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.framework.workflow.KcDocumentRejectionService;
 import org.kuali.coeus.sys.framework.workflow.KcWorkflowService;
@@ -52,10 +52,8 @@ import org.kuali.rice.kns.authorization.AuthorizationConstants;
 import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.document.DocumentRequestAuthorizationCache;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -67,6 +65,9 @@ import java.util.Set;
 public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDocumentAuthorizerBase {
 
     private static final Log LOG = LogFactory.getLog(ProposalDevelopmentDocumentAuthorizer.class);
+    private static final String MODIFY_BUDGET = "ModifyBudget";
+    private static final String SAVE_CERTIFICATION = "SaveCertification";
+    private static final String IS_AUTHORIZED_TO_MODIFY = "IsAuthorizedToModify";
 
     private KcAuthorizationService kcAuthorizationService;
 
@@ -82,7 +83,7 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
 
     @Override
     public Set<String> getEditModes(Document document, Person user, Set<String> currentEditModes) {
-        Set<String> editModes = new HashSet<String>();
+        Set<String> editModes = new HashSet<>();
          
         ProposalDevelopmentDocument proposalDoc = (ProposalDevelopmentDocument) document;
         DevelopmentProposal developmentProposal = proposalDoc.getDevelopmentProposal();
@@ -123,21 +124,17 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
     public boolean canDeleteDocument(Document document, Person user) {
     	if(document != null && document instanceof Permissionable)
     		return getKcAuthorizationService().hasPermission(user.getPrincipalId(), (Permissionable)document, PermissionConstants.DELETE_PROPOSAL);
-    	else 
+    	else
     		return false;
     }
     
     public boolean canCreateInstitutionalProposal(Document document, Person user) {
-        boolean hasPermission = true;
-        Map<String,String> permissionDetails =new HashMap<String,String>();
-        permissionDetails.put(PermissionConstants.DOCUMENT_TYPE_ATTRIBUTE_QUALIFIER, InstitutionalProposalConstants.INSTITUTIONAL_PROPOSAL_DOCUMENT_NAME);
-        
-        hasPermission &= getPermissionService().hasPermission(user.getPrincipalId(), InstitutionalProposalConstants.INSTITUTIONAL_PROPOSAL_NAMESPACE, 
+        boolean hasPermission = getPermissionService().hasPermission(user.getPrincipalId(), InstitutionalProposalConstants.INSTITUTIONAL_PROPOSAL_NAMESPACE,
     			PermissionConstants.CREATE_INSTITUTIONAL_PROPOSAL);
         if (hasPermission) {
-        	hasPermission &= getPermissionService().hasPermission(user.getPrincipalId(), 
-                InstitutionalProposalConstants.INSTITUTIONAL_PROPOSAL_NAMESPACE, 
-                PermissionConstants.SUBMIT_INSTITUTIONAL_PROPOSAL);
+        	hasPermission = getPermissionService().hasPermission(user.getPrincipalId(),
+                    InstitutionalProposalConstants.INSTITUTIONAL_PROPOSAL_NAMESPACE,
+                    PermissionConstants.SUBMIT_INSTITUTIONAL_PROPOSAL);
     	}
         return hasPermission;
     }
@@ -228,7 +225,7 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
         }
         
         if (isAuthorizedToMaintainProposalHierarchy(doc, user)) {
-            editModes.add("maintainProposalHierarchy");
+            editModes.add(ProposalDevelopmentConstants.AuthConstants.MAINTAIN_HIERARCHY_EDIT_MODE);
         }
         
         if (isAuthorizedToRejectProposal(doc, user)) {
@@ -405,17 +402,70 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
     public boolean hasCertificationPermissions(ProposalDevelopmentDocument document, Person user,ProposalPerson proposalPerson){
     	return getProposalDevelopmentPermissionsService().hasCertificationPermissions(document, user, proposalPerson);
     }
-    
+
+    public boolean canSaveCertificationForPerson(ProposalDevelopmentDocument document, Person user,ProposalPerson proposalPerson){
+        return isProposalStateEditableForCertification(document.getDevelopmentProposal()) && hasCertificationPermissions(document,user,proposalPerson);
+    }
     protected boolean canSaveCertification(ProposalDevelopmentDocument document, Person user) {
-        for(ProposalPerson person : document.getDevelopmentProposal().getProposalPersons()) {
-            if (getProposalDevelopmentPermissionsService().hasCertificationPermissions(document, user, person)) {
-                return true;
-            }
+        final DevelopmentProposal proposal = document.getDevelopmentProposal();
+
+        DocumentRequestAuthorizationCache documentRequestAuthorizationCache = getDocumentRequestAuthorizationCache(document);
+
+        boolean hasSaveCertificationPermission;
+
+        final String saveCertificationCacheKey = buildPermissionCacheKey(document, user, SAVE_CERTIFICATION);
+        if (documentRequestAuthorizationCache.hasPermissionResult(saveCertificationCacheKey)) {
+            hasSaveCertificationPermission = documentRequestAuthorizationCache.getPermissionResult(saveCertificationCacheKey);
+        } else {
+            hasSaveCertificationPermission = isProposalStateEditableForCertification(document.getDevelopmentProposal())
+                    && document.getDevelopmentProposal().getProposalPersons().stream()
+                    .filter(person -> getProposalDevelopmentPermissionsService().hasCertificationPermissions(document, user, person))
+                    .anyMatch(person -> true);
         }
 
-        return false;
+        if (proposal.isChild() && hasSaveCertificationPermission) {
+            final Document parent = proposal.getParent().getDocument();
+            final String parentResultCacheKey = buildPermissionCacheKey(parent, user, SAVE_CERTIFICATION);
+            documentRequestAuthorizationCache.getPermissionResultCache().remove(parentResultCacheKey);
+            hasSaveCertificationPermission = canSaveCertification((ProposalDevelopmentDocument) parent, user);
+        }
+
+        documentRequestAuthorizationCache.addPermissionResult(saveCertificationCacheKey, hasSaveCertificationPermission);
+
+        return hasSaveCertificationPermission;
+    }
+    
+    protected boolean canViewCertification(ProposalDevelopmentDocument document, Person user) {
+    	return getKcAuthorizationService().hasPermission(user.getPrincipalId(), document, PermissionConstants.VIEW_CERTIFICATION);
     }
 
+    protected boolean isProposalStateEditableForCertification(DevelopmentProposal developmentProposal) {
+    	return getProposalStatesEditableForCertification().contains(developmentProposal.getProposalStateTypeCode());
+    }
+    
+    protected Set<String> getProposalStatesEditableForCertification() {
+        Set<String> proposalStates = new HashSet<>();
+        if(isCertificationRequiredOnlyBeforeApproval()) {
+        	proposalStates.add(ProposalState.IN_PROGRESS);
+        	proposalStates.add(ProposalState.REVISIONS_REQUESTED);
+        	proposalStates.add(ProposalState.APPROVAL_PENDING);
+        	proposalStates.add(ProposalState.APPROVAL_PENDING_SUBMITTED);
+        }else {
+        	proposalStates.add(ProposalState.IN_PROGRESS);
+        	proposalStates.add(ProposalState.REVISIONS_REQUESTED);
+        }
+        return proposalStates;
+    }
+   
+    protected boolean isCertificationRequiredOnlyBeforeApproval() {
+        String keyPersonCertDefferalParam =  ProposalDevelopmentUtils.getProposalDevelopmentDocumentParameter(ProposalDevelopmentUtils.KEY_PERSON_CERTIFICATION_DEFERRAL_PARM);
+        if(keyPersonCertDefferalParam.equalsIgnoreCase(ProposalDevelopmentConstants.ParameterValues.KEY_PERSON_CERTIFICATION_BEFORE_APPROVE)) {
+        	return true;
+        }else {
+        	return false;
+        }
+    }
+    
     protected boolean isAuthorizedToReplaceNarrative(Narrative narrative, Person user) {
         final ProposalDevelopmentDocument pdDocument = (ProposalDevelopmentDocument) narrative.getDevelopmentProposal().getDocument();
 
@@ -508,24 +558,34 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
 
     protected boolean isAuthorizedToModifyBudget(Document document, Person user) {
         final ProposalDevelopmentDocument pdDocument = ((ProposalDevelopmentDocument) document);
+        final DevelopmentProposal proposal = pdDocument.getDevelopmentProposal();
 
         DocumentRequestAuthorizationCache documentRequestAuthorizationCache = getDocumentRequestAuthorizationCache(pdDocument);
 
         boolean hasModifyBudgetPermission;
 
-        String modifyBudgetCacheKey = "ModifyBudget|" + pdDocument.getDocumentNumber() + "|" + user.getPrincipalId();
+        final String modifyBudgetCacheKey = buildPermissionCacheKey(pdDocument, user, MODIFY_BUDGET);
         if (documentRequestAuthorizationCache.hasPermissionResult(modifyBudgetCacheKey)) {
             hasModifyBudgetPermission = documentRequestAuthorizationCache.getPermissionResult(modifyBudgetCacheKey);
-        }
-        else {
+        } else {
             hasModifyBudgetPermission =  getKcAuthorizationService().hasPermission(user.getPrincipalId(), pdDocument, PermissionConstants.MODIFY_BUDGET);
-            documentRequestAuthorizationCache.addPermissionResult(modifyBudgetCacheKey, hasModifyBudgetPermission);
         }
 
         boolean rejectedDocument = getKcDocumentRejectionService().isDocumentOnInitialNode(pdDocument.getDocumentHeader().getWorkflowDocument());
-        return ( (!getKcWorkflowService().isInWorkflow(pdDocument) || rejectedDocument) && hasModifyBudgetPermission);
+        hasModifyBudgetPermission =  ( (!getKcWorkflowService().isInWorkflow(pdDocument) || rejectedDocument) && hasModifyBudgetPermission);
+
+        if (proposal.isChild() && hasModifyBudgetPermission) {
+            final Document parent = proposal.getParent().getDocument();
+            final String parentResultCacheKey = buildPermissionCacheKey(parent, user, MODIFY_BUDGET);
+            documentRequestAuthorizationCache.getPermissionResultCache().remove(parentResultCacheKey);
+            hasModifyBudgetPermission = isAuthorizedToModifyBudget(parent, user);
+        }
+
+        documentRequestAuthorizationCache.addPermissionResult(modifyBudgetCacheKey, hasModifyBudgetPermission);
+
+        return hasModifyBudgetPermission;
     }
-    
+
     Boolean getCachedPermissionResult(Document document, String permissionCacheKey) {
     	DocumentRequestAuthorizationCache documentRequestAuthorizationCache = getDocumentRequestAuthorizationCache(document);
     	if (documentRequestAuthorizationCache.hasPermissionResult(permissionCacheKey)) {
@@ -545,16 +605,31 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
     }
     
     protected boolean hasModifyS2sEnroutePermission(Document document, Person user) {
-		Boolean cachedResult = getCachedPermissionResult(document, buildPermissionCacheKey(document, user, PermissionConstants.MODIFY_S2S_ENROUTE));
-    	if (cachedResult != null) {
-    		return cachedResult;
-    	}
+        DocumentRequestAuthorizationCache documentRequestAuthorizationCache = getDocumentRequestAuthorizationCache(document);
+        final String cacheKey = buildPermissionCacheKey(document, user, PermissionConstants.MODIFY_S2S_ENROUTE);
+		Boolean cachedResult = getCachedPermissionResult(document, cacheKey);
+    	boolean hasS2sPermission;
+
+        if (cachedResult != null) {
+            hasS2sPermission = cachedResult;
+    	} else {
+            ProposalDevelopmentDocument pdDocument = (ProposalDevelopmentDocument) document;
+            hasS2sPermission = getKcAuthorizationService().hasPermission(user.getPrincipalId(), pdDocument, PermissionConstants.MODIFY_S2S_ENROUTE);
+        }
+
+        final ProposalDevelopmentDocument pdDocument = ((ProposalDevelopmentDocument) document);
+        final DevelopmentProposal proposal = pdDocument.getDevelopmentProposal();
+
+        if (proposal.isChild() && hasS2sPermission) {
+            final Document parent = proposal.getParent().getDocument();
+            final String parentResultCacheKey = buildPermissionCacheKey(parent, user, PermissionConstants.MODIFY_S2S_ENROUTE);
+            documentRequestAuthorizationCache.getPermissionResultCache().remove(parentResultCacheKey);
+            hasS2sPermission = isAuthorizedToModifyBudget(parent, user);
+        }
+
+        addCachedPermissionResult(document, cacheKey, hasS2sPermission);
     	
-    	ProposalDevelopmentDocument pdDocument = (ProposalDevelopmentDocument) document;
-    	boolean result = getKcAuthorizationService().hasPermission(user.getPrincipalId(), pdDocument, PermissionConstants.MODIFY_S2S_ENROUTE);
-    	addCachedPermissionResult(document, buildPermissionCacheKey(document, user, PermissionConstants.MODIFY_S2S_ENROUTE), result);
-    	
-    	return result;
+    	return hasS2sPermission;
     }
 
     protected boolean isAuthorizedToOpenBudget(Document document, Person user) {
@@ -604,7 +679,7 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
 
     protected boolean isAuthorizedToReplacePersonnelAttachement(Document document, Person user) {
         final ProposalDevelopmentDocument pdDocument = ((ProposalDevelopmentDocument) document);
-        ProposalState proposalState = pdDocument.getDevelopmentProposal().getProposalState();
+
         return getModifyNarrativePermission(pdDocument, user) || isAuthorizedToAlterProposalData(document, user);
     }
 
@@ -612,14 +687,11 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
         final ProposalDevelopmentDocument pdDocument = ((ProposalDevelopmentDocument) document);
         return pdDocument.getDocumentHeader().hasWorkflowDocument() && pdDocument.getDocumentHeader().getWorkflowDocument().isEnroute()
                 && getKcAuthorizationService().hasPermission(user.getPrincipalId(), pdDocument, PermissionConstants.RECALL_DOCUMENT)
-                && !isRevisionRequested(pdDocument.getDevelopmentProposal().getProposalState());
+                && !isRevisionRequested(pdDocument.getDevelopmentProposal().getProposalStateTypeCode());
     }
 
-    protected boolean isRevisionRequested(ProposalState proposalState) {
-        if (proposalState != null){
-            return StringUtils.equalsIgnoreCase(proposalState.getDescription(), ProposalStateConstants.REVISION_REQUESTED);
-        }
-        return false;
+    protected boolean isRevisionRequested(String code) {
+        return StringUtils.equalsIgnoreCase(code, ProposalState.REVISIONS_REQUESTED);
     }
 
     protected boolean isAuthorizedToRejectProposal(Document document, Person user) {
@@ -684,7 +756,29 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
 
     protected boolean isAuthorizedToMaintainProposalHierarchy(Document document, Person user) {
         final ProposalDevelopmentDocument pdDocument = ((ProposalDevelopmentDocument) document);
-        return getKcAuthorizationService().hasPermission(user.getPrincipalId(), pdDocument, PermissionConstants.MAINTAIN_PROPOSAL_HIERARCHY);
+        final DevelopmentProposal proposal = pdDocument.getDevelopmentProposal();
+
+        DocumentRequestAuthorizationCache documentRequestAuthorizationCache = getDocumentRequestAuthorizationCache(pdDocument);
+
+        boolean hasMaintainProposalHierarchyPermission;
+
+        final String cacheKey = buildPermissionCacheKey(pdDocument, user, PermissionConstants.MAINTAIN_PROPOSAL_HIERARCHY);
+        if (documentRequestAuthorizationCache.hasPermissionResult(cacheKey)) {
+            hasMaintainProposalHierarchyPermission = documentRequestAuthorizationCache.getPermissionResult(cacheKey);
+        } else {
+            hasMaintainProposalHierarchyPermission =  getKcAuthorizationService().hasPermission(user.getPrincipalId(), pdDocument, PermissionConstants.MAINTAIN_PROPOSAL_HIERARCHY);
+        }
+
+        if (proposal.isChild() && hasMaintainProposalHierarchyPermission) {
+            final Document parent = proposal.getParent().getDocument();
+            final String parentResultCacheKey = buildPermissionCacheKey(parent, user, PermissionConstants.MAINTAIN_PROPOSAL_HIERARCHY);
+            documentRequestAuthorizationCache.getPermissionResultCache().remove(parentResultCacheKey);
+            hasMaintainProposalHierarchyPermission = isAuthorizedToModifyBudget(parent, user);
+        }
+
+        documentRequestAuthorizationCache.addPermissionResult(cacheKey, hasMaintainProposalHierarchyPermission);
+
+        return hasMaintainProposalHierarchyPermission;
     }
 
     protected boolean isAuthorizedToAlterProposalData(Document document, Person user) {
@@ -819,17 +913,13 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
     }
 
     protected boolean isAuthorizedToAddAddressBook(Document doc, Person user) {
-        final boolean hasPermission;
-        final ProposalDevelopmentDocument pdDocument = ((ProposalDevelopmentDocument) doc);
-
-        hasPermission = getPermissionService().hasPermission(user.getPrincipalId(), Constants.MODULE_NAMESPACE_UNIT,PermissionConstants.ADD_ADDRESS_BOOK);
-        return hasPermission;
+        return getPermissionService().hasPermission(user.getPrincipalId(), Constants.MODULE_NAMESPACE_UNIT,PermissionConstants.ADD_ADDRESS_BOOK);
     }
 
     protected boolean isAuthorizedToModify(Document document, Person user) {
         DocumentRequestAuthorizationCache documentRequestAuthorizationCache = getDocumentRequestAuthorizationCache(document);
 
-        String resultCacheKey = "IsAuthorizedToModify|" + document.getDocumentNumber() + "|" + user.getPrincipalId();
+        final String resultCacheKey = buildPermissionCacheKey(document, user, IS_AUTHORIZED_TO_MODIFY);
         if (documentRequestAuthorizationCache.hasPermissionResult(resultCacheKey)) {
             return documentRequestAuthorizationCache.getPermissionResult(resultCacheKey);
         }
@@ -843,7 +933,7 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
 
         final String proposalNbr = proposal.getProposalNumber();
 
-        final boolean hasPermission;
+        boolean hasPermission;
         if (proposalNbr == null) {
             hasPermission = hasPermissionByOwnedByUnit(document, user);
         } else {
@@ -852,12 +942,19 @@ public class ProposalDevelopmentDocumentAuthorizer extends KcKradTransactionalDo
              * and the user has the require permission.
              */
 
-           final boolean hasBeenRejected = proposal.getProposalState().getCode().equals(ProposalState.REVISIONS_REQUESTED);
+           final boolean hasBeenRejected = ProposalState.REVISIONS_REQUESTED.equals(proposal.getProposalStateTypeCode());
 
             hasPermission = !pdDocument.isViewOnly() &&
                     getKcAuthorizationService().hasPermission(user.getPrincipalId(), pdDocument, PermissionConstants.MODIFY_PROPOSAL) &&
                     (!getKcWorkflowService().isInWorkflow(document) || hasBeenRejected) &&
                     !proposal.getSubmitFlag();
+        }
+
+        if (proposal.isChild() && hasPermission) {
+            final Document parent = proposal.getParent().getDocument();
+            final String parentResultCacheKey = buildPermissionCacheKey(parent, user, IS_AUTHORIZED_TO_MODIFY);
+            documentRequestAuthorizationCache.getPermissionResultCache().remove(parentResultCacheKey);
+            hasPermission = isAuthorizedToModify(parent, user);
         }
 
         documentRequestAuthorizationCache.addPermissionResult(resultCacheKey, hasPermission);

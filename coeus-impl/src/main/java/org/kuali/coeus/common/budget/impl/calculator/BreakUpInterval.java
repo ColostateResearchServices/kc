@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,7 @@ import org.kuali.coeus.common.budget.framework.rate.BudgetRate;
  * has to be performed.
  *
  */
-public class BreakUpInterval{
+public class BreakUpInterval {
     private Boundary boundary;
     private ScaleTwoDecimal underRecovery;
     private QueryList<BudgetRate> breakupIntervalRates;
@@ -48,8 +48,7 @@ public class BreakUpInterval{
     private QueryList<BudgetRateAndBase> rateBaseList ;
    
 
-/**return the vector which contains Budget Rate and Base data
-    *
+    /**return the vector which contains Budget Rate and Base data
     */
     public QueryList getRateBase() {
         return rateBaseList;

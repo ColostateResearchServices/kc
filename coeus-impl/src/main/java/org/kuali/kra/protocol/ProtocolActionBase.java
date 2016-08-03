@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.kuali.coeus.coi.framework.*;
 import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
 import org.kuali.coeus.common.framework.auth.perm.Permissionable;
@@ -65,10 +66,8 @@ import org.kuali.rice.krad.util.KRADUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 /**
  * The ProtocolActionBase is the base class for all ProtocolBase actions.  Each derived
@@ -76,6 +75,8 @@ import java.util.Map;
  * all user requests for that particular tab (web page).
  */
 public abstract class ProtocolActionBase extends KcTransactionalDocumentActionBase {
+
+    private transient ProjectPublisher projectPublisher;
 
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -113,7 +114,7 @@ public abstract class ProtocolActionBase extends KcTransactionalDocumentActionBa
         return branchToPanelOrNotificationEditor(mapping, protocolForm, getProtocolForwardNameHook());
     }
 
-    public ActionForward permissions(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+    public ActionForward permissions(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         ProtocolFormBase protocolForm = (ProtocolFormBase)form;
         protocolForm.getPermissionsHelper().prepareView();
         return branchToPanelOrNotificationEditor(mapping, protocolForm, getProtocolPermissionsForwardNameHook());
@@ -152,8 +153,9 @@ public abstract class ProtocolActionBase extends KcTransactionalDocumentActionBa
      * @return the Action Forward
      */
     public ActionForward noteAndAttachment(ActionMapping mapping, ActionForm form
-            , HttpServletRequest request, HttpServletResponse response) {        
+            , HttpServletRequest request, HttpServletResponse response) throws Exception {        
         ProtocolFormBase protocolForm = (ProtocolFormBase)form;
+        protocolForm.initializeNotesAttachments();
         protocolForm.getNotesAttachmentsHelper().prepareView();
         return branchToPanelOrNotificationEditor(mapping, protocolForm, getNoteAndAttachmentForwardNameHook());
     }
@@ -191,35 +193,40 @@ public abstract class ProtocolActionBase extends KcTransactionalDocumentActionBa
             protocolForm.setDocument(retrievedDocument);
             request.setAttribute(KRADConstants.PARAMETER_DOC_ID, docIdRequestParameter);        
        }
+       protocolForm.initializeProtocolAction();
        // make sure current submission is displayed when navigate to action page.
        protocolForm.getActionHelper().setCurrentSubmissionNumber(Constants.PROTOCOL_DEFAULT_SUBMISSION_NUMBER);
        protocolForm.getActionHelper().prepareView();
        protocolForm.getActionHelper().prepareCommentsView();
- 
-       
-       //When a user selects the Questionnaires tab, empty answerHeaders are generated and saved to the database so that subsequent methods relying
-       //on that persisted data have it available to render panels.  Make Protocol Actions tab work in this same manner so it's sub-tab 
-       //Print ==> Questionnaires will render when a user enters a protocol but does not select the Questionnaire tab to answer the questions.
-       protocolForm.getQuestionnaireHelper().prepareView();
-       protocolForm.getQuestionnaireHelper().populateAnswers();
-       protocolForm.getQuestionnaireHelper().setQuestionnaireActiveStatuses();
-       Document document = protocolForm.getDocument();
-       List<AnswerHeader> answerHeaders = protocolForm.getQuestionnaireHelper().getAnswerHeaders();       
-       if (applyRules(new SaveQuestionnaireAnswerEvent(document, answerHeaders)) && applyRules(new SaveProtocolQuestionnaireEvent(document, answerHeaders)) ) {
-           protocolForm.getQuestionnaireHelper().preSave();
-           getBusinessObjectService().save(answerHeaders);
-       }
-  
+       saveQuestionnaire(protocolForm);
        return branchToPanelOrNotificationEditor(mapping, protocolForm, getProtocolActionsForwardNameHook());
+    }
+    
+    protected void saveQuestionnaire(ProtocolFormBase protocolForm) {
+        //When a user selects the Questionnaires tab, empty answerHeaders are generated and saved to the database so that subsequent methods relying
+        //on that persisted data have it available to render panels.  Make Protocol Actions tab work in this same manner so it's sub-tab 
+        //Print ==> Questionnaires will render when a user enters a protocol but does not select the Questionnaire tab to answer the questions.
+        protocolForm.getQuestionnaireHelper().prepareView();
+        protocolForm.getQuestionnaireHelper().populateAnswers();
+        protocolForm.getQuestionnaireHelper().setQuestionnaireActiveStatuses();
+        Document document = protocolForm.getDocument();
+        List<AnswerHeader> answerHeaders = protocolForm.getQuestionnaireHelper().getAnswerHeaders();       
+        if (applyRules(new SaveQuestionnaireAnswerEvent(document, answerHeaders)) && applyRules(new SaveProtocolQuestionnaireEvent(document, answerHeaders)) ) {
+            protocolForm.getQuestionnaireHelper().preSave();
+            getBusinessObjectService().save(answerHeaders);
+        }
     }
     
     public ActionForward protocolHistory(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception  {
         ProtocolFormBase protocolForm = (ProtocolFormBase) form;
+        protocolForm.initializeProtocolHistory();
         protocolForm.getActionHelper().setCurrentSubmissionNumber(Constants.PROTOCOL_DEFAULT_SUBMISSION_NUMBER);
+        protocolForm.getActionHelper().prepareView();
+        protocolForm.getActionHelper().prepareCommentsView();
         protocolForm.getActionHelper().initSubmissionDetails();
         return branchToPanelOrNotificationEditor(mapping, protocolForm, getProtocolHistoryForwardNameHook());
     }
-    
+
     public ActionForward customData(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
         ProtocolFormBase protocolForm = (ProtocolFormBase)form;
         protocolForm.getCustomDataHelper().prepareCustomData();
@@ -236,7 +243,7 @@ public abstract class ProtocolActionBase extends KcTransactionalDocumentActionBa
         }
     
     }
-    
+
     @Override
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
         throws Exception {
@@ -254,7 +261,8 @@ public abstract class ProtocolActionBase extends KcTransactionalDocumentActionBa
                 this.preSave(mapping, form, request, response);
                 actionForward = super.save(mapping, form, request, response);
                 this.postSave(mapping, form, request, response);
-                
+                getProjectPublisher().publishProject(getProjectRetrievalService().retrieveProject(protocolForm.getProtocolDocument().getProtocol().getProtocolId().toString()));
+
                 if (KRADConstants.SAVE_METHOD.equals(protocolForm.getMethodToCall()) && protocolForm.isAuditActivated() 
                         && GlobalVariables.getMessageMap().hasNoErrors()) {
                     // hook invocation to get the forward name
@@ -776,4 +784,19 @@ public abstract class ProtocolActionBase extends KcTransactionalDocumentActionBa
     protected KcNotificationService getNotificationService() {
         return KcServiceLocator.getService(KcNotificationService.class);
     }
+
+
+    public ProjectPublisher getProjectPublisher() {
+        if (projectPublisher == null) {
+            projectPublisher = KcServiceLocator.getService(ProjectPublisher.class);
+        }
+
+        return projectPublisher;
+    }
+
+    public void setProjectPublisher(ProjectPublisher projectPublisher) {
+        this.projectPublisher = projectPublisher;
+    }
+
+    public abstract ProjectRetrievalService getProjectRetrievalService();
 }

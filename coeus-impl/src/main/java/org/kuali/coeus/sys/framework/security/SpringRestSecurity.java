@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,15 +27,20 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
+
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebMvcSecurity
+@Deprecated
 public class SpringRestSecurity extends WebSecurityConfigurerAdapter {
-	
-	private static final String V1_REST_SERVICES_REGEX = ".*/v1/.*";
+
 	private static final String ADMIN_ROLE = "ADMIN";
 	private static final String KC_REST_ADMIN_PASSWORD = "kc.rest.admin.password";
 	private static final String KC_REST_ADMIN_USERNAME = "kc.rest.admin.username";
+	private static final String AUTH_REST_URLS_REGEX = "auth.rest.urls.regex";
 	@Autowired
 	@Qualifier("kualiConfigurationService")
 	private ConfigurationService configurationService;
@@ -52,7 +57,20 @@ public class SpringRestSecurity extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-	    http.authorizeRequests().regexMatchers(V1_REST_SERVICES_REGEX).hasRole(ADMIN_ROLE).and().httpBasic();
+        http.headers().xssProtection().addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
+
+		final String authRestUrlsRegex = configurationService.getPropertyValueAsString(AUTH_REST_URLS_REGEX);
+		if (StringUtils.isNotBlank(authRestUrlsRegex)) {
+			Stream.of(authRestUrlsRegex.split(","))
+					.map(String::trim)
+					.forEach(regex -> {
+				try {
+					http.authorizeRequests().regexMatchers(regex).hasRole(ADMIN_ROLE).and().httpBasic();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
 	}
 
 	public ConfigurationService getConfigurationService() {

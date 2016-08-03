@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
  */
 package org.kuali.coeus.common.budget.framework.core.category;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
 import org.kuali.coeus.common.budget.api.core.category.BudgetCategoryTypeContract;
 import org.kuali.coeus.common.budget.framework.core.BudgetConstants;
@@ -76,7 +77,7 @@ public class BudgetCategoryType extends KcPersistableBusinessObjectBase implemen
      */
     @Override
     public int compareTo(BudgetCategoryType o) {
-        return this.sortId.compareTo(o.sortId);
+    	return new CompareToBuilder().append(this.sortId, o.sortId).toComparison();
     }
 
     public boolean isCategoryParticipantSupport() {

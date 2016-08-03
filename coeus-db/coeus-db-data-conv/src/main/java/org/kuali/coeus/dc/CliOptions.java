@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -105,6 +105,18 @@ public class CliOptions {
     
     public boolean containsTimeAndMoneyDocStatus() {
     	return contains("tmdocstatus");
+    }
+    
+    public boolean containsSubawardAmountInfo() {
+    	return contains("subaward-amountinfo");
+    }
+    
+    public boolean containsTimeAndMoneyDups() {
+    	return contains("tm-dups");
+    }
+    
+    public boolean containsProposalYnq() {
+    	return contains("proposal-ynq");
     }
 
     private boolean contains(String name) {
@@ -226,7 +238,7 @@ public class CliOptions {
                 + "\n"
                 + "If platform is not specified then the platform will be autodetected from the connection strings.\n"
                 + "\n"
-                + "The valid conversion targets are (proposal|irb|iacuc|pprole|questseq|tmdocstatus).\n"
+                + "The valid conversion targets are (proposal|irb|iacuc|pprole|questseq|tmdocstatus|subaward-amountinfo|tm-dups).\n"
                 + "\n"
                 + "The dryrun flag may still cause database sequences to increment.\n"
                 + "\n"

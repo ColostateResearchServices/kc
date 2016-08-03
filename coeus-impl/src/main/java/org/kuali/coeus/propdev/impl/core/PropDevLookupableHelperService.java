@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,16 +18,16 @@
  */
 package org.kuali.coeus.propdev.impl.core;
 
-import java.util.Collection;
-
-import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.krad.lookup.Lookupable;
 import org.kuali.rice.krad.uif.element.Link;
+import org.kuali.rice.krad.uif.field.FieldGroup;
 
 public interface PropDevLookupableHelperService extends Lookupable {
 
-	public void buildPropDevViewActionLink(Link actionLink, Object model, String title) throws WorkflowException;
+	void buildPropDevViewActionLink(Link actionLink, Object model, String title);
 	
-	public void buildPropDevEditActionLink(Link actionLink, Object model, String title) throws WorkflowException;
+	void buildPropDevEditActionLink(Link actionLink, Object model, String title);
+
+	void canModifyProposal(FieldGroup fieldGroup, Object model, ProposalDevelopmentDocument document);
 	
 }

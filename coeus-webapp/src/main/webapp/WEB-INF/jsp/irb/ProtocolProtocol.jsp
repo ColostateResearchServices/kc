@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -55,7 +55,7 @@
 <kra-irb:protocolParticipants />
 
 <kul:panelFooter />
-	<c:if test="${readOnly && KualiForm.editingMode['canModify']}">
+	<c:if test="${readOnly && KualiForm.editingMode['canModify'] && KualiForm.displayEditButton}">
 		<c:set var="extraButtonSource" value="${ConfigProperties.kra.externalizable.images.url}buttonsmall_edit_temp.gif"/>
 		<c:set var="extraButtonProperty" value="methodToCall.edit"/>
 		<c:set var="extraButtonAlt" value="Edit"/>

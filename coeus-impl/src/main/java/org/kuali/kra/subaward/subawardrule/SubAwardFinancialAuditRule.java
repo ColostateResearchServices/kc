@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -102,8 +102,7 @@ public class SubAwardFinancialAuditRule extends
     protected boolean checkForObligatedAmountZero(Document document) {
         SubAwardDocument subAwardDocument = (SubAwardDocument) document;
         ScaleTwoDecimal obligatedAmount = ScaleTwoDecimal.ZERO;
-        for (SubAwardAmountInfo subAwardAmountInfo
-        :subAwardDocument.getSubAward().getSubAwardAmountInfoList()) {
+        for (SubAwardAmountInfo subAwardAmountInfo : subAwardDocument.getSubAward().getAllSubAwardAmountInfos()) {
             if (subAwardAmountInfo.getObligatedChange() != null) {
               obligatedAmount = obligatedAmount.
               add(subAwardAmountInfo.getObligatedChange());
@@ -130,8 +129,7 @@ public class SubAwardFinancialAuditRule extends
     protected boolean checkForAnticipatedAmountZero(Document document) {
         ScaleTwoDecimal anticipateAmount = ScaleTwoDecimal.ZERO;
         SubAwardDocument subAwardDocument = (SubAwardDocument) document;
-        for (SubAwardAmountInfo subAwardAmountInfo
-        :subAwardDocument.getSubAward().getSubAwardAmountInfoList()) {
+        for (SubAwardAmountInfo subAwardAmountInfo : subAwardDocument.getSubAward().getAllSubAwardAmountInfos()) {
             if (subAwardAmountInfo.getAnticipatedChange() != null) {
              anticipateAmount = anticipateAmount.add(
            subAwardAmountInfo.getAnticipatedChange());

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  *
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -292,7 +292,7 @@ public class ProposalDevelopmentHomeController extends ProposalDevelopmentContro
    public ModelAndView docHandler(@ModelAttribute("KualiForm") DocumentFormBase form, @RequestParam(required = false) String auditActivated, @RequestParam(required = false) String viewOnly,
                                   @RequestParam(required = false) String navigateToPageId, @RequestParam(required = false) String defaultOpenTab
                                   ) throws Exception {
-       ProposalDevelopmentDocument document;
+        ProposalDevelopmentDocument document;
        boolean isDeleted = false;
        if(!ObjectUtils.isNull(form.getDocId())) {
            document = (ProposalDevelopmentDocument) getDocumentService().getByDocumentHeaderId(form.getDocId());
@@ -378,7 +378,9 @@ public class ProposalDevelopmentHomeController extends ProposalDevelopmentContro
             opportunity.setCompetetionId(form.getRequest().getParameter(ProposalDevelopmentConstants.S2sConstants.COMPETETION_ID));
             opportunity.setInstructionUrl(form.getRequest().getParameter(ProposalDevelopmentConstants.S2sConstants.INSTRUCTION_URL));
             opportunity.setOpportunityId(form.getRequest().getParameter(ProposalDevelopmentConstants.S2sConstants.OPPORTUNITY_ID));
-            opportunity.setOpportunityTitle(form.getRequest().getParameter(ProposalDevelopmentConstants.S2sConstants.OPPORTUNITY_TITLE));
+            final String opportunityTitle = form.getRequest().getParameter(ProposalDevelopmentConstants.S2sConstants.OPPORTUNITY_TITLE);
+            String trimmedTitle = StringUtils.substring(opportunityTitle, 0, ProposalDevelopmentConstants.S2sConstants.OPP_TITLE_MAX_LENGTH);
+            opportunity.setOpportunityTitle(trimmedTitle);
             opportunity.setProviderCode(form.getRequest().getParameter(ProposalDevelopmentConstants.S2sConstants.PROVIDER_CODE));
             opportunity.setSchemaUrl(form.getRequest().getParameter(ProposalDevelopmentConstants.S2sConstants.SCHEMA_URL));
             opportunity.setDevelopmentProposal(propDevForm.getProposalDevelopmentDocument().getDevelopmentProposal());

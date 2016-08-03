@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -132,7 +132,9 @@ public class KcAttachmentServiceImpl implements KcAttachmentService {
 
     @Override
     public boolean validPDFFile(FileMeta fileInQuestion, ErrorReporter errorReporter, String errorPrefix) {
-        if (!Constants.PDF_REPORT_CONTENT_TYPE.equals(fileInQuestion.getContentType())) {
+        if (fileInQuestion.getName() == null) {
+        	errorReporter.reportError(errorPrefix, KeyConstants.ERROR_ATTACHMENT_FILE_REQURIED);
+        } else if (!Constants.PDF_REPORT_CONTENT_TYPE.equals(fileInQuestion.getContentType())) {
            errorReporter.reportWarning(errorPrefix, KeyConstants.INVALID_FILE_TYPE,
                     fileInQuestion.getName(), Constants.PDF_REPORT_CONTENT_TYPE);
         }

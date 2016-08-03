@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,8 +35,6 @@ public interface Constants {
     public static final String BUSINESS_OBJECT_DAO_NAME = "businessObjectDao";
     public static final String MAINTENANCE_NEW_ACTION = "New";
     
-    public static final String LAST_ACTION_PRINCIPAL_ID = "lastActionPrincipalId";
-
     public static final String KEY_PERSON_ROLE = "KP";
     public static final String PRINCIPAL_INVESTIGATOR_ROLE = "PI";
     public static final String ALL_INVESTIGATORS = "Investigators";
@@ -66,12 +64,6 @@ public interface Constants {
     public static final String MAPPING_NARRATIVE_ATTACHMENT_RIGHTS_PAGE = "attachmentRights";
     public static final String MAPPING_INSTITUTE_ATTACHMENT_RIGHTS_PAGE = "instituteAttachmentRights";
     public static final String MAPPING_RESUBMISSION_PROMPT = "resubmissionPrompt";
-    public static final String MAPPING_HOLDING_PAGE = "kraHoldingPage";
-    public static final String ALTERNATE_DOC_ID_SESSION_KEY = "alternateDocIdSessionKey";
-    
-    public static final String HOLDING_PAGE_MESSAGES = "holdingPageMessages";
-    public static final String HOLDING_PAGE_RETURN_LOCATION = "holdingPageReturnLocation";
-    public static final String HOLDING_PAGE_DOCUMENT_ID = "holdingPageDocumentId";
 
     public static final String FORCE_HOLDING_PAGE_FOR_ACTION_LIST = "forceHoldingForActionList";
     
@@ -121,6 +113,7 @@ public interface Constants {
     public static final String MODULE_NAMESPACE_INSITUTIONAL_PROPOSAL = "KC-IP";
     public static final String MODULE_NAMESPACE_TIME_AND_MONEY = "KC-T";
     public static final String MODULE_NAMESPACE_UNIT = "KC-UNT";
+    public static final String MODULE_NAMESPACE_MAINTENANCE = "KC-M";
 
     public static final String PESSIMISTIC_LOCKING_EXPIRATION_AGE = "pessimisticLocking.expirationAge";
     
@@ -184,7 +177,8 @@ public interface Constants {
     public static final String CREDIT_SPLIT_KEY = "document.developmentProposalList[0].creditSplit";
     public static final String PERSON_CERTIFICATE = "proposalPersonCertificate";
     public static final String PERSON_COMMENT = "personComment";
-
+    public static final int ERA_COMMONS_USERNAME_MIN_LENGTH = 6;
+    
     /*Proposal notification constants*/
     public static final String DATA_OVERRIDE_NOTIFICATION_ACTION = "102";
     public static final String DATA_OVERRIDE_CONTEXT = "Proposal Data Override";
@@ -678,6 +672,8 @@ public interface Constants {
     public static final String ENABLE_PROTOCOL_TO_PROPOSAL_LINK = "irb.protocol.institute.proposal.linking.enabled";
     
     public static final String PROTOCOL_TYPE_CODE_EXEMPT = "irb.protocol.protocoltype.exempt";
+    public static final String IRB_PROTOCOL_DUPLICATE_PERSON_ENABLED = "irb.protocol.duplicatePerson.enabled";
+    public static final String IACUC_PROTOCOL_DUPLICATE_PERSON_ENABLED = "iacuc.protocol.duplicatePerson.enabled";
     
     // Questionnaire
     public static final String QUESTION_EXPLANATION = "E";
@@ -708,6 +704,7 @@ public interface Constants {
     //Award Hierarchy - Time And Money Constants
     public static final String AWARD_HIERARCHY_DEFAULT_PARENT_OF_ROOT = "000000-00000";
     public static final String LAST_NODE_NEXT_VALUE = "lastNodeNextValue";
+    public static final String ALLOW_TM_WHEN_PENDING_AWARD_PARAM = "ALLOW_TM_WHEN_PENDING_AWARD_EXISTS";
     
     //Award Template Constants
     public static final String AWARD_TEMP_RECPNT_CONTACT_TYPE_CODE_ROLODEX_ID_SEPARATOR = "***";
@@ -910,6 +907,7 @@ public interface Constants {
     //Prop Dev Parameters
     public static final String SPONSOR_HIERACHY_REQ_DIV_PROG_CODES = "SPONSOR_HIERACHY_REQ_DIV_PROG_CODES";
     public static final String PROP_PERSON_COI_STATUS_FLAG = "PROP_PERSON_COI_STATUS_FLAG";
+    String ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE = "ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE";
 
 
     public static final String MM_DD_YYYY_HH_MM_A_DATE_FORMAT = "MM/dd/yyyy hh:mm a";
@@ -923,5 +921,12 @@ public interface Constants {
     public static final int PROTOCOL_DEFAULT_SUBMISSION_NUMBER = -1;
 
     public static final String MAKE_AWD_CUM_ANTICIPATED_OBL_EDITABLE = "MAKE_AWD_CUM_ANTICIPATED_OBL_EDITABLE";
+    String COI_PROJECTS_ENABLED = "coi.projects.enabled";
+    String COI_PROJECTS = "coi.projects";
+    String CONTENT_TYPE = "Content-Type";
+    String APPLICATION_JSON = "application/json";
+    String COI_PROJECTS_DISCLOSURE_STATUS_URL = "coi.projects.disclosure.status.url";
+    String AUTHORIZATION_HEADER = "Authorization";
+    String BEARER_TOKEN = "Bearer ";
 }
 

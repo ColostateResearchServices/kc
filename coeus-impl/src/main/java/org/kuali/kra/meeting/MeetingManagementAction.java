@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,12 @@ import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.committee.bo.CommitteeSchedule;
 import org.kuali.kra.committee.document.CommitteeDocument;
 import org.kuali.kra.committee.service.CommitteeScheduleService;
+import org.kuali.kra.irb.Protocol;
 import org.kuali.kra.irb.actions.reviewcomments.ReviewCommentsService;
+import org.kuali.kra.protocol.actions.submit.ProtocolSubmissionLiteBase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MeetingManagementAction extends MeetingManagementActionBase {
 
@@ -69,8 +74,16 @@ public class MeetingManagementAction extends MeetingManagementActionBase {
     }
 
     @Override
+    protected String getDocumentNumber(ProtocolSubmissionLiteBase protocolSubmission) {
+        Map<String, String> criteria = new HashMap<>();
+        criteria.put(PROTOCOL_ID, protocolSubmission.getProtocolId().toString());
+        Protocol protocol = getBusinessObjectService().findByPrimaryKey(Protocol.class, criteria);
+        return protocol.getProtocolDocument().getDocumentNumber();
+    }
+
+    @Override
     protected String getActionIdHook() {
-        return "protocolProtocolActions";
+        return "protocolProtocol";
     }
 
     @SuppressWarnings("rawtypes")

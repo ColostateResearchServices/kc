@@ -1,7 +1,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -119,7 +119,11 @@
     	<field-descriptor name="financialChartOfAccountsCode" column="FIN_CHART_OF_ACCOUNTS_CODE" jdbc-type="VARCHAR" />
     	<field-descriptor name="syncChild" column="HIERARCHY_SYNC_CHILD" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
     	<field-descriptor name="awardSequenceStatus" column="AWARD_SEQUENCE_STATUS" jdbc-type="VARCHAR"/>
-     	<collection-descriptor name="awardComments" proxy="true" element-class-ref="org.kuali.kra.award.home.AwardComment" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+		<field-descriptor name="fainId" column="FAIN_ID" jdbc-type="VARCHAR"/>
+		<field-descriptor name="fedAwardYear" column="FED_AWARD_YEAR" jdbc-type="INTEGER"/>
+		<field-descriptor name="fedAwardDate" column="FED_AWARD_DATE" jdbc-type="DATE"/>
+
+		<collection-descriptor name="awardComments" proxy="true" element-class-ref="org.kuali.kra.award.home.AwardComment" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
             <inverse-foreignkey field-ref="awardId"/>
         </collection-descriptor>
         

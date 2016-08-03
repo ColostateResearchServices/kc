@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,7 @@ package org.kuali.kra.protocol;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.common.committee.impl.bo.CommitteeMembershipBase;
+import org.kuali.coeus.common.committee.impl.meeting.CommitteeScheduleMinuteBase;
 import org.kuali.coeus.common.framework.attachment.AttachmentFile;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocument;
 import org.kuali.coeus.common.framework.version.sequence.owner.SequenceOwner;
@@ -58,16 +59,19 @@ import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
 import org.kuali.coeus.common.questionnaire.framework.answer.QuestionnaireAnswerService;
 import org.kuali.rice.core.api.datetime.DateTimeService;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
+import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.SequenceAccessorService;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.ObjectUtils;
+
 
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Map.Entry;
+
 
 
 public abstract class ProtocolBase extends KcPersistableBusinessObjectBase implements SequenceOwner<ProtocolBase>, Permissionable, UnitAclLoadable, Disclosurable, KcKrmsContextBo {
@@ -211,7 +215,7 @@ public abstract class ProtocolBase extends KcPersistableBusinessObjectBase imple
         protocolReferences = new ArrayList<ProtocolReferenceBase>(); 
         newDescription = getDefaultNewDescription();
         protocolStatus = getProtocolStatusNewInstanceHook();
-        protocolStatusCode = protocolStatus.getProtocolStatusCode();
+        protocolStatusCode = getProtocolStatus().getProtocolStatusCode();
         protocolLocations = new ArrayList<ProtocolLocationBase>(); 
         protocolPersons = new ArrayList<ProtocolPersonBase>();
         
@@ -226,7 +230,7 @@ public abstract class ProtocolBase extends KcPersistableBusinessObjectBase imple
         
         // set statuscode default
         setProtocolStatusCode(getDefaultProtocolStatusCodeHook());
-        this.refreshReferenceObject(Constants.PROPERTY_PROTOCOL_STATUS);
+        refreshReferenceObject(Constants.PROPERTY_PROTOCOL_STATUS);
         initializeProtocolAttachmentFilter();
     }
     
@@ -510,9 +514,17 @@ public abstract class ProtocolBase extends KcPersistableBusinessObjectBase imple
 
     
     public ProtocolDocumentBase getProtocolDocument() {
+    	loadWorkflowDocument(this.protocolDocument);
         return protocolDocument;
     }
 
+    protected void loadWorkflowDocument(ProtocolDocumentBase protocolDocument) {
+    	if (protocolDocument != null && protocolDocument.getDocumentHeader() != null && !protocolDocument.getDocumentHeader().hasWorkflowDocument()) {
+		    protocolDocument.getDocumentHeader().setWorkflowDocument(WorkflowDocumentFactory.loadDocument(GlobalVariables.getUserSession().getPrincipalId(), 
+		    		protocolDocument.getDocumentNumber()));
+		}
+    }
+    
     public void setProtocolDocument(ProtocolDocumentBase protocolDocument) {
         this.protocolDocument = protocolDocument;
     }
@@ -1062,6 +1074,11 @@ public abstract class ProtocolBase extends KcPersistableBusinessObjectBase imple
     }
 
     @Override
+    public String getVersionNameFieldValue() {
+        return protocolNumber;
+    }
+
+    @Override
     public void incrementSequenceNumber() {
         this.sequenceNumber++; 
     }
@@ -1196,11 +1213,22 @@ public abstract class ProtocolBase extends KcPersistableBusinessObjectBase imple
     
     protected void setNewSubmissionReferences(List<ProtocolSubmissionBase> submissions) {
     	submissions.forEach(submission -> {
+    		setSubmissionMinutesReferences(submission);
             submission.setProtocolNumber(this.getProtocolNumber());
             submission.setSubmissionId(null);
             submission.setSequenceNumber(sequenceNumber);
             submission.setProtocolId(this.getProtocolId());
             this.getProtocolSubmissions().add(submission);
+        });
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected void setSubmissionMinutesReferences(ProtocolSubmissionBase submission) {
+        List<CommitteeScheduleMinuteBase> committeeScheduleMinutes = submission.getCommitteeScheduleMinutes();
+        committeeScheduleMinutes.forEach(committeeScheduleMinute -> {
+        	committeeScheduleMinute.setCommScheduleMinutesId(null);
+        	committeeScheduleMinute.setProtocolIdFk(this.getProtocolId());
+        	committeeScheduleMinute.setSubmissionIdFk(null);
         });
     }
     

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -241,10 +241,6 @@ public class ProtocolForm extends ProtocolFormBase {
         return (PersonnelHelper) super.getPersonnelHelper();
     }
     
-    public PermissionsHelper getPermissionsHelper() {
-        return (PermissionsHelper) super.getPermissionsHelper();
-    }
-    
     public ProtocolReferenceBean getNewProtocolReferenceBean() {
         return (ProtocolReferenceBean) super.getNewProtocolReferenceBean();
     }
@@ -280,7 +276,8 @@ public class ProtocolForm extends ProtocolFormBase {
         if (propertyName.startsWith("actionHelper.protocolSubmitAction.reviewer") ||
                 propertyName.startsWith("methodToCall.printSubmissionQuestionnaireAnswer.line")
                 || propertyName.startsWith("methodToCall.saveCorrespondence")
-                || propertyName.startsWith("methodToCall.closeCorrespondence")) {
+                || propertyName.startsWith("methodToCall.closeCorrespondence")
+                || propertyName.startsWith("methodToCall.viewCorrespondence")) {
             return true;
         } else {
             return super.isPropertyEditable(propertyName);
@@ -326,8 +323,12 @@ public class ProtocolForm extends ProtocolFormBase {
 
 
     @Override
-    protected ActionHelperBase createNewActionHelperInstanceHook(ProtocolFormBase protocolForm) throws Exception {
-        return new ActionHelper((ProtocolForm) protocolForm);
+    protected ActionHelperBase createNewActionHelperInstanceHook(ProtocolFormBase protocolForm, boolean initializeActions) throws Exception {
+    	ActionHelper actionHelper = new ActionHelper((ProtocolForm) protocolForm);
+    	if(initializeActions) {
+    		actionHelper.initializeProtocolActions();
+    	}
+    	return actionHelper;
     }
 
 

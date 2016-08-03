@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,10 @@
           transactionalDocument="false"
           htmlFormAction="kraHoldingPage"
           defaultMethodToCall="returnToPortal">
-          
+
+	<input type="hidden" name="holdingPageDocumentId" value="${holdingPageDocumentId}">
+	<input type="hidden" name="holdingPageReturnLocation" value="${holdingPageReturnLocation}">
+
     <div class="topblurb">
         <div align="center">
 	        <table cellpadding="10" cellspacing="0" border="0">

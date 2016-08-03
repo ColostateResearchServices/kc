@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,6 @@ import org.kuali.coeus.common.budget.framework.nonpersonnel.AbstractBudgetCalcul
 import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItem;
 import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItemBase;
 import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItemCalculatedAmount;
-import org.kuali.coeus.common.budget.framework.copy.DeepCopyIgnore;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -55,7 +54,6 @@ import static java.util.Calendar.MONTH;
 @Table(name = "BUDGET_PERSONNEL_DETAILS")
 public class BudgetPersonnelDetails extends BudgetLineItemBase implements BudgetPersonnelDetailsContract {
 
-    @DeepCopyIgnore
     @PortableSequenceGenerator(name = "SEQ_BUDGET_PER_DET_ID")
     @GeneratedValue(generator = "SEQ_BUDGET_PER_DET_ID")
     @Id
@@ -205,7 +203,6 @@ public class BudgetPersonnelDetails extends BudgetLineItemBase implements Budget
 
     //ignore the budget period bo during deep copy as any link up the budget object graph
     //will cause generateAllPeriods to consume large amounts of memory
-    @DeepCopyIgnore
     @Transient
     private BudgetPeriod budgetPeriodBO;
 

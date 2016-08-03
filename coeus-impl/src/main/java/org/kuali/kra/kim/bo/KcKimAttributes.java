@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,7 @@ public class KcKimAttributes extends KimAttributes {
     public static final String SUBAWARD = "subAward";
     public static final String SUB_QUALIFIER = "subQualifier";
     public static final String DOCUMENT_NUMBER = "documentNumber";
+    public static final String CLASS_NAME = "className";
     
     protected String proposal;
     protected String protocol;
@@ -48,6 +49,7 @@ public class KcKimAttributes extends KimAttributes {
     protected String subAward;
     protected String sectionName;
     protected String documentAction;
+    protected String className;
     
     protected Unit unit;
     
@@ -146,5 +148,12 @@ public class KcKimAttributes extends KimAttributes {
     public void setSubAward(String subAward) {
         this.subAward = subAward;
     }
-   
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 }

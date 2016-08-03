@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,8 +27,10 @@ public class LandingPageForm extends UifFormBase {
     
     @RequestAccessible
     private String href;
+    
+    private String selectedMenuItem;
 
-    public LandingPageForm() {
+	public LandingPageForm() {
         setViewId("Kc-LandingPage-DefaultView");
     }
 
@@ -43,4 +45,14 @@ public class LandingPageForm extends UifFormBase {
 	public void setHref(String href) {
 		this.href = href;
 	}
+	
+    public String getSelectedMenuItem() {
+		return selectedMenuItem;
+	}
+
+	public void setSelectedMenuItem(String selectedMenuItem) {
+		this.selectedMenuItem = selectedMenuItem;
+	}
+
+
 }

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -198,6 +198,11 @@ public class ActionHelper extends ActionHelperBase {
      */
     public ActionHelper(ProtocolForm form) throws Exception {
         super(form);
+    }
+
+    @Override
+    public void initializeProtocolActions() throws Exception {
+    	super.initializeProtocolActions();
         protocolNotifyIrbBean = new ProtocolNotifyIrbBean(this, "protocolNotifyIrbBean");
         // setting the attachment here so new files can be attached to newActionAttachment
         protocolNotifyIrbBean.setNewActionAttachment(new ProtocolActionAttachment());
@@ -245,6 +250,7 @@ public class ActionHelper extends ActionHelperBase {
 
         initIRBSpecificActionBeanTaskMap();
     }
+    
     
     /**
      * Initializes the mapping between the task names and the beans.  This is used to get the bean associated to the task name passed in from the tag file.

@@ -26,6 +26,7 @@
     <param name="kc.common.mode">LOCAL</param>
 	<param name="kc.core.mode">LOCAL</param>
 	<param name="kc.pd.mode">LOCAL</param>
+	<param name="kc.pd.rest.mode">LOCAL</param>
 	<param name="kc.ip.mode">LOCAL</param>
 	<param name="kc.award.mode">LOCAL</param>
 	<param name="kc.subaward.mode">LOCAL</param>
@@ -41,6 +42,7 @@
 	<param name="app.code">${module.name}</param>
 	<param name="application.id">KC</param>	
 	<param name="application.host">127.0.0.1</param>
+	<param name="application.rest.services.base.url" override="false">${application.http.scheme}://${application.host}:${http.port}</param>
 	
 	<!-- Config param for setting the bus security on and off in the integration services -->
 	<param name="fin.system.integration.bus.security.on">false</param>
@@ -54,7 +56,7 @@
 	<param name="kew.externalizable.images.url">/${app.context.name}/kew/images/</param>
 	<param name="kra.externalizable.images.url">/${app.context.name}/static/images/</param>
 
-    <param name="kns.javascript.files">plugins/jquery/jquery-1.8.3.js,plugins/cookie/jquery.cookie.js,kr/scripts/core.js,kr/scripts/dhtml.js,kr/scripts/my_common.js,kr/scripts/jscalendar-1.0/calendar.js,kr/scripts/jscalendar-1.0/lang/calendar-en.js,kr/scripts/jscalendar-1.0/calendar-setup.js,dwr/engine.js,dwr/util.js,dwr/interface/PersonService.js,kr/scripts/objectInfo.js,dwr/interface/CustomAttributeService.js,dwr/interface/BudgetService.js,dwr/interface/AwardTemplateReportTermService.js,scripts/fancybox2.1.5/jquery.fancybox.pack.js,plugins/blockUI/jquery.blockUI.js,scripts/kuali_application.js,scripts/bootstrap/bootstrap.js</param>
+    <param name="kns.javascript.files">plugins/jquery/jquery-1.8.3.js,plugins/cookie/jquery.cookie.js,kr/scripts/core.js,kr/scripts/dhtml.js,kr/scripts/my_common.js,kr/scripts/jscalendar-1.0/calendar.js,kr/scripts/jscalendar-1.0/lang/calendar-en.js,kr/scripts/jscalendar-1.0/calendar-setup.js,dwr/engine.js,dwr/util.js,dwr/interface/PersonService.js,dwr/interface/StateService.js,kr/scripts/objectInfo.js,dwr/interface/CustomAttributeService.js,dwr/interface/BudgetService.js,dwr/interface/AwardTemplateReportTermService.js,scripts/fancybox2.1.5/jquery.fancybox.pack.js,plugins/blockUI/jquery.blockUI.js,scripts/kuali_application.js,scripts/bootstrap/bootstrap.js,kim/scripts/person.js</param>
     <param name="kns.css.files">kr/css/kuali.css,kr/scripts/jscalendar-1.0/calendar-win2k-1.css,scripts/fancybox2.1.5/jquery.fancybox.css,css/kuali_application.css,css/bootstrap/css/bootstrap-skinned.css</param>
 
     <param name="portal.css.files">plugins/fancybox/jquery.fancybox.css,plugins/textpopout/popoutTextarea.css,plugins/jgrowl/jquery.jgrowl.css,css/kuali_overrides.css,css/bootstrap/css/bootstrap-skinned.css</param>
@@ -126,6 +128,7 @@
 	<!-- Kuali parameters -->
 	<param name="encryption.key">7IC64w6kAAAA</param>
 	<param name="print.xml.directory">${java.io.tmpdir}/</param>
+	<param name="print.logging.enable">false</param>
 
 	<!-- workaround until Rice resolves KULRICE-4065 -->
 	<param name="enable.nonproduction.data.unmasking">true</param>
@@ -179,6 +182,7 @@
 	<param name="filtermapping.login.1">/*</param>
 	
 	<param name="transaction.timeout">3600</param>
+	<param name="tm.btm.defaultTransactionTimeout">${transaction.timeout}</param>
 	
 	<!-- image overrides -->
 	<param name="application.custom.image.url.copyoneper">/${app.context.name}/static/images/buttonsmall_copyallperiods.gif</param>
@@ -218,6 +222,7 @@
 	<param name="kc.flyway.enabled" override="false">true</param>
     <param name="kc.flyway.sql.migration.path" override="false">co/kuali/coeus/data/migration/sql/mysql</param>
     <param name="kc.flyway.java.migration.path" override="false">co/kuali/coeus/data/migration/custom/coeus</param>
+    <param name="kc.flyway.baseline.version">0</param>
 
 	<!-- Auto-ingester properties -->
 	<param name="kc.kew.auto.ingestion.paths" override="false">org/kuali/coeus/rice-xml,org/kuali/coeus/coeus-xml</param>
@@ -232,14 +237,24 @@
     <param name="kc.schemaspy.enabled">true</param>
 	<param name="kc.monitoring.enabled">true</param>
 	<param name="kc.monitoring.verbose.logging">false</param>
-	<param name="kc.monitoring.exclude.pattern">.*/static/.*|/healthCheck/.*|.*/css/.*|.*/images/.*|.*/help/.*|.*/plugins/.*|.*/themes/.*|.*/rice-contrib/.*|.*/scripts/.*|/schemaspy/.*</param>
+	<param name="kc.monitoring.exclude.pattern">.*/static/.*|/healthCheck/.*|.*/css/.*|.*/images/.*|.*/help/.*|.*/plugins/.*|.*/themes/.*|.*/rice-contrib/.*|.*/scripts/.*|/schemaspy/.*|/legacyCoeusSchemaspy/.*</param>
 	<param name="rice.krad.jpa.global.jpa.vendor.adapter.class">co.kuali.coeus.sys.impl.monitor.MonitoringEclipseLinkJpaVendorAdapter</param>
 
     <param name="kc.rest.admin.username" override="false"></param>
     <param name="kc.rest.admin.password" override="false"></param>
 
-	<param name="coi.projects.url">http://127.0.0.1:3002/api/coi/projects</param>
-	<param name="coi.projects.enabled">false</param>
+    <param name="coi.standalone.base.url">${application.rest.services.base.url}</param>
+    <param name="coi.api.url">${coi.standalone.base.url}/api/coi</param>
+    <param name="coi.projects.url">${coi.api.url}/projects</param>
+    <param name="coi.projects.disclosure.status.url">${coi.api.url}/project-disclosure-statuses/</param>
+
+    <param name="coi.projects.enabled">false</param>
+	<param name="auth.base.url">${application.rest.services.base.url}</param>
+	<param name="auth.users.url">${auth.base.url}/api/v1/users</param>
+	<param name="rice.portal.logout.redirectUrl">${application.url}/kc-krad/landingPage</param>
+
+	<param name="auth.rest.urls.regex">.*api.*,.*v1.*</param>
+	<param name="auth.core.enabled">false</param>
 
 	<param name="mq.redelivery.default.maximumRedeliveries">10</param>
 	<param name="mq.redelivery.default.initialRedeliveryDelay">3000</param>
@@ -247,7 +262,25 @@
 	<param name="mq.redelivery.default.useExponentialBackOff">true</param>
 	<param name="mq.redelivery.default.backOffMultiplier">2</param>
 
+	<param name="mq.datasource.uniqueName">activemq</param>
 	<param name="mq.datasource.minPoolSize">1</param>
 	<param name="mq.datasource.maxPoolSize">20</param>
 	<param name="mq.broker.dataDirectory">activemq-data</param>
+	
+	<param name="kc.rest.ssl.trust.selfsigned" override="false">${dev.mode}</param>
+	<param name="auth.user.push.use.dev.password" override="false">false</param>
+	<param name="auth.user.push.dev.password" override="false">password</param>
+
+	<param name="auth.system.token"></param>
+
+	<param name="kuali.reports.base.url">${application.rest.services.base.url}</param>
+	<param name="kuali.reports.url">${kuali.reports.base.url}/reports/#/index</param>
+
+	<!-- for grm legacy coeus schemaspy config -->
+	<param name="legacy.coeus.kc.schemaspy.enabled">false</param>
+	<param name="legacy.coeus.datasource.url"></param>
+	<param name="legacy.coeus.datasource.username"></param>
+	<param name="legacy.coeus.datasource.password"></param>
+	<param name="legacy.coeus.datasource.ojb.platform">Oracle9i</param>
+	<param name="legacy.coeus.datasource.driver.name">${datasource.driver.name.${legacy.coeus.datasource.ojb.platform}}</param>
 </config>

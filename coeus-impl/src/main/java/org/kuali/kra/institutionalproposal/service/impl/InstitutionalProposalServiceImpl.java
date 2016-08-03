@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,8 @@ package org.kuali.kra.institutionalproposal.service.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kuali.coeus.coi.framework.ProjectPublisher;
+import org.kuali.coeus.coi.framework.ProjectRetrievalService;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttribute;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocValue;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocument;
@@ -28,10 +30,12 @@ import org.kuali.coeus.common.framework.version.VersionException;
 import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.kuali.coeus.common.framework.version.VersioningService;
 import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.core.ProposalTypeService;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.propdev.impl.person.ProposalPersonUnit;
 import org.kuali.coeus.propdev.impl.person.creditsplit.ProposalPersonCreditSplit;
 import org.kuali.coeus.propdev.impl.person.creditsplit.ProposalUnitCreditSplit;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.award.home.Award;
 import org.kuali.coeus.propdev.impl.keyword.PropScienceKeyword;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
@@ -65,8 +69,6 @@ import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.DocumentService;
 import org.kuali.rice.krad.service.SequenceAccessorService;
 import org.kuali.rice.krad.util.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -97,6 +99,8 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
     public static final int DEFAULT_COST_SHARE_TYPE_CODE = 1;
     public static final String VALID_FUNDING_PROPOSAL_STATUS_CODES = "validFundingProposalStatusCodes";
     public static final String SEPARATOR = ",";
+    private static final String TRUE_INDICATOR_VALUE = "1";
+    private static final String FALSE_INDICATOR_VALUE = "0";
 
     private BusinessObjectService businessObjectService;
     private DocumentService documentService;
@@ -105,23 +109,42 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
     private SequenceAccessorService sequenceAccessorService;
     private ParameterService parameterService;
     private InstitutionalProposalDao institutionalProposalDao;
-
-    private static final String TRUE_INDICATOR_VALUE = "1";
-	private static final String FALSE_INDICATOR_VALUE = "0";
-
-    @Autowired
-    @Qualifier("dataObjectService")
     private DataObjectService dataObjectService;
+
+    private ProjectRetrievalService instPropProjectRetrievalService;
+
+    private ProposalTypeService proposalTypeService;
+    private ProjectPublisher projectPublisher;
+
+    public ProposalTypeService getProposalTypeService() {
+        //since PD is loaded after IP and @Lazy does not work, we have to use the ServiceLocator
+        if (proposalTypeService == null) {
+            proposalTypeService = KcServiceLocator.getService(ProposalTypeService.class);
+        }
+
+
+        return proposalTypeService;
+    }
+
+    public ProjectPublisher getProjectPublisher() {
+        //since COI is loaded last and @Lazy does not work, we have to use the ServiceLocator
+        if (projectPublisher == null) {
+            projectPublisher = KcServiceLocator.getService(ProjectPublisher.class);
+        }
+
+        return projectPublisher;
+    }
+
     
     /**
      * Creates a new pending Institutional Proposal based on given development proposal and budget.
      *
      * @param developmentProposal DevelopmentProposal
      * @param budget Budget
-     * @return String The new proposal number
+     * @return String The new institutional proposal
      * @see org.kuali.kra.institutionalproposal.service.InstitutionalProposalService#createInstitutionalProposal(DevelopmentProposal, Budget)
      */
-    public String createInstitutionalProposal(DevelopmentProposal developmentProposal, Budget budget) {
+    public InstitutionalProposal createInstitutionalProposal(DevelopmentProposal developmentProposal, Budget budget) {
         
         try {
             InstitutionalProposal institutionalProposal = new InstitutionalProposal();
@@ -133,7 +156,8 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
             InstitutionalProposalDocument institutionalProposalDocument = mergeProposals(institutionalProposal, developmentProposal, budget);
             setInstitutionalProposalIndicators(institutionalProposalDocument.getInstitutionalProposal());
             documentService.routeDocument(institutionalProposalDocument, ROUTE_MESSAGE + developmentProposal.getProposalNumber(), new ArrayList<>());
-            return institutionalProposalDocument.getInstitutionalProposal().getProposalNumber();
+            getProjectPublisher().publishProject(getInstPropProjectRetrievalService().retrieveProject(institutionalProposalDocument.getInstitutionalProposal().getProposalId().toString()));
+            return institutionalProposalDocument.getInstitutionalProposal();
         } catch (WorkflowException ex) {
             throw new InstitutionalProposalCreationException(WORKFLOW_EXCEPTION_MESSAGE, ex);
         } 
@@ -149,16 +173,17 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
      * @return String The new version number
      * @see org.kuali.kra.institutionalproposal.service.InstitutionalProposalService#createInstitutionalProposalVersion(String, DevelopmentProposal, Budget)
      */
-    public String createInstitutionalProposalVersion(String proposalNumber, DevelopmentProposal developmentProposal, Budget budget) {
+    public InstitutionalProposal createInstitutionalProposalVersion(String proposalNumber, DevelopmentProposal developmentProposal, Budget budget) {
         
         try {
             InstitutionalProposalDocument newInstitutionalProposalDocument = versionProposal(proposalNumber, developmentProposal, budget);
             setInstitutionalProposalIndicators(newInstitutionalProposalDocument.getInstitutionalProposal());
-            documentService.routeDocument(newInstitutionalProposalDocument, ROUTE_MESSAGE + developmentProposal.getProposalNumber(), 
-            		new ArrayList<>());
-            institutionalProposalVersioningService.updateInstitutionalProposalVersionStatus(newInstitutionalProposalDocument.getInstitutionalProposal(), 
-            		VersionStatus.ACTIVE);
-            return newInstitutionalProposalDocument.getInstitutionalProposal().getSequenceNumber().toString();
+            documentService.routeDocument(newInstitutionalProposalDocument, ROUTE_MESSAGE + developmentProposal.getProposalNumber(),
+                    new ArrayList<>());
+            institutionalProposalVersioningService.updateInstitutionalProposalVersionStatus(newInstitutionalProposalDocument.getInstitutionalProposal(),
+                    VersionStatus.ACTIVE);
+            getProjectPublisher().publishProject(getInstPropProjectRetrievalService().retrieveProject(newInstitutionalProposalDocument.getInstitutionalProposal().getProposalId().toString()));
+            return newInstitutionalProposalDocument.getInstitutionalProposal();
         } catch (WorkflowException|VersionException e) {
             throw new InstitutionalProposalCreationException(VERSION_EXCEPTION_MESSAGE, e);
         }
@@ -413,7 +438,7 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
     }
     
     protected void doBaseFieldsDataFeed(InstitutionalProposal institutionalProposal, DevelopmentProposal developmentProposal) {
-        institutionalProposal.setProposalTypeCode(Integer.parseInt(developmentProposal.getProposalTypeCode()));
+        institutionalProposal.setProposalTypeCode(convertToInstitutionalProposalTypeCode(institutionalProposal.getProposalTypeCode(), developmentProposal.getProposalTypeCode()));
         institutionalProposal.setActivityTypeCode(developmentProposal.getActivityTypeCode());
         if (developmentProposal.getProposalDocument().getDocumentHeader().getWorkflowDocument().isDisapproved()) {
             //if rejected set status code to WITHDRAWN
@@ -423,7 +448,7 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
         }
         institutionalProposal.setSponsorCode(developmentProposal.getSponsorCode());
         institutionalProposal.setTitle(developmentProposal.getTitle());
-        institutionalProposal.setSubcontractFlag(developmentProposal.getSubcontracts());
+        institutionalProposal.setSubcontractFlag(developmentProposal.getSubcontracts() != null ? developmentProposal.getSubcontracts() : false);
         institutionalProposal.setRequestedStartDateTotal(developmentProposal.getRequestedStartDateInitial());
         institutionalProposal.setRequestedEndDateTotal(developmentProposal.getRequestedEndDateInitial());
         institutionalProposal.setDeadlineDate(developmentProposal.getDeadlineDate());
@@ -453,7 +478,21 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
             institutionalProposal.setAwardTypeCode(developmentProposal.getAnticipatedAwardType().getCode());
         }
     }
-    
+
+    private int convertToInstitutionalProposalTypeCode(Integer institutionalProposalProposalTypeCode, String developmentProposalTypeCode) {
+        if(StringUtils.equals(developmentProposalTypeCode, getProposalTypeService().getNewChangedOrCorrectedProposalTypeCode())) {
+            return Integer.parseInt(getProposalTypeService().getNewProposalTypeCode());
+        } else if(StringUtils.equals(developmentProposalTypeCode,getProposalTypeService().getSupplementChangedOrCorrectedProposalTypeCode())) {
+            return  Integer.parseInt(getProposalTypeService().getContinuationProposalTypeCode());
+        } else if(StringUtils.equals(developmentProposalTypeCode,getProposalTypeService().getRenewalChangedOrCorrectedProposalTypeCode())) {
+            return Integer.parseInt(getProposalTypeService().getRenewProposalTypeCode());
+        } else if(StringUtils.equals(developmentProposalTypeCode,getProposalTypeService().getBudgetSowUpdateProposalTypeCode())) {
+            return institutionalProposalProposalTypeCode;
+        } else {
+            return Integer.parseInt(developmentProposalTypeCode);
+        }
+    }
+
     protected void doCustomAttributeDataFeed(InstitutionalProposalDocument institutionalProposalDocument, DevelopmentProposal developmentProposal) throws WorkflowException {
         Map<String, CustomAttributeDocument> dpCustomAttributes = developmentProposal.getProposalDocument().getCustomAttributeDocuments();
         Map<String, CustomAttributeDocument> ipCustomAttributes = institutionalProposalDocument.getCustomAttributeDocuments();
@@ -477,7 +516,7 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
 
     protected String getCustomAttributeValue(List<CustomAttributeDocValue> values, String key) {
         for (CustomAttributeDocValue value : values) {
-            if (StringUtils.equals(String.valueOf(value.getId()),key)) {
+            if (StringUtils.equals(String.valueOf(value.getId()), key)) {
                 return value.getValue();
             }
         }
@@ -639,7 +678,7 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
             WorkflowException, IOException{
         InstitutionalProposal newVersion = getVersioningService().createNewVersion(currentInstitutionalProposal);
         Map<String, String> fieldValues = new HashMap<>();
-		fieldValues.put("proposalNumber", currentInstitutionalProposal.getProposalNumber());
+		fieldValues.put(PROPOSAL_NUMBER, currentInstitutionalProposal.getProposalNumber());
     	List<InstitutionalProposal> instProp = (List<InstitutionalProposal>) businessObjectService.findMatchingOrderBy(InstitutionalProposal.class, fieldValues, "sequenceNumber", false);
     	if (instProp != null && instProp.size() > 0) {
     		for(InstitutionalProposal instProposal:instProp) {
@@ -776,4 +815,18 @@ public class InstitutionalProposalServiceImpl implements InstitutionalProposalSe
     public void setInstitutionalProposalDao(InstitutionalProposalDao institutionalProposalDao) {
         this.institutionalProposalDao = institutionalProposalDao;
     }
+
+    public ProjectRetrievalService getInstPropProjectRetrievalService() {
+        return instPropProjectRetrievalService;
+    }
+
+    public void setInstPropProjectRetrievalService(ProjectRetrievalService instPropProjectRetrievalService) {
+        this.instPropProjectRetrievalService = instPropProjectRetrievalService;
+    }
+
+    public void setProposalTypeService(ProposalTypeService proposalTypeService) {
+        this.proposalTypeService = proposalTypeService;
+    }
+
+
 }

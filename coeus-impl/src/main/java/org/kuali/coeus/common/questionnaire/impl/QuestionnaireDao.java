@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,10 @@
 
 package org.kuali.coeus.common.questionnaire.impl;
 
+import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
+
+import java.util.List;
+
 /**
  * @author Kuali Rice Team (rice.collab@kuali.org)
  */
@@ -32,4 +36,6 @@ public interface QuestionnaireDao {
      */
     public Integer getCurrentQuestionnaireSequenceNumber(String questionnaireSeqId);
 
-}
+    public List<AnswerHeader> getQuestionnaireAnswers(String moduleCode, String moduleItemKey, String moduleSubItemKey);
+
+    }

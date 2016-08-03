@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.kuali.coeus.propdev.impl.core;
+
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.propdev.impl.datavalidation.ProposalDevelopmentDataValidationConstants;
@@ -41,7 +43,7 @@ public class ProposalDocumentView extends KcTransactionalDocumentView {
     @Override
     protected void generatePessimisticLockMessages(TransactionalDocumentFormBase form) {
     	ProposalDevelopmentDocumentForm proposalDevelopmentDocumentForm = (ProposalDevelopmentDocumentForm)form;
-    	if(!proposalDevelopmentDocumentForm.isViewOnly()) {
+    	if(!proposalDevelopmentDocumentForm.isViewOnly() || canSaveCertification(proposalDevelopmentDocumentForm)) {
             Document document = form.getDocument();
             String pageId = proposalDevelopmentDocumentForm.getPageId();
             Person user = GlobalVariables.getUserSession().getPerson();
@@ -62,8 +64,20 @@ public class ProposalDocumentView extends KcTransactionalDocumentView {
                         GlobalVariables.getMessageMap().putError(KRADConstants.GLOBAL_ERRORS,
                                 KC_ERROR_TRANSACTIONAL_LOCKED, lockDescriptor, lockOwner, lockTime, lockDate, lock.getId().toString());
                     }
+                    removeSaveCertification(proposalDevelopmentDocumentForm);
                 }
             }
     	}
     }
+    
+    protected boolean canSaveCertification(ProposalDevelopmentDocumentForm proposalDevelopmentDocumentForm) {
+    	Map<String, Boolean> editModes = proposalDevelopmentDocumentForm.getEditModes();
+    	return editModes.get(ProposalDevelopmentConstants.AuthConstants.CAN_SAVE_CERTIFICATION);
+    }
+
+    protected void removeSaveCertification(ProposalDevelopmentDocumentForm proposalDevelopmentDocumentForm) {
+    	Map<String, Boolean> editModes = proposalDevelopmentDocumentForm.getEditModes();
+    	editModes.remove(ProposalDevelopmentConstants.AuthConstants.CAN_SAVE_CERTIFICATION);
+    }
+
 }

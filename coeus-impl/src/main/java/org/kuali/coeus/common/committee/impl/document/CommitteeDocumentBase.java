@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,6 +35,7 @@ import org.kuali.rice.krad.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The CommitteeBase Document wraps a single CommitteeBase BO.  
@@ -61,7 +62,7 @@ public abstract class CommitteeDocumentBase<CD extends CommitteeDocumentBase<CD,
      * relationships within OJB in regards to anonymous keys.  We are
      * forced to use a one-to-many relationship.
      */
-    private List<CMT> committeeList = new ArrayList<CMT>();
+    private List<CMT> committeeList = new ArrayList<>();
     
 
     public CommitteeDocumentBase() {
@@ -122,13 +123,19 @@ public abstract class CommitteeDocumentBase<CD extends CommitteeDocumentBase<CD,
     public List buildListOfDeletionAwareLists() {
 
         List managedLists = super.buildListOfDeletionAwareLists();
+        managedLists.add(getCommittee().getCommitteeMemberships());
+
+        managedLists.add(getCommittee().getCommitteeMemberships().stream()
+                .flatMap(membership -> membership.getMembershipRoles().stream()).collect(Collectors.toList()));
+        managedLists.add(getCommittee().getCommitteeMemberships().stream()
+                .flatMap(membership -> membership.getMembershipExpertise().stream()).collect(Collectors.toList()));
 
         return managedLists;
     }
     
     @Override
     protected List<RolePersons> getAllRolePersons() {
-        return new ArrayList<RolePersons>();
+        return new ArrayList<>();
     }
     
     public String getDocumentTypeCode() {
@@ -139,7 +146,7 @@ public abstract class CommitteeDocumentBase<CD extends CommitteeDocumentBase<CD,
     public void prepareForSave() {
         super.prepareForSave();
         if (ObjectUtils.isNull(this.getVersionNumber())) {
-            this.setVersionNumber(new Long(0));
+            this.setVersionNumber(0L);
         }
         if (this.getCommittee() != null) {
             this.setCommitteeId(this.getCommittee().getCommitteeId());
@@ -155,15 +162,18 @@ public abstract class CommitteeDocumentBase<CD extends CommitteeDocumentBase<CD,
 
     @Override
     public void doRouteStatusChange(DocumentRouteStatusChange statusChangeEvent) {
-        super.doRouteStatusChange(statusChangeEvent);
-        this.setDocStatusCode(statusChangeEvent.getNewRouteStatus());
-        if (isFinal(statusChangeEvent) && this.getCommittee().getSequenceNumber() > 1) {
-            List<CS> newMasterSchedules = getCommitteeService().mergeCommitteeSchedule(this.getCommittee().getCommitteeId());
-            this.getCommittee().setCommitteeSchedules(newMasterSchedules);
-            getBusinessObjectService().save(this);
-            // finally update all submissions to point to the new committee
-            getCommitteeService().updateCommitteeForProtocolSubmissions(this.getCommittee());
-        }
+        executeAsLastActionUser(() -> {
+            super.doRouteStatusChange(statusChangeEvent);
+            this.setDocStatusCode(statusChangeEvent.getNewRouteStatus());
+            if (isFinal(statusChangeEvent) && this.getCommittee().getSequenceNumber() > 1) {
+                List<CS> newMasterSchedules = getCommitteeService().mergeCommitteeSchedule(this.getCommittee());
+                this.getCommittee().setCommitteeSchedules(newMasterSchedules);
+                getBusinessObjectService().save(this);
+                // finally update all submissions to point to the new committee
+                getCommitteeService().updateCommitteeForProtocolSubmissions(this.getCommittee());
+            }
+            return null;
+        });
     }
     
     protected abstract CommitteeServiceBase<CMT, CS> getCommitteeService();
@@ -174,8 +184,6 @@ public abstract class CommitteeDocumentBase<CD extends CommitteeDocumentBase<CD,
     
     /**
      * Has the document entered the final state in workflow?
-     * @param statusChangeEvent
-     * @return
      */
     private boolean isFinal(DocumentRouteStatusChange statusChangeEvent) {
         return StringUtils.equals(KewApiConstants.ROUTE_HEADER_FINAL_CD, statusChangeEvent.getNewRouteStatus());
@@ -202,7 +210,6 @@ public abstract class CommitteeDocumentBase<CD extends CommitteeDocumentBase<CD,
      * Close to hack.  called by holdingpageaction
      * Different document type may have different routing set up, so each document type
      * can implement its own isProcessComplete
-     * @return
      */
     public boolean isProcessComplete() {
         boolean isComplete = false;

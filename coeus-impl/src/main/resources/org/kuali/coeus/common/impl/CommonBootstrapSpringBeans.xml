@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -31,14 +31,16 @@
 
     <context:annotation-config />
 
-    <context:annotation-config />
-
-    <bean id="kcCommonConfigurer" class="org.kuali.coeus.sys.framework.config.KcConfigurer">
+    <bean id="kcCommonConfigurer" parent="apiConfigurer-parentBean">
         <property name="moduleName" value="kc.common"/>
         <property name="moduleTitle" value="KC Common"/>
         <property name="bootstrapSpringFile" value="classpath:org/kuali/coeus/common/impl/CommonAllComponentSpringBeans.xml"/>
         <property name="dispatchServletName" value="kc-common"/>
-        <property name="enableSpringSecurity" value="true"/>
+        <property name="dispatchServletMappings">
+        	<list>
+        		<value>research-common</value>
+        	</list>
+        </property>
     </bean>
 
 </beans>

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -185,7 +185,7 @@ public class BudgetVersionsAction extends BudgetAction {
 
         BudgetRatesService budgetService = KcServiceLocator.getService(BudgetRatesService.class);
         
-        if (!"TRUE".equals(budgetForm.getEditingMode().get(AuthorizationConstants.EditMode.VIEW_ONLY))) {
+        if (!budgetForm.getEditingMode().containsKey(AuthorizationConstants.EditMode.VIEW_ONLY)) {
             save(mapping, form, request, response);
         }
         AwardBudgetDocument budgetDoc = budgetForm.getBudgetDocument();

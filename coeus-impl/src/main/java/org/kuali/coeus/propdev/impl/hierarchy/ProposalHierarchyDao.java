@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,24 +18,23 @@
  */
 package org.kuali.coeus.propdev.impl.hierarchy;
 
-import org.kuali.coeus.propdev.impl.budget.ProposalBudgetStatus;
 import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.propdev.impl.person.ProposalPersonDegree;
-import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
+import org.kuali.coeus.propdev.impl.state.ProposalState;
 
 import java.util.List;
 
 
 public interface ProposalHierarchyDao {
-	public List<DevelopmentProposal> getHierarchyChildProposals(String parentProposalNumber);
-    public List<String> getHierarchyChildProposalNumbers(String proposalNumber);
-    public List<ProposalBudgetStatus> getHierarchyChildProposalBudgetStatuses(String proposalNumber);
-    public boolean personInMultipleChildProposals(String personId, String hierarchyProposalNumber);
-    public DevelopmentProposal getDevelopmentProposal(String proposalNumber);
-    public String getProposalState(String proposalNumber);
-    public List<ProposalPerson> isPersonOnProposal(String proposalNumber, String personId);
-    public void deleteDegreeInfo(String proposalNumber, Integer proposalPersonNumber, ProposalPerson person);
-    public List<ProposalPersonDegree> getDegreeInformation(String proposalNumber, ProposalPerson person);
-
-    }
+	List<DevelopmentProposal> getHierarchyChildProposals(String parentProposalNumber);
+    List<String> getHierarchyChildProposalNumbers(String proposalNumber);
+    boolean employeePersonInMultipleChildProposals(String personId, String hierarchyProposalNumber);
+    boolean nonEmployeePersonInMultipleChildProposals(Integer rolodexId, String hierarchyProposalNumber);
+    DevelopmentProposal getDevelopmentProposal(String proposalNumber);
+    ProposalState getProposalState(String proposalNumber);
+    List<ProposalPerson> isEmployeePersonOnProposal(String proposalNumber, String personId);
+    List<ProposalPerson> isNonEmployeePersonOnProposal(String proposalNumber, Integer rolodexId);
+    void deleteDegreeInfo(String proposalNumber, Integer proposalPersonNumber, ProposalPerson person);
+    List<ProposalPersonDegree> getDegreeInformation(String proposalNumber, ProposalPerson person);
+}

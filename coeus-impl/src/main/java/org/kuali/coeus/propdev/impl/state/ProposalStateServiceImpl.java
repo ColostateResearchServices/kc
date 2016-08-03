@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,19 +37,16 @@ public class ProposalStateServiceImpl implements ProposalStateService {
     @Autowired
     @Qualifier("kcWorkflowService")
     private KcWorkflowService kcWorkflowService;
-    
+
     @Override
     public String getProposalStateTypeCode(ProposalDevelopmentDocument proposalDevelopmentDocument, boolean isRejectAction) {
-        WorkflowDocument wd = proposalDevelopmentDocument.getDocumentHeader().getWorkflowDocument();
-        
+        final WorkflowDocument wd = proposalDevelopmentDocument.getDocumentHeader().getWorkflowDocument();
         if (wd.isInitiated()) {
             return ProposalState.IN_PROGRESS;
         } else if (wd.isSaved()) {
-            return computeProposalStateForSaved(proposalDevelopmentDocument);
-        } else if( isRejectAction && wd.isEnroute()  ) {
-            return ProposalState.REVISIONS_REQUESTED;
+            return computeProposalStateForSaved(proposalDevelopmentDocument, isRejectAction);
         } else if (wd.isEnroute()) {
-            return computeProposalStateForEnRoute(proposalDevelopmentDocument);
+            return computeProposalStateForEnRoute(proposalDevelopmentDocument, isRejectAction);
         } else if (wd.isApproved()) {
             return computeProposalStateForApproved(proposalDevelopmentDocument);
         } else if (wd.isDisapproved()) {
@@ -61,17 +58,21 @@ public class ProposalStateServiceImpl implements ProposalStateService {
         }
     }
 
-    protected String computeProposalStateForSaved(ProposalDevelopmentDocument proposalDevelopmentDocument) {
+    protected String computeProposalStateForSaved(ProposalDevelopmentDocument proposalDevelopmentDocument, boolean isRejectAction) {
         if (isSubmitted(proposalDevelopmentDocument)) {
             return ProposalState.APPROVAL_NOT_INITIATED_SUBMITTED;
+        } else if (isRejectAction) {
+            return ProposalState.REVISIONS_REQUESTED;
         } else {
             return ProposalState.IN_PROGRESS;
         }
     }
 
-    protected String computeProposalStateForEnRoute(ProposalDevelopmentDocument proposalDevelopmentDocument) {
+    protected String computeProposalStateForEnRoute(ProposalDevelopmentDocument proposalDevelopmentDocument, boolean isRejectAction) {
         String proposalStateTypeCode = proposalDevelopmentDocument.getDevelopmentProposal().getProposalStateTypeCode();
-        if ((isSubmitted(proposalDevelopmentDocument) && !isFinalApproval(proposalDevelopmentDocument.getDocumentHeader().getWorkflowDocument())) ||
+        if (isRejectAction) {
+        	return ProposalState.REVISIONS_REQUESTED;
+        } else if ((isSubmitted(proposalDevelopmentDocument) && !isFinalApproval(proposalDevelopmentDocument.getDocumentHeader().getWorkflowDocument())) ||
                 StringUtils.equals(proposalStateTypeCode,ProposalState.APPROVAL_PENDING_SUBMITTED)) {
             return ProposalState.APPROVAL_PENDING_SUBMITTED;
         } else {
@@ -80,10 +81,8 @@ public class ProposalStateServiceImpl implements ProposalStateService {
     }
 
     protected boolean isFinalApproval(WorkflowDocument workflowDocument) {
-        if (StringUtils.isNotEmpty(workflowDocument.getDocumentId())) {
-            return getKcWorkflowService().isFinalApproval(workflowDocument);
-        }
-        return false;
+        return StringUtils.isNotEmpty(workflowDocument.getDocumentId())
+                && getKcWorkflowService().isFinalApproval(workflowDocument);
     }
 
     protected String computeProposalStateForApproved(ProposalDevelopmentDocument proposalDevelopmentDocument) {

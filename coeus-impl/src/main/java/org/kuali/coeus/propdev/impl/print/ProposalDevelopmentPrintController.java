@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -64,7 +64,7 @@ public class ProposalDevelopmentPrintController extends ProposalDevelopmentContr
     @Transactional @RequestMapping(value = "/proposalDevelopment", params="methodToCall=preparePrintDialog")
     public ModelAndView preparePrintDialog(@ModelAttribute("KualiForm") ProposalDevelopmentDocumentForm form) {
         getProposalDevelopmentPrintingService().populateSponsorForms(form.getSponsorFormTemplates(),form.getDevelopmentProposal().getSponsorCode());
-
+        form.setPrintS2sOppForms(form.getDevelopmentProposal().getS2sOppForms());
         return getModelAndViewService().showDialog("PropDev-Print-Dialog",true,form);
     }
 

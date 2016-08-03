@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -243,7 +243,7 @@ public class BudgetCumilativeXmlStream extends BudgetBaseStream {
     protected void setBudgetLASalaryForBudgetRateAndBaseForCumulativeReport(List<ReportType> reportTypeList) {
         for (BudgetPeriod budgetPeriod : budget.getBudgetPeriods()) {
                 this.budgetPeriod = budgetPeriod;
-                setBudgetLASalaryForBudgetRateAndBase(reportTypeList);
+                setBudgetLASalaryForBudgetRateAndBase(reportTypeList, new ArrayList<ReportTypeVO>());
 
         }
     }
@@ -258,6 +258,7 @@ public class BudgetCumilativeXmlStream extends BudgetBaseStream {
 		for (BudgetPeriod budgetPeriod : budget.getBudgetPeriods()) {
 		    reportTypeVOList.addAll(getReportTypeVOList(budgetPeriod));
         }
+		reportTypeVOList.sort(Comparator.comparing(ReportTypeVO::getBudgetCategoryCode));
         setReportTypeListFromReportTypeVoListForCumulativeBudgetSalary(
                 reportTypeList, reportTypeVOList);
 	}
@@ -343,12 +344,9 @@ public class BudgetCumilativeXmlStream extends BudgetBaseStream {
 		for (BudgetPeriod budgetPeriod : budget.getBudgetPeriods()) {
 			this.budgetPeriod = budgetPeriod;
 			if (getUnitNumber() > 0) {
-				for (BudgetLineItem budgetLineItem : budgetPeriod
-						.getBudgetLineItems()) {
-					calculatedCost = calculatedCost
-							.add(getTotalCalculatedCostByRateClassTypeFromLineItem(
-									RateClassType.LAB_ALLOCATION
-											.getRateClassType(), budgetLineItem));
+				for (BudgetLineItem budgetLineItem : budgetPeriod.getBudgetLineItems()) {
+					calculatedCost = calculatedCost.add(
+                            getTotalCalculatedCostByRateClassTypeFromLineItem(RateClassType.LAB_ALLOCATION.getRateClassType(), budgetLineItem));
 				}
 			}
 		}

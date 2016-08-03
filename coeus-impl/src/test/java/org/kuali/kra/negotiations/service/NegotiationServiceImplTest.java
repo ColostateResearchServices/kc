@@ -1,3 +1,21 @@
+/*
+ * Kuali Coeus, a comprehensive research administration system for higher education.
+ *
+ * Copyright 2005-2016 Kuali, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.kuali.kra.negotiations.service;
 
 import static org.junit.Assert.*;
@@ -7,6 +25,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -165,6 +185,35 @@ public class NegotiationServiceImplTest {
 		assertEquals(location1.getDescription(), historyBeans.get(1).getLocation());
 		assertEquals(ZERO_DAYS_LONG_STRING, historyBeans.get(1).getLocationDays());
 	}
+
+    @Test
+    public void testNegotiationActivity() {
+        NegotiationActivity activity = new NegotiationActivity();
+        int numberOfDaysAgo = 10;
+        DateTime startDate1 = DateTime.now().minusDays(numberOfDaysAgo);
+        DateTime endDate1 = null;
+
+        Assert.assertTrue(StringUtils.equalsIgnoreCase(activity.getNumberOfDays(new Date(startDate1.getMillis()), null), "10"));
+
+        numberOfDaysAgo = 5;
+        startDate1 = DateTime.now().minusDays(numberOfDaysAgo);
+        endDate1 = null;
+        Assert.assertTrue(StringUtils.equalsIgnoreCase(activity.getNumberOfDays(new Date(startDate1.getMillis()), null), numberOfDaysAgo + ""));
+
+        numberOfDaysAgo = 5;
+        startDate1 = DateTime.now().minusDays(numberOfDaysAgo);
+        endDate1 = DateTime.now().minusDays(1);
+        Assert.assertTrue(StringUtils.equalsIgnoreCase(activity.getNumberOfDays(new Date(startDate1.getMillis()),new Date(endDate1.getMillis())), "4"));
+
+        startDate1 = DateTime.now().plusDays(5);
+        endDate1 = DateTime.now().minusDays(1);
+        Assert.assertTrue(StringUtils.equalsIgnoreCase(activity.getNumberOfDays(new Date(startDate1.getMillis()), new Date(endDate1.getMillis())), "-6"));
+
+        endDate1 = DateTime.now().plusDays(5);
+        startDate1 = DateTime.now().minusDays(1);
+        Assert.assertTrue(StringUtils.equalsIgnoreCase(activity.getNumberOfDays(new Date(startDate1.getMillis()), new Date(endDate1.getMillis())), "6"));
+
+    }
 	
 	@Test
 	public void testHistoryBeanGeneration_twoActivities_sameLocation_noFinalEndDate() {
@@ -238,7 +287,43 @@ public class NegotiationServiceImplTest {
 		DateTime effectiveStartDate = endDate1.plusDays(1);
 		assertEquals(effectiveStartDate.toDate(), historyBeans.get(1).getEfectiveLocationStartDate());
 	}
-	
+
+    @Test
+    public void testHistoryBeanGeneration_twoActivities_sameLocation_overLappingDates_daylight_savings() {
+        int numberOfDaysAgo = 20;
+        int activityLength1 = 10;
+
+        NegotiationActivity activity1 = new NegotiationActivity();
+        activity1.setLocation(location1);
+        activity1.setActivityType(activityType1);
+
+        DateTime startDate1 = DateTime.now().minusDays(numberOfDaysAgo);
+        activity1.setStartDate(new Date(startDate1.getMillis()));
+        DateTime endDate1 = startDate1.plusDays(activityLength1);
+        activity1.setEndDate(new Date(endDate1.getMillis()));
+
+        NegotiationActivity activity2 = new NegotiationActivity();
+        activity2.setLocation(location1);
+        activity2.setActivityType(activityType1);
+
+        DateTime startDate2 = DateTime.now().minusDays(15);
+        activity2.setStartDate(new Date(startDate2.getMillis()));
+        DateTime endDate2 = DateTime.now().plusDays(30);
+        activity2.setEndDate(new Date(endDate2.getMillis()));
+
+        List<NegotiationActivity> activities = new ArrayList<>();
+        activities.add(activity1);
+        activities.add(activity2);
+
+        List<NegotiationActivityHistoryLineBean> historyBeans = negotiationService.getNegotiationActivityHistoryLineBeans(activities);
+
+        assertEquals(2, historyBeans.size());
+        assertEquals(location1.getDescription(), historyBeans.get(0).getLocation());
+        assertEquals(String.valueOf(activityLength1), historyBeans.get(0).getLocationDays());
+        assertEquals(location1.getDescription(), historyBeans.get(1).getLocation());
+        assertEquals("39", historyBeans.get(1).getLocationDays());
+    }
+
 	@Test
 	public void testHistoryBeanGeneration_twoActivities_sameLocation_inclusiveDates() {
 		int numberOfDaysAgo = 30;

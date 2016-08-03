@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -82,7 +82,7 @@ public class Boundary {
     public int getStartDateTotalDays() {        
         calendar.setTime(startDate);
         return calendar.getActualMaximum(Calendar.DATE);
-    } // end getStartDateNoOfDays        
+    }
 
 /**
  * Returns the remaining no. of days in startDate
@@ -92,7 +92,7 @@ public class Boundary {
     public int getStartDateRemainingDays() {        
         calendar.setTime(startDate);
         return calendar.getActualMaximum(Calendar.DATE) - calendar.get(Calendar.DATE) + 1;
-    } // end getStartDateNoOfDays       
+    }
 
 /**
  * Returns the endDate Month * 
@@ -206,7 +206,7 @@ public class Boundary {
         this.applicableCostSharing = applicableCostSharing;
     }
     
- } // end Boundary
+ }
 
 
 

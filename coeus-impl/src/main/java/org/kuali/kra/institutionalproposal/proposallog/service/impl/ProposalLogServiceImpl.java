@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,7 @@ package org.kuali.kra.institutionalproposal.proposallog.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.kra.institutionalproposal.proposallog.ProposalLog;
+import org.kuali.kra.institutionalproposal.proposallog.ProposalLogType;
 import org.kuali.kra.institutionalproposal.proposallog.ProposalLogUtils;
 import org.kuali.kra.institutionalproposal.proposallog.service.ProposalLogService;
 import org.kuali.rice.krad.service.BusinessObjectService;
@@ -107,6 +108,11 @@ public class ProposalLogServiceImpl implements ProposalLogService {
             purgeAlreadyMergedLogs(matchedLogs);
         }
         return matchedLogs;
+    }
+    
+    public ProposalLogType getProposalLogTypeFromDescription(String description) {
+    	return getBusinessObjectService().findMatching(ProposalLogType.class, Collections.singletonMap("description", description))
+    			.stream().findFirst().orElse(null);
     }
 
     /**

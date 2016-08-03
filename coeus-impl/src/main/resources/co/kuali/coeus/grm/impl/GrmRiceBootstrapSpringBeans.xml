@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    -
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    -
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -49,6 +49,7 @@
         <property name="enabled" value="${kc.flyway.enabled}"/>
         <property name="sqlMigrationPath" value="${kc.flyway.sql.migration.path}" />
         <property name="javaMigrationPath" value="${kc.flyway.java.migration.path}" />
+        <property name="initVersion" value="${kc.flyway.baseline.version}" />
     </bean>
 
 </beans>

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@ import java.sql.Date;
 
 public class ReportTypeVO {
 
+    private Long budgetLineItemId;
 	private String rateClassDesc;
 	private String rateTypeDesc;
 	private Date startDate;
@@ -195,4 +196,12 @@ public class ReportTypeVO {
 	public void setEmployeeBenefitRate(ScaleTwoDecimal employeeBenefitRate) {
 		this.employeeBenefitRate = employeeBenefitRate;
 	}
+
+    public Long getBudgetLineItemId() {
+        return budgetLineItemId;
+    }
+
+    public void setBudgetLineItemId(Long budgetLineItemId) {
+        this.budgetLineItemId = budgetLineItemId;
+    }
 }

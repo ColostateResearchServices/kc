@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -54,7 +54,6 @@
   	
   	  	
 <kra-a:awardDataValidation /> 
-<%-- <kra:dataValidation auditActivated="${KualiForm.auditActivated}" topTab="true"> --%>
 <kra-a:awardHierarchy />
 <kra-a:awardSync />
 <kra-a:awardPrint />
@@ -66,10 +65,6 @@
 <kra-a:awardCreateAccount />
 </kra:section>
 <kul:panelFooter />
-
-<%--
-<kul:documentControls transactionalDocument="true" suppressRoutingControls="true" />
---%>
 
 <kul:documentControls transactionalDocument="true"
                       extraButtonSource="${extraButtonSource}"

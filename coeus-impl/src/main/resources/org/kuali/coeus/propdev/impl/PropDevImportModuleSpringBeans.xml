@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -31,7 +31,7 @@
 
     <bean id="grlImporter" abstract="true" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean" p:singleton="true" p:mustExist="true" />
     <bean id="institutionalProposalService" parent="grlImporter" p:serviceName="institutionalProposalService" />
-    <bean id="specialReviewService" parent="grlImporter" p:serviceName="specialReviewService"/> 
+    <bean id="specialReviewService" parent="grlImporter" p:serviceName="specialReviewService"/>
 
     <!-- SYS -->
 
@@ -52,6 +52,8 @@
     <bean id="auditHelper" parent="grlImporter" p:serviceName="auditHelper"/>
     <bean id="kcEntityManager" parent="grlImporter" p:serviceName="kcEntityManager" />
     <bean id="kcPessimisticLockService" parent="grlImporter" p:serviceName="kcPessimisticLockService" />
+    <bean id="jdbcOperations" parent="grlImporter" p:serviceName="jdbcOperations" />
+    <bean id="restAuditLoggerFactory" parent="grlImporter" p:serviceName="restAuditLoggerFactory" />
 
     <!-- AWARD -->
     <bean id="awardService" parent="grlImporter" p:serviceName="awardService" />
@@ -61,7 +63,6 @@
     <bean id="budgetCalculationService" parent="grlImporter" p:serviceName="budgetCalculationService" />
     <bean id="budgetService" parent="grlImporter" p:serviceName="budgetService" />
     <bean id="budgetSummaryService" parent="grlImporter" p:serviceName="budgetSummaryService" />
-    <bean id="deepCopyPostProcessor" parent="grlImporter" p:serviceName="deepCopyPostProcessor" />
     <bean id="budgetPersonService" parent="grlImporter" p:serviceName="budgetPersonService" />
     <bean id="budgetPersonnelBudgetService" parent="grlImporter" p:serviceName="budgetPersonnelBudgetService" />
     <bean id="budgetRatesService" parent="grlImporter" p:serviceName="budgetRatesService" />

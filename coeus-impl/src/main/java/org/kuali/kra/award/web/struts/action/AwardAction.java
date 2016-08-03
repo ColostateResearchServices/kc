@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionRedirect;
+import org.kuali.coeus.coi.framework.*;
 import org.kuali.coeus.common.framework.auth.SystemAuthorizationService;
 import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.kuali.coeus.common.framework.version.history.VersionHistory;
@@ -33,6 +35,7 @@ import org.kuali.coeus.common.framework.version.history.VersionHistoryService;
 import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
 import org.kuali.coeus.common.framework.auth.UnitAuthorizationService;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
+import org.kuali.coeus.sys.framework.controller.KcHoldingPageConstants;
 import org.kuali.coeus.sys.framework.validation.AuditHelper;
 import org.kuali.coeus.sys.framework.validation.AuditHelper.ValidationState;
 import org.kuali.coeus.sys.framework.controller.StrutsConfirmation;
@@ -41,7 +44,6 @@ import org.kuali.kra.award.*;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchy;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchyBean;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchyService;
-import org.kuali.kra.award.awardhierarchy.AwardHierarchyTempObject;
 import org.kuali.kra.award.awardhierarchy.sync.AwardSyncPendingChangeBean;
 import org.kuali.kra.award.awardhierarchy.sync.AwardSyncType;
 import org.kuali.kra.award.awardhierarchy.sync.service.AwardSyncCreationService;
@@ -152,11 +154,39 @@ public class AwardAction extends BudgetParentActionBase {
     public static final String DISABLE_ATTACHMENT_REMOVAL = "disableAttachmentRemoval";
     public static final String CURRENT_VERSION_BUDGETS = "currentVersionBudgets";
 
+    //question constants
+    private static final String QUESTION_VERIFY_SYNC="VerifySync";
+    private static final String QUESTION_VERIFY_EMPTY_SYNC="VerifyEmptySync";
+
+    private static final Log LOG = LogFactory.getLog( AwardAction.class );
+
     private enum SuperUserAction {
         SUPER_USER_APPROVE, TAKE_SUPER_USER_ACTIONS
     }
-    
-    private ParameterService parameterService;
+
+    private static final AwardTemplateSyncScope[] DEFAULT_SCOPES_REQUIRE_VERIFY_FOR_EMPTY = new AwardTemplateSyncScope[] {
+            AwardTemplateSyncScope.PAYMENTS_AND_INVOICES_TAB,
+            AwardTemplateSyncScope.SPONSOR_CONTACTS_TAB,
+            AwardTemplateSyncScope.REPORTS_TAB
+    };
+
+
+    private static final AwardTemplateSyncScope[] DEFAULT_AWARD_TEMPLATE_SYNC_SCOPES = new AwardTemplateSyncScope[] {
+            AwardTemplateSyncScope.AWARD_PAGE,
+            AwardTemplateSyncScope.COST_SHARE,
+            AwardTemplateSyncScope.PAYMENTS_AND_INVOICES_TAB,
+            AwardTemplateSyncScope.SPONSOR_CONTACTS_TAB,
+            AwardTemplateSyncScope.TERMS_TAB,
+            AwardTemplateSyncScope.REPORTS_TAB,
+            AwardTemplateSyncScope.COMMENTS_TAB
+    };
+
+    private static final String DOCUMENT_ROUTE_QUESTION="DocRoute";
+
+    private static final String ADD_SYNC_CHANGE_QUESTION = "document.question.awardhierarchy.sync";
+    private static final String DEL_SYNC_CHANGE_QUESTION = "document.question.awardhierarchy.sync";
+
+    private transient ParameterService parameterService;
     private transient AwardBudgetService awardBudgetService;
     private transient AwardService awardService;
     private transient ReportTrackingService reportTrackingService;
@@ -164,42 +194,14 @@ public class AwardAction extends BudgetParentActionBase {
     private transient SubAwardService subAwardService;
     TimeAndMoneyAwardDateSaveRuleImpl timeAndMoneyAwardDateSaveRuleImpl;
     private transient TimeAndMoneyVersionService timeAndMoneyVersionService;
-    
-    private static final Log LOG = LogFactory.getLog( AwardAction.class );
-    
-    //question constants
-    private static final String QUESTION_VERIFY_SYNC="VerifySync";
-    private static final String QUESTION_VERIFY_EMPTY_SYNC="VerifyEmptySync";
-    
-   
-    
-    private static final AwardTemplateSyncScope[] DEFAULT_SCOPES_REQUIRE_VERIFY_FOR_EMPTY = new AwardTemplateSyncScope[] {
-            AwardTemplateSyncScope.PAYMENTS_AND_INVOICES_TAB,
-            AwardTemplateSyncScope.SPONSOR_CONTACTS_TAB,
-            AwardTemplateSyncScope.REPORTS_TAB
-    };
-    
-    
-    private static final AwardTemplateSyncScope[] DEFAULT_AWARD_TEMPLATE_SYNC_SCOPES = new AwardTemplateSyncScope[] { 
-        AwardTemplateSyncScope.AWARD_PAGE,
-        AwardTemplateSyncScope.COST_SHARE,
-        AwardTemplateSyncScope.PAYMENTS_AND_INVOICES_TAB,
-        AwardTemplateSyncScope.SPONSOR_CONTACTS_TAB,
-        AwardTemplateSyncScope.TERMS_TAB,
-        AwardTemplateSyncScope.REPORTS_TAB,
-        AwardTemplateSyncScope.COMMENTS_TAB
-        };
-
-    private static final String DOCUMENT_ROUTE_QUESTION="DocRoute";
-    
-    private static final String ADD_SYNC_CHANGE_QUESTION = "document.question.awardhierarchy.sync";
-    private static final String DEL_SYNC_CHANGE_QUESTION = "document.question.awardhierarchy.sync";    
+    private transient ProjectPublisher projectPublisher;
+    private transient ProjectRetrievalService projectRetrievalService;
 
     @Override
     public ActionForward docHandler(ActionMapping mapping, ActionForm form
             , HttpServletRequest request, HttpServletResponse response) throws Exception {
         AwardForm awardForm = (AwardForm) form;
-        ActionForward docHandlerForward = null;
+        ActionForward docHandlerForward;
         cleanUpUserSession();
         docHandlerForward = handleLoadingDocument(mapping, awardForm, request, response);
         
@@ -276,7 +278,7 @@ public class AwardAction extends BudgetParentActionBase {
         AwardForm awardForm = (AwardForm)form;
         AwardDocument awardDocument = awardForm.getAwardDocument();
 
-        List<String> order = new ArrayList<String>();
+        List<String> order = new ArrayList<>();
         AwardHierarchyBean helperBean = awardForm.getAwardHierarchyBean();
         AwardHierarchy rootNode = helperBean.getRootNode();
         Award currentAward = awardDocument.getAward();
@@ -305,8 +307,9 @@ public class AwardAction extends BudgetParentActionBase {
         String returnLocation = buildActionUrl(routeHeaderId, Constants.MAPPING_AWARD_ACTIONS_PAGE, AWARD_DOCUMENT);
         
         ActionForward basicForward = mapping.findForward(KRADConstants.MAPPING_PORTAL);
-        ActionForward holdingPageForward = mapping.findForward(Constants.MAPPING_HOLDING_PAGE);
-        return routeToHoldingPage(basicForward, forward, holdingPageForward, returnLocation);
+        ActionRedirect holdingPageForward = new ActionRedirect(mapping.findForward(KcHoldingPageConstants.MAPPING_HOLDING_PAGE));
+        holdingPageForward.addParameter(KcHoldingPageConstants.HOLDING_PAGE_DOCUMENT_ID, routeHeaderId);
+        return routeToHoldingPage(basicForward, forward, holdingPageForward, returnLocation, routeHeaderId);
     }
     
     protected ActionForward submitAward(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -324,8 +327,9 @@ public class AwardAction extends BudgetParentActionBase {
         String returnLocation = buildActionUrl(routeHeaderId, Constants.MAPPING_AWARD_ACTIONS_PAGE, AWARD_DOCUMENT);
         
         ActionForward basicForward = mapping.findForward(KRADConstants.MAPPING_PORTAL);
-        ActionForward holdingPageForward = mapping.findForward(Constants.MAPPING_HOLDING_PAGE);
-        return routeToHoldingPage(basicForward, forward, holdingPageForward, returnLocation);
+        ActionRedirect holdingPageForward = new ActionRedirect(mapping.findForward(KcHoldingPageConstants.MAPPING_HOLDING_PAGE));
+        holdingPageForward.addParameter(KcHoldingPageConstants.HOLDING_PAGE_DOCUMENT_ID, routeHeaderId);
+        return routeToHoldingPage(basicForward, forward, holdingPageForward, returnLocation, routeHeaderId);
     }
     
     @Override
@@ -345,7 +349,7 @@ public class AwardAction extends BudgetParentActionBase {
            return submitAward(mapping, form, request, response);
         } else {
             GlobalVariables.getMessageMap().clearErrorMessages(); 
-            GlobalVariables.getMessageMap().putError(DATA_VALIDATION,KeyConstants.ERROR_WORKFLOW_SUBMISSION,  new String[] {});
+            GlobalVariables.getMessageMap().putError(DATA_VALIDATION,KeyConstants.ERROR_WORKFLOW_SUBMISSION);
             return mapping.findForward(Constants.MAPPING_BASIC);
          }
     }
@@ -380,7 +384,7 @@ public class AwardAction extends BudgetParentActionBase {
             ValidationState status = getAuditHelper().isValidSubmission(awardForm, true);
             if (status == ValidationState.ERROR) {
                 GlobalVariables.getMessageMap().clearErrorMessages();
-                GlobalVariables.getMessageMap().putError(DATA_VALIDATION, KeyConstants.ERROR_WORKFLOW_SUBMISSION, new String[] {});
+                GlobalVariables.getMessageMap().putError(DATA_VALIDATION, KeyConstants.ERROR_WORKFLOW_SUBMISSION);
                 forward = mapping.findForward(Constants.MAPPING_AWARD_BASIC);
             } else {
                 forward = super.blanketApprove(mapping, form, request, response);
@@ -394,13 +398,13 @@ public class AwardAction extends BudgetParentActionBase {
         String returnLocation = buildActionUrl(routeHeaderId, Constants.MAPPING_AWARD_ACTIONS_PAGE, AWARD_DOCUMENT);
         
         ActionForward basicForward = mapping.findForward(KRADConstants.MAPPING_PORTAL);
-        ActionForward holdingPageForward = mapping.findForward(Constants.MAPPING_HOLDING_PAGE);
-        return routeToHoldingPage(basicForward, forward, holdingPageForward, returnLocation);
+        ActionRedirect holdingPageForward = new ActionRedirect(mapping.findForward(KcHoldingPageConstants.MAPPING_HOLDING_PAGE));
+        holdingPageForward.addParameter(KcHoldingPageConstants.HOLDING_PAGE_DOCUMENT_ID, routeHeaderId);
+        return routeToHoldingPage(basicForward, forward, holdingPageForward, returnLocation, routeHeaderId);
     }
-    
+
     @Override
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ActionForward forward = mapping.findForward(Constants.MAPPING_BASIC);
         AwardForm awardForm = (AwardForm) form;
 
         Award award = awardForm.getAwardDocument().getAward();
@@ -422,7 +426,7 @@ public class AwardAction extends BudgetParentActionBase {
             award.setScienceCodeIndicator(Constants.YES_FLAG);
         }
 
-        forward = super.save(mapping, form, request, response);
+        ActionForward forward = super.save(mapping, form, request, response);
         if (awardForm.getMethodToCall().equals(SAVE) && awardForm.isAuditActivated()) {
             forward = mapping.findForward(Constants.MAPPING_AWARD_ACTIONS_PAGE);
         }
@@ -447,6 +451,9 @@ public class AwardAction extends BudgetParentActionBase {
          * deal with the award report tracking generation business.
          */
         getReportTrackingService().generateReportTrackingAndSave(award, false);
+
+        getProjectPublisher().publishProject(getProjectRetrievalService()
+                .retrieveProject(awardForm.getAwardDocument().getAward().getAwardId().toString()));
 
         return forward;
     }
@@ -567,7 +574,7 @@ public class AwardAction extends BudgetParentActionBase {
     private boolean checkNoMoreThanOnePI(Award award) {
         int piCount = 0;
         int counter = 0;
-        ArrayList<String> fields = new ArrayList<String>();
+        ArrayList<String> fields = new ArrayList<>();
         for (AwardPerson p : award.getProjectPersons()) {
             if (p.isPrincipalInvestigator()) {
                 piCount++;
@@ -611,20 +618,19 @@ public class AwardAction extends BudgetParentActionBase {
     }
 
     public void setBooleanAwardInMultipleNodeHierarchyOnForm (Award award) {
-        Map<String, Object> fieldValues = new HashMap<String, Object>();
+        Map<String, Object> fieldValues = new HashMap<>();
         String awardNumber = award.getAwardNumber();
         fieldValues.put(AWARD_NUMBER, awardNumber);
         fieldValues.put(ACTIVE, Boolean.TRUE);
-        BusinessObjectService businessObjectService =  KcServiceLocator.getService(BusinessObjectService.class);
-        List<AwardHierarchy> awardHierarchies = (List<AwardHierarchy>) businessObjectService.findMatching(AwardHierarchy.class, fieldValues);
+        List<AwardHierarchy> awardHierarchies = (List<AwardHierarchy>) getBusinessObjectService().findMatching(AwardHierarchy.class, fieldValues);
         if (awardHierarchies.size() == 0) {
             award.setAwardInMultipleNodeHierarchy(false);
         }else {
-            Map<String, Object> newFieldValues = new HashMap<String, Object>();
+            Map<String, Object> newFieldValues = new HashMap<>();
             String rootAwardNumber = awardHierarchies.get(0).getRootAwardNumber();
             newFieldValues.put(ROOT_AWARD_NUMBER, rootAwardNumber);
             newFieldValues.put(ACTIVE, Boolean.TRUE);
-            int matchingValues = businessObjectService.countMatching(AwardHierarchy.class, newFieldValues);
+            int matchingValues = getBusinessObjectService().countMatching(AwardHierarchy.class, newFieldValues);
             if (matchingValues > 1) {
                 award.setAwardInMultipleNodeHierarchy(true);
             }else {
@@ -682,8 +688,7 @@ public class AwardAction extends BudgetParentActionBase {
             }
         }
     }
-    
-    @SuppressWarnings({ "deprecation", "unchecked" })
+
     public ActionForward timeAndMoney(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception{
         AwardForm awardForm = (AwardForm) form;
         AwardDocument awardDocument = awardForm.getAwardDocument();
@@ -704,14 +709,15 @@ public class AwardAction extends BudgetParentActionBase {
     
             Award currentAward = awardDocument.getAward();
     
-            Map<String, Object> fieldValues = new HashMap<>();
             String rootAwardNumber = awardForm.getAwardHierarchyNodes().get(currentAward.getAwardNumber()).getRootAwardNumber();
-            fieldValues.put(ROOT_AWARD_NUMBER, rootAwardNumber);            
             String documentNumber = getTimeAndMoneyVersionService().getCurrentTimeAndMoneyDocumentNumber(rootAwardNumber);
             
             Award rootAward = getAwardVersionService().getWorkingAwardVersion(rootAwardNumber);   
 
             if(documentNumber == null) {
+            	if (!getTimeAndMoneyVersionService().validateCreateNewTimeAndMoneyDocument(rootAwardNumber)) {
+            		return mapping.findForward(Constants.MAPPING_AWARD_BASIC);
+            	}
                 generateDirectFandADistribution(currentAward);
                 TimeAndMoneyDocument timeAndMoneyDocument = (TimeAndMoneyDocument) documentService.getNewDocument(TimeAndMoneyDocument.class);
                 timeAndMoneyDocument.getDocumentHeader().setDocumentDescription(TIMEANDMONEY_DOCUMENT);
@@ -777,7 +783,7 @@ public class AwardAction extends BudgetParentActionBase {
             transactionDetail.setObligatedIndirectAmount(new ScaleTwoDecimal(0));
         }
         transactionDetail.setAwardNumber(rootAward.getAwardNumber());
-        transactionDetail.setTransactionId(new Long(0));
+        transactionDetail.setTransactionId(0L);
         transactionDetail.setTimeAndMoneyDocumentNumber(documentNumber);
         transactionDetail.setComments(commentsString);
         transactionDetail.setTransactionDetailType(TransactionDetailType.PRIMARY.toString());
@@ -852,9 +858,7 @@ public class AwardAction extends BudgetParentActionBase {
     }
     
     public List<Award> getAwardVersions(String awardNumber) {
-        BusinessObjectService businessObjectService =  KcServiceLocator.getService(BusinessObjectService.class);
-        List<Award> awards = (List<Award>)businessObjectService.findMatchingOrderBy(Award.class, getHashMapToFindActiveAward(awardNumber), "sequenceNumber", true);   
-        return awards;
+        return (List<Award>)getBusinessObjectService().findMatchingOrderBy(Award.class, getHashMapToFindActiveAward(awardNumber), "sequenceNumber", true);
     }
     
     public AwardVersionService getAwardVersionService() {
@@ -879,7 +883,7 @@ public class AwardAction extends BudgetParentActionBase {
     }  
    
     private Map<String, String> getHashMapToFindActiveAward(String goToAwardNumber) {
-        Map<String, String> map = new HashMap<String,String>();
+        Map<String, String> map = new HashMap<>();
         map.put(AWARD_NUMBER, goToAwardNumber);
         return map;
     }
@@ -903,7 +907,6 @@ public class AwardAction extends BudgetParentActionBase {
      *
      * This method gets called upon navigation to Payment, Reports and Terms tab.
      */
-    @SuppressWarnings("all")
     public ActionForward paymentReportsAndTerms(ActionMapping mapping, ActionForm form
             , HttpServletRequest request, HttpServletResponse response) {
         AwardForm awardForm = (AwardForm) form;
@@ -913,7 +916,6 @@ public class AwardAction extends BudgetParentActionBase {
         return mapping.findForward(Constants.MAPPING_AWARD_PAYMENT_REPORTS_AND_TERMS_PAGE);
     }
 
-    @SuppressWarnings("unchecked")
     protected void setReportsAndTermsOnAwardForm(AwardForm awardForm) {
         AwardSponsorTermService awardSponsorTermService = getAwardSponsorTermService();
         List<KeyValue> sponsorTermTypes = awardSponsorTermService.retrieveSponsorTermTypesToAwardFormForPanelHeaderDisplay();
@@ -1028,7 +1030,7 @@ public class AwardAction extends BudgetParentActionBase {
         // OJB sometimes erroneously returns a Budget instead of a AwardBudExt. The following line will
         // force OJB to load the AwardBudgetExt first making it return the right object in all subsequent
         // retrievals.
-        getAwardService().findAwardsForAwardNumber(awardNumber).stream().forEach(award -> {award.refreshReferenceObject(CURRENT_VERSION_BUDGETS);});
+        getAwardService().findAwardsForAwardNumber(awardNumber).stream().forEach(award -> award.refreshReferenceObject(CURRENT_VERSION_BUDGETS));
         getAwardBudgetService().populateBudgetLimitSummary(awardForm.getBudgetLimitSummary(), awardForm.getAwardDocument().getAward());
         return mapping.findForward(Constants.MAPPING_AWARD_BUDGET_VERSIONS_PAGE);
     }
@@ -1066,15 +1068,6 @@ public class AwardAction extends BudgetParentActionBase {
         }
         
         return forward;
-    }    
-    
-    
-    protected void loadDocument(KualiDocumentFormBase kualiForm) throws WorkflowException {
-        super.loadDocument(kualiForm);
-        Award award = ((AwardForm) kualiForm).getAwardDocument().getAward();
-        if (!((AwardForm) kualiForm).getAwardDocument().isPlaceHolderDocument()) {
-        	award.setSponsorNihMultiplePi(getSponsorHierarchyService().isSponsorNihMultiplePi(award.getSponsorCode()));
-        }
     }
 
     protected void loadDocumentInForm(HttpServletRequest request, AwardForm awardForm)
@@ -1126,7 +1119,7 @@ public class AwardAction extends BudgetParentActionBase {
             GlobalVariables.getMessageMap().putError(
                     StringUtils.isBlank(syncScopes) ? "document.award.awardTemplate" 
                             : String.format("document.award.awardTemplate.%s", StringUtils.substring(syncScopes,1)), 
-                            KeyConstants.ERROR_NO_SPONSOR_TEMPLATE_FOUND,  new String[]{});
+                            KeyConstants.ERROR_NO_SPONSOR_TEMPLATE_FOUND);
             awardForm.setOldTemplateCode(null);
             awardForm.setTemplateLookup(false);
             return mapping.findForward(Constants.MAPPING_AWARD_BASIC);
@@ -1148,7 +1141,7 @@ public class AwardAction extends BudgetParentActionBase {
          * SCOPE1...SCOPEN : A ':' delimited list of scope names that should be synced. If none are specified then the sync is done for every field and method.
          * 
          */
-        if (StringUtils.isNotBlank(syncScopes) && syncScopes.length() > 1 && syncScopes.indexOf(":")>-1) {
+        if (StringUtils.isNotBlank(syncScopes) && syncScopes.length() > 1 && syncScopes.contains(":")) {
             String[] scopeStrings = StringUtils.split(StringUtils.substringAfter(syncScopes, ":"));
             scopes = new AwardTemplateSyncScope[scopeStrings.length];
             for( int i = 0; i < scopeStrings.length; i++ ) {
@@ -1192,7 +1185,7 @@ public class AwardAction extends BudgetParentActionBase {
 
         if( awardDocument.getAward().getTemplateCode() == null ) {
             GlobalVariables.getMessageMap().clearErrorMessages();
-            GlobalVariables.getMessageMap().putError(DOCUMENT_AWARD_AWARD_TEMPLATE,KeyConstants.ERROR_NO_TEMPLATE_CODE,  new String[] {});
+            GlobalVariables.getMessageMap().putError(DOCUMENT_AWARD_AWARD_TEMPLATE,KeyConstants.ERROR_NO_TEMPLATE_CODE);
             awardForm.setOldTemplateCode(null);
             awardForm.setTemplateLookup(false);
             return mapping.findForward(Constants.MAPPING_AWARD_BASIC);
@@ -1208,11 +1201,11 @@ public class AwardAction extends BudgetParentActionBase {
             //setup before forwarding to the processor.
             AwardTemplateSyncScope[] scopes;
             scopes = new AwardTemplateSyncScope[] { AwardTemplateSyncScope.FULL };
-            HashMap<AwardTemplateSyncScope,Boolean> confirmMap = new HashMap<AwardTemplateSyncScope,Boolean>();
+            HashMap<AwardTemplateSyncScope,Boolean> confirmMap = new HashMap<>();
             confirmMap.put(AwardTemplateSyncScope.FULL, true);
             awardForm.setCurrentSyncScopes(scopes);
             awardForm.setSyncRequiresConfirmationMap(confirmMap);
-        } else if( question!=null && (QUESTION_VERIFY_SYNC+":"+AwardTemplateSyncScope.FULL).equals(question) ) {
+        } else if((QUESTION_VERIFY_SYNC + ":" + AwardTemplateSyncScope.FULL).equals(question)) {
             
             if( ConfirmationQuestion.YES.equals(buttonClicked) ) {
                 //if the award has a sequence number more than 1, we 
@@ -1273,75 +1266,74 @@ public class AwardAction extends BudgetParentActionBase {
         AwardTemplateSyncScope[] scopes = awardForm.getCurrentSyncScopes();
         AwardTemplateSyncScope[] scopesList = scopes;   // for maintaining the current scopes list
         ConfigurationService kualiConfiguration = CoreApiServiceLocator.getKualiConfigurationService();
-        
-        for( int i = 0; i < scopes.length; i++ ) {
-            AwardTemplateSyncScope currentScope = scopes[i];
-            
+
+        for (AwardTemplateSyncScope currentScope : scopes) {
             if (((question == null || !((StringUtils.equals(QUESTION_VERIFY_SYNC + ":" + currentScope, question))))
-                        && awardForm.getSyncRequiresConfirmationMap().get(currentScope))
+                    && awardForm.getSyncRequiresConfirmationMap().get(currentScope))
                     && !StringUtils.equals(QUESTION_VERIFY_EMPTY_SYNC + ":" + currentScope, question)) {
-                        
+
                 String scopeSyncLabel = "";
                 StrutsConfirmation confirmationQuestion;
-                if( StringUtils.isNotEmpty(currentScope.getDisplayPropertyName())) {
+                if (StringUtils.isNotEmpty(currentScope.getDisplayPropertyName())) {
                     scopeSyncLabel = kualiConfiguration.getPropertyValueAsString(currentScope.getDisplayPropertyName());
                 }
-                if( StringUtils.equals(scopeSyncLabel, REPORTS_PROPERTY_NAME) || StringUtils.equals(scopeSyncLabel, PAYMENT_INVOICES_PROPERTY_NAME)) {
-                    confirmationQuestion = buildAwardSyncParameterizedConfirmationQuestion(mapping, form, request, response, (QUESTION_VERIFY_SYNC+":"+currentScope),
+                if (StringUtils.equals(scopeSyncLabel, REPORTS_PROPERTY_NAME) || StringUtils.equals(scopeSyncLabel, PAYMENT_INVOICES_PROPERTY_NAME)) {
+                    confirmationQuestion = buildAwardSyncParameterizedConfirmationQuestion(mapping, form, request, response, (QUESTION_VERIFY_SYNC + ":" + currentScope),
                             scopeSyncLabel, awardDocument.getAward().getAwardTemplate().getDescription(), getScopeMessageToAddQuestion(currentScope));
                 } else {
-                    confirmationQuestion = buildParameterizedConfirmationQuestion(mapping, form, request, response, (QUESTION_VERIFY_SYNC+":"+currentScope), 
-                            currentScope.equals(AwardTemplateSyncScope.FULL)?KeyConstants.QUESTION_SYNC_FULL:KeyConstants.QUESTION_SYNC_PANEL,
-                            scopeSyncLabel, awardDocument.getAward().getAwardTemplate().getDescription(), getScopeMessageToAddQuestion(currentScope)); 
+                    confirmationQuestion = buildParameterizedConfirmationQuestion(mapping, form, request, response, (QUESTION_VERIFY_SYNC + ":" + currentScope),
+                            currentScope.equals(AwardTemplateSyncScope.FULL) ? KeyConstants.QUESTION_SYNC_FULL : KeyConstants.QUESTION_SYNC_PANEL,
+                            scopeSyncLabel, awardDocument.getAward().getAwardTemplate().getDescription(), getScopeMessageToAddQuestion(currentScope));
                 }
                 confirmationQuestion.setCaller(PROCESS_SYNC_AWARD);
-                awardForm.setCurrentSyncQuestionId( (QUESTION_VERIFY_SYNC+":"+currentScope) );
-                return  (performQuestionWithoutInput( confirmationQuestion,""  ));
-               
-            } else if (( StringUtils.equals(awardForm.getCurrentSyncQuestionId(), question) 
-                            &&  ConfirmationQuestion.YES.equals(buttonClicked)) 
-                         || !awardForm.getSyncRequiresConfirmationMap().get(currentScope)) {                               
-                    if( LOG.isDebugEnabled() ) 
-                        LOG.debug( "USER ACCEPTED SYNC OR NO CONFIRM REQUIRED FOR:"+currentScope+" CALLING SYNC SERVICE." );
-                    boolean templateHasScopedData = awardTemplateSyncService.templateContainsScopedData(awardDocument, currentScope);
-                    boolean scopeRequiresEmptyConfirm = ArrayUtils.contains(DEFAULT_SCOPES_REQUIRE_VERIFY_FOR_EMPTY,currentScope);
-                    
-                    if( awardDocument.getAward().getSequenceNumber() > 1 
-                            && !templateHasScopedData 
-                            && StringUtils.equals( awardForm.getCurrentSyncQuestionId(), (QUESTION_VERIFY_SYNC+":"+currentScope) ) 
-                            && scopeRequiresEmptyConfirm ) {
-                       //we need to verify since the template has no data.
-                        String scopeSyncLabel = "";
-                        if( StringUtils.isNotEmpty(currentScope.getDisplayPropertyName()))
-                            scopeSyncLabel = kualiConfiguration.getPropertyValueAsString(currentScope.getDisplayPropertyName());
-                        
-                        StrutsConfirmation confirmationQuestion = buildParameterizedConfirmationQuestion(mapping, form, request, response, (
-                                    QUESTION_VERIFY_EMPTY_SYNC+":"+currentScope), KeyConstants.QUESTION_SYNC_PANEL_TO_EMPTY,
-                                    scopeSyncLabel, awardDocument.getAward().getAwardTemplate().getDescription()); 
-                        awardForm.setCurrentSyncQuestionId((QUESTION_VERIFY_EMPTY_SYNC+":"+currentScope));
-                        confirmationQuestion.setCaller(PROCESS_SYNC_AWARD);
-                        return performQuestionWithoutInput(confirmationQuestion, "");
-                        
-                    }
-                    
-                    AwardTemplateSyncScope[] s = { currentScope };
-                    awardTemplateSyncService.syncAwardToTemplate(awardDocument, s);
-                    scopesList = ArrayUtils.remove(scopesList, 0);    // maintaining the current list
-                    awardForm.setCurrentSyncScopes(scopesList);
-                    
-           } else if ( StringUtils.equals(awardForm.getCurrentSyncQuestionId(),question) && ConfirmationQuestion.NO.equals(buttonClicked)) {
-                if( LOG.isDebugEnabled() ) 
-                    LOG.debug( "USER DECLINED "+currentScope +", SKIPPING." );
+                awardForm.setCurrentSyncQuestionId((QUESTION_VERIFY_SYNC + ":" + currentScope));
+                return (performQuestionWithoutInput(confirmationQuestion, ""));
+
+            } else if ((StringUtils.equals(awardForm.getCurrentSyncQuestionId(), question)
+                    && ConfirmationQuestion.YES.equals(buttonClicked))
+                    || !awardForm.getSyncRequiresConfirmationMap().get(currentScope)) {
+                if (LOG.isDebugEnabled())
+                    LOG.debug("USER ACCEPTED SYNC OR NO CONFIRM REQUIRED FOR:" + currentScope + " CALLING SYNC SERVICE.");
+                boolean templateHasScopedData = awardTemplateSyncService.templateContainsScopedData(awardDocument, currentScope);
+                boolean scopeRequiresEmptyConfirm = ArrayUtils.contains(DEFAULT_SCOPES_REQUIRE_VERIFY_FOR_EMPTY, currentScope);
+
+                if (awardDocument.getAward().getSequenceNumber() > 1
+                        && !templateHasScopedData
+                        && StringUtils.equals(awardForm.getCurrentSyncQuestionId(), (QUESTION_VERIFY_SYNC + ":" + currentScope))
+                        && scopeRequiresEmptyConfirm) {
+                    //we need to verify since the template has no data.
+                    String scopeSyncLabel = "";
+                    if (StringUtils.isNotEmpty(currentScope.getDisplayPropertyName()))
+                        scopeSyncLabel = kualiConfiguration.getPropertyValueAsString(currentScope.getDisplayPropertyName());
+
+                    StrutsConfirmation confirmationQuestion = buildParameterizedConfirmationQuestion(mapping, form, request, response, (
+                                    QUESTION_VERIFY_EMPTY_SYNC + ":" + currentScope), KeyConstants.QUESTION_SYNC_PANEL_TO_EMPTY,
+                            scopeSyncLabel, awardDocument.getAward().getAwardTemplate().getDescription());
+                    awardForm.setCurrentSyncQuestionId((QUESTION_VERIFY_EMPTY_SYNC + ":" + currentScope));
+                    confirmationQuestion.setCaller(PROCESS_SYNC_AWARD);
+                    return performQuestionWithoutInput(confirmationQuestion, "");
+
+                }
+
+                AwardTemplateSyncScope[] s = {currentScope};
+                awardTemplateSyncService.syncAwardToTemplate(awardDocument, s);
+                scopesList = ArrayUtils.remove(scopesList, 0);    // maintaining the current list
+                awardForm.setCurrentSyncScopes(scopesList);
+
+            } else if (StringUtils.equals(awardForm.getCurrentSyncQuestionId(), question) && ConfirmationQuestion.NO.equals(buttonClicked)) {
+                if (LOG.isDebugEnabled())
+                    LOG.debug("USER DECLINED " + currentScope + ", SKIPPING.");
                 scopesList = ArrayUtils.remove(scopesList, 0);    // maintaining the current list
                 awardForm.setCurrentSyncScopes(scopesList);
             } else {
-                throw new RuntimeException( "Do not know what to do in this case!" );
+                throw new RuntimeException("Do not know what to do in this case!");
             }
         }   
         awardForm.setOldTemplateCode(null);
         awardForm.setTemplateLookup(false);
         awardForm.setCurrentSyncScopes(null);
         awardForm.setCurrentSyncQuestionId(null);
+        awardForm.buildReportTrackingBeans();
         return mapping.findForward(Constants.MAPPING_AWARD_BASIC);
     }    
     
@@ -1354,7 +1346,7 @@ public class AwardAction extends BudgetParentActionBase {
     protected String getSyncScopesString(HttpServletRequest request) {
         String syncScopesList = null;
         String parameterName = (String) request.getAttribute(KRADConstants.METHOD_TO_CALL_ATTRIBUTE);
-        if (StringUtils.isNotBlank(parameterName) && parameterName.indexOf(".scopes")!=-1) {
+        if (StringUtils.isNotBlank(parameterName) && parameterName.contains(".scopes")) {
             syncScopesList = StringUtils.substringBetween(parameterName, ".scopes", ".anchor");
         }
         return syncScopesList;
@@ -1378,7 +1370,7 @@ public class AwardAction extends BudgetParentActionBase {
     public ActionForward performLookup(ActionMapping mapping, ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String parameterName = (String) request.getAttribute(KRADConstants.METHOD_TO_CALL_ATTRIBUTE);
-        if( (StringUtils.isNotBlank(parameterName) && parameterName.indexOf(".performLookup")!=-1 && parameterName.contains("templateCode:document.award.templateCode"))) {
+        if( (StringUtils.isNotBlank(parameterName) && parameterName.contains(".performLookup") && parameterName.contains("templateCode:document.award.templateCode"))) {
             AwardForm awardForm = (AwardForm)form;
             awardForm.setTemplateLookup(true);
             ((AwardForm)form).setOldTemplateCode(((AwardForm)form).getAwardDocument().getAward().getTemplateCode() );
@@ -1431,7 +1423,7 @@ public class AwardAction extends BudgetParentActionBase {
         throws Exception {
         AwardForm awardForm = (AwardForm) form;
         String message = ADD_SYNC_CHANGE_QUESTION;
-        if (awardForm.getAwardSyncBean().getPendingChanges().get(0).getSyncType().equals(AwardSyncType.DELETE_SYNC.getSyncValue())) {
+        if (awardForm.getAwardSyncBean().getPendingChanges().get(0).getSyncType().equals(AwardSyncType.DELETE_SYNC)) {
             message = DEL_SYNC_CHANGE_QUESTION;
         }
         //overwrite the method to call to call this instead of the original method which would result
@@ -1599,7 +1591,7 @@ public class AwardAction extends BudgetParentActionBase {
             }
         } else {
             GlobalVariables.getMessageMap().clearErrorMessages(); 
-            GlobalVariables.getMessageMap().putError(DATA_VALIDATION,KeyConstants.ERROR_WORKFLOW_SUBMISSION,  new String[] {});
+            GlobalVariables.getMessageMap().putError(DATA_VALIDATION,KeyConstants.ERROR_WORKFLOW_SUBMISSION);
             return forward;
         }
         return forward;
@@ -1628,11 +1620,11 @@ public class AwardAction extends BudgetParentActionBase {
 	}
 	
 	protected void buildAwardHierarchySourceAndTargetList(AwardForm awardForm, Award currentAward) {
-		List<String> order = new ArrayList<String>();
+		List<String> order = new ArrayList<>();
 		if (StringUtils.isBlank(awardForm.getAwardHierarchyTargetAwardNumber())) {
 			awardForm.setAwardHierarchyTargetAwardNumber(currentAward.getAwardNumber());
 		}
-	    Map<String,AwardHierarchyNode> awardHierarchyNodes = new HashMap<String, AwardHierarchyNode>();
+	    Map<String,AwardHierarchyNode> awardHierarchyNodes = new HashMap<>();
 	    Map<String,AwardHierarchy> awardHierarchyItems = 
 	    		awardForm.getAwardHierarchyBean().getAwardHierarchy(awardForm.getAwardHierarchyTargetAwardNumber(), order);
 	    getAwardHierarchyService().populateAwardHierarchyNodes(awardHierarchyItems, awardHierarchyNodes, currentAward.getAwardNumber(), currentAward.getSequenceNumber().toString());
@@ -1659,4 +1651,30 @@ public class AwardAction extends BudgetParentActionBase {
 		}
 		return result;
 	}
+
+
+    public ProjectPublisher getProjectPublisher() {
+        if (projectPublisher == null) {
+            projectPublisher = KcServiceLocator.getService(ProjectPublisher.class);
+        }
+
+        return projectPublisher;
+    }
+
+    public void setProjectPublisher(ProjectPublisher projectPublisher) {
+        this.projectPublisher = projectPublisher;
+    }
+
+    public ProjectRetrievalService getProjectRetrievalService() {
+        if (projectRetrievalService == null) {
+            projectRetrievalService = KcServiceLocator.getService("awardProjectRetrievalService");
+        }
+
+        return projectRetrievalService;
+    }
+
+    public void setProjectRetrievalService(ProjectRetrievalService projectRetrievalService) {
+        this.projectRetrievalService = projectRetrievalService;
+    }
+
 }

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,10 @@ public class SubAwardFinancialActionTest {
     @Before
     public void setUp() throws Exception {
 
-        subAwardFinancialAction = new SubAwardFinancialAction();
+        subAwardFinancialAction = new SubAwardFinancialAction() {
+        	@Override
+        	public void saveSubAwardAmountInfo(SubAwardAmountInfo subAwardAmountInfo) { }
+        };
         subAward = new SubAward();
         amountInfo = new SubAwardAmountInfo();
         amountInfo.setAnticipatedAmount(new ScaleTwoDecimal(5));

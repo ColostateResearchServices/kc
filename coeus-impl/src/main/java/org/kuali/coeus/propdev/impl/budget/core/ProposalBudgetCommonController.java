@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -172,8 +172,11 @@ public class ProposalBudgetCommonController extends ProposalBudgetControllerBase
 	@RequestMapping(params = "methodToCall=closeWithSave")
 	public ModelAndView closeWithSave(@ModelAttribute("KualiForm") ProposalBudgetForm form) throws Exception {
 		super.save(form);
-		getProposalBudgetLockService().deleteBudgetLock(form.getBudget());
-		return getNavigationControllerService().returnToHub(form);
+		if (getGlobalVariableService().getMessageMap().hasNoErrors()) {
+			getProposalBudgetLockService().deleteBudgetLock(form.getBudget());
+			return getNavigationControllerService().returnToHub(form);
+		}
+		return getModelAndViewService().getModelAndView(form);
 	}
 
 	@Transactional

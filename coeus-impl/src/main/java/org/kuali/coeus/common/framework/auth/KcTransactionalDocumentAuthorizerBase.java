@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -201,11 +201,6 @@ public abstract class KcTransactionalDocumentAuthorizerBase extends BusinessObje
         return true;
     }
     
-    /**
-     * Can the document be routed into workflow?
-     * @param document the document
-     * @return true if routeable; otherwise false
-     */
     protected final boolean canRoute(Document document) {
         boolean canRoute = false;
         WorkflowDocument workflowDocument = document.getDocumentHeader().getWorkflowDocument();
@@ -214,7 +209,7 @@ public abstract class KcTransactionalDocumentAuthorizerBase extends BusinessObje
         }
         return canRoute;
     }
-        
+
     /**
      * Can the document be canceled?
      * @param document the document

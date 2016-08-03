@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,8 @@
 package org.kuali.coeus.sys.impl.gv;
 
 import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
+import org.kuali.rice.kns.util.KNSGlobalVariables;
+import org.kuali.rice.kns.util.MessageList;
 import org.kuali.rice.krad.util.AuditCluster;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.UserSession;
@@ -52,7 +54,17 @@ public class GlobalVariableServiceImpl implements GlobalVariableService {
     public void setMessageMap(MessageMap messageMap) {
         GlobalVariables.setMessageMap(messageMap);
     }
-    
+
+    @Override
+    public MessageList getMessageList() {
+        return KNSGlobalVariables.getMessageList();
+    }
+
+    @Override
+    public void setMessageList(MessageList messageList) {
+        KNSGlobalVariables.setMessageList(messageList);
+    }
+
     @Override
     public Map<String, AuditCluster> getAuditErrorMap() {
     	return GlobalVariables.getAuditErrorMap();

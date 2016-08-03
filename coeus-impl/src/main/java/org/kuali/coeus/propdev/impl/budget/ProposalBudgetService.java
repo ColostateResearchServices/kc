@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,19 +32,15 @@ public interface ProposalBudgetService extends BudgetCommonService<DevelopmentPr
      *
      * @param parentDocument The parent document that has the budget.
      * @return parentDocument final version of budget corresponding to the parentDocument object.
-     * @throws org.kuali.rice.kew.api.exception.WorkflowException
      */
-    public ProposalDevelopmentBudgetExt getFinalBudgetVersion(ProposalDevelopmentDocument parentDocument);
+    ProposalDevelopmentBudgetExt getFinalBudgetVersion(ProposalDevelopmentDocument parentDocument);
     
     /**
      * Copy the specified budget, using the optional developmentProposal as the new budget parent if provided.
-     * @param budget
-     * @param onlyOnePeriod
-     * @param developmentProposal
-     * @return
      */
-    public ProposalDevelopmentBudgetExt copyBudgetVersion(ProposalDevelopmentBudgetExt budget, boolean onlyOnePeriod, DevelopmentProposal developmentProposal);
+    ProposalDevelopmentBudgetExt copyBudgetVersion(ProposalDevelopmentBudgetExt budget, boolean onlyOnePeriod, DevelopmentProposal developmentProposal);
 
-    public boolean isBudgetMarkedForSubmission(Budget finalBudget, Budget currentBudget);
-    
+    boolean isBudgetMarkedForSubmission(Budget finalBudget, Budget currentBudget);
+
+    void syncBudgetReferencesForCopy(ProposalDevelopmentBudgetExt budget);
 }

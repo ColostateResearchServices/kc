@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,9 @@ package org.kuali.coeus.sys.framework.util;
 import org.kuali.rice.krad.lookup.CollectionIncomplete;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Yet another collection utility.  Contains methods that are not found in the apache util classes or the
@@ -107,4 +110,59 @@ public final class CollectionUtils {
         }
     }
 
+    /**
+     * Creates an entry from a key and value.
+     * @param key the key. Can be null.
+     * @param value the value.  Can be null.
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return a Map.Entry
+     */
+    public static <K, V> Map.Entry<K, V> entry(K key, V value) {
+        return new AbstractMap.SimpleEntry<K, V>(key, value);
+    }
+
+    /**
+     * Convenience method to a return a Collector that converts an Map.Entry to a Map.
+     * @param <K> the key type
+     * @param <U> the value type
+     * @return A Collector from Map.Entry to Map
+     */
+    public static <K, U> Collector<Map.Entry<K, U>, ?, Map<K, U>> entriesToMap() {
+        return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
+    }
+    
+    /**
+     * Convenience method to a return a Collector that converts an Map.Entry to a Map.
+     * @param <K> the key type
+     * @param <U> the value type
+     * @return A Collector from Map.Entry to Map
+     */
+    public static <K, U> Collector<Map.Entry<K, U>, ?, Map<K, U>> nullSafeEntriesToMap() {
+        return nullSafeToMap(Map.Entry::getKey, Map.Entry::getValue);
+    }
+    
+    /**
+     * Null-safe replacement for Collectors.toMap. Allows null keys and values. 
+     * If a duplicate key is found, throws IllegalStateException
+     * @param keyMapper function to get the key from the items
+     * @param valueMapper function to get the value from the items
+     * @return A Collector from List to Map
+     */
+    public static <T, K, U> Collector<T, ?, Map<K, U>> nullSafeToMap(Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends U> valueMapper) {
+    	return Collectors.collectingAndThen(
+	        Collectors.toList(),
+	        list -> {
+	            Map<K, U> result = new HashMap<>();
+	            for (T item : list) {
+	                K key = keyMapper.apply(item);
+	                if (result.putIfAbsent(key, valueMapper.apply(item)) != null) {
+	                    throw new IllegalStateException(String.format("Duplicate key %s", key));
+	                }
+	            }
+	            return result;
+	        }
+    	);
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -907,13 +907,11 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
 
     @Override
     public void rePopulateCalculatedAmount(Budget budget, BudgetLineItem budgetLineItem) {
-        budgetLineItem.getBudgetCalculatedAmounts().clear();
-        new LineItemCalculator(budget,budgetLineItem).setCalculatedAmounts(budget, budgetLineItem);
+        new LineItemCalculator(budget,budgetLineItem).setCalculatedAmounts(budgetLineItem);
     }
     @Override
     public void rePopulateCalculatedAmount(Budget budget, BudgetPersonnelDetails newBudgetPersonnelDetails) {
-        newBudgetPersonnelDetails.getBudgetCalculatedAmounts().clear();
-        new PersonnelLineItemCalculator(budget,newBudgetPersonnelDetails).setCalculatedAmounts(budget, newBudgetPersonnelDetails);
+        new PersonnelLineItemCalculator(budget,newBudgetPersonnelDetails).setCalculatedAmounts(newBudgetPersonnelDetails);
     }
     @Override
     public void updatePersonnelBudgetRate(BudgetLineItem budgetLineItem){
@@ -1200,11 +1198,21 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
     }
 
     private boolean isCalculatedDirectCostRate(boolean personnelFlag, RateType rateType, RateClass rateClass) {
-        return ((!getBudgetRatesService().isEmployeeBenefit(rateClass.getRateClassTypeCode())
+        return (isEbonLAorVacationLA(rateType, rateClass) || !personnelFlag)
+                && !getBudgetRatesService().isOverhead(rateClass.getRateClassTypeCode())
+                && !isVacation(rateType, rateClass);
+
+    }
+
+    protected boolean isVacation(RateType rateType, RateClass rateClass) {
+        return getBudgetRatesService().isVacation(rateClass.getRateClassTypeCode()) &&
+                !getBudgetRatesService().isVacationOnLabAllocation(rateClass.getCode(), rateType.getRateTypeCode());
+    }
+
+    private boolean isEbonLAorVacationLA(RateType rateType, RateClass rateClass) {
+        return !getBudgetRatesService().isEmployeeBenefit(rateClass.getRateClassTypeCode())
                 || getBudgetRatesService().isVacationOnLabAllocation(rateClass.getCode(), rateType.getRateTypeCode())
-                || getBudgetRatesService().isEmployeeBenefitOnLabAllocation(rateClass.getCode(), rateType.getRateTypeCode()))
-                || !personnelFlag)
-                && !StringUtils.equals(rateClass.getRateClassTypeCode(), RateClassType.OVERHEAD.getRateClassType());
+                || getBudgetRatesService().isEmployeeBenefitOnLabAllocation(rateClass.getCode(), rateType.getRateTypeCode());
     }
 
     /**
@@ -1264,7 +1272,7 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
     }
     
     public void calculateAndUpdateFormulatedCost(BudgetLineItem budgetLineItem) {
-        if(budgetLineItem.getFormulatedCostElementFlag()){
+        if(budgetLineItem.getFormulatedCostElementFlag() && !CollectionUtils.isEmpty(budgetLineItem.getBudgetFormulatedCosts())){
             ScaleTwoDecimal formulatedCostTotal = getFormulatedCostsTotal(budgetLineItem);
             if(formulatedCostTotal!=null){
                 budgetLineItem.setLineItemCost(formulatedCostTotal);

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -124,13 +124,9 @@ public abstract class ProtocolFormBase extends KcTransactionalDocumentFormBase i
     public void initialize() throws Exception {
             setProtocolHelper(createNewProtocolHelperInstanceHook(this));
             setPersonnelHelper(createNewPersonnelHelperInstanceHook(this));
-            setPermissionsHelper(createNewPermissionsHelperInstanceHook(this));
             setCustomDataHelper(createNewCustomDataHelperInstanceHook(this));
             setSpecialReviewHelper(createNewSpecialReviewHelperInstanceHook(this));
-            setActionHelper(createNewActionHelperInstanceHook(this));
             setQuestionnaireHelper(createNewQuestionnaireHelperInstanceHook(this));
-            setNotesAttachmentsHelper(createNewNotesAttachmentsHelperInstanceHook(this));
-            this.notesAttachmentsHelper.prepareView();
             setNewProtocolReferenceBean(createNewProtocolReferenceBeanInstance());
             setOnlineReviewsActionHelper(createNewOnlineReviewsActionHelperInstanceHook(this));
             setNotificationHelper(getNotificationHelperHook());
@@ -138,13 +134,29 @@ public abstract class ProtocolFormBase extends KcTransactionalDocumentFormBase i
     }
        
   
+    public void initializePermission() throws Exception {
+        setPermissionsHelper(createNewPermissionsHelperInstanceHook(this));
+    }
+    
+    public void initializeNotesAttachments() throws Exception {
+        setNotesAttachmentsHelper(createNewNotesAttachmentsHelperInstanceHook(this));
+        this.notesAttachmentsHelper.prepareView();
+    }
+    
+    public void initializeProtocolAction() throws Exception {
+        setActionHelper(createNewActionHelperInstanceHook(this, true));
+    }
 
+    public void initializeProtocolHistory() throws Exception {
+        setActionHelper(createNewActionHelperInstanceHook(this, true));
+    }
+    
     protected abstract NotificationHelper<? extends ProtocolNotificationContextBase> getNotificationHelperHook();
     
     protected abstract ProtocolReferenceBeanBase createNewProtocolReferenceBeanInstance();
 
     protected abstract QuestionnaireHelperBase createNewQuestionnaireHelperInstanceHook(ProtocolFormBase protocolForm);
-    protected abstract ActionHelperBase createNewActionHelperInstanceHook(ProtocolFormBase protocolForm) throws Exception;
+    protected abstract ActionHelperBase createNewActionHelperInstanceHook(ProtocolFormBase protocolForm, boolean initializeActions) throws Exception;
     protected abstract ProtocolSpecialReviewHelperBase createNewSpecialReviewHelperInstanceHook(ProtocolFormBase protocolForm);
     protected abstract ProtocolCustomDataHelperBase createNewCustomDataHelperInstanceHook(ProtocolFormBase protocolForm);
     protected abstract OnlineReviewsActionHelperBase createNewOnlineReviewsActionHelperInstanceHook(ProtocolFormBase protocolForm);
@@ -219,7 +231,20 @@ public abstract class ProtocolFormBase extends KcTransactionalDocumentFormBase i
     }
     
     public PermissionsHelperBase getPermissionsHelper() {
-          return permissionsHelper;
+    	if (permissionsHelper == null) {
+    		try {
+    			this.initializePermission();
+    		} catch (Exception e) {
+    			throw new RuntimeException(e);
+    		}
+    	}
+        return permissionsHelper;
+    }
+    
+    public void resetUserPermissionStates() {
+    	if (permissionsHelper != null) {
+    		permissionsHelper.resetUserStates();
+    	}
     }
     
     
@@ -475,6 +500,10 @@ public abstract class ProtocolFormBase extends KcTransactionalDocumentFormBase i
             status = this.getDocument().getDocumentHeader().getWorkflowDocument().getStatus();
         }
         return StringUtils.equals(status.getCode(), DocumentStatus.SAVED.getCode());
+    }
+
+    public boolean getDisplayEditButton() {
+        return !getProtocolDocument().getProtocol().isRenewalWithoutAmendment();
     }
     
 }

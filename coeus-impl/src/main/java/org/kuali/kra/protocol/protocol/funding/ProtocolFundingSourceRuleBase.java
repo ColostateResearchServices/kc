@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -75,6 +75,7 @@ public abstract class ProtocolFundingSourceRuleBase extends KcTransactionalDocum
         FundingSourceType fundingSourceType = fundingSource.getFundingSourceType();
         String fundingSourceNumber = fundingSource.getFundingSourceNumber();
         String fundingSourceName =  fundingSource.getFundingSourceName();
+        String fundingSourceTypeCode =  fundingSource.getFundingSourceTypeCode();
 
         if (StringUtils.isBlank(fundingSource.getFundingSourceTypeCode())) {
             isValid = false;
@@ -89,7 +90,8 @@ public abstract class ProtocolFundingSourceRuleBase extends KcTransactionalDocum
                     fundingSourceType.getDescription(), fundingSourceNumber);      
         }         
         if (StringUtils.isBlank(fundingSourceName) && StringUtils.isNotBlank(fundingSource.getFundingSourceTypeCode())
-                && getProtocolFundingSourceService().isEditable(fundingSource.getFundingSourceTypeCode())) {
+                && getProtocolFundingSourceService().isEditable(fundingSource.getFundingSourceTypeCode())
+                && !FundingSourceType.OTHER.equals(fundingSourceTypeCode)) {
             isValid = false;
             reportError(Constants.PROTOCOL_FUNDING_SOURCE_NAME_FIELD, KeyConstants.ERROR_PROTOCOL_FUNDING_SOURCE_NAME_NOT_FOUND);         
         }

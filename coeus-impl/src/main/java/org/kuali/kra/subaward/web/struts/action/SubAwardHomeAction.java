@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -198,7 +198,7 @@ public class SubAwardHomeAction extends SubAwardAction{
             forward = mapping.findForward(Constants.MAPPING_SUBAWARD_PAGE);            
         } else {
             initializeFormWithSubAward(subAwardForm, (SubAward) foundPending.getSequenceOwner());
-            response.sendRedirect(buildForwardUrl(subAwardForm.getDocId()));
+            response.sendRedirect(buildForwardUrl(subAwardForm.getSubAwardDocument().getDocumentNumber()));
             forward = null;
         }
         return forward;
@@ -223,8 +223,7 @@ public class SubAwardHomeAction extends SubAwardAction{
      * @return ActionForward
      * @throws Exception
      */
-    private ActionForward createAndSaveNewSubAwardVersion(
-    HttpServletResponse response, SubAwardForm subAwardForm,
+    private ActionForward createAndSaveNewSubAwardVersion(HttpServletResponse response, SubAwardForm subAwardForm,
        SubAwardDocument subAwardDocument, SubAward subAward) throws Exception {
        subAwardForm.getSubAwardDocument().getSubAward().setNewVersion(true);
        SubAwardDocument newSubAwardDocument = getSubAwardService().createNewSubAwardVersion(subAwardForm.getSubAwardDocument());

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.common.committee.impl.meeting.CommitteeScheduleMinuteBase;
 import org.kuali.coeus.common.framework.custom.DocumentCustomData;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
+import org.kuali.coeus.sys.framework.controller.KcHoldingPageConstants;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.bo.RolePersons;
 import org.kuali.kra.infrastructure.Constants;
@@ -74,7 +75,7 @@ public class ProtocolOnlineReviewDocument  extends ProtocolOnlineReviewDocumentB
 
 	public ProtocolOnlineReviewDocument() { 
         super();
-        protocolOnlineReviewList = new ArrayList<ProtocolOnlineReview>();
+        protocolOnlineReviewList = new ArrayList<>();
         ProtocolOnlineReview newProtocolReview = new ProtocolOnlineReview();
         newProtocolReview.setProtocolOnlineReviewDocument(this);
         protocolOnlineReviewList.add(newProtocolReview);
@@ -148,10 +149,7 @@ public class ProtocolOnlineReviewDocument  extends ProtocolOnlineReviewDocumentB
     
     @Override
     protected List<RolePersons> getAllRolePersons() {
-        KcAuthorizationService kraAuthService =
-               (KcAuthorizationService) KcServiceLocator.getService(KcAuthorizationService.class);
-        //return kraAuthService.getAllRolePersons(getProtocolOnlineReview());
-        return new ArrayList<RolePersons>();
+        return new ArrayList<>();
     }
     
     public String getDocumentTypeCode() {
@@ -161,32 +159,39 @@ public class ProtocolOnlineReviewDocument  extends ProtocolOnlineReviewDocumentB
     
     @Override
     public void doRouteStatusChange(DocumentRouteStatusChange statusChangeEvent) {
-        super.doRouteStatusChange(statusChangeEvent);
-        if (StringUtils.equals(statusChangeEvent.getNewRouteStatus(), KewApiConstants.ROUTE_HEADER_CANCEL_CD) 
-                || StringUtils.equals(statusChangeEvent.getNewRouteStatus(), KewApiConstants.ROUTE_HEADER_DISAPPROVED_CD)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format("Protocol Online Review Document %s has been cancelled, deleting associated review comments.", getDocumentNumber()));
+
+        executeAsLastActionUser(() -> {
+            super.doRouteStatusChange(statusChangeEvent);
+            if (StringUtils.equals(statusChangeEvent.getNewRouteStatus(), KewApiConstants.ROUTE_HEADER_CANCEL_CD)
+                    || StringUtils.equals(statusChangeEvent.getNewRouteStatus(), KewApiConstants.ROUTE_HEADER_DISAPPROVED_CD)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(String.format("Protocol Online Review Document %s has been cancelled, deleting associated review comments.", getDocumentNumber()));
+                }
+                getProtocolOnlineReview().getProtocolSubmission().getProtocolReviewers().remove(getProtocolOnlineReview().getProtocolReviewer());
+
+                List<CommitteeScheduleMinuteBase> reviewComments = getProtocolOnlineReview().getCommitteeScheduleMinutes();
+                List<CommitteeScheduleMinuteBase> deletedReviewComments = new ArrayList<CommitteeScheduleMinuteBase>();
+                getReviewerCommentsService().deleteAllReviewComments(reviewComments, deletedReviewComments);
+                getReviewerCommentsService().saveReviewComments(reviewComments, deletedReviewComments);
+
+                List<ProtocolReviewAttachmentBase> reviewAttachments = getProtocolOnlineReview().getReviewAttachments();
+                List<ProtocolReviewAttachmentBase> deletedReviewAttachments = new ArrayList<ProtocolReviewAttachmentBase>();
+                getReviewerCommentsService().deleteAllReviewAttachments(reviewAttachments, deletedReviewAttachments);
+                getReviewerCommentsService().saveReviewAttachments(reviewAttachments, deletedReviewAttachments);
+
+                getProtocolOnlineReview().setProtocolOnlineReviewStatusCode(ProtocolOnlineReviewStatus.REMOVED_CANCELLED_STATUS_CD);
+                getBusinessObjectService().save(getProtocolOnlineReview());
             }
-            getProtocolOnlineReview().getProtocolSubmission().getProtocolReviewers().remove(getProtocolOnlineReview().getProtocolReviewer());
-            
-            List<CommitteeScheduleMinuteBase> reviewComments = getProtocolOnlineReview().getCommitteeScheduleMinutes();
-            List<CommitteeScheduleMinuteBase> deletedReviewComments = new ArrayList<CommitteeScheduleMinuteBase>();
-            getReviewerCommentsService().deleteAllReviewComments(reviewComments, deletedReviewComments);
-            getReviewerCommentsService().saveReviewComments(reviewComments, deletedReviewComments);
-
-            List<ProtocolReviewAttachmentBase> reviewAttachments = getProtocolOnlineReview().getReviewAttachments();
-            List<ProtocolReviewAttachmentBase> deletedReviewAttachments = new ArrayList<ProtocolReviewAttachmentBase>();
-            getReviewerCommentsService().deleteAllReviewAttachments(reviewAttachments, deletedReviewAttachments);
-            getReviewerCommentsService().saveReviewAttachments(reviewAttachments, deletedReviewAttachments);
-
-            getProtocolOnlineReview().setProtocolOnlineReviewStatusCode(ProtocolOnlineReviewStatus.REMOVED_CANCELLED_STATUS_CD);
-            getBusinessObjectService().save(getProtocolOnlineReview());
-        }
+            return null;
+        });
     }
 
     @Override
     public void doActionTaken( ActionTakenEvent event ) {
-        super.doActionTaken(event);
+        executeAsLastActionUser( () -> {
+            super.doActionTaken(event);
+            return null;
+        });
     }
     
     private BusinessObjectService getBusinessObjectService() {
@@ -208,7 +213,7 @@ public class ProtocolOnlineReviewDocument  extends ProtocolOnlineReviewDocumentB
     public boolean isProcessComplete() {
         boolean isComplete = true;
         
-        String backLocation = (String) GlobalVariables.getUserSession().retrieveObject(Constants.HOLDING_PAGE_RETURN_LOCATION);
+        String backLocation = (String) GlobalVariables.getUserSession().retrieveObject(KcHoldingPageConstants.HOLDING_PAGE_RETURN_LOCATION);
         String olrDocId = getURLParamValue(backLocation, OLR_DOC_ID_PARAM);
         if (olrDocId != null) {
             String olrEvent = getURLParamValue(backLocation, OLR_EVENT_PARAM);

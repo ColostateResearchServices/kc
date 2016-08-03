@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -48,10 +48,9 @@ public class QuestionField extends InputFieldBase {
     private static final long serialVersionUID = -940684402907403282L;
     private Map<String, String> controlMappings;
     private boolean useSuggest;
-    private String bindingInfo;
 
     public QuestionField() {
-        controlMappings = new HashMap<String, String>();
+        controlMappings = new HashMap<>();
     }
     
     @Override
@@ -146,6 +145,7 @@ public class QuestionField extends InputFieldBase {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public QuestionField copy() {
         final QuestionField copy =  super.copy();
         copy.setControlMappings(new HashMap<>(controlMappings));

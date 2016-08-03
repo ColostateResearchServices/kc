@@ -1,3 +1,21 @@
+/*
+ * Kuali Coeus, a comprehensive research administration system for higher education.
+ *
+ * Copyright 2005-2016 Kuali, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.kuali.coeus.dc.tm;
 
 import static org.kuali.coeus.dc.common.db.PreparedStatementUtils.setString;
@@ -23,7 +41,7 @@ public class TimeAndMoneyDocumentStatusDaoImpl implements
 	private static final String PENDING_STATUS = "PENDING";
 	private static final String CANCELED_STATUS = "CANCELED";
 	private static final String ACTIVE_STATUS = "ACTIVE";
-	private static final String MAX_ACTIVE_DOCUMENT_QUERY = "select max(DOCUMENT_NUMBER) from TIME_AND_MONEY_DOCUMENT where TIME_AND_MONEY_DOC_STATUS = '" +
+	private static final String MAX_ACTIVE_DOCUMENT_QUERY = "select max(CAST(DOCUMENT_NUMBER AS DECIMAL (38,0))) from TIME_AND_MONEY_DOCUMENT where TIME_AND_MONEY_DOC_STATUS = '" +
 			ARCHIVED_STATUS + "' group by AWARD_NUMBER";
 	private static final String UPDATE_ACTIVE_TIME_AND_MONEY_DOC_STATUS = "update TIME_AND_MONEY_DOCUMENT doc set TIME_AND_MONEY_DOC_STATUS = '"
 			+ ACTIVE_STATUS + "' where DOCUMENT_NUMBER = ?";
@@ -36,15 +54,15 @@ public class TimeAndMoneyDocumentStatusDaoImpl implements
     private List<String> activeStatuses;
 	
     public TimeAndMoneyDocumentStatusDaoImpl() {
-    	canceledStatuses = new ArrayList<String>();
+    	canceledStatuses = new ArrayList<>();
     	canceledStatuses.add("X");
     	canceledStatuses.add("D");
-    	pendingStatuses = new ArrayList<String>();
+    	pendingStatuses = new ArrayList<>();
     	pendingStatuses.add("I");
     	pendingStatuses.add("S");
     	pendingStatuses.add("R");
     	pendingStatuses.add("E");
-    	activeStatuses = new ArrayList<String>();
+    	activeStatuses = new ArrayList<>();
     	activeStatuses.add("P");
     	activeStatuses.add("F");    	
     }

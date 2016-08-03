@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -50,7 +50,6 @@ public class IacucPrintXmlUtilServiceImpl implements IacucPrintXmlUtilService {
     private static final String ACTION_ID = "actionId";
     private DateTimeService dateTimeService;
     private ReviewCommentsService reviewCommentsService;
-    private IacucProtocolAmendRenewService protocolAmendRenewService;
     private BusinessObjectService businessObjectService;
     
     public void setPersonXml(KcPerson person, PersonType personType) {
@@ -207,7 +206,7 @@ public class IacucPrintXmlUtilServiceImpl implements IacucPrintXmlUtilService {
         for (CommitteeScheduleMinuteBase minuteEntryInfoBean : minutes) {
             ProtocolBase protocol = minuteEntryInfoBean.getProtocol();
             if (protocol != null && protocol.getProtocolNumber() != null) {
-            	String minutesProtocolNumber = getProtocolAmendRenewService().getAmendedOrRenewalProtocolNumber(protocol.getProtocolNumber());
+            	String minutesProtocolNumber = protocol.getProtocolNumber();
                 if (minutesProtocolNumber.equals(protocolSubmission.getProtocolNumber())
                         && protocol.getProtocolSubmission() != null
                         && protocol.getProtocolSubmission().getSubmissionNumber().equals(protocolSubmission.getSubmissionNumber())) {
@@ -267,14 +266,5 @@ public class IacucPrintXmlUtilServiceImpl implements IacucPrintXmlUtilService {
     public DateTimeService getDateTimeService() {
         return dateTimeService;
     }
-
-	public IacucProtocolAmendRenewService getProtocolAmendRenewService() {
-		return protocolAmendRenewService;
-	}
-
-	public void setProtocolAmendRenewService(
-			IacucProtocolAmendRenewService protocolAmendRenewService) {
-		this.protocolAmendRenewService = protocolAmendRenewService;
-	}    
     
 }

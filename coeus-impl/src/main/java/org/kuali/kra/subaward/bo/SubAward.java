@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,8 @@
  */
 package org.kuali.kra.subaward.bo;
 
+import org.kuali.coeus.common.framework.custom.CustomDataContainer;
+import org.kuali.coeus.common.framework.custom.DocumentCustomData;
 import org.kuali.coeus.common.framework.org.Organization;
 import org.kuali.coeus.common.framework.org.OrganizationService;
 import org.kuali.coeus.common.framework.person.KcPerson;
@@ -49,13 +51,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 
  * This class is using for SubAward...
  */
 public class SubAward extends KcPersistableBusinessObjectBase
-implements Permissionable, SequenceOwner<SubAward>, Negotiable {
+implements Permissionable, SequenceOwner<SubAward>, CustomDataContainer, Negotiable {
 
     private static final long serialVersionUID = 1L;
     private static final String ROLODEX_ID_FIELD_NAME = "rolodexId";
@@ -110,8 +113,6 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
 
     private SubAwardReports subAwardReports;
 
-    private SubAwardAmountInfo subAwardAmountInfo;
-
     private String organizationName;
 
     private String requisitionerName;
@@ -143,7 +144,11 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
     private Date executionDate;
     
     private String requisitionId;
-    
+
+    private String fedAwardProjDesc;
+    private ScaleTwoDecimal fAndARate;
+    private Boolean deMinimus;
+
     private SubAwardCostType subAwardCostType;
 
     private Date modificationEffectiveDate;
@@ -155,6 +160,12 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
     private List<SubAwardTemplateInfo> subAwardTemplateInfo;
     private List<SubAwardPrintAgreement> subAwardPrintAgreement;
     private List<SubAwardForms> subAwardForms;
+	private List<SubAwardFundingSource> subAwardFundingSourceList;
+    private List<SubAwardAmountInfo> subAwardAmountInfoList;
+    private List<SubAwardAmountInfo> allSubAwardAmountInfos;
+    private List<SubAwardContact> subAwardContactsList;
+    private List<SubAwardCloseout> subAwardCloseoutList;
+    private List<SubAwardCustomData> subAwardCustomDataList;
 
     private VersionHistorySearchBo versionHistory;
 
@@ -466,7 +477,7 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
         if (requisitionerUserName != null) {
             KcPerson requisitioner = KcServiceLocator.
             getService(KcPersonService.class).getKcPersonByUserName(
-            		requisitionerUserName);
+                    requisitionerUserName);
             if (requisitioner != null) {
                 requisitionerId = requisitioner.getPersonId();
             }
@@ -502,18 +513,6 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
 	public void setSiteInvestigatorName(String siteInvestigatorName) {
 		this.siteInvestigatorName = siteInvestigatorName;
 	}
-
-
-
-	private List<SubAwardFundingSource> subAwardFundingSourceList;
-
-    private List<SubAwardAmountInfo> subAwardAmountInfoList;
-
-    private List<SubAwardContact> subAwardContactsList;
-
-    private List<SubAwardCloseout> subAwardCloseoutList;
-
-    private List<SubAwardCustomData> subAwardCustomDataList;
 
     /**.
 	 * This creates subAwardConstructor
@@ -924,22 +923,6 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
 		this.subAwardCloseout = subAwardCloseout;
 	}
 
-	/**.
-	 * This is the Getter Method for subAwardAmountInfo
-	 * @return Returns the subAwardAmountInfo.
-	 */
-	public SubAwardAmountInfo getSubAwardAmountInfo() {
-		return subAwardAmountInfo;
-	}
-
-	/**.
-	 * This is the Setter Method for subAwardAmountInfo
-	 * @param subAwardAmountInfo The subAwardAmountInfo to set.
-	 */
-	public void setSubAwardAmountInfo(SubAwardAmountInfo subAwardAmountInfo) {
-		this.subAwardAmountInfo = subAwardAmountInfo;
-	}
-
     /**.
 	 * This is the Getter Method for subAwardFundingSourceList
 	 * @return Returns the subAwardFundingSourceList.
@@ -1047,18 +1030,13 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
 	 * This is the Getter Method for initializeCollections
 	 */
     protected void initializeCollections() {
-        subAwardFundingSourceList = new AutoPopulatingList<
-        SubAwardFundingSource>(SubAwardFundingSource.class);
-        subAwardAmountInfoList = new AutoPopulatingList<
-        SubAwardAmountInfo>(SubAwardAmountInfo.class);
-        subAwardContactsList = new AutoPopulatingList<
-        SubAwardContact>(SubAwardContact.class);
-        subAwardCloseoutList = new AutoPopulatingList<
-        SubAwardCloseout>(SubAwardCloseout.class);
-        subAwardCustomDataList = new AutoPopulatingList<
-        SubAwardCustomData>(SubAwardCustomData.class);
-        subAwardReportList = new AutoPopulatingList<
-        SubAwardReports>(SubAwardReports.class);
+        subAwardFundingSourceList = new AutoPopulatingList<SubAwardFundingSource>(SubAwardFundingSource.class);
+        subAwardAmountInfoList = new AutoPopulatingList<SubAwardAmountInfo>(SubAwardAmountInfo.class);
+        allSubAwardAmountInfos = new ArrayList<>();
+        subAwardContactsList = new AutoPopulatingList<SubAwardContact>(SubAwardContact.class);
+        subAwardCloseoutList = new AutoPopulatingList<SubAwardCloseout>(SubAwardCloseout.class);
+        subAwardCustomDataList = new AutoPopulatingList<SubAwardCustomData>(SubAwardCustomData.class);
+        subAwardReportList = new AutoPopulatingList<SubAwardReports>(SubAwardReports.class);
     }
     /**.
 	 * This is the Setter Method for subAwardDocument
@@ -1181,6 +1159,10 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
         return "subAwardCode";
     }
 
+    @Override
+    public String getVersionNameFieldValue() {
+        return subAwardCode;
+    }
 
 
     /**.
@@ -1602,5 +1584,58 @@ implements Permissionable, SequenceOwner<SubAward>, Negotiable {
 
     public void setVersionHistory(VersionHistorySearchBo versionHistory) {
         this.versionHistory = versionHistory;
+    }
+
+    public Boolean getDeMinimus() {
+        return deMinimus;
+    }
+
+    public void setDeMinimus(Boolean deMinimus) {
+        this.deMinimus = deMinimus;
+    }
+
+    public ScaleTwoDecimal getfAndARate() {
+        return fAndARate;
+    }
+
+    public void setfAndARate(ScaleTwoDecimal fAndARate) {
+        this.fAndARate = fAndARate;
+    }
+
+    public String getFedAwardProjDesc() {
+        return fedAwardProjDesc;
+    }
+
+    public void setFedAwardProjDesc(String fedAwardProjDesc) {
+        this.fedAwardProjDesc = fedAwardProjDesc;
+    }
+
+	public List<SubAwardAmountInfo> getAllSubAwardAmountInfos() {
+		return allSubAwardAmountInfos;
+	}
+
+    public SubAwardAmountInfo getLatestSubAwardAmountInfo() {
+        if (allSubAwardAmountInfos.size() > 0) {
+            return allSubAwardAmountInfos.get(allSubAwardAmountInfos.size() - 1);
+        }
+        return null;
+    }
+
+	public void setAllSubAwardAmountInfos(
+			List<SubAwardAmountInfo> allSubAwardAmountInfos) {
+		this.allSubAwardAmountInfos = allSubAwardAmountInfos;
+	}
+	
+	public List<SubAwardAmountInfo> getHistoricalAmountInfos() {
+		final List<Integer> currentAmountInfoIds = getSubAwardAmountInfoList().stream()
+				.map(SubAwardAmountInfo::getSubAwardAmountInfoId).collect(Collectors.toList());
+		return getAllSubAwardAmountInfos().stream()
+				.filter(amountInfo -> !currentAmountInfoIds.contains(amountInfo.getSubAwardAmountInfoId()))
+				.collect(Collectors.toList());
+	}
+
+    @Override
+    public List<? extends DocumentCustomData> getCustomDataList() {
+        return getSubAwardCustomDataList();
     }
 }

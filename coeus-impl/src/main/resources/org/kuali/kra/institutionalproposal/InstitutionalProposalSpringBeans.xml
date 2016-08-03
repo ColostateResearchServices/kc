@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -30,12 +31,16 @@
                            http://www.springframework.org/schema/tx
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://www.springframework.org/schema/util
-                           http://www.springframework.org/schema/util/spring-util.xsd">
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <tx:annotation-driven transaction-manager="transactionManager" />
     <context:annotation-config />
+    <mvc:annotation-driven/>
 
     <context:component-scan base-package="org.kuali.coeus.instprop"/>
+    <context:component-scan base-package="org.kuali.kra.institutionalproposal"/>
 
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
@@ -110,7 +115,11 @@
     <bean id="dateTimeService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="dateTimeService" />
     </bean>
-    
+
+    <bean id="disclosureStatusRetrievalService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="disclosureStatusRetrievalService" />
+    </bean>
+
     <bean id="documentService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="documentService" />
     </bean>
@@ -155,6 +164,14 @@
         <property name="serviceName" value="versioningService" />
     </bean>
 
+    <bean id="versionHistoryService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="versionHistoryService" />
+    </bean>
+
+    <bean id="fiscalYearMonthService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="fiscalYearMonthService" />
+    </bean>
+
     <bean id="kcPersonService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="kcPersonService" />
     </bean>
@@ -162,6 +179,7 @@
     <bean id="documentDictionaryService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="documentDictionaryService" />
     </bean>
+
 
     <bean id="dbPlatform" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="dbPlatform" />
@@ -236,7 +254,7 @@
     </bean>
 	
     <!-- Institutional Proposal Services -->
-    
+
     <bean id="institutionalProposalService" class="org.kuali.kra.institutionalproposal.service.impl.InstitutionalProposalServiceImpl">
         <property name="documentService" ref="documentService" />
         <property name="businessObjectService" ref="businessObjectService" />
@@ -245,6 +263,8 @@
         <property name="sequenceAccessorService" ref="sequenceAccessorService" />
         <property name="parameterService" ref="parameterService" />
         <property name="institutionalProposalDao" ref="institutionalProposalDao"/>
+        <property name="instPropProjectRetrievalService" ref="instPropProjectRetrievalService" />
+        <property name="dataObjectService" ref="dataObjectService" />
     </bean>
 
     <bean id="institutionalProposalDao" parent="platformAwareDao" class="org.kuali.kra.institutionalproposal.dao.ojb.InstitutionalProposalDaoOjb"/>
@@ -265,8 +285,13 @@
     
     <bean id="dataObjectService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="dataObjectService" />
-    </bean>    
-    
+    </bean>
+
+    <bean id="institutionalProposalCustomDataResolverTypeServiceCallback" parent="kcCoreCallbackService"
+          p:callbackService-ref="institutionalProposalCustomDataResolverTypeService"
+          p:localServiceName="institutionalProposalCustomDataResolverTypeService"
+          p:serviceInterface="org.kuali.rice.krms.framework.type.TermResolverTypeService"/>
+
     <bean id="institutionalProposalLockService" class="org.kuali.kra.institutionalproposal.service.impl.InstitutionalProposalLockServiceImpl">
         <property name="dataDictionaryService" ref="dataDictionaryService"/>
     		<property name="dataObjectService" ref="dataObjectService" />
@@ -307,7 +332,15 @@
         <property name="businessObjectService" ref="businessObjectService" />
         <property name="versioningService" ref="versioningService" />
     </bean>
-    
+
+    <bean id="institutionalProposalJavaFunctionKrmsTermService" class="org.kuali.kra.institutionalproposal.service.impl.InstitutionalProposalJavaFunctionKrmsTermServiceImpl">
+        <property name="fiscalYearMonthService" ref="fiscalYearMonthService" />
+        <property name="businessObjectService" ref="businessObjectService" />
+        <property name="parameterService" ref="parameterService" />
+        <property name="documentService" ref="documentService" />
+        <property name="versionHistoryService" ref="versionHistoryService" />
+    </bean>
+
     <!-- Institutional Proposal Printing Services -->
     
     <bean id="institutionalProposalPrintingService" class="org.kuali.kra.institutionalproposal.printing.service.impl.InstitutionalProposalPrintingServiceImpl">
@@ -333,5 +366,69 @@
     <bean id="kualiConfigurationService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="kualiConfigurationService" />
     </bean>
+
+    <bean id="jdbcOperations" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="jdbcOperations" />
+    </bean>
+
+    <bean id="permissionService" parent="grlImporter" p:serviceName="kimPermissionService" />
+    <bean id="globalVariableService" parent="grlImporter" p:serviceName="globalVariableService"/>
+    <bean id="dictionaryValidationService" parent="grlImporter" p:serviceName="dictionaryValidationService"/>
+    <bean id="errorHandlingUtilService" parent="grlImporter" p:serviceName="errorHandlingUtilService"/>
+    <bean id="persistenceVerificationService" parent="grlImporter" p:serviceName="persistenceVerificationService" />
+    <bean id="restAuditLoggerFactory" parent="grlImporter" p:serviceName="restAuditLoggerFactory" />
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <import resource="classpath:org/kuali/coeus/sys/framework/ImportEndpointSpringBeans.xml" />
+    <import resource="classpath:org/kuali/coeus/sys/framework/ImportSimpleCrudRestSpringBeans.xml" />
+
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.IndirectcostRateType" />
+    <bean class="org.kuali.coeus.instprop.impl.api.InstitutionalProposalController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposal" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalAdminDetails" p:camelCasePluralName="InstitutionalProposalAdminDetails" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.attachments.InstitutionalProposalAttachment" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalAttachmentType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalBoLite" p:camelCasePluralName="LiteViewInstitutionalProposals" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalComment" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalCostShare" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.customdata.InstitutionalProposalCustomData" p:camelCasePluralName="InstitutionalProposalCustomData" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.document.InstitutionalProposalDocument" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalLog" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalNotepad" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.contacts.InstitutionalProposalPerson" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.contacts.InstitutionalProposalPersonCreditSplit" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.personmasschange.bo.InstitutionalProposalPersonMassChange" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.contacts.InstitutionalProposalPersonUnit" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.contacts.InstitutionalProposalPersonUnitCreditSplit" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalScienceKeyword" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.specialreview.InstitutionalProposalSpecialReview" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.specialreview.InstitutionalProposalSpecialReviewExemption" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalUnit" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.contacts.InstitutionalProposalUnitContact" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.home.InstitutionalProposalUnrecoveredFandA" p:camelCasePluralName="InstitutionalProposalUnrecoveredFAndAs" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ipreview.IntellectualPropertyReview" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ipreview.IntellectualPropertyReviewActivity" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ipreview.IntellectualPropertyReviewActivityType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ipreview.IntellectualPropertyReviewRequirementType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ipreview.IntellectualPropertyReviewResultType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.proposaladmindetails.ProposalAdminDetails" p:camelCasePluralName="ProposalAdminDetails" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ProposalIpReviewJoin" p:camelCasePluralName="ProposalIntellectualPropertyReviewJoins" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.proposallog.ProposalLog" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.personmasschange.bo.ProposalLogPersonMassChange" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.proposallog.ProposalLogStatus" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.proposallog.ProposalLogType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ProposalStatus" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.institutionalproposal.ProposalComment" />
 
 </beans>

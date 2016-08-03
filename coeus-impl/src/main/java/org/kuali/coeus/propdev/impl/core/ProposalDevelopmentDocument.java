@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,6 @@ import org.kuali.coeus.common.framework.custom.DocumentCustomData;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocValue;
 import org.kuali.coeus.common.permissions.impl.PermissionableKeys;
 import org.kuali.coeus.propdev.api.core.ProposalDevelopmentDocumentContract;
-import org.kuali.coeus.propdev.impl.budget.ProposalBudgetStatusService;
 import org.kuali.coeus.propdev.impl.state.ProposalStateService;
 import org.kuali.coeus.common.framework.auth.perm.Permissionable;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
@@ -38,6 +37,7 @@ import org.kuali.coeus.common.budget.framework.core.BudgetParentDocument;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.kra.infrastructure.RoleConstants;
+import org.kuali.kra.institutionalproposal.home.InstitutionalProposal;
 import org.kuali.kra.institutionalproposal.service.InstitutionalProposalService;
 import org.kuali.kra.krms.KcKrmsConstants;
 import org.kuali.coeus.common.framework.krms.KrmsRulesContext;
@@ -53,8 +53,11 @@ import org.kuali.rice.coreservice.framework.parameter.ParameterConstants.NAMESPA
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.action.ActionTaken;
+import org.kuali.rice.kew.api.action.ActionType;
 import org.kuali.rice.kew.api.action.WorkflowDocumentActionsService;
+import org.kuali.rice.kew.api.document.WorkflowDocumentService;
 import org.kuali.rice.kew.framework.postprocessor.ActionTakenEvent;
 import org.kuali.rice.kew.framework.postprocessor.DocumentRouteStatusChange;
 import org.kuali.rice.kim.api.identity.Person;
@@ -107,16 +110,17 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
     private transient ProposalStateService proposalStateService;
 	
 	@Transient
-    private transient KcDocumentRejectionService kcDocumentRejectionService; 
+    private transient KcDocumentRejectionService kcDocumentRejectionService;
 
-	@Transient
+    @Transient
+    private transient WorkflowDocumentService workflowDocumentService;
+
+    @Transient
 	InstitutionalProposalService institutionalProposalService;
 	
     @Transient
     private transient WorkflowDocumentActionsService  workflowDocumentActionsService;
-    
-    @Transient
-    private transient ProposalBudgetStatusService proposalBudgetStatusService;
+
     
     @Transient
     private transient DataDictionaryService dataDictionaryService  ;
@@ -151,13 +155,12 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
     @Transient
     private transient Boolean certifyViewOnly = false;
 
-    
 	public ProposalDevelopmentDocument() {
         super();
         DevelopmentProposal newProposal = new DevelopmentProposal();
         newProposal.setProposalDocument(this);
         developmentProposal = newProposal;
-        customDataList = new ArrayList<CustomAttributeDocValue>();
+        customDataList = new ArrayList<>();
     }
     @Override
     public DevelopmentProposal getDevelopmentProposal() {
@@ -202,6 +205,13 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
 		}
 		return kcDocumentRejectionService;
 	}
+
+    protected WorkflowDocumentService getWorkflowDocumentService() {
+        if (workflowDocumentService == null){
+            workflowDocumentService = KewApiServiceLocator.getWorkflowDocumentService();
+        }
+        return workflowDocumentService;
+    }
 	
 	protected InstitutionalProposalService getInstitutionalProposalService () {
 		if ( institutionalProposalService == null){
@@ -215,13 +225,6 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
 			workflowDocumentActionsService = KewApiServiceLocator.getWorkflowDocumentActionsService();
 		}
 		return workflowDocumentActionsService;
-	}
-
-	protected ProposalBudgetStatusService getProposalBudgetStatusService() {
-		if (proposalBudgetStatusService == null){
-			proposalBudgetStatusService = KcServiceLocator.getService(ProposalBudgetStatusService.class);
-		}
-		return proposalBudgetStatusService;
 	}
 
 	protected DataDictionaryService getDataDictionaryService() {
@@ -247,68 +250,84 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
 
     @Override
     public void doRouteStatusChange(DocumentRouteStatusChange dto) {
-        super.doRouteStatusChange(dto);
-        String newStatus = dto.getNewRouteStatus();
-        String oldStatus = dto.getOldRouteStatus();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Route Status change for document %s from %s to %s", this.getDocumentNumber(), oldStatus, newStatus));
-        }
-        if (!isProposalDeleted()) {
-            DevelopmentProposal bp = this.getDevelopmentProposal();
-            LOG.info(String.format("Route status change for document %s - proposal number %s is moving from %s to %s", bp.getProposalDocument().getDocumentHeader().getDocumentNumber(), bp.getProposalNumber(), oldStatus, newStatus));
-           if (!bp.isInHierarchy()) {
-                try {
-                	getProposalHierarchyService().calculateAndSetProposalAppDocStatus(this, dto);
-                } catch (ProposalHierarchyException pe) {
-                    throw new RuntimeException(String.format("ProposalHierarchyException thrown while updating app doc status for document %s", getDocumentNumber()));
-                }
+
+        executeAsLastActionUser( () -> {
+            super.doRouteStatusChange(dto);
+            String newStatus = dto.getNewRouteStatus();
+            String oldStatus = dto.getOldRouteStatus();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format("Route Status change for document %s from %s to %s", this.getDocumentNumber(), oldStatus, newStatus));
             }
-            bp.setProposalStateTypeCode(getProposalStateService().getProposalStateTypeCode(this, false));
-            
-        }
+            if (!isProposalDeleted()) {
+                DevelopmentProposal bp = this.getDevelopmentProposal();
+                LOG.info(String.format("Route status change for document %s - proposal number %s is moving from %s to %s", bp.getProposalDocument().getDocumentHeader().getDocumentNumber(), bp.getProposalNumber(), oldStatus, newStatus));
+               if (!bp.isInHierarchy()) {
+                    try {
+                        getProposalHierarchyService().calculateAndSetProposalAppDocStatus(this, dto);
+                    } catch (ProposalHierarchyException pe) {
+                        throw new RuntimeException(String.format("ProposalHierarchyException thrown while updating app doc status for document %s", getDocumentNumber()));
+                    }
+                }
+                bp.setProposalStateTypeCode(getProposalStateService().getProposalStateTypeCode(this, false));
+                getDataObjectService().save(bp);
+            }
+            return null;
+        });
     }
 
     @Override
     public void doActionTaken(ActionTakenEvent event) {
-        super.doActionTaken(event);
-        ActionTaken actionTaken = event.getActionTaken();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Action taken on document %s: event code %s, action taken is %s", getDocumentNumber(), event.getDocumentEventCode(), actionTaken.getActionTaken().getCode()));
-        }
-        if (!isProposalDeleted()) {
-            if (StringUtils.equals(KewApiConstants.ACTION_TAKEN_APPROVED_CD, actionTaken.getActionTaken().getCode())) {
-                try {
-                    if (getKcDocumentRejectionService().isDocumentOnInitialNode(this.getDocumentHeader().getWorkflowDocument())) {
-                        DocumentRouteStatusChange dto = new DocumentRouteStatusChange(getDocumentHeader().getWorkflowDocument().getDocumentId(), getDocumentNumber(), KewApiConstants.ROUTE_HEADER_ENROUTE_CD, KewApiConstants.ROUTE_HEADER_ENROUTE_CD);
-                        if (!getDevelopmentProposal().isChild() ) {
-                            getProposalHierarchyService().calculateAndSetProposalAppDocStatus(this, dto);
+        executeAsLastActionUser( () -> {
+            super.doActionTaken(event);
+            ActionTaken actionTaken = event.getActionTaken();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format("Action taken on document %s: event code %s, action taken is %s", getDocumentNumber(), event.getDocumentEventCode(), actionTaken.getActionTaken().getCode()));
+            }
+            if (!isProposalDeleted()) {
+                if (StringUtils.equals(KewApiConstants.ACTION_TAKEN_APPROVED_CD, actionTaken.getActionTaken().getCode())) {
+                    try {
+                        if (getKcDocumentRejectionService().isDocumentOnInitialNode(this.getDocumentHeader().getWorkflowDocument())) {
+                            DocumentRouteStatusChange dto = new DocumentRouteStatusChange(getDocumentHeader().getWorkflowDocument().getDocumentId(), getDocumentNumber(), KewApiConstants.ROUTE_HEADER_ENROUTE_CD, KewApiConstants.ROUTE_HEADER_ENROUTE_CD);
+                            if (!getDevelopmentProposal().isChild()) {
+                                getProposalHierarchyService().calculateAndSetProposalAppDocStatus(this, dto);
+                            }
                         }
+                    } catch (ProposalHierarchyException pe) {
+                        throw new RuntimeException(String.format("ProposalHeierachyException encountered trying to re-submit rejected parent document:%s", getDocumentNumber()), pe);
+                    } catch (Exception we) {
+                        throw new RuntimeException(String.format("Exception trying to re-submit rejected parent:%s", getDocumentNumber()), we);
                     }
-                } catch (ProposalHierarchyException pe) {
-                    throw new RuntimeException(String.format("ProposalHeierachyException encountered trying to re-submit rejected parent document:%s", getDocumentNumber()), pe);
-                } catch (Exception we) {
-                    throw new RuntimeException(String.format("Exception trying to re-submit rejected parent:%s", getDocumentNumber()), we);
+                }
+                String pCode = getDevelopmentProposal().getProposalStateTypeCode();
+                getDevelopmentProposal().setProposalStateTypeCode(getProposalStateService().getProposalStateTypeCode(this, hasProposalBeenRejected(getDocumentHeader().getWorkflowDocument())));
+                if (!StringUtils.equals(pCode, getDevelopmentProposal().getProposalStateTypeCode())) {
+                    getDataObjectService().save(getDevelopmentProposal());
+                    getDevelopmentProposal().refreshReferenceObject("proposalState");
+                }
+                if (getDevelopmentProposal().isChild() && StringUtils.equals(KewApiConstants.ACTION_TAKEN_CANCELED_CD, actionTaken.getActionTaken().getCode())) {
+                    try {
+                        getProposalHierarchyService().removeFromHierarchy(this.getDevelopmentProposal());
+                    } catch (ProposalHierarchyException e) {
+                        throw new RuntimeException(String.format("COULD NOT REMOVE CHILD:%s", this.getDevelopmentProposal().getProposalNumber()));
+                    }
+                }
+                if (isLastSubmitterApprovalAction(event.getActionTaken()) && shouldAutogenerateInstitutionalProposal()) {
+                    final InstitutionalProposal institutionalProposal = getInstitutionalProposalService().createInstitutionalProposal(this.getDevelopmentProposal(), this.getDevelopmentProposal().getFinalBudget());
+                    this.setInstitutionalProposalNumber(institutionalProposal.getProposalNumber());
+                    getDataObjectService().save(this);
                 }
             }
-            String pCode = getDevelopmentProposal().getProposalStateTypeCode();
-            getDevelopmentProposal().setProposalStateTypeCode(getProposalStateService().getProposalStateTypeCode(this, getKcDocumentRejectionService().isDocumentOnInitialNode(this.getDocumentHeader().getWorkflowDocument())));
-            if (!StringUtils.equals(pCode, getDevelopmentProposal().getProposalStateTypeCode())) {
-                getDataObjectService().save(getDevelopmentProposal());
-                getDevelopmentProposal().refreshReferenceObject("proposalState");
-            }
-            if (getDevelopmentProposal().isChild() && StringUtils.equals(KewApiConstants.ACTION_TAKEN_CANCELED_CD, actionTaken.getActionTaken().getCode())) {
-                try {
-                	getProposalHierarchyService().removeFromHierarchy(this.getDevelopmentProposal());
-                } catch (ProposalHierarchyException e) {
-                    throw new RuntimeException(String.format("COULD NOT REMOVE CHILD:%s", this.getDevelopmentProposal().getProposalNumber()));
-                }
-            }
-            if (isLastSubmitterApprovalAction(event.getActionTaken()) && shouldAutogenerateInstitutionalProposal()) {
-            	String proposalNumber = getInstitutionalProposalService().createInstitutionalProposal(this.getDevelopmentProposal(), this.getDevelopmentProposal().getFinalBudget());
-                this.setInstitutionalProposalNumber(proposalNumber);
-            }
-        }
+            return null;
+        });
     }
+
+    private boolean hasProposalBeenRejected(WorkflowDocument document) {
+        return getKcDocumentRejectionService().isDocumentOnInitialNode(document) &&
+            getWorkflowDocumentService().getAllActionsTaken(getDocumentNumber())
+                .stream().anyMatch(actionTaken -> actionTaken.getActionTaken() == ActionType.COMPLETE);
+    }
+
+
 
     private boolean isLastSubmitterApprovalAction(ActionTaken actionTaken) {
         return actionTaken.getActionTaken().getCode().equals(KewApiConstants.ACTION_TAKEN_APPROVED_CD) && getWorkflowDocumentActionsService().isFinalApprover(actionTaken.getDocumentId(), actionTaken.getPrincipalId());
@@ -369,7 +388,6 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
         documentHeader = getDocumentHeaderService().saveDocumentHeader(documentHeader);
 
         if (!isProposalDeleted()) {
-            getProposalBudgetStatusService().saveBudgetFinalVersionStatus(this);
             List<? extends Budget> versions = getBudgetParent().getBudgets();
             if (versions != null) {
                 updateBudgetDescriptions(versions);
@@ -381,14 +399,13 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
     public void processAfterRetrieve() {
         super.processAfterRetrieve();
         if (!isProposalDeleted()) {
-            getProposalBudgetStatusService().loadBudgetStatus(this.getDevelopmentProposal());
             getDevelopmentProposal().updateProposalChangeHistory();
         }
     }
 
     public Boolean getAllowsNoteAttachments() {
         if (allowsNoteAttachments == null) {
-            DocumentEntry entry = (DocumentEntry) getDataDictionaryService().getDataDictionary().getDocumentEntry(getClass().getName());
+            DocumentEntry entry = getDataDictionaryService().getDataDictionary().getDocumentEntry(getClass().getName());
             allowsNoteAttachments = entry.getAllowsNoteAttachments();
         }
         return allowsNoteAttachments;
@@ -400,7 +417,7 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
 
     @Override
     public List<String> getRoleNames() {
-        List<String> roleNames = new ArrayList<String>();
+        List<String> roleNames = new ArrayList<>();
         roleNames.add(RoleConstants.AGGREGATOR);
         roleNames.add(RoleConstants.BUDGET_CREATOR);
         roleNames.add(RoleConstants.NARRATIVE_WRITER);
@@ -468,8 +485,7 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
             }
 
             public List<String> getRoleNames() {
-                List<String> roleNames = new ArrayList<String>();
-                return roleNames;
+                return new ArrayList<>();
             }
 
             public String getNamespace() {
@@ -521,7 +537,6 @@ public class ProposalDevelopmentDocument extends BudgetParentDocument<Developmen
      * Close to hack.  called by holdingpageaction
      * Different document type may have different routing set up, so each document type
      * can implement its own isProcessComplete
-     * @return
      */
     public boolean isProcessComplete() {
         boolean isComplete = false;

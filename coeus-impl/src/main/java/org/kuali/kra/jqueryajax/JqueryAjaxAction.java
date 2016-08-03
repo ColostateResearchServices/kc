@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,7 @@
 package org.kuali.kra.jqueryajax;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -221,9 +222,13 @@ public class JqueryAjaxAction extends KualiDocumentActionBase {
         throws Exception {
         final JqueryAjaxForm ajaxForm = (JqueryAjaxForm) form;
         if (StringUtils.isNotBlank(ajaxForm.getCode())) {
-            final AwardTemplate template = getBusinessObjectService().findBySinglePrimaryKey(AwardTemplate.class, ajaxForm.getCode());
-            if (template != null) {
-                ajaxForm.setReturnVal(template.getDescription());
+            if (NumberUtils.isDigits(ajaxForm.getCode())) {
+                final AwardTemplate template = getBusinessObjectService().findBySinglePrimaryKey(AwardTemplate.class, ajaxForm.getCode());
+                if (template != null) {
+                    ajaxForm.setReturnVal(template.getDescription());
+                } else {
+                    ajaxForm.setReturnVal("<span style='color: red;'>not found</span>");
+                }
             } else {
                 ajaxForm.setReturnVal("<span style='color: red;'>not found</span>");
             }

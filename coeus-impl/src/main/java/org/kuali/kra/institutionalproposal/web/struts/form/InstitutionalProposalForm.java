@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -319,7 +319,8 @@ public class InstitutionalProposalForm extends KcTransactionalDocumentFormBase i
     }
     
     public boolean getDisplayEditButton() {
-        return !getDocument().getDocumentHeader().getWorkflowDocument().isCanceled();
+        return !getDocument().getDocumentHeader().getWorkflowDocument().isCanceled()
+                && getInstitutionalProposalDocument().getInstitutionalProposal().isActiveVersion();
       }
     
     public boolean isCfdaLookupRequired() {
@@ -406,6 +407,11 @@ public class InstitutionalProposalForm extends KcTransactionalDocumentFormBase i
 
     public String getShortUrl() {
         return getBaseShortUrl() + "/kc-common/proposals/" + getInstitutionalProposalDocument().getInstitutionalProposal().getInstProposalNumber();
+    }
+
+    public boolean getDisplayCoiDisclosureStatus() {
+        return getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_INSITUTIONAL_PROPOSAL,
+                Constants.PARAMETER_COMPONENT_DOCUMENT, Constants.ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE);
     }
 
 }

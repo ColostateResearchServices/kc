@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -76,7 +76,7 @@ public class PersonnelLineItemCalculator extends AbstractBudgetCalculator {
        Long versionNumber = -1L;
        Map<String, Boolean> applyRateFlags = null;
        
-       if (getBudgetRateService().performSyncFlag(budget)){
+       if (isPerformSync()){
            if (budgetPersonnelLineItem.getBudgetPersonnelCalculatedAmounts().size() > 0) {
                versionNumber = budgetPersonnelLineItem.getBudgetPersonnelCalculatedAmounts().get(0).getVersionNumber();
            }
@@ -84,7 +84,7 @@ public class PersonnelLineItemCalculator extends AbstractBudgetCalculator {
            //Save applyRateFlag to set it back on the new Calculated Amounts
            applyRateFlags = saveApplyRateFlagsForReset();
            
-           setCalculatedAmounts(budget,budgetPersonnelLineItem);
+           setCalculatedAmounts(budgetPersonnelLineItem);
            
            for (BudgetPersonnelCalculatedAmount budgetPersonnelCalculatedAmount : budgetPersonnelLineItem.getBudgetPersonnelCalculatedAmounts()) {
                if (versionNumber != null && versionNumber.longValue() > -1) {
@@ -94,7 +94,7 @@ public class PersonnelLineItemCalculator extends AbstractBudgetCalculator {
        }
 
        if (budgetPersonnelLineItem.getBudgetPersonnelCalculatedAmounts().size() <= 0) {
-           setCalculatedAmounts(budget,budgetPersonnelLineItem);
+           setCalculatedAmounts(budgetPersonnelLineItem);
        }
 
        for (BudgetPersonnelCalculatedAmount budgetPersonnelCalculatedAmount : budgetPersonnelLineItem.getBudgetPersonnelCalculatedAmounts()) {
@@ -102,6 +102,10 @@ public class PersonnelLineItemCalculator extends AbstractBudgetCalculator {
                budgetPersonnelCalculatedAmount.setApplyRateFlag(applyRateFlags.get(budgetPersonnelCalculatedAmount.getRateClassCode()+budgetPersonnelCalculatedAmount.getRateTypeCode()));
            }
        }        
+    }
+
+    protected boolean isPerformSync() {
+        return getBudgetRateService().performSyncFlag(budget);
     }
 
     @Override

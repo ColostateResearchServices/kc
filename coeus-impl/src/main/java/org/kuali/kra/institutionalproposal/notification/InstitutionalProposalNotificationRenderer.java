@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
  */
 package org.kuali.kra.institutionalproposal.notification;
 
+import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.common.notification.impl.NotificationRendererBase;
 import org.kuali.kra.institutionalproposal.home.InstitutionalProposal;
 
@@ -31,24 +32,21 @@ import java.util.Map;
 public class InstitutionalProposalNotificationRenderer extends NotificationRendererBase implements Serializable {
 
     private static final long serialVersionUID = 451541228341893685L;
-    
+    private static final String MM_DD_YYYY = "MM/dd/yyyy";
+
     private InstitutionalProposal institutionalProposal;
     
     public InstitutionalProposalNotificationRenderer() {
-        
+        super();
     }
-    
-    /**
-     * Constructs an Institutional Proposal notification renderer.
-     * @param institutionalProposal
-     */
+
     public InstitutionalProposalNotificationRenderer(InstitutionalProposal institutionalProposal) {
         this.institutionalProposal = institutionalProposal;
     }
 
     @Override
     public Map<String, String> getDefaultReplacementParameters() {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(MM_DD_YYYY);
         Map<String, String> result = super.getDefaultReplacementParameters();
         result.put("{PROPOSAL_NUMBER}", institutionalProposal.getProposalNumber());
         result.put("{PROPOSAL_TITLE}", institutionalProposal.getTitle());
@@ -62,7 +60,7 @@ public class InstitutionalProposalNotificationRenderer extends NotificationRende
         if (institutionalProposal.getDeadlineDate() != null) {
             result.put("{DEADLINE_DATE}", dateFormatter.format(institutionalProposal.getDeadlineDate()));
         } else {
-            result.put("{DEADLINE_DATE}", "");
+            result.put("{DEADLINE_DATE}", StringUtils.EMPTY);
         }
         result.put("{DEADLINE_TIME}", institutionalProposal.getDeadlineTime());
         result.put("{CFDA_NUMBER}", institutionalProposal.getCfdaNumber());

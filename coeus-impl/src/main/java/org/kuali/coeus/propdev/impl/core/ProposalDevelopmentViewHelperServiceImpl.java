@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,10 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.kuali.coeus.coi.framework.DisclosureProjectStatus;
+import org.kuali.coeus.coi.framework.DisclosureStatusRetrievalService;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
+import org.kuali.coeus.common.api.rolodex.RolodexService;
 import org.kuali.coeus.common.api.sponsor.hierarchy.SponsorHierarchyService;
 import org.kuali.coeus.common.budget.framework.calculator.BudgetCalculationService;
 import org.kuali.coeus.common.framework.auth.perm.KcAuthorizationService;
@@ -40,8 +44,10 @@ import org.kuali.coeus.common.questionnaire.framework.answer.Answer;
 import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
 import org.kuali.coeus.common.questionnaire.framework.question.Question;
 import org.kuali.coeus.common.questionnaire.framework.question.QuestionExplanation;
-import org.apache.log4j.Logger;
+import org.kuali.coeus.propdev.impl.attachment.MultipartFileValidationService;
 import org.kuali.coeus.propdev.impl.attachment.ProposalDevelopmentAttachmentHelper;
+import org.kuali.coeus.propdev.impl.auth.ProposalDevelopmentDocumentAuthorizer;
+import org.kuali.coeus.propdev.impl.auth.ProposalDevelopmentDocumentViewAuthorizer;
 import org.kuali.coeus.propdev.impl.auth.perm.ProposalDevelopmentPermissionsService;
 import org.kuali.coeus.propdev.impl.custom.ProposalDevelopmentCustomDataGroupDto;
 import org.kuali.coeus.propdev.impl.datavalidation.ProposalDevelopmentDataValidationConstants;
@@ -53,7 +59,9 @@ import org.kuali.coeus.propdev.impl.s2s.S2sOpportunity;
 import org.kuali.coeus.propdev.impl.s2s.S2sRevisionTypeConstants;
 import org.kuali.coeus.propdev.impl.questionnaire.ProposalDevelopmentQuestionnaireHelper;
 import org.kuali.coeus.propdev.impl.s2s.question.ProposalDevelopmentS2sQuestionnaireHelper;
+import org.kuali.coeus.propdev.impl.state.ProposalState;
 import org.kuali.coeus.sys.framework.controller.KcFileService;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.framework.validation.AuditHelper;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.kra.protocol.actions.ProtocolStatusBase;
@@ -83,7 +91,6 @@ import org.kuali.rice.krad.util.*;
 import org.kuali.rice.krad.bo.Note;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.krad.service.KualiRuleService;
-import org.kuali.rice.krad.service.LookupService;
 import org.kuali.rice.krad.service.NoteService;
 import org.kuali.rice.krad.uif.UifConstants;
 import org.kuali.rice.krad.uif.UifParameters;
@@ -101,8 +108,8 @@ import org.springframework.stereotype.Service;
 public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServiceImpl implements ProposalDevelopmentViewHelperService {
 
     private static final long serialVersionUID = -5122498699317873886L;
-    private static final Logger LOG = Logger.getLogger(ProposalDevelopmentViewHelperServiceImpl.class);
     private static final String PARENT_PROPOSAL_TYPE_CODE = "PRDV";
+    private static final String ATTACHMENT_FILE = "multipartFile";
 
     @Autowired
     @Qualifier("dateTimeService")
@@ -111,10 +118,6 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     @Autowired
     @Qualifier("legacyNarrativeService")
     private LegacyNarrativeService narrativeService;
-
-    @Autowired
-    @Qualifier("lookupService")
-    private LookupService lookupService;
 
     @Autowired
     @Qualifier("noteService")
@@ -147,6 +150,7 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     @Autowired
     @Qualifier("proposalDevelopmentService")
     private ProposalDevelopmentService proposalDevelopmentService;
+
     private String protocolStatusCode;
 
     @Autowired
@@ -160,10 +164,6 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     @Autowired
     @Qualifier("sponsorHierarchyService")
     private SponsorHierarchyService sponsorHierarchyService;
-    
-    @Autowired
-    @Qualifier("proposalTypeService")
-    private ProposalTypeService proposalTypeService;
 
     @Autowired
     @Qualifier("sponsorSearchService")
@@ -188,6 +188,18 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     @Autowired
     @Qualifier("proposalPersonCoiIntegrationService")
     ProposalPersonCoiIntegrationService proposalPersonCoiIntegrationService;
+
+    @Autowired
+    @Qualifier("multipartFileValidationService")
+    private MultipartFileValidationService multipartFileValidationService;
+
+    @Autowired
+    @Qualifier("proposalDevelopmentDocumentViewAuthorizer")
+    private ProposalDevelopmentDocumentViewAuthorizer proposalDevelopmentDocumentViewAuthorizer;
+
+    @Autowired
+    @Qualifier("rolodexService")
+    private RolodexService rolodexService;
 
     @Override
     public void processBeforeAddLine(ViewModel model, Object addLine, String collectionId, final String collectionPath) {
@@ -275,7 +287,7 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
             // must be invoked to maintain the parent collection
             List<ProposalSite> sites = ObjectPropertyUtils.getPropertyValue(model, collectionPath);
             if (sites == null) {
-                sites = new ArrayList<ProposalSite>();
+                sites = new ArrayList<>();
             }
 
             if (!sites.contains(lineObject)) {
@@ -309,8 +321,7 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     @Override
     protected boolean performAddLineValidation(ViewModel viewModel, Object newLine, String collectionId,
             String collectionPath) {
-    	boolean isValid = true;
-    	isValid = super.performAddLineValidation(viewModel, newLine, collectionId, collectionPath);
+    	boolean isValid = super.performAddLineValidation(viewModel, newLine, collectionId, collectionPath);
     	String collectionLabel = (String) viewModel.getViewPostMetadata().getComponentPostData(collectionId,UifConstants.PostMetadata.COLL_LABEL);
     	ProposalDevelopmentDocumentForm form = (ProposalDevelopmentDocumentForm) viewModel;
         ProposalDevelopmentDocument document = form.getProposalDevelopmentDocument();
@@ -359,16 +370,26 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     public void processAfterSaveLine(ViewModel model, Object lineObject, String collectionId, String collectionPath) {
            getDataObjectService().save(lineObject);
            if (lineObject instanceof ProposalPersonBiography) {
-               try {
-                   ((ProposalPersonBiography)lineObject).init(((ProposalPersonBiography) lineObject).getMultipartFile());
-               } catch (Exception e) {
-                   LOG.info("No File Attached");
+               final MessageMap messages = multipartFileValidationService.validateMultipartFile(ATTACHMENT_FILE, ((ProposalPersonBiography) lineObject).getMultipartFile());
+               if (!messages.hasMessages()) {
+                   try {
+                       ((ProposalPersonBiography)lineObject).init(((ProposalPersonBiography) lineObject).getMultipartFile());
+                   } catch (Exception e) {
+                       throw new RuntimeException(e);
+                   }
+               } else {
+                   getGlobalVariableService().getMessageMap().merge(messages);
                }
            } else if (lineObject instanceof  Narrative) {
-               try {
-                   ((Narrative)lineObject).init(((Narrative) lineObject).getMultipartFile());
-               } catch (Exception e) {
-                   LOG.info("No File Attached");
+               final MessageMap messages = multipartFileValidationService.validateMultipartFile(ATTACHMENT_FILE, ((Narrative) lineObject).getMultipartFile());
+               if (!messages.hasMessages()) {
+                   try {
+                       ((Narrative)lineObject).init(((Narrative) lineObject).getMultipartFile());
+                   } catch (Exception e) {
+                       throw new RuntimeException(e);
+                   }
+               } else {
+                   getGlobalVariableService().getMessageMap().merge(messages);
                }
            }
     }
@@ -519,14 +540,6 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
 
     public void setNarrativeService(LegacyNarrativeService narrativeService) {
         this.narrativeService = narrativeService;
-    }
-
-    protected LookupService getLookupService() {
-        return lookupService;
-    }
-
-    public void setLookupService(LookupService lookupService) {
-        this.lookupService = lookupService;
     }
 
     public DateTimeService getDateTimeService() {
@@ -719,8 +732,7 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
         ProposalDevelopmentAttachmentHelper helper = form.getProposalDevelopmentAttachmentHelper();
         if (!isAttachmentFileEditable(helper, collectionPath, index)){
             if (helper.getEditableFileLineAttachments().get(collectionPath) == null){
-                List<String> tempList = new ArrayList<String>();
-                helper.getEditableFileLineAttachments().put(collectionPath, tempList);
+                helper.getEditableFileLineAttachments().put(collectionPath, new ArrayList<>());
             }
             helper.getEditableFileLineAttachments().get(collectionPath).add(index);
         }
@@ -765,24 +777,37 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     Personnel which appears in multiple proposals should not allow update of personnel attachments at the child (critical)
     Personnel attachments for personnel who appears only once in proposal hierarchy should be view only at the parent (no update of details nor delete) (critical)
      */
-    public boolean renderPersonnelEditForHierarchyProposal(String personId, DevelopmentProposal proposal) {
-        return (proposal.isInHierarchy()) ? renderEditForPersonnelAttachment(personId, proposal) : true;
+    public boolean renderPersonnelEditForHierarchyProposal(String personId, Integer rolodexId, DevelopmentProposal proposal) {
+        return !proposal.isInHierarchy() || renderEditForPersonnelAttachment(personId, rolodexId, proposal);
     }
 
-    protected boolean renderEditForPersonnelAttachment(String personId, DevelopmentProposal proposal) {
-        if (personId != null) {
-            boolean inMultiple = getProposalHierarchyService().personInMultipleProposals(personId, proposal);
-            return (proposal.isParent()) ? inMultiple : !inMultiple;
-        }
-        return true;
+    protected boolean renderEditForPersonnelAttachment(String personId, Integer rolodexId, DevelopmentProposal proposal) {
+        boolean inMultiple = StringUtils.isNotBlank(personId) ? getProposalHierarchyService().employeePersonInMultipleProposals(personId, proposal)
+                : getProposalHierarchyService().nonEmployeePersonInMultipleProposals(rolodexId, proposal);
+        return (proposal.isParent()) ? inMultiple : !inMultiple;
     }
 
     public String getProposalStatusForDisplay(DevelopmentProposal proposal) {
-        if (proposal.isChild()) {
-            return getProposalHierarchyService().getProposalState(proposal.getHierarchyParentProposalNumber());
-        } else {
-            return proposal.getProposalState().getDescription();
-        }
+        final ProposalState state = proposal.getHierarchyAwareProposalStatus();
+        return state != null ? state.getDescription() : "";
+    }
+
+    public String getAnnualDisclosureStatusForPerson(DevelopmentProposal proposal, ProposalPerson person) {
+        String personId = person.getPersonId() == null ? person.getRolodexId().toString() : person.getPersonId();
+        String sourceId = Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT;
+        String projectId = proposal.getProposalNumber();
+        DisclosureProjectStatus projectStatus = getDisclosureStatusRetrievalService().getDisclosureStatusForPerson(sourceId, projectId, personId);
+        return projectStatus.getStatus() == null ? "" : projectStatus.getStatus();
+    }
+
+    public DisclosureStatusRetrievalService getDisclosureStatusRetrievalService() {
+        return KcServiceLocator.getService(DisclosureStatusRetrievalService.class);
+    }
+
+    public boolean isCoiDisclosureStatusEnabled() {
+        return getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT,
+                Constants.PARAMETER_COMPONENT_DOCUMENT,
+                Constants.ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE);
     }
 
     public void prepareSummaryPage(ProposalDevelopmentDocumentForm form) {
@@ -844,26 +869,22 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     public boolean isPersonFieldEditable(String propertyName){
         ProposalDevelopmentDocumentForm form = (ProposalDevelopmentDocumentForm)ViewLifecycle.getModel();
         Boolean returnValue = form.getPersonEditableFields().get(propertyName);
-        return returnValue==null?false:returnValue.booleanValue();
+        return returnValue != null && returnValue;
     }
 
     public boolean requiresResubmissionPrompt(DevelopmentProposal developmentProposal, String resubmissionOption) {
-       return ( getProposalTypeService().getContinuationProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
-            || getProposalTypeService().getRenewProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
-            || getProposalTypeService().getResubmissionProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
-            || getProposalTypeService().getRevisionProposalTypeCode().equals(developmentProposal.getProposalTypeCode())
-            || getProposalTypeService().getS2SSubmissionChangeCorrectedCode().equals(developmentProposal.getProposalTypeCode())
-            || isSubmissionChangeCorrected(developmentProposal))
-            && resubmissionOption == null;
+       if(isResubmissionPromptDialogEnabled()) {
+           return getProposalDevelopmentService().isProposalReniewedOrChangeCorrected(developmentProposal)
+                    && resubmissionOption == null;
+       }else{
+           return false;
+       }
     }
-    
 
-    
-    
-    private boolean isSubmissionChangeCorrected(DevelopmentProposal developmentProposal) {
-        return developmentProposal.getS2sOpportunity() != null && getProposalTypeService().getS2SSubmissionChangeCorrectedCode().equals(developmentProposal.getS2sOpportunity().getS2sSubmissionTypeCode());
+    public boolean isResubmissionPromptDialogEnabled() {
+        return getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT, ParameterConstants.DOCUMENT_COMPONENT, ProposalDevelopmentService.ENABLE_IP_GENERATION_PROMPT_DIALOG);
     }
-    
+
     public boolean renderQuestionnaire(ProposalPerson proposalPerson){
         if (proposalPerson.getRole().getCertificationRequired()){
             return true;
@@ -944,58 +965,33 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     }
 
     public boolean displayDirectIndierctCosts() {
-        return StringUtils.equals(getParameterService().getParameter(Constants.PARAMETER_MODULE_AWARD, ParameterConstants.DOCUMENT_COMPONENT,"ENABLE_AWD_ANT_OBL_DIRECT_INDIRECT_COST").getValue(),"1");
+        return StringUtils.equals(getParameterService().getParameter(Constants.PARAMETER_MODULE_AWARD, ParameterConstants.DOCUMENT_COMPONENT, "ENABLE_AWD_ANT_OBL_DIRECT_INDIRECT_COST").getValue(), "1");
     }
 
     public String getDisclaimerText() {
        return getParameterService().getParameterValueAsString(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT, ParameterConstants.DOCUMENT_COMPONENT, "propSummaryDisclaimerText");
     }
 
-    public boolean areAllCertificationsComplete(List<ProposalPerson> proposalPersons) {
-        for (ProposalPerson person : proposalPersons) {
-            for (AnswerHeader answerHeader : person.getQuestionnaireHelper().getAnswerHeaders())  {
-                if (!answerHeader.isCompleted()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
     public boolean canViewCertificationTab(ProposalDevelopmentDocument document,ProposalPerson proposalPerson) {
     	String currentUser = getGlobalVariableService().getUserSession().getPrincipalName();
     	Person person = getPersonService().getPersonByPrincipalName(currentUser);
-    	return getProposalDevelopmentPermissionsService().hasCertificationPermissions(document, person, proposalPerson);
+    	return getProposalDevelopmentPermissionsService().hasCertificationPermissions(document, person, proposalPerson) || 
+    			getKraAuthorizationService().hasPermission(person.getPrincipalId(), document, PermissionConstants.VIEW_CERTIFICATION);
     }
 
     public boolean displayCoiDisclosureStatus() {
-       return getParameterService().getParameterValueAsBoolean(Constants.KC_GENERIC_PARAMETER_NAMESPACE,Constants.KC_ALL_PARAMETER_DETAIL_TYPE_CODE, Constants.PROP_PERSON_COI_STATUS_FLAG);
+       return getParameterService().getParameterValueAsBoolean(Constants.KC_GENERIC_PARAMETER_NAMESPACE,
+                                                                Constants.KC_ALL_PARAMETER_DETAIL_TYPE_CODE,
+                                                                Constants.PROP_PERSON_COI_STATUS_FLAG);
     }
  
-    public boolean isCertQuestViewOnly(ProposalDevelopmentDocument document ,ProposalPerson proposalPerson){
-    	 if (proposalPerson.getPerson() == null) {
-      	   return false;
-         }
-    	 String currentUser = getGlobalVariableService().getUserSession().getPrincipalId();
-    	 boolean canViewCertification = kraAuthorizationService.hasPermission(currentUser, document, PermissionConstants.VIEW_CERTIFICATION);
-    	 boolean canCertify = kraAuthorizationService.hasPermission(currentUser, document, PermissionConstants.CERTIFY);
-         boolean renderQuestionnaire = renderQuestionnaire(proposalPerson);
-
-        if (canCertify) {
-            document.setCertifyViewOnly(false);
-            return !renderQuestionnaire;
-        }
-        if (canViewCertification) {
-            if (proposalPerson.getPersonId().equals(currentUser)){
-                document.setCertifyViewOnly(false);
-                return !renderQuestionnaire;
-            } else {
-                document.setCertifyViewOnly(true);
-                return true;
-            }
-        } else {
-            document.setCertifyViewOnly(false);
-            return !renderQuestionnaire;
-        }
+    public boolean canSaveCertification(ProposalDevelopmentDocument document ,ProposalPerson proposalPerson){
+        proposalDevelopmentDocumentViewAuthorizer.initializeDocumentAuthorizerIfNecessary(document);
+        ProposalDevelopmentDocumentAuthorizer proposalDevelopmentDocumentAuthorizer = (ProposalDevelopmentDocumentAuthorizer) proposalDevelopmentDocumentViewAuthorizer.getDocumentAuthorizer();
+        Person currentUser = getGlobalVariableService().getUserSession().getPerson();
+        boolean canSaveCertify = proposalDevelopmentDocumentAuthorizer.canSaveCertificationForPerson(document,currentUser,proposalPerson);
+        document.setCertifyViewOnly(!canSaveCertify);
+        return canSaveCertify;
     }
 
     public boolean isViewOnly(ProposalDevelopmentDocument document){
@@ -1030,16 +1026,7 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
     
     public boolean syncAllRequiresEndDateExtension(DevelopmentProposal hierarchyProposal) {
     	return getProposalHierarchyService().needToExtendProjectDate(hierarchyProposal);
-    }   
-
-	public ProposalTypeService getProposalTypeService() {
-		return proposalTypeService;
-	}
-
-	public void setProposalTypeService(ProposalTypeService proposalTypeService) {
-		this.proposalTypeService = proposalTypeService;
-	}
-
+    }
 
     public SponsorSearchService getSponsorSearchService() {
         return sponsorSearchService;
@@ -1063,15 +1050,20 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
         return openTab;
     }
   
-    public String getPropPersonName(String personId) {
+    public String getPropPersonName(String personId, Integer rolodexId) {
         if (StringUtils.isNotEmpty(personId)) {
-            Person person= getPersonService().getPerson(personId);
-
-            final String middleName = person.getMiddleName() != null ? person.getMiddleName() + " " : "";
-
-            return (person.getFirstName() + " " + middleName + person.getLastName()).trim();
+            final Person person = getPersonService().getPerson(personId);
+            return person != null ? toFullName(person.getFirstName(), person.getMiddleName(), person.getLastName()) : StringUtils.EMPTY;
+        } else if (rolodexId != null) {
+            final RolodexContract rolodex = getRolodexService().getRolodex(rolodexId);
+            return rolodex != null ? toFullName(rolodex.getFirstName(), rolodex.getMiddleName(), rolodex.getLastName()) : StringUtils.EMPTY;
         }
         return StringUtils.EMPTY;
+    }
+
+    protected String toFullName(String first, String middle, String last) {
+        final String middleName = middle != null ? middle + " " : "";
+        return (first + " " + middleName + last).trim();
     }
 
     public KcPersonService getKcPersonService() {
@@ -1114,5 +1106,37 @@ public class ProposalDevelopmentViewHelperServiceImpl extends KcViewHelperServic
 
     public void setProposalPersonCoiIntegrationService(ProposalPersonCoiIntegrationService proposalPersonCoiIntegrationService) {
         this.proposalPersonCoiIntegrationService = proposalPersonCoiIntegrationService;
+    }
+
+    public MultipartFileValidationService getMultipartFileValidationService() {
+        return multipartFileValidationService;
+    }
+
+    public void setMultipartFileValidationService(MultipartFileValidationService multipartFileValidationService) {
+        this.multipartFileValidationService = multipartFileValidationService;
+    }
+
+    public KcAuthorizationService getKraAuthorizationService() {
+        return kraAuthorizationService;
+    }
+
+    public void setKraAuthorizationService(KcAuthorizationService kraAuthorizationService) {
+        this.kraAuthorizationService = kraAuthorizationService;
+    }
+
+    public ProposalDevelopmentDocumentViewAuthorizer getProposalDevelopmentDocumentViewAuthorizer() {
+        return proposalDevelopmentDocumentViewAuthorizer;
+    }
+
+    public void setProposalDevelopmentDocumentViewAuthorizer(ProposalDevelopmentDocumentViewAuthorizer proposalDevelopmentDocumentViewAuthorizer) {
+        this.proposalDevelopmentDocumentViewAuthorizer = proposalDevelopmentDocumentViewAuthorizer;
+    }
+
+    public RolodexService getRolodexService() {
+        return rolodexService;
+    }
+
+    public void setRolodexService(RolodexService rolodexService) {
+        this.rolodexService = rolodexService;
     }
 }

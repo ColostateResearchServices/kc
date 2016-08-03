@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -66,7 +66,7 @@
         <property name="items">
             <list>
                 <bean parent="Uif-Image" p:source="@{#ConfigProperties['kra.externalizable.images.url']}../../css/images/KualiCo.png" p:altText="KualiCo Logo" p:cssClasses="pull-right kc-footer-img"/>
-                <bean parent="Uif-Message" p:messageText="Copyright 2005-2015 Kuali, Inc. All rights reserved.[br]
+                <bean parent="Uif-Message" p:messageText="Copyright 2005-2016 Kuali, Inc. All rights reserved.[br]
 Portions of Kuali are copyrighted by other parties as described in the [link='@{#ConfigProperties['application.url']}/acknowledgments.jsp']Acknowledgments[/link] screen.
 [br][css='kc-applicationFooter-version']@{#ConfigProperties['version']} @{#ConfigProperties['datasource.ojb.platform']}[/css]" p:renderWrapperTag="false"/>
             </list>
@@ -130,9 +130,22 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </list>
                     </property>
                 </bean>
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="REPORTS" p:order="50"
+                      p:render="@{(#getParamAsBoolean('KC-GEN','All','KUALI_REPORTS_ENABLED') == null ? false : #getParamAsBoolean('KC-GEN','All','KUALI_REPORTS_ENABLED'))
+                       	and #userSession != null
+                      	and #getService('unitAuthorizationService').hasPermission(#userSession.getPrincipalId(),
+                      		T(org.kuali.kra.infrastructure.RoleConstants).DEPARTMENT_ROLE_TYPE,
+                      		T(org.kuali.kra.infrastructure.PermissionConstants).RUN_GLOBAL_REPORTS)}">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href" value="@{#ConfigProperties['kuali.reports.url']}"/>
+                        </map>
+                    </property>
+                </bean>
                 <bean parent="Uif-Link" p:href="@{#ConfigProperties['application.url']}/portal.do"
                     p:wrapperCssClasses="pull-right" 
-                    p:linkText="SYSTEM ADMIN PORTAL" p:order="50"/>
+                    p:linkText="SYSTEM ADMIN PORTAL" p:order="60"/>
             </list>        
         </property>
     </bean>
@@ -187,7 +200,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
          parent="Kc-Header-IframeView" p:location.baseUrl="@{#ConfigProperties['rice.server.url']}" p:location.controllerMapping="/kew/DocumentSearch.do"/>
     <bean id="Kc-Header-ApplicationLogo" parent="Kc-Header-ApplicationLogo-parentBean"/>
     <bean id="Kc-Header-ApplicationLogo-parentBean" parent="Uif-Image"
-          abstract="true" p:source="../static/images/KualiCo.png"/>
+          abstract="true" p:source="../static/images/KualiLogo.png"/>
 
     <bean id="Kc-Header-ResearcherMenu" parent="Kc-Header-ResearcherMenu-parentBean"/>
     <bean id="Kc-Header-ResearcherMenu-parentBean" abstract="true"
@@ -235,8 +248,9 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
           parent="Uif-SimpleGroup">
         <property name="items">
             <list>
-                <bean parent="Kc-Header-Researcher-COIGroup" p:order="10"/>
-                <bean parent="Kc-Header-Researcher-IacucGroup" p:order="20"/>
+                <bean parent="Kc-Header-Researcher-COIMonolithGroup" p:order="10" p:render="@{!#ConfigProperties['coi.projects.enabled']}"/>
+                <bean parent="Kc-Header-Researcher-COIStandaloneGroup" p:order="20" p:render="@{#ConfigProperties['coi.projects.enabled']}"/>
+                <bean parent="Kc-Header-Researcher-IacucGroup" p:order="30"/>
             </list>
         </property>
     </bean>
@@ -290,8 +304,14 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                       p:actionParameters="viewName:DevelopmentProposals-LookupViewName"
                       p:actionUrl.controllerMapping="/lookup"
                       p:order="60" />
+                <bean parent="Uif-MenuAction" p:actionLabel="View S2S Submissions"
+                      p:actionUrl.baseUrl="@{#ConfigProperties['application.url']}/kr-krad"
+                      p:actionUrl.viewId="PropDev-S2SSubmissions-LookupView"
+                      p:actionParameters="viewName:PropDev-S2SSubmissions-Lookup"
+                      p:actionUrl.controllerMapping="/lookup"
+                      p:order="70" />                      
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="Search Proposal Log" p:order="70" >
+                      p:actionLabel="Search Proposal Log" p:order="80" >
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
@@ -300,7 +320,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                     </property>
                 </bean>
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="Search Institutional Proposals" p:order="80" >
+                      p:actionLabel="Search Institutional Proposals" p:order="90" >
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
@@ -484,8 +504,18 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
         </property>
     </bean>
 
-    <bean id="Kc-Header-Researcher-COIGroup" parent="Kc-Header-Researcher-COIGroup-parentBean"/>
-    <bean id="Kc-Header-Researcher-COIGroup-parentBean" abstract="true"
+    <bean id="Kc-Header-Researcher-COIStandaloneGroup" parent="Kc-Header-Researcher-COIStandaloneGroup-parentBean"/>
+    <bean id="Kc-Header-Researcher-COIStandaloneGroup-parentBean" abstract="true"
+          parent="Uif-MenuList" p:headerText="Conflict of Interest">
+        <property name="items">
+            <list>
+                <bean parent="Uif-Link" p:href="@{#ConfigProperties['coi.standalone.base.url']}/coi" p:linkText="COI Dashboard" p:order="10"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="Kc-Header-Researcher-COIMonolithGroup" parent="Kc-Header-Researcher-COIMonolithGroup-parentBean"/>
+    <bean id="Kc-Header-Researcher-COIMonolithGroup-parentBean" abstract="true"
           parent="Uif-MenuList" p:headerText="Conflict of Interest">
         <property name="items">
             <list>
@@ -758,14 +788,24 @@ value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&
                     <list>
                         <bean parent="Kc-Header-Unit-Group1" p:order="10"/>
                         <bean parent="Kc-Header-Unit-Group2" p:order="20"/>
-                        <bean parent="Kc-Header-Unit-Group3" p:order="30"/>
-                        <bean parent="Kc-Header-Unit-Group4" p:order="40"/>
-                        <bean parent="Kc-Header-Unit-Group5" p:order="50"/>
-                        <bean parent="Kc-Header-Unit-Group6" p:order="60"/>
-                        <bean parent="Kc-Header-Unit-Group7" p:order="70"/>
+                        <bean parent="Kc-Header-Unit-CoiGroup" p:order="30"/>
+                        <bean parent="Kc-Header-Unit-Group4" p:order="50"/>
+                        <bean parent="Kc-Header-Unit-Group5" p:order="60"/>
+                        <bean parent="Kc-Header-Unit-Group6" p:order="70"/>
+                        <bean parent="Kc-Header-Unit-Group7" p:order="80"/>
                     </list>
                 </property>
             </bean>
+        </property>
+    </bean>
+
+    <bean id="Kc-Header-Unit-CoiGroup" parent="Kc-Header-Unit-CoiGroup-parentBean"/>
+    <bean id="Kc-Header-Unit-CoiGroup-parentBean" abstract="true" parent="Uif-SimpleGroup">
+        <property name="items">
+        <list>
+        <bean parent="Kc-Header-Unit-Group3" p:order="10" p:render="@{!#ConfigProperties['coi.projects.enabled']}"/>
+        <bean parent="Kc-Header-Unit-COIStandaloneGroup" p:order="20" p:render="@{#ConfigProperties['coi.projects.enabled']}"/>
+        </list>
         </property>
     </bean>
 
@@ -955,6 +995,73 @@ value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&
 
     </bean>
 
+    <bean id="Kc-Header-Unit-COIStandaloneGroup" parent="Kc-Header-Unit-COIStandaloneGroup-parentBean"/>
+    <bean id="Kc-Header-Unit-COIStandaloneGroup-parentBean" abstract="true" parent="Uif-MenuList"
+          p:headerText="Pre-Submission Compliance">
+        <property name="items">
+            <list>
+                <bean parent="Uif-SimpleHeaderFour" p:headerText="Conflict of Interest"
+                      p:order="5"/>
+                <bean parent="Uif-Link" p:href="@{#ConfigProperties['coi.standalone.base.url']}/coi/admin" p:linkText="COI Administrator Dashboard" p:order="10"/>
+                <bean parent="Uif-Link" p:href="@{#ConfigProperties['coi.standalone.base.url']}/coi/config" p:linkText="COI Configuration" p:order="20"/>
+
+                <bean parent="Uif-SimpleHeaderFour" p:headerText="Protocols" p:order="30"/>
+                <bean parent="Uif-HorizontalBoxSection" p:order="40">
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-Message" p:messageText="Animals" p:order="10" />
+                            <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                                  p:iconClass="icon-plus" p:order="20" >
+                                <property name="actionUrl.requestParameters">
+                                    <map>
+                                        <entry key="href"
+                                               value="@{#ConfigProperties['application.url']}/iacucProtocolProtocol.do?methodToCall=docHandler&amp;command=initiate&amp;docTypeName=IacucProtocolDocument&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
+                                    </map>
+                                </property>
+                            </bean>
+                            <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                                  p:iconClass="icon-search" p:order="30" >
+                                <property name="actionUrl.requestParameters">
+                                    <map>
+                                        <entry key="href"
+                                               value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=start&amp;businessObjectClassName=org.kuali.kra.iacuc.IacucProtocol&amp;docFormKey=88888888&amp;includeCustomActionUrls=true&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true"/>
+                                    </map>
+                                </property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="Uif-HorizontalBoxSection" p:order="50">
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-Message" p:messageText="Human Participants" p:order="10" />
+                            <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                                  p:iconClass="icon-plus" p:order="20">
+                                <property name="actionUrl.requestParameters">
+                                    <map>
+                                        <entry key="href"
+                                               value="@{#ConfigProperties['application.url']}/protocolProtocol.do?methodToCall=docHandler&amp;command=initiate&amp;docTypeName=ProtocolDocument&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
+                                    </map>
+                                </property>
+                            </bean>
+                            <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                                  p:iconClass="icon-search" p:order="30">
+                                <property name="actionUrl.requestParameters">
+                                    <map>
+                                        <entry key="href"
+                                               value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=start&amp;businessObjectClassName=org.kuali.kra.irb.Protocol&amp;docFormKey=88888888&amp;includeCustomActionUrls=true&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true"/>
+                                    </map>
+                                </property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+
+
     <bean id="Kc-Header-Unit-Group3" parent="Kc-Header-Unit-Group3-parentBean"/>
     <bean id="Kc-Header-Unit-Group3-parentBean" abstract="true" parent="Uif-MenuList"
           p:headerText="Pre-Submission Compliance">
@@ -1022,10 +1129,7 @@ value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&
                         </map>
                     </property>
                 </bean>
-
                 <bean parent="Uif-SimpleHeaderFour" p:headerText="Protocols" p:order="80"/>
-
-
                 <bean parent="Uif-HorizontalBoxSection" p:order="90">
                     <property name="items">
                         <list>
@@ -1051,8 +1155,6 @@ value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&
                         </list>
                     </property>
                 </bean>
-
-
                 <bean parent="Uif-HorizontalBoxSection" p:order="100">
                     <property name="items">
                         <list>
@@ -1078,10 +1180,10 @@ value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&
                         </list>
                     </property>
                 </bean>
-
             </list>
         </property>
     </bean>
+
     <bean id="Kc-Header-Unit-Group4" parent="Kc-Header-Unit-Group4-parentBean"/>
     <bean id="Kc-Header-Unit-Group4-parentBean" abstract="true" parent="Uif-MenuList"
           p:headerText="Post-Submission Compliance">
@@ -1407,8 +1509,8 @@ value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&
                         </map>
                     </property>
                 </bean>
-                <bean parent="Uif-MenuAction" p:actionLabel="Logout" p:actionUrl.viewId="DummyLoginView"
-                      p:actionUrl.controllerMapping="/login" p:actionUrl.methodToCall="logout"/>
+                <bean parent="Uif-MenuAction" p:actionLabel="Logout" p:actionUrl.baseUrl="@{#ConfigProperties['application.url']}/kc-krad"
+                	p:actionUrl.viewId="Kc-LandingPage-DefaultView" p:actionUrl.controllerMapping="/landingPage" p:actionUrl.methodToCall="logout"/>
             </list>
         </property>
     </bean>

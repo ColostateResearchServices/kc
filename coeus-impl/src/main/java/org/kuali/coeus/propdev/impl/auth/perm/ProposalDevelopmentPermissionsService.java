@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,7 @@ package org.kuali.coeus.propdev.impl.auth.perm;
 
 import java.util.List;
 
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.docperm.ProposalUserRoles;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
@@ -45,4 +46,14 @@ public interface ProposalDevelopmentPermissionsService {
 
     public boolean hasCertificationPermissions(ProposalDevelopmentDocument document, Person user,ProposalPerson proposalPerson);
 
-}
+    public boolean isPiCoiKeyPersonsForcedToDiscloseWithCustomData(DevelopmentProposal developmentProposal);
+
+    public boolean isKeyPersonRoleExempt(ProposalPerson proposalPerson);
+
+    public boolean doesSponsorRequireKeyPersonCertification(ProposalPerson proposalPerson);
+
+    public boolean isRolodexCertificationEnabled();
+
+    public boolean doesPersonRequireCertification(ProposalPerson person);
+
+    }

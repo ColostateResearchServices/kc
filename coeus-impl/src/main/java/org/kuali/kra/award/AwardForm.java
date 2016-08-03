@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kuali.coeus.award.AccountInformationBean;
 import org.kuali.coeus.award.finance.AwardAccount;
+import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.kuali.coeus.common.framework.version.history.VersionHistoryService;
 import org.kuali.coeus.common.notification.impl.NotificationHelper;
 import org.kuali.coeus.common.permissions.impl.web.struts.form.PermissionsForm;
@@ -1293,7 +1294,7 @@ public class AwardForm extends BudgetVersionFormBase implements MultiLookupForm,
     }
     
     public boolean getDisplayEditButton() {
-        return !getAwardDocument().isCanceled();
+        return !getAwardDocument().isCanceled() && VersionStatus.ACTIVE.toString().equals(getAwardDocument().getAward().getAwardSequenceStatus());
     }
     
     protected VersionHistoryService getVersionHistoryService() {
@@ -1549,5 +1550,9 @@ public class AwardForm extends BudgetVersionFormBase implements MultiLookupForm,
                 ParameterConstants.DOCUMENT_COMPONENT, Constants.MAKE_AWD_CUM_ANTICIPATED_OBL_EDITABLE);
     }
 
+    public boolean getDisplayCoiDisclosureStatus() {
+        return getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_AWARD,
+                Constants.PARAMETER_COMPONENT_DOCUMENT, Constants.ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE);
+    }
 
 }

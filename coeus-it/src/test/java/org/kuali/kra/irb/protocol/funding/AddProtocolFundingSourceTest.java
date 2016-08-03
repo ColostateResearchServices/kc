@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -165,6 +165,28 @@ public class AddProtocolFundingSourceTest extends KcIntegrationTestBase {
             theTest.checkRuleAssertions();            
     }
 
+    @Test
+    public void testBlankNameFundingSourceOther() { 
+        TemplateRuleTest<AddProtocolFundingSourceEvent, ProtocolFundingSourceRule>  theTest = 
+            new  TemplateRuleTest<AddProtocolFundingSourceEvent, ProtocolFundingSourceRule> (){            
+                @Override
+                protected void prerequisite() {        
+                    fundingSource.setFundingSourceName("");
+                    fundingSource.setFundingSourceTypeCode(FundingSourceType.OTHER);
+                    event = new AddProtocolFundingSourceEvent(Constants.EMPTY_STRING, doc, fundingSource, protocolFundingSources);
+                    rule = new ProtocolFundingSourceRule();
+                    rule.setBusinessObjectService(null);
+                    rule.setProtocolFundingSourceService(getProtocolFundingSourceService());
+                    expectedReturnValue = false;
+                }                
+                @Override
+                public void checkRuleAssertions() {
+                    Assert.assertFalse(getErrorMap().containsMessageKey(KeyConstants.ERROR_PROTOCOL_FUNDING_SOURCE_NAME_NOT_FOUND));
+                }
+            };
+            theTest.checkRuleAssertions();            
+    }
+    
     @Test
     public void testNullTypeFundingSource() { 
         TemplateRuleTest<AddProtocolFundingSourceEvent, ProtocolFundingSourceRule>  theTest = 

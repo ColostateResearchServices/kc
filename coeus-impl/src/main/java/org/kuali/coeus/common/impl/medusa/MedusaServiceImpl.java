@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -58,6 +58,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Medusa Service provides the methods to get MedusaNodes that describe the tree-like structure that describes
@@ -607,7 +608,7 @@ public class MedusaServiceImpl implements MedusaService {
         }
         SubAward currentSubAward = (SubAward) getActiveOrCurrentVersion(SubAward.class, subAward.getSubAwardCode());
         if (currentSubAward != null) {
-            getSubAwardService().getAmountInfo(currentSubAward);
+            getSubAwardService().calculateAmountInfo(currentSubAward);
         }
         return currentSubAward == null ? subAward : currentSubAward;
     }
@@ -896,12 +897,11 @@ public class MedusaServiceImpl implements MedusaService {
     @SuppressWarnings("unchecked")
     protected Collection<InstitutionalProposal> getProposals(DevelopmentProposal devProposal) {
         Collection<ProposalAdminDetails> proposalAdminDetails = businessObjectService.findMatching(ProposalAdminDetails.class, getFieldValues("devProposalNumber", devProposal.getProposalNumber()));
-        Collection<InstitutionalProposal> instProposals = new ArrayList<InstitutionalProposal>();
-        for (ProposalAdminDetails proposalAdminDetail : proposalAdminDetails) {
-            //find the newest version of the institutional proposal that is linked
-            instProposals.add(getInstitutionalProposal(proposalAdminDetail.getInstProposalId()));
-        }
-        return instProposals;        
+        return proposalAdminDetails.stream()
+        		.map(ProposalAdminDetails::getInstProposalId)
+        		.filter(proposalNumber -> proposalNumber != null)
+        		.map(this::getInstitutionalProposal)
+        		.collect(Collectors.toList());      
     }
     
     protected Collection<Negotiation> getNegotiations(BusinessObject bo) {

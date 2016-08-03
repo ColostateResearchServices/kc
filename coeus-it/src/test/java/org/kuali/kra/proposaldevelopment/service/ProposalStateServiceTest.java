@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -87,7 +87,6 @@ public class ProposalStateServiceTest extends KcIntegrationTestBase {
     public void testEnroute() {
         runTest(ENROUTE, false, false, ProposalState.APPROVAL_PENDING, ProposalState.APPROVAL_PENDING, ProposalState.APPROVAL_PENDING);
         runTest(ENROUTE, true, false, ProposalState.APPROVAL_PENDING_SUBMITTED, ProposalState.APPROVAL_PENDING_SUBMITTED, ProposalState.APPROVAL_PENDING);
-        runTest(ENROUTE, true, true, ProposalState.REVISIONS_REQUESTED, ProposalState.REVISIONS_REQUESTED, null);
     }
     
     /**
@@ -153,7 +152,7 @@ public class ProposalStateServiceTest extends KcIntegrationTestBase {
         ProposalDevelopmentDocument doc = createProposalDevelopmentDocument(workflowState, isSubmitted);
 
         doc.getDevelopmentProposal().setProposalStateTypeCode(previousStateTypeCode);
-        String state = service.getProposalStateTypeCode(doc, isRejected );
+        String state = service.getProposalStateTypeCode(doc, isRejected);
         assertEquals("Proposal State", expectedState1, state);
         
         state = service.getProposalStateTypeCode(doc, isRejected);

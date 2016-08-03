@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    -
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    -
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -22,8 +22,9 @@
 <div class="body">
 
    <ul class="chan">
-      <li><a href="${ConfigProperties.krad.url}/core/admin/cache?viewId=CacheAdmin-view1&methodToCall=start" title="Cache Admin">Cache Admin</a>
-             </li>
+      <li><a href="${ConfigProperties.application.url}/coiProject.do?methodToCall=publishAll" title="Project Push To COI">Project Push To COI</a></li>
+      <li><a href="${ConfigProperties.application.url}/authServicePush.do?methodToCall=pushAll" title="Push Users to the Core Auth Service">Push Users to the Core Auth Service</a></li>
+      <li><a href="${ConfigProperties.krad.url}/core/admin/cache?viewId=CacheAdmin-view1&methodToCall=start" title="Cache Admin">Cache Admin</a></li>
    </ul>
 
 </div>

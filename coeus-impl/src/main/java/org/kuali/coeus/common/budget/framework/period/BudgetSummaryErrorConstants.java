@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,7 +39,8 @@ public enum BudgetSummaryErrorConstants {
         ERROR_LINE_ITEM_EXISTS("error.lineItem.exists", "startDate"),
         ERROR_PERIOD_LINE_ITEM_DOESNOT_EXIST("error.periodLineItem.doesNot.exist", "noFocus"),
         ERROR_GENERATE_PERIOD("error.generatePeriod", "noFocus"),
-        ERROR_NO_FUTURE_PERIOD_TO_GENERATE("error.noFuturePeriodToGenerate", "noFocus");
+        ERROR_NO_FUTURE_PERIOD_TO_GENERATE("error.noFuturePeriodToGenerate", "noFocus"),
+        ERROR_PERIOD_GAPS("error.budgetPeriodGaps", "noFocus");
         private final String errorKey;   
         private final String errorProperty;
 

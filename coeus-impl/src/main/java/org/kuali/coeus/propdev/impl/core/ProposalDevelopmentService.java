@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,7 @@ import org.kuali.rice.kew.api.exception.WorkflowException;
 import java.util.List;
 
 public interface ProposalDevelopmentService {
-    
+
     void initializeUnitOrganizationLocation(ProposalDevelopmentDocument proposalDevelopmentDocument);
     
     /**
@@ -61,6 +61,7 @@ public interface ProposalDevelopmentService {
     String SUMMARY_QUESTIONS_INDICATOR = "enableSummaryQuestionsPanel";
     String SUMMARY_ATTACHMENTS_INDICATOR = "enableSummaryAttachmentsPanel";
     String SUMMARY_KEYWORDS_INDICATOR = "enableSummaryKeywordsPanel";
+    String ENABLE_IP_GENERATION_PROMPT_DIALOG = "enableIPGenerationPromptDialog";
 
     /**
      * Get the units that the user has tht can create proposal.
@@ -73,5 +74,8 @@ public interface ProposalDevelopmentService {
     List<Unit> getUnitsForCreateProposal(String userId);
     
     boolean autogenerateInstitutionalProposal();
-    
+
+    String getIPGenerateOption(DevelopmentProposal developmentProposal);
+
+    boolean isProposalReniewedOrChangeCorrected(DevelopmentProposal developmentProposal);
 }

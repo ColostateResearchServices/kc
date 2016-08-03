@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
  */
 package org.kuali.coeus.common.committee.impl.notification;
 
+import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.common.committee.impl.meeting.ScheduleAgendaBase;
 
 import java.util.Map;
@@ -32,12 +33,6 @@ public class AgendaCreatedNotificationRenderer extends CommitteeNotificationRend
     private String actionTaken;
     private ScheduleAgendaBase scheduleAgenda;
 
-    /**
-     * Constructs an Agenda Created notification renderer.
-     * 
-     * @param protocol
-     * @param actionTaken
-     */
     public AgendaCreatedNotificationRenderer(ScheduleAgendaBase scheduleAgenda, String actionTaken) {
         super(scheduleAgenda.getCommitteeSchedule().getParentCommittee());
         this.scheduleAgenda = scheduleAgenda;
@@ -65,8 +60,8 @@ public class AgendaCreatedNotificationRenderer extends CommitteeNotificationRend
         Map<String, String> params = super.getDefaultReplacementParameters();
         params.put(CommitteeReplacementParameters.LAST_ACTION_DATE, scheduleAgenda.getCommitteeSchedule().getScheduledDate().toString());
         params.put(CommitteeReplacementParameters.ACTION_TAKEN, actionTaken);
-        params.put(CommitteeReplacementParameters.OBJECT_INDEX, new Integer(scheduleAgenda.getAgendaNumber().intValue() - 1).toString());
-        params.put(CommitteeReplacementParameters.SCHEDULE_ID, "" + scheduleAgenda.getCommitteeSchedule().getId());
+        params.put(CommitteeReplacementParameters.OBJECT_INDEX, Integer.valueOf(scheduleAgenda.getAgendaNumber() - 1).toString());
+        params.put(CommitteeReplacementParameters.SCHEDULE_ID, StringUtils.EMPTY + scheduleAgenda.getCommitteeSchedule().getId());
         return params;
     }    
 

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,8 @@ import org.kuali.coeus.common.framework.type.ActivityType;
 public class InstituteRate extends AbstractInstituteRate {
 
     private static final long serialVersionUID = -7899229198533624158L;
+    
+    private Long id;
 
     private String activityTypeCode;
 
@@ -47,4 +49,12 @@ public class InstituteRate extends AbstractInstituteRate {
     public void setActivityType(ActivityType activityType) {
         this.activityType = activityType;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 }

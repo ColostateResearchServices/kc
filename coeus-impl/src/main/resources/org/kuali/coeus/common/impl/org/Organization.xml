@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -1011,7 +1011,7 @@
                 <property name="inquiryFields">
                   <list>
                     <bean p:attributeName="fiscalYear" parent="FieldDefinition"/>
-                    <bean p:attributeName="auditAccepted" parent="FieldDefinition"/>
+                    <bean p:attributeName="auditAcceptedCode" parent="FieldDefinition"/>
                     <bean p:attributeName="auditComment" parent="FieldDefinition"/>
                   </list>
                 </property>
@@ -1156,7 +1156,7 @@
           <property name="items">
             <list>
               <bean p:propertyName="fiscalYear" parent="Uif-DataField"/>
-              <bean p:propertyName="auditAccepted" parent="Uif-DataField"/>
+              <bean p:propertyName="auditAcceptedCode" parent="Uif-DataField"/>
               <bean p:propertyName="auditComment" parent="Uif-DataField"/>
             </list>
           </property>

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -119,22 +119,20 @@ public class ProposalBudgetRateAndPeriodController extends ProposalBudgetControl
     	ModelAndView modelAndView = getModelAndViewService().getModelAndView(form);
         int selectedLine = Integer.parseInt(form.getActionParamaterValue(UifParameters.SELECTED_LINE_INDEX));
         BudgetPeriod budgetPeriod = budget.getBudgetPeriods().get(selectedLine);
-        boolean rulePassed = getKcBusinessRulesEngine().applyRules(new SaveBudgetPeriodAndTotalEvent(budget, BUDGET_PERIOD_ERROR_PATH_PREFIX));
         if (isBudgetPeriodDateChanged(budgetPeriod) && isOnlyLineItemDateError()) {
         	getGlobalVariableService().getMessageMap().clearErrorMessages();
             DialogResponse dialogResponse = form.getDialogResponse(PERIOD_CHANGES_DIALOG_ID);
             if(dialogResponse == null) {
             	return getModelAndViewService().showDialog(PERIOD_CHANGES_DIALOG_ID, true, form);
             }else {
-                rulePassed = false;
                 boolean confirmResetDefault = dialogResponse.getResponseAsBoolean();
                 if(confirmResetDefault) {
                     getBudgetSummaryService().adjustStartEndDatesForLineItems(budgetPeriod);
-                    //check rules again after adjusting date
-                    rulePassed = getKcBusinessRulesEngine().applyRules(new SaveBudgetPeriodAndTotalEvent(budget, BUDGET_PERIOD_ERROR_PATH_PREFIX));
                 }
             }
         }
+
+        boolean rulePassed = getKcBusinessRulesEngine().applyRules(new SaveBudgetPeriodAndTotalEvent(budget, BUDGET_PERIOD_ERROR_PATH_PREFIX));
         if(rulePassed) {
         	getBudgetCalculationService().calculateBudgetPeriod(budget, budgetPeriod);
             modelAndView = super.saveLine(form);
@@ -183,27 +181,20 @@ public class ProposalBudgetRateAndPeriodController extends ProposalBudgetControl
     public ModelAndView save(ProposalBudgetForm form) {
     	ModelAndView modelAndView = getModelAndViewService().getModelAndView(form);
         Budget budget = form.getBudget();
-        boolean rulePassed = getKcBusinessRulesEngine().applyRules(new SaveBudgetPeriodAndTotalEvent(budget, BUDGET_PERIOD_ERROR_PATH_PREFIX));
         if (isBudgetPeriodDateChanged(budget) && isOnlyLineItemDateError()) {
         	getGlobalVariableService().getMessageMap().clearErrorMessages();
             DialogResponse dialogResponse = form.getDialogResponse(PERIOD_CHANGES_DIALOG_ID);
             if(dialogResponse == null) {
             	return getModelAndViewService().showDialog(PERIOD_CHANGES_DIALOG_ID, true, form);
             }else {
-                rulePassed = false;
                 boolean confirmResetDefault = dialogResponse.getResponseAsBoolean();
                 if(confirmResetDefault) {
                     getBudgetSummaryService().adjustStartEndDatesForLineItems(budget);
-                    //check rules again after adjusting date
-                    rulePassed = getKcBusinessRulesEngine().applyRules(new SaveBudgetPeriodAndTotalEvent(budget, BUDGET_PERIOD_ERROR_PATH_PREFIX));
                 }
             }
         }
-        if(rulePassed) {
-            modelAndView = super.save(form);
-            form.getEditableBudgetLineItems().clear();
-        }
-        return modelAndView;
+
+        return super.save(form);
     }
     
     /**

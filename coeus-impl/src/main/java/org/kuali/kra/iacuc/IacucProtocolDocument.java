@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kuali.coeus.common.framework.custom.DocumentCustomData;
 import org.kuali.coeus.common.notification.impl.bo.KcNotification;
+import org.kuali.coeus.sys.framework.controller.KcHoldingPageConstants;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.bo.ResearchAreaBase;
 import org.kuali.kra.iacuc.actions.IacucProtocolAction;
@@ -160,10 +161,10 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
                      * The new protocol document is only available after the amendment has been merged. So, once the amendment is merged,
                      * find the active protocol available and change the return link to point to that.
                      */
-                    String oldLocation = (String) GlobalVariables.getUserSession().retrieveObject(Constants.HOLDING_PAGE_RETURN_LOCATION);
+                    String oldLocation = (String) GlobalVariables.getUserSession().retrieveObject(KcHoldingPageConstants.HOLDING_PAGE_RETURN_LOCATION);
                     String oldDocNbr = getProtocol().getProtocolDocument().getDocumentNumber();
                     String returnLocation = oldLocation.replaceFirst(oldDocNbr, protocolId);
-                    GlobalVariables.getUserSession().addObject(Constants.HOLDING_PAGE_RETURN_LOCATION, (Object) returnLocation);
+                    GlobalVariables.getUserSession().addObject(KcHoldingPageConstants.HOLDING_PAGE_RETURN_LOCATION, (Object) returnLocation);
                 }
             }         
             // approve/expedited approve/response approve

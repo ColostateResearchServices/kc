@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -49,11 +49,12 @@ public class ProtocolOnlineReviewServiceImpl extends ProtocolOnlineReviewService
     @Override
     public boolean isProtocolInStateToBeReviewed(ProtocolBase protocol) {
         boolean isReviewable = false;
-        ProtocolSubmission submission = (ProtocolSubmission)((Protocol) protocol).getProtocolSubmission();
+        ProtocolSubmission submission = ((Protocol) protocol).getProtocolSubmission();
         if (submission != null) {
             try {
                 isReviewable = StringUtils.isNotEmpty(submission.getScheduleId())  
                         || ProtocolReviewType.EXPEDITED_REVIEW_TYPE_CODE.equals(submission.getProtocolReviewTypeCode())
+                        || ProtocolReviewType.EXEMPT_STUDIES_REVIEW_TYPE_CODE.equals(submission.getProtocolReviewTypeCode())
                         || (ProtocolReviewType.FYI_TYPE_CODE.equalsIgnoreCase(submission.getProtocolReviewTypeCode()) && 
                             ProtocolSubmissionType.NOTIFY_IRB.equalsIgnoreCase(submission.getProtocolSubmissionType().getSubmissionTypeCode())); 
                 isReviewable &= (StringUtils.equals(submission.getSubmissionStatusCode(), ProtocolSubmissionStatus.SUBMITTED_TO_COMMITTEE) 

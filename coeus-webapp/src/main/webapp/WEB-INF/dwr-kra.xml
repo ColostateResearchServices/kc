@@ -1,7 +1,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -57,9 +57,6 @@
         <convert converter="bean" match="org.kuali.rice.location.framework.state.StateEbo">
             <param name="include" value="code,name,countryCode" />
         </convert>
-        <convert converter="bean" match="org.kuali.rice.location.api.state.State">
-            <param name="include" value="code,name,countryCode" />
-        </convert>
 
         <create creator="spring" javascript="SponsorService">
             <param name="beanName" value="sponsorService" />
@@ -107,6 +104,7 @@
 		<create creator="spring" javascript="OrganizationService">
 			<param name="beanName" value="organizationService" />
 			<include method="getOrganizationName" />
+			<include method="getOrganizationDuns" />
 		</create>
         <create creator="spring" javascript="ProtocolFundingSourceService">
             <param name="beanName" value="protocolFundingSourceService" />
@@ -174,10 +172,6 @@
         <create creator="spring" javascript="SubAwardService">
             <param name="beanName" value="subAwardService" />
             <include method="getCalculatedFollowupDateForAjaxCall" />
-        </create>  	
-		<create creator="spring" javascript="StateService">
-            <param name="beanName" value="stateService" />
-            <include method="findAllStatesInCountryByAltCode" />
         </create>
 		<create creator="spring" javascript="BudgetRatesService">
 			<param name="beanName" value="budgetRatesService" />

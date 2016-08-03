@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -400,16 +400,8 @@ public abstract class BudgetRatesServiceImpl implements BudgetRatesService {
         }
         return effectiveDate;
     }
-
-
-
-    /* Look for budget persons salary effective date and return the 
-     * earliest effective date 
-     * This date is used to fetch/calculate inflation rates  
-     * 
-     * */
    
-    protected Date getBudgetPersonSalaryEffectiveDate(Budget budget) {
+    public Date getBudgetPersonSalaryEffectiveDate(Budget budget) {
         Map<String, Object> queryMap = new HashMap<>();
         queryMap.put("budgetId", budget.getBudgetId());
         Collection<BudgetPerson> budgetPersons =  getBusinessObjectService().findMatching(BudgetPerson.class, queryMap);
@@ -904,6 +896,10 @@ public abstract class BudgetRatesServiceImpl implements BudgetRatesService {
     public boolean isLabAllocationSalary(String rateClassTypeCode) {
         return StringUtils.equals(rateClassTypeCode, org.kuali.coeus.common.budget.api.rate.RateClassType.LA_SALARIES.getRateClassType());
 
+    }
+
+    public boolean isOverhead(String rateClassTypeCode) {
+        return StringUtils.equals(rateClassTypeCode, org.kuali.coeus.common.budget.api.rate.RateClassType.OVERHEAD.getRateClassType());
     }
 
     @Override

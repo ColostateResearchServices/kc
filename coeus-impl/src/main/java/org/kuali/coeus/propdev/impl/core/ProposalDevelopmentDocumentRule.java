@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,6 +32,7 @@ import org.kuali.coeus.propdev.impl.attachment.*;
 import org.kuali.coeus.propdev.impl.attachment.institute.*;
 import org.kuali.coeus.propdev.impl.abstrct.AbstractsRule;
 import org.kuali.coeus.propdev.impl.abstrct.ProposalAbstract;
+import org.kuali.coeus.propdev.impl.auth.perm.ProposalDevelopmentPermissionsService;
 import org.kuali.coeus.propdev.impl.basic.ProposalDevelopmentProposalRequiredFieldsAuditRule;
 import org.kuali.coeus.propdev.impl.budget.ProposalBudgetService;
 import org.kuali.coeus.propdev.impl.datavalidation.ProposalDevelopmentDataValidationConstants;
@@ -91,6 +92,9 @@ import org.kuali.rice.krad.rules.rule.DocumentAuditRule;
 import org.kuali.rice.krad.rules.rule.event.ApproveDocumentEvent;
 import org.kuali.rice.krad.util.MessageMap;
 
+import static org.kuali.coeus.propdev.impl.core.ProposalDevelopmentConstants.PropDevParameterConstants.ENABLE_KEY_PERSON_VALIDATION_FOR_NON_EMPLOYEE_PERSONNEL;
+import static org.kuali.kra.infrastructure.KeyConstants.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,7 +109,7 @@ import java.util.List;
 public class ProposalDevelopmentDocumentRule extends KcTransactionalDocumentRuleBase implements AddCongressionalDistrictRule, AddKeyPersonRule, AddNarrativeRule, ReplaceNarrativeRule, SaveNarrativesRule, AddInstituteAttachmentRule, ReplaceInstituteAttachmentRule, AddPersonnelAttachmentRule, ReplacePersonnelAttachmentRule, AddProposalSiteRule, KcBusinessRule, SaveProposalSitesRule, AbstractsRule, CopyProposalRule, ChangeKeyPersonRule, DeleteCongressionalDistrictRule, PermissionsRule, NewNarrativeUserRightsRule, SaveKeyPersonRule,CalculateCreditSplitRule, ProposalDataOverrideRule, ResubmissionPromptRule, BudgetDataOverrideRule, DocumentAuditRule {
 
 
-    private static final org.apache.commons.logging.Log LOG = org.apache.commons.logging.LogFactory.getLog(ProposalDevelopmentDocumentRule.class); 
+    private static final org.apache.commons.logging.Log LOG = org.apache.commons.logging.LogFactory.getLog(ProposalDevelopmentDocumentRule.class);
     private static final String PROPOSAL_QUESTIONS_KEY="proposalYnq[%d].%s";
     private static final String PROPOSAL_QUESTIONS_KEY_PROPERTY_ANSWER="answer";
     private static final String PROPOSAL_QUESTIONS_KEY_PROPERTY_REVIEW_DATE="reviewDate";
@@ -117,6 +121,7 @@ public class ProposalDevelopmentDocumentRule extends KcTransactionalDocumentRule
     private SubmissionInfoService submissionInfoService;
     private ParameterService parameterService;
     private KcBusinessRulesEngine kcBusinessRulesEngine;
+    private ProposalDevelopmentPermissionsService permissionsService;
 
     protected DataDictionaryService getDataDictionaryService (){
         if (dataDictionaryService == null)
@@ -177,12 +182,34 @@ public class ProposalDevelopmentDocumentRule extends KcTransactionalDocumentRule
             valid &= processCustomDataRule(proposalDevelopmentDocument);
             valid &= processAttachmentRules(proposalDevelopmentDocument);
             valid &= processSaveSpecialReviewRule(proposalDevelopmentDocument);
+            valid &= processCertificationRules(proposalDevelopmentDocument);
+
             GlobalVariables.getMessageMap().removeFromErrorPath("document.developmentProposal");
         }
 
         return valid;
     }
-    
+
+    protected boolean processCertificationRules(ProposalDevelopmentDocument proposalDevelopmentDocument) {
+        final Boolean validationEnabled = getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT, Constants.PARAMETER_COMPONENT_DOCUMENT,
+                ENABLE_KEY_PERSON_VALIDATION_FOR_NON_EMPLOYEE_PERSONNEL);
+        if(validationEnabled) {
+            int personIndex = 0;
+            KeyPersonnelCertificationRule certificationRule = new KeyPersonnelCertificationRule();
+            for (ProposalPerson person : proposalDevelopmentDocument.getDevelopmentProposal().getProposalPersons()) {
+                final String errorStarter = "document.developmentProposal.proposalPersons[";
+                final String errorFinish = "].questionnaireHelper.answerHeaders[0].questions";
+                String errorKey = errorStarter + personIndex + errorFinish;
+                if (certificationRule.doesNonEmployeeNeedCertification(person)) {
+                    GlobalVariables.getMessageMap().putWarning(errorKey, ERROR_PROPOSAL_PERSON_NONEMPLOYEE_CERTIFICATION_INCOMPLETE,
+                            person.getFullName());
+                }
+                personIndex++;
+            }
+        }
+        return true;
+    }
+
     @Override
     protected boolean processCustomApproveDocumentBusinessRules(ApproveDocumentEvent approveEvent) {
         boolean retval = super.processCustomApproveDocumentBusinessRules(approveEvent);
@@ -505,8 +532,10 @@ public class ProposalDevelopmentDocumentRule extends KcTransactionalDocumentRule
         		!StringUtils.equals(budgetStatusCompleteCode, proposal.getFinalBudget().getBudgetStatus())) {
             auditErrors.add(new AuditError("document.developmentProposal.budgets", KeyConstants.AUDIT_ERROR_NO_BUDGETVERSION_COMPLETE_AND_FINAL, ProposalDevelopmentDataValidationConstants.BUDGET_PAGE_ID));
             retval = false;
-        } else if (proposal.getFinalBudget() != null && (!proposal.getFinalBudget().getStartDate().equals(proposal.getRequestedStartDateInitial()) ||
-        		!proposal.getFinalBudget().getEndDate().equals(proposal.getRequestedEndDateInitial()))) {
+        } else if (proposal.getFinalBudget() != null && (proposal.getFinalBudget().getStartDate().before(proposal.getRequestedStartDateInitial()) ||
+        		proposal.getFinalBudget().getEndDate().after(proposal.getRequestedEndDateInitial()) ||
+                proposal.getFinalBudget().getSummaryPeriodStartDate().before(proposal.getRequestedStartDateInitial()) ||
+                proposal.getFinalBudget().getSummaryPeriodEndDate().after(proposal.getRequestedEndDateInitial()))) {
         	auditErrors.add(new AuditError("document.developmentProposal.budgets", KeyConstants.ERROR_BUDGET_DATES_NOT_MATCH_PROPOSAL_DATES, ProposalDevelopmentDataValidationConstants.BUDGET_PAGE_ID));
             retval = false;
         }
@@ -657,6 +686,8 @@ public class ProposalDevelopmentDocumentRule extends KcTransactionalDocumentRule
     public boolean processRules(KcDocumentEventBaseExtension event) {
         return event.getRule().processRules(event);
     }
+
+
 	public ParameterService getParameterService() {
 		if (parameterService == null) {
 			parameterService = KcServiceLocator.getService(ParameterService.class);

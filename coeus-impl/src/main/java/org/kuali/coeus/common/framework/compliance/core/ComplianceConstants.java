@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,9 @@ package org.kuali.coeus.common.framework.compliance.core;
 public final class ComplianceConstants {
     
     public static final String NEW_SPECIAL_REVIEW_COMMENT = "A Special Review has been inserted.";
+    public static final String PROTO_CORRESP_TYPE_CODE = "protoCorrespTypeCode";
+    public static final String IRB_RENEWAL_REMINDER_CORRESP_TYPES = "irb.protocol.renewal.reminder.corresp.types";
+    public static final String IACUC_RENEWAL_REMINDER_CORRESP_TYPES = "iacuc.protocol.renewal.reminder.corresp.types";
 
     private ComplianceConstants() {
         throw new UnsupportedOperationException("do not call");

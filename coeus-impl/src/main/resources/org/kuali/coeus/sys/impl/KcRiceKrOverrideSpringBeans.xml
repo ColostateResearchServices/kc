@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -34,5 +34,8 @@
     		p:dataObjectService-ref="dataObjectService" />
 
     <bean id="viewLifecyclePhaseBuilder" class="org.kuali.coeus.org.kuali.rice.krad.uif.lifecycle.KcViewLifecyclePhaseBuilderBase"/>
+
+    <bean id="enWorkflowDocumentService" class="org.kuali.coeus.sys.impl.workflow.KcWorkflowDocumentServiceImpl"/>
+
 
 </beans>

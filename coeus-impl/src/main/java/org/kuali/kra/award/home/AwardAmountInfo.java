@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -190,7 +190,7 @@ public class AwardAmountInfo extends AwardAssociate {
         this.obligationExpirationDate = obligationExpirationDate;
     }
 
-    private void changeUpdateElements(Object newObject, Object oldObject) {
+    protected void changeUpdateElements(Object newObject, Object oldObject) {
         if (!ObjectUtils.equals(newObject, oldObject)) {
             super.setUpdateTimestamp(new Timestamp(new java.util.Date().getTime()));
             super.setUpdateUser(getGlobalVariableService().getUserSession().getPrincipalName());

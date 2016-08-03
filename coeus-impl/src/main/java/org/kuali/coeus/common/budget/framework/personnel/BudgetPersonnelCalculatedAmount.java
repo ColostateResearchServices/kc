@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,6 @@ package org.kuali.coeus.common.budget.framework.personnel;
 import org.kuali.coeus.common.budget.api.personnel.BudgetPersonnelCalculatedAmountContract;
 import org.kuali.coeus.common.budget.framework.nonpersonnel.AbstractBudgetCalculatedAmount;
 import javax.persistence.*;
-import org.kuali.coeus.common.budget.framework.copy.DeepCopyIgnore;
 import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
 @Entity
@@ -33,7 +32,6 @@ public class BudgetPersonnelCalculatedAmount extends AbstractBudgetCalculatedAmo
     @Column(name = "PERSON_NUMBER")
     private Integer personNumber;
 
-    @DeepCopyIgnore
     @PortableSequenceGenerator(name = "SEQ_BUDGET_PER_CAL_AMTS_ID")
     @GeneratedValue(generator = "SEQ_BUDGET_PER_CAL_AMTS_ID")
     @Id

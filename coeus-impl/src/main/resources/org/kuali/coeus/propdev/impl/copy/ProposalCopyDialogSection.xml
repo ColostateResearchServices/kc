@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -96,8 +96,12 @@ http://www.springframework.org/schema/util/spring-util-3.0.xsd">
     </bean>
 
     <bean id="PropDev-CopyDialog-OwnedByUnitNumberField" parent="PropDev-CopyDialog-OwnedByUnitNumberField-parentBean" />
-    <bean id="PropDev-CopyDialog-OwnedByUnitNumberField-parentBean"
-          abstract="true" parent="PropDev-DetailsPage-OwnedByUnitNumberField" p:fieldLabel.renderColon="false" >
+    <bean id="PropDev-CopyDialog-OwnedByUnitNumberField-parentBean" abstract="true"
+          parent="Uif-InputField" p:propertyName="ownedByUnitNumber">
+        <property name="control">
+            <bean parent="Uif-DropdownControl" />
+        </property>
+        <property name="optionsFinder" value="#{#getService('leadUnitValuesFinder')}"/>
     </bean>
 
     <bean id="PropDev-CopyDialog-BudgetSelection-parentBean"

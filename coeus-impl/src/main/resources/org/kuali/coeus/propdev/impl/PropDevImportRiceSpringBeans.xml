@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,8 @@
                            http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean id="grlImporter" abstract="true" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean" p:singleton="true" p:mustExist="true" />
+    <bean id="actionTakenService" parent="grlImporter" p:serviceName="enActionTakenService" />
+    <bean id="actionRequestService" parent="grlImporter" p:serviceName="enActionRequestService" />
     <bean id="legacyDataAdapter" parent="grlImporter" p:serviceName="legacyDataAdapter" />
     <bean id="dataObjectService" parent="grlImporter" p:serviceName="dataObjectService" />
     <bean id="businessObjectService" parent="grlImporter" p:serviceName="businessObjectService" />

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -69,11 +69,14 @@ public class ProposalDevelopmentConstants {
         public static final String INSTRUCTION_URL = "instructionUrl";
         public static final String CFDA_NUMBER = "cfdaNumber";
         public static final String PROVIDER_CODE = "providerCode" ;
+        public static final int OPP_TITLE_MAX_LENGTH = 119;
     }
 
     public static class Parameters {
         public static final String KEY_PERSON_CERTIFICATION_SELF_CERTIFY_ONLY = "KEY_PERSON_CERTIFICATION_SELF_CERTIFY_ONLY";
         public static final String NOTIFY_ALL_CERTIFICATIONS_COMPLETE = "notifyAggregatorWhenAllCertificationsComplete";
+        public static final String KEY_PERSON_PROJECT_ROLE = "keyPersonProjectRole";
+        public static final String ALPHABETIZE_ATTACHMENT_TYPES = "alphabetizeAttachmentTypes";
     }
 
     public static class ParameterValues {
@@ -110,13 +113,21 @@ public class ProposalDevelopmentConstants {
     }
     
     public static class PropDevParameterConstants {
-		public static final String CHANGE_CORRECTED_CODE = "S2S_SUBMISSION_TYPE_CODE_CHANGE_CORRECTED_APPLICATION";
-	    public static final String PROPOSAL_TYPE_CODE_NEW_PARM = "PROPOSAL_TYPE_CODE_NEW";
-	    public static final String PROPOSAL_TYPE_CODE_RESUBMISSION_PARM = "PROPOSAL_TYPE_CODE_RESUBMISSION";
-	    public static final String PROPOSAL_TYPE_CODE_RENEWAL_PARM = "PROPOSAL_TYPE_CODE_RENEWAL";
-	    public static final String PROPOSAL_TYPE_CODE_CONTINUATION_PARM = "PROPOSAL_TYPE_CODE_CONTINUATION";
-	    public static final String PROPOSAL_TYPE_CODE_REVISION_PARM = "PROPOSAL_TYPE_CODE_REVISION";
-	    public static final String PROPOSAL_TYPE_CODE_TASK_ORDER_PARM = "PROPOSAL_TYPE_CODE_TASK_ORDER";
+        public static final String CHANGE_CORRECTED_CODE = "S2S_SUBMISSION_TYPE_CODE_CHANGE_CORRECTED_APPLICATION";
+        public static final String S2S_SUBMISSION_TYPE_CODE_PREAPPLICATION = "S2S_SUBMISSION_TYPE_CODE_PREAPPLICATION";
+        public static final String PROPOSAL_TYPE_CODE_NEW_PARM = "PROPOSAL_TYPE_CODE_NEW";
+        public static final String PROPOSAL_TYPE_CODE_RESUBMISSION_PARM = "PROPOSAL_TYPE_CODE_RESUBMISSION";
+        public static final String PROPOSAL_TYPE_CODE_RENEWAL_PARM = "PROPOSAL_TYPE_CODE_RENEWAL";
+        public static final String PROPOSAL_TYPE_CODE_CONTINUATION_PARM = "PROPOSAL_TYPE_CODE_CONTINUATION";
+        public static final String PROPOSAL_TYPE_CODE_REVISION_PARM = "PROPOSAL_TYPE_CODE_REVISION";
+        public static final String PROPOSAL_TYPE_CODE_TASK_ORDER_PARM = "PROPOSAL_TYPE_CODE_TASK_ORDER";
+        public static final String PROPOSAL_TYPE_CODE_NEW_CHANGE_CORRECTED_PARM = "PROPOSAL_TYPE_CODE_NEW_CHANGE_CORRECTED";
+        public static final String PROPOSAL_TYPE_CODE_RESUBMISSION_CHANGE_CORRECTED_PARM = "PROPOSAL_TYPE_CODE_RESUBMISSION_CHANGE_CORRECTED";
+        public static final String PROPOSAL_TYPE_CODE_RENEWAL_CHANGE_CORRECTED_PARM = "PROPOSAL_TYPE_CODE_RENEWAL_CHANGE_CORRECTED";
+        public static final String PROPOSAL_TYPE_CODE_SUPPLEMENT_CHANGE_CORRECTED_PARM = "PROPOSAL_TYPE_CODE_SUPPLEMENT_CHANGE_CORRECTED";
+        public static final String PROPOSAL_TYPE_CODE_BUDGET_SOW_UPDATE_PARM = "PROPOSAL_TYPE_CODE_BUDGET_SOW_UPDATE";
+        public static final String PROPOSAL_TYPE_CODE_PRE_PROPOSAL_PARM = "PROPOSAL_TYPE_CODE_PRE_PROPOSAL";
+        public static final String ENABLE_KEY_PERSON_VALIDATION_FOR_NON_EMPLOYEE_PERSONNEL = "ENABLE_KEY_PERSON_VALIDATION_FOR_NON_EMPLOYEE_PERSONNEL";
     }
     
     public static class AuthConstants {
@@ -126,6 +137,12 @@ public class ProposalDevelopmentConstants {
         public static final String MAINTAIN_HIERARCHY_EDIT_MODE = "maintainProposalHierarchy";
         public static final String CAN_SAVE_CERTIFICATION = "canSaveCertification";
         public static final String MODIFY_S2S = "modifyS2s";
+    }
+
+    public static class KewConstants {
+
+        public static final String PROPOSAL_DEVELOPMENT_DOCUMENT = "ProposalDevelopmentDocument";
+		public static final String AGGREGATORS_REQUEST_FOR_REVIEW_ANNOTATION = "Aggregators Request for Review";
     }
     
     

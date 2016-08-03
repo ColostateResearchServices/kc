@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -211,9 +211,11 @@ opacity:1;
             	                </c:if>
 						   </c:when>
 						   <c:otherwise>
+							   <c:if test="${!readOnly && !empty KualiForm.editingMode['CAN_MAINTAIN_AWARD_ATTACHMENTS']}">
 								<html:image property="methodToCall.deleteAttachment.line${itrStatus.index}.anchor${currentTabIndex}"
 									   src='${ConfigProperties.kra.externalizable.images.url}tinybutton-delete1.gif' styleClass="tinybutton"
 									   alt="Delete Attachment"/>
+							   </c:if>
 						  </c:otherwise>
 						   </c:choose>
 						</c:if>

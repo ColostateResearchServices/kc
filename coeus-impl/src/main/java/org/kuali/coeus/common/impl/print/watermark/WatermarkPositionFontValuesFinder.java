@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,23 +24,23 @@ import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * 
  * This class for storing the details of watermark Font.
  */
 public class WatermarkPositionFontValuesFinder extends UifKeyValuesFinderBase {
-    /**
-     * This method for storing lookup keyvalues of watermark font size.
-     * Watermark Font Size: 20 - 100.
-     */
+
+    private static final List<KeyValue> KEY_VALUES = IntStream.rangeClosed(2, 30)
+            .filter(i -> i % 2 == 0)
+            .mapToObj(i -> new ConcreteKeyValue(String.valueOf(i), String.valueOf(i).concat(" %")))
+            .collect(Collectors.toList());
+
     @Override
     public List<KeyValue> getKeyValues() {
-        List<KeyValue> keyValues = new ArrayList<KeyValue>();
-        for(Integer fontValue=7;fontValue<=30;fontValue+=2){
-            keyValues.add(new ConcreteKeyValue(fontValue.toString(),fontValue.toString().concat(" %"))); 
-        }       
-        return keyValues;
+        return KEY_VALUES;
     }
      
 

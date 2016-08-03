@@ -1,3 +1,21 @@
+/*
+ * Kuali Coeus, a comprehensive research administration system for higher education.
+ *
+ * Copyright 2005-2016 Kuali, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.kuali.coeus.award.finance.impl;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +33,8 @@ import org.kuali.rice.krad.service.BusinessObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import com.codiform.moo.curry.Translate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,32 +61,23 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountInformationDto createAccountInformation(Award award) {
 
-        AccountInformationDto accountInformation  = new AccountInformationDto();
+        AccountInformationDto accountInformation = Translate.to(AccountInformationDto.class).from(award);
         setName(award, accountInformation);
-        accountInformation.setAccountNumber(award.getAccountNumber());
         setDefaultAddress(award, accountInformation);
         setAdminAddress(award, accountInformation);
-
-        if  (award.getCfdaNumber() != null) {
-            accountInformation.setCfdaNumber(award.getCfdaNumber());
-        }
-
-        accountInformation.setEffectiveDate(award.getAwardEffectiveDate());
-        accountInformation.setExpirationDate(award.getProjectEndDate());
-        accountInformation.setExpenseGuidelineText(award.getAwardNumber());
         setIncomeGuidelineText(award, accountInformation);
-        accountInformation.setPurposeText(award.getTitle());
-        accountInformation.setUnit(award.getUnitNumber());
-        accountInformation.setPrincipalId(award.getPrincipalInvestigator().getPersonId());
         AwardFandaRate currentFandaRate = award.getCurrentFandaRate();
 
-        String rateClassCode = currentFandaRate.getFandaRateType().getRateClassCode();
-        String rateTypeCode = currentFandaRate.getFandaRateType().getRateTypeCode();
-        String icrTypeCode = getIndirectCostTypeCode(rateClassCode, rateTypeCode);
-
-        accountInformation.setOffCampusIndicator(!currentFandaRate.getOnOffCampusFlag());
-        accountInformation.setIndirectCostRate(determineIndirectCostRateCode(award));
-        accountInformation.setIndirectCostTypeCode(icrTypeCode + StringUtils.EMPTY);
+        if (currentFandaRate != null) {
+	        String rateClassCode = currentFandaRate.getFandaRateType().getRateClassCode();
+	        String rateTypeCode = currentFandaRate.getFandaRateType().getRateTypeCode();
+	        String icrTypeCode = getIndirectCostTypeCode(rateClassCode, rateTypeCode);
+	
+	        accountInformation.setOffCampusIndicator(!currentFandaRate.getOnOffCampusFlag());
+	        accountInformation.setIndirectCostTypeCode(icrTypeCode + StringUtils.EMPTY);
+	        accountInformation.setIndirectCostRate(determineIndirectCostRateCode(award));
+        }
+        
         accountInformation.setHigherEdFunctionCode(award.getActivityType().getHigherEducationFunctionCode());
         return accountInformation;
 

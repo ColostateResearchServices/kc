@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -97,8 +97,7 @@ public abstract class ProtocolSubmissionBase extends ProtocolAssociateBase {
     @SkipVersioning
     private transient CommitteeScheduleBase committeeSchedule;
 
-    @SkipVersioning
-    private transient List<CommitteeScheduleMinuteBase> committeeScheduleMinutes;
+    private List<CommitteeScheduleMinuteBase> committeeScheduleMinutes;
 
     @SkipVersioning
     private transient List<ProtocolReviewAttachmentBase> reviewAttachments;
@@ -438,7 +437,9 @@ public abstract class ProtocolSubmissionBase extends ProtocolAssociateBase {
     }
 
     public List<CommitteeScheduleMinuteBase> getCommitteeScheduleMinutes() {
-        refreshReferenceObject("committeeScheduleMinutes");
+        if (committeeScheduleMinutes == null || committeeScheduleMinutes.isEmpty()) {
+            refreshReferenceObject("committeeScheduleMinutes");
+        }
         return committeeScheduleMinutes;
     }
 

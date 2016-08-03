@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.kuali.coeus</groupId>
         <artifactId>coeus</artifactId>
-        <version>1509.58-SNAPSHOT</version>
+        <version>1603.50-SNAPSHOT</version>
     </parent>
     <artifactId>coeus-webapp</artifactId>
     <packaging>war</packaging>
@@ -43,7 +43,7 @@
         <kc.context.path>/kc-${build.environment}</kc.context.path>
         <kc.port>8080</kc.port>
 
-        <frontend-maven-plugin.version>0.0.25</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>0.0.26</frontend-maven-plugin.version>
         <frontend-maven-plugin.node.version>v0.12.7</frontend-maven-plugin.node.version>
         <frontend-maven-plugin.npm.version>2.7.6</frontend-maven-plugin.npm.version>
         <jsfrontend.sources>src/main/jsfrontend</jsfrontend.sources>
@@ -389,6 +389,40 @@
         <profile>
             <id>oracle</id>
             <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.oracle</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>include-mysql-driver</id>
+            <activation>
+                <property>
+                    <name>!grm.off</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${mysql.groupId}</groupId>
+                    <artifactId>${mysql.artifactId}</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>include-oracle-driver</id>
+            <activation>
+                <property>
+                    <name>!grm.off</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${oracle.groupId}</groupId>
+                    <artifactId>${oracle.artifactId}</artifactId>
+                </dependency>
                 <dependency>
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>org.eclipse.persistence.oracle</artifactId>

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -95,10 +95,6 @@ public class IacucProtocolActionAjaxServiceImpl extends ProtocolActionAjaxServic
     }
 
     public String getModifySubmissionProtocolReviewers(String protocolId, String committeeId, String scheduleId, String protocolReviewTypeCode) {
-        if (StringUtils.isNotBlank(scheduleId) && !StringUtils.equals(protocolReviewTypeCode, IacucProtocolReviewType.FULL_COMMITTEE_REVIEW)){
-            return "";
-        }
-
         return getRevs(protocolId, committeeId, scheduleId);
     }
 

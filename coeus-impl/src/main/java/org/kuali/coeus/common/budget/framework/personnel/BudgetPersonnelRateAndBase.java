@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,7 +20,7 @@ package org.kuali.coeus.common.budget.framework.personnel;
 
 import javax.persistence.*;
 
-import org.kuali.coeus.common.budget.framework.copy.DeepCopyIgnore;
+
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 import org.kuali.coeus.common.budget.framework.nonpersonnel.AbstractBudgetRateAndBase;
 import org.kuali.coeus.sys.framework.persistence.ScaleTwoDecimalConverter;
@@ -32,7 +32,6 @@ public class BudgetPersonnelRateAndBase extends AbstractBudgetRateAndBase {
 
     private static final long serialVersionUID = -3822394019599765292L;
 
-    @DeepCopyIgnore
     @PortableSequenceGenerator(name = "SEQ_BGT_PER_DET_RATE_BASE_ID")
     @GeneratedValue(generator = "SEQ_BGT_PER_DET_RATE_BASE_ID")
     @Id

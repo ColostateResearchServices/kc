@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,7 @@
 package org.kuali.kra.award.paymentreports.awardreports.reporting;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.kuali.coeus.common.framework.contact.Contactable;
 import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.coeus.common.framework.person.KcPersonService;
@@ -468,8 +469,9 @@ public class ReportTracking extends KcPersistableBusinessObjectBase implements C
      */
     @Override
     public int compareTo(ReportTracking o) {
-        return o == null || o.getDueDate() == null || this.getDueDate() == null ? 0 
-                : this.getDueDate().compareTo(o.getDueDate());
+        return new CompareToBuilder()
+                .append(o.getDueDate(), this.getDueDate())
+                .toComparison();
     }
 
     public int getItemCount() {

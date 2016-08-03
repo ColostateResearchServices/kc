@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,7 @@ import org.kuali.coeus.sys.framework.rule.KcTransactionalDocumentRuleBase;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.common.api.sponsor.hierarchy.SponsorHierarchyService;
 import org.kuali.kra.infrastructure.Constants;
+import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.rice.krad.util.AuditCluster;
 import org.kuali.rice.krad.util.AuditError;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -66,6 +67,7 @@ public class KeyPersonnelAuditRule extends KcTransactionalDocumentRuleBase imple
             keyPersonnelService = KcServiceLocator.getService(KeyPersonnelService.class);
         return keyPersonnelService;
     }
+
     @Override
     public boolean processRunAuditBusinessRules(Document document) {
         ProposalDevelopmentDocument pd = (ProposalDevelopmentDocument) document;
@@ -73,7 +75,7 @@ public class KeyPersonnelAuditRule extends KcTransactionalDocumentRuleBase imple
 
         if (!hasPrincipalInvestigator(pd)) {
             retval = false;
-            getAuditErrors(StringUtils.EMPTY).add(new AuditError(PERSONNEL_PAGE_ID, ERROR_INVESTIGATOR_LOWBOUND, PERSONNEL_PAGE_ID));
+            getAuditErrors(StringUtils.EMPTY, AUDIT_ERRORS).add(new AuditError(PERSONNEL_PAGE_ID, ERROR_INVESTIGATOR_LOWBOUND, PERSONNEL_PAGE_ID));
         }
         // Include normal save document business rules
         retval &= new ProposalDevelopmentKeyPersonsRule().processCustomSaveDocumentBusinessRules(pd);
@@ -82,14 +84,7 @@ public class KeyPersonnelAuditRule extends KcTransactionalDocumentRuleBase imple
         int  personCount = 0;
         for (ProposalPerson person : pd.getDevelopmentProposal().getProposalPersons()) {
             retval &= validateInvestigator(person,personCount);
-            if (pd.getDevelopmentProposal().getS2sOpportunity() != null &&
-                    !pd.getDevelopmentProposal().getS2sOpportunity().getOpportunityId().isEmpty() &&
-                    getSponsorHierarchyService().isSponsorInHierarchy(pd.getDevelopmentProposal().getSponsorCode(), SPONSOR_GROUPS, 1, Constants.NIH_SPONSOR_ACRONYM)) {
-                if (person.isMultiplePi() || person.isPrincipalInvestigator()) {
-                    retval &= validateEraCommonUserName(person, personCount);
-                }
-                
-            }
+            retval = doPIsHaveCorrectEraCommonsNames(retval, personCount, person, pd);
 
             if (!hasInvestigator && isInvestigator(person)) {
                 hasInvestigator = true;
@@ -103,14 +98,32 @@ public class KeyPersonnelAuditRule extends KcTransactionalDocumentRuleBase imple
         return retval;
 
     }
-    
-    private boolean validateEraCommonUserName(ProposalPerson person, int personCount) {
+
+    protected boolean doPIsHaveCorrectEraCommonsNames(boolean retval, int personCount, ProposalPerson person, ProposalDevelopmentDocument pd) {
+        if (pd.getDevelopmentProposal().getS2sOpportunity() != null &&
+                !pd.getDevelopmentProposal().getS2sOpportunity().getOpportunityId().isEmpty() &&
+                getSponsorHierarchyService().isSponsorInHierarchy(pd.getDevelopmentProposal().getSponsorCode(), SPONSOR_GROUPS, 1, Constants.NIH_SPONSOR_ACRONYM)) {
+            if (person.isMultiplePi() || person.isPrincipalInvestigator()) {
+                retval &= validateEraCommonsUserName(person, personCount);
+            }
+        }
+
+        return retval;
+    }
+
+    protected boolean validateEraCommonsUserName(ProposalPerson person, int personCount) {
         boolean retval = true;
         if (person.getEraCommonsUserName() == null) {
             retval = false;
-            getAuditErrors(PERSONNEL_DETAIL_SECTION_NAME).add(new AuditError("document.developmentProposal.proposalPersons[" + personCount + "].eraCommonsUserName",
+            getAuditErrors(PERSONNEL_DETAIL_SECTION_NAME, AUDIT_ERRORS).add(new AuditError("document.developmentProposal.proposalPersons[" + personCount + "].eraCommonsUserName",
                     ERROR_ERA_COMMON_USER_NAME,PERSONNEL_PAGE_ID,new String[]{person.getFullName()}));
 
+        } else {
+            if(person.getEraCommonsUserName().length() < Constants.ERA_COMMONS_USERNAME_MIN_LENGTH) {
+                getAuditErrors(PERSONNEL_DETAIL_SECTION_NAME, AUDIT_WARNINGS).add(new AuditError("document.developmentProposal.proposalPersons[" + personCount + "].eraCommonsUserName",
+                        KeyConstants.ERROR_MINLENGTH, PERSONNEL_PAGE_ID, new String[] {"eRA Commons User Name for user " + person.getFullName() + " ", ""+ Constants.ERA_COMMONS_USERNAME_MIN_LENGTH}));
+
+            }
         }
         return retval;
     }
@@ -146,13 +159,13 @@ public class KeyPersonnelAuditRule extends KcTransactionalDocumentRuleBase imple
        
        if (person.getUnits().size() < 1) {
            LOG.info("error.investigatorUnits.limit");
-           getAuditErrors(PERSONNEL_UNIT_SECTION_NAME).add(new AuditError("document.developmentProposal.proposalPersons[" + personCount + "].units", ERROR_INVESTIGATOR_UNITS_UPBOUND,PERSONNEL_PAGE_ID));
+           getAuditErrors(PERSONNEL_UNIT_SECTION_NAME, AUDIT_ERRORS).add(new AuditError("document.developmentProposal.proposalPersons[" + personCount + "].units", ERROR_INVESTIGATOR_UNITS_UPBOUND,PERSONNEL_PAGE_ID));
        }
        
        for (ProposalPersonUnit unit : person.getUnits()) {
            if (isBlank(unit.getUnitNumber())) {
                LOG.trace("error.investigatorUnits.limit");
-               getAuditErrors(PERSONNEL_UNIT_SECTION_NAME).add(new AuditError("document.developmentProposal.proposalPersons[" + personCount + "].units", ERROR_INVESTIGATOR_UNITS_UPBOUND,PERSONNEL_PAGE_ID));
+               getAuditErrors(PERSONNEL_UNIT_SECTION_NAME, AUDIT_ERRORS).add(new AuditError("document.developmentProposal.proposalPersons[" + personCount + "].units", ERROR_INVESTIGATOR_UNITS_UPBOUND,PERSONNEL_PAGE_ID));
            }
            
            retval &= validateUnit(unit);
@@ -214,11 +227,11 @@ public class KeyPersonnelAuditRule extends KcTransactionalDocumentRuleBase imple
      *
      * @return List of AuditError instances
      */
-    private List<AuditError> getAuditErrors(String sectionName ) {
+    private List<AuditError> getAuditErrors(String sectionName, String severity) {
         List<AuditError> auditErrors = new ArrayList<AuditError>();
         String clusterKey = PERSONNEL_PAGE_NAME + "." + sectionName;
         if (!GlobalVariables.getAuditErrorMap().containsKey(clusterKey)) {
-           GlobalVariables.getAuditErrorMap().put(clusterKey, new AuditCluster(clusterKey, auditErrors, AUDIT_ERRORS));
+           GlobalVariables.getAuditErrorMap().put(clusterKey, new AuditCluster(clusterKey, auditErrors, severity));
         }
         else {
             auditErrors = ((AuditCluster)GlobalVariables.getAuditErrorMap().get(clusterKey)).getAuditErrorList();

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -157,7 +157,7 @@ public class ReviewCommentsServiceImpl extends ReviewCommentsServiceImplBase<Pro
         
         List<ProtocolSubmission> protocolSubmissions = (List)getProtocolFinderDao().findProtocolSubmissions(protocolNumber, submissionNumber);
         for (ProtocolSubmission protocolSubmission : protocolSubmissions) {
-            if (protocolSubmission.getCommitteeScheduleMinutes() != null) {
+            if (protocolNumber.equals(protocolSubmission.getProtocolNumber()) && protocolSubmission.getCommitteeScheduleMinutes() != null) {
                 List<CommitteeScheduleMinute> committeeScheduleMinutes = (List)protocolSubmission.getCommitteeScheduleMinutes();
                 for (CommitteeScheduleMinute minute : committeeScheduleMinutes) {
                     String minuteEntryTypeCode = minute.getMinuteEntryTypeCode();

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -46,10 +46,9 @@ public interface ProtocolGenericActionService extends org.kuali.kra.protocol.act
      * Defer a protocol.
      * @param protocol Protocol object
      * @param actionBean ProtocolGenericActionBean object
-     * @return the newly versioned Protocol document
      * @throws Exception if there was a general problem performing the action
      */
-    ProtocolDocument defer(Protocol protocol, ProtocolGenericActionBean actionBean) throws Exception;
+    void defer(Protocol protocol, ProtocolGenericActionBean actionBean) throws Exception;
     
     /**
      * Record IRB Acknowledgement for a protocol.
@@ -82,4 +81,7 @@ public interface ProtocolGenericActionService extends org.kuali.kra.protocol.act
      * @throws Exception if there was a general problem performing the action
      */
     void suspendByDsmb(Protocol protocol, ProtocolGenericActionBean actionBean) throws Exception;
+    
+    ProtocolDocument getDeferredVersionedDocument(Protocol protocol) throws Exception;
+    
 }

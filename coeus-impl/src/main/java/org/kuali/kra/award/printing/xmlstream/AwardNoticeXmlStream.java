@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -201,7 +201,6 @@ public class AwardNoticeXmlStream extends AwardBaseStream {
 	            String groupName = customAttribute.getGroupName();
 	            String attributeLabel = customAttribute.getLabel();
 	            String attributeValue = awardCustomData.getValue();
-	            if(attributeValue!=null){
     	            if(groupName!=null && !groupName.equals(prevGroupName)){
     	                otherGroupType = otherData.addNewOtherDetails();
     	                otherGroupType.setDescription(groupName);
@@ -212,7 +211,6 @@ public class AwardNoticeXmlStream extends AwardBaseStream {
     	                otherGroupDetailsType.setColumnName(attributeLabel);
     	                otherGroupDetailsType.setColumnValue(attributeValue);
     	            }
-	            }
 	                
 	        }
 		}

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,4 +22,5 @@ public class AwardConstants {
 
 	public static final String STATE_SPONSOR_TYPE_PARAM = "STATE_SPONSOR_TYPE";
 	public static final String INVOICE_REPORT_DESC_PARAM = "FIN_SYS_INVOICE_REPORT_DESC";
+	public static final String ROOT_AWARD_SUFFIX = "-00001";
 }

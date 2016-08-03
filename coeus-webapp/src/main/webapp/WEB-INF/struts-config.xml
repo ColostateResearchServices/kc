@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -109,8 +109,6 @@
 <!-- Rice content End -->
        	
        	<forward name="kraHoldingPage" path="/kraHoldingPage.do" redirect="true" />
-       	<forward name="irbHoldingPage" path="/irbHoldingPage.do" redirect="true" />       	
-       	
        	<forward name="closePage" path="/EmptyClosePage.html" />
     </global-forwards>
 
@@ -140,7 +138,7 @@
        	<!-- End required KNS mappings -->
 <!-- Rice content End -->
 
-        <action path="/kraHoldingPage" name="KualiForm" type="org.kuali.coeus.sys.framework.controller.KcHoldingPageAction">
+        <action path="/kraHoldingPage" name="KualiForm" type="org.kuali.coeus.sys.framework.controller.KcHoldingPageAction" >
             <forward name="basic" path="/kraHoldingPage.jsp" />
         </action>
                
@@ -705,13 +703,21 @@
         </action>
      
       <!-- AAP: adding report controller -->
-      <action path="/displayExternalReport" name="ReportForm" type="co.kuali.coeus.reporting.web.struts.action.ReportForwardAction">
-        <forward name="basic" path="/reportRedirect.jsp"/>
-      </action>
+      <action path="/displayExternalReport" name="ReportForm" type="co.kuali.coeus.reporting.web.struts.action.ReportForwardAction"/>
 
         <action path="/activeMqMessageMaintenance" name="KualiMaintenanceForm" attribute="KualiForm" scope="request" parameter="methodToCall" validate="false" input="/kr/WEB-INF/jsp/KualiMaintenanceDocument.jsp" type="org.kuali.coeus.sys.impl.mq.ActiveMqMessageMaintenanceDocumentAction">
             <forward name="basic" path="/kr/WEB-INF/jsp/KualiMaintenanceDocument.jsp" />
         </action>
+
+        <action path="/coiProject" name="KualiForm" type="org.kuali.coeus.coi.impl.CoiProjectAction">
+            <forward name="basic" path="/WEB-INF/jsp/coi/CoiProjectPush.jsp"/>
+        </action>
+        
+        <action path="/authServicePush" name="KualiForm" type="org.kuali.coeus.sys.impl.auth.AuthServiceBulkPushAction">
+            <forward name="basic" path="/WEB-INF/jsp/sys/AuthServicePush.jsp"/>
+        </action>
+
+
     </action-mappings>
 
 

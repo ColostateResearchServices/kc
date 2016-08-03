@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,4 +34,17 @@ public interface ProposalTypeService {
 	
 	public boolean isProposalTypeRenewalRevisionContinuation(String proposalTypeCode);
 
+	public String getNewChangedOrCorrectedProposalTypeCode();
+
+	public String getResubmissionChangedOrCorrectedProposalTypeCode();
+
+	public String getBudgetSowUpdateProposalTypeCode();
+
+	public String getRenewalChangedOrCorrectedProposalTypeCode();
+
+	public String getSupplementChangedOrCorrectedProposalTypeCode();
+
+	public String getDefaultSubmissionTypeCode(String proposalTypeCode);
+
+	public String getPreProposalProposalTypeCode();
 }

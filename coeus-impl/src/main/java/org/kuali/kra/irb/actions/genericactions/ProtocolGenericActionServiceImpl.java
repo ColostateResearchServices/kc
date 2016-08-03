@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -55,10 +55,8 @@ public class ProtocolGenericActionServiceImpl extends ProtocolGenericActionServi
     }
     
     @Override
-    public ProtocolDocument defer(Protocol protocol, ProtocolGenericActionBean actionBean) throws Exception {
+    public void defer(Protocol protocol, ProtocolGenericActionBean actionBean) throws Exception {
         performGenericAction(protocol, actionBean, ProtocolActionType.DEFERRED, ProtocolStatus.DEFERRED);
-        
-        return getDeferredVersionedDocument(protocol);
     }
     
     @Override
@@ -162,11 +160,12 @@ public class ProtocolGenericActionServiceImpl extends ProtocolGenericActionServi
         getProtocolOnlineReviewService().cancelOnlineReviews(protocol.getProtocolSubmission(), "Protocol Review cancelled - protocol has been disapproved.");
     }
     
-    private ProtocolDocument getDeferredVersionedDocument(Protocol protocol) throws Exception {
+    public ProtocolDocument getDeferredVersionedDocument(Protocol protocol) throws Exception {
         getDocumentService().cancelDocument(protocol.getProtocolDocument(), "Protocol document cancelled - protocol has been deferred.");
         getProtocolOnlineReviewService().cancelOnlineReviews(protocol.getProtocolSubmission(), "Protocol Review cancelled - protocol has been deferred.");
         
         ProtocolDocument newDocument = (ProtocolDocument) getVersionedDocument(protocol);
+        setReferencesForProtocolCorrespondence(newDocument);
 
         ProtocolAction assignToAgendaProtocolAction = (ProtocolAction) getProtocolAssignToAgendaService().getAssignedToAgendaProtocolAction((Protocol) newDocument.getProtocol());
         if (assignToAgendaProtocolAction != null) {
@@ -177,6 +176,17 @@ public class ProtocolGenericActionServiceImpl extends ProtocolGenericActionServi
         getDocumentService().saveDocument(newDocument);
         
         return newDocument;
+    }
+    
+    protected void setReferencesForProtocolCorrespondence(ProtocolDocument newDocument) {
+    	Protocol newProtocol = newDocument.getProtocol();
+    	newProtocol.getProtocolActions().forEach(protocolAction -> {
+    		protocolAction.setSequenceNumber(newProtocol.getSequenceNumber());
+    		protocolAction.getProtocolCorrespondences().forEach(protocolCorrespondence -> {
+    			protocolCorrespondence.setProtocolId(newProtocol.getProtocolId());
+    			protocolCorrespondence.setSequenceNumber(newProtocol.getSequenceNumber());
+            });
+        });
     }
     
     protected ProtocolDocument getReturnedVersionedDocument(ProtocolBase protocol) throws Exception {

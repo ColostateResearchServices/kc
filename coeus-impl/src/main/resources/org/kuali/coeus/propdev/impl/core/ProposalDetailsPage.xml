@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -77,7 +77,7 @@
 	</bean>
 	<bean id="PropDev-DetailsPage-Keywords" parent="PropDev-DetailsPage-Keywords-parentBean"/>
 	<bean id="PropDev-DetailsPage-Keywords-parentBean" abstract="true" parent="Uif-InputField"
-		p:propertyName="propScienceKeywords" p:label="Keywords" p:render="@{#ViewHelper.displayKeywords()}">
+		p:propertyName="propScienceKeywords" p:label="Keywords" p:render="@{#ViewHelper.displayKeywords()}" p:readOnlyDisplayReplacementPropertyName="propScienceKeywordsAsText">
 		<property name="control">
 			<bean parent="Uif-AdvancedMultiSelectControl">
 				<property name="templateOptions">
@@ -166,6 +166,7 @@
     <bean id="PropDev-DetailsPage-PrimeSponsorField-parentBean"
           abstract="true" parent="PropDev-DetailsPage-SponsorField-Defaults"
           p:propertyName="primeSponsorCode"
+          p:readOnlyDisplayReplacement="@{document.developmentProposal.primeSponsorCode != null ? document.developmentProposal.primeSponsorCode + ' &amp;nbsp;-&amp;nbsp; ' + document.developmentProposal.primeSponsor?.sponsorName : '&amp;nbsp;'}"
           p:instructionalMessage.messageText="@{document.developmentProposal.primeSponsor?.sponsorName?:'&amp;nbsp;'}">
         <property name="quickfinder">
             <bean parent="PropDev-DetailsPage-SponsorQuickFinder"

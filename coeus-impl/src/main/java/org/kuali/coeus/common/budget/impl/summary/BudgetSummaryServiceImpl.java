@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,6 @@ import org.kuali.coeus.common.budget.framework.core.BudgetCommonService;
 import org.kuali.coeus.common.budget.framework.core.BudgetCommonServiceFactory;
 import org.kuali.coeus.common.budget.framework.core.BudgetConstants;
 import org.kuali.coeus.common.budget.framework.core.BudgetParent;
-import org.kuali.coeus.common.budget.framework.copy.DeepCopyPostProcessor;
 import org.kuali.coeus.common.budget.framework.nonpersonnel.BudgetLineItem;
 import org.kuali.coeus.common.budget.framework.period.BudgetPeriod;
 import org.kuali.coeus.common.budget.framework.personnel.BudgetPerson;
@@ -64,9 +63,6 @@ public class BudgetSummaryServiceImpl implements BudgetSummaryService {
     @Autowired
     @Qualifier("dateTimeService")
     private DateTimeService dateTimeService;
-    @Autowired
-    @Qualifier("deepCopyPostProcessor")
-    private DeepCopyPostProcessor deepCopyPostProcessor;
 
     @Autowired
     @Qualifier("dataObjectService")
@@ -75,8 +71,6 @@ public class BudgetSummaryServiceImpl implements BudgetSummaryService {
     public void setDateTimeService (DateTimeService dateTimeService){this.dateTimeService = dateTimeService;}
     protected DateTimeService getDateTimeService (){return dateTimeService;}
 
-    public void setDeepCopyPostProcessor (DeepCopyPostProcessor deepCopyPostProcessor){this.deepCopyPostProcessor = deepCopyPostProcessor;}
-    protected DeepCopyPostProcessor getDeepCopyPostProcessor (){return deepCopyPostProcessor;}
 
     @Override
     public void generateAllPeriods(Budget budget) {
@@ -161,8 +155,7 @@ public class BudgetSummaryServiceImpl implements BudgetSummaryService {
         }
         
         BudgetPeriod firstPeriod = budgetPeriods.get(0);
-        List<BudgetLineItem> firstPerLineItems = firstPeriod.getBudgetLineItems();
-        for (BudgetLineItem budgetLineItem : firstPerLineItems) {
+        for (BudgetLineItem budgetLineItem : new ArrayList<>(firstPeriod.getBudgetLineItems())) {
             budgetCalculationService.applyToLaterPeriods(budget, firstPeriod, budgetLineItem);
         }
         
@@ -399,11 +392,11 @@ public class BudgetSummaryServiceImpl implements BudgetSummaryService {
     public void adjustStartEndDatesForLineItems(BudgetPeriod budgetPeriod) {
         if ( (budgetPeriod.getOldStartDate() != null && budgetPeriod.getStartDate().compareTo(budgetPeriod.getOldStartDate()) != 0) || 
                 (budgetPeriod.getOldEndDate() != null && budgetPeriod.getEndDate().compareTo(budgetPeriod.getOldEndDate()) != 0) ) {
-            List <BudgetLineItem >budgetLineItems = budgetPeriod.getBudgetLineItems();
+            List <BudgetLineItem > budgetLineItems = budgetPeriod.getBudgetLineItems();
             setupOldStartEndDate(budgetLineItems);
             for(BudgetLineItem budgetLineItem: budgetLineItems) {
-                Date newStartDate = budgetLineItem.getStartDate();
-                Date newEndDate = budgetLineItem.getEndDate();
+                Date newStartDate;
+                Date newEndDate;
                 List <Date> startEndDates = new ArrayList<Date>();
                 startEndDates.add(0, budgetLineItem.getStartDate());
                 startEndDates.add(1, budgetLineItem.getEndDate());
@@ -557,61 +550,30 @@ public class BudgetSummaryServiceImpl implements BudgetSummaryService {
 
     @Override
     public List<Date> getNewStartEndDates(List<Date> startEndDates, int gap, int duration, Date prevDate, boolean leapDayInPeriod,  boolean leapDayInGap) {
-        // duration is < (enddate - start date)
         Date startDate = startEndDates.get(0);
-        Date endDate = startEndDates.get(1);
-        Date newStartDate = startDate;
-        Date newEndDate = endDate;
-        boolean endDateAdjusted = false;
-        if (gap == 0) {
-            newEndDate = add(startDate,duration);;
-        } else {
-                // keep the gap between child start date and parent start date
-            newStartDate=add(startDate,gap);
-            newEndDate = add(newStartDate,duration);;
-            if (newStartDate.after(endDate)) {
-                newStartDate = startDate;
-                newEndDate=add(startDate,duration);
-            } else  if(newEndDate.after(endDate)) {
-                endDateAdjusted = true;
-                newEndDate=endDate;
-                newStartDate = add(endDate,duration *(-1));                
-            } 
-        }
-        boolean isLeapDayInNewGap = isLeapDaysInPeriod(startDate, newStartDate);
+        Date newStartDate = add(startDate, gap);
+        Date newEndDate = add(newStartDate,duration);
 
-        startEndDates.clear();
-        if (leapDayInGap && !endDateAdjusted) {
-           if (newStartDate.after(startDate)) {
-              // shift non-leap year date
-              newStartDate = add(newStartDate, -1);                
-              newEndDate = add(newEndDate, -1);                                
-           }
-        } else if (isLeapDayInNewGap) {
-          if (newEndDate.before(endDate)) {
-          // shift leap year date
-              newStartDate = add(newStartDate, 1);                
-              newEndDate = add(newEndDate, 1);                                
-          }
-      
-        }
-        boolean isLeapDayInNewPeriod = isLeapDaysInPeriod(newStartDate, newEndDate);
+        boolean isLeapDayInNewPeriod = isLeapDaysInPeriod(startDate, newEndDate);
+        boolean isLeapDayInNewGap = isLeapDaysInPeriod(startDate,newStartDate);
+        boolean isLeapDayInInitialPeriod = leapDayInPeriod || leapDayInGap;
 
-        if (leapDayInPeriod && !isLeapDayInNewPeriod) {
-           newEndDate = add(newEndDate, -1);
-        } else if (!leapDayInPeriod && isLeapDayInNewPeriod) {
-            if (endDate.after(newEndDate)) {
-                newEndDate = add(newEndDate, 1);   
-            } else if (startDate.before(newStartDate)) {
-                newStartDate = add(newStartDate, 1);                
-                         
-            }
-            
+        if (isLeapDayInInitialPeriod && !isLeapDayInNewPeriod) {
+            newEndDate = add(newEndDate, -1);
+        } else if (!isLeapDayInInitialPeriod && isLeapDayInNewPeriod) {
+            newEndDate = add(newEndDate, 1);
         }
 
-        startEndDates.add(0, newStartDate);
-        startEndDates.add(1, newEndDate);
-        return startEndDates;
+        if (!isLeapDayInNewGap && leapDayInGap) {
+            newStartDate = add(newStartDate, -1);
+        } else if (isLeapDayInNewGap && !leapDayInGap) {
+            newStartDate = add(newStartDate, 1);
+        }
+
+        List<Date> newStartEndDates = new ArrayList<>();
+        newStartEndDates.add(0,newStartDate);
+        newStartEndDates.add(1,newEndDate);
+        return newStartEndDates;
     }
 
     protected boolean isLeapYear(Date date) {

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -299,7 +299,7 @@ public class BudgetParametersAction extends BudgetAction {
         
         BudgetForm budgetForm = (BudgetForm) form;
         boolean rulePassed = getKcBusinessRulesEngine().applyRules(
-                new GenerateBudgetPeriodEvent(budgetForm.getBudget(), budgetForm.getNewBudgetPeriod()));
+                new GenerateBudgetPeriodEvent(budgetForm.getBudget(), null));
         if (rulePassed) {
             if (isRateTypeChanged(budgetForm)) {
                 return confirm(buildRecalculateBudgetConfirmationQuestion(mapping, form, request, response), 

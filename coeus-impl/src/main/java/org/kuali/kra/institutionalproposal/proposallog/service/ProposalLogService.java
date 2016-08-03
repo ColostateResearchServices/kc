@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,7 @@
 package org.kuali.kra.institutionalproposal.proposallog.service;
 
 import org.kuali.kra.institutionalproposal.proposallog.ProposalLog;
+import org.kuali.kra.institutionalproposal.proposallog.ProposalLogType;
 
 import java.util.List;
 
@@ -29,24 +30,18 @@ public interface ProposalLogService {
     
     /**
      * Tie the temporary proposal to the permanent one and update the status.
-     * @param permamentProposalLog
-     * @param temporaryProposalNumber
      */
     void mergeProposalLog(ProposalLog permanentProposalLog, String temporaryProposalNumber);    
     
     /**
      * Update the state of the log entry for the given proposal number to reflect that it has been merged
      * with another proposal log.
-     * 
-     * @param proposalNumber String
      */
     void mergeProposalLog(String proposalNumber);
     
     /**
      * Update the state of the log entry for the given proposal number to reflect that it has been promoted
      * to an Institutional Proposal.
-     * 
-     * @param proposalNumber String
      */
     void promoteProposalLog(String proposalNumber);
     
@@ -57,9 +52,11 @@ public interface ProposalLogService {
     
     /**
      * Gets all temporary proposal logs with the matching pi that haven't been merged yet.
-     * @param proposalLogTypeCode
-     * @param piId
-     * @return
      */
-    List<ProposalLog> getMatchingTemporaryProposalLogs(String proposalLogTypeCode, String piId, String rolodexId);    
+    List<ProposalLog> getMatchingTemporaryProposalLogs(String proposalLogTypeCode, String piId, String rolodexId); 
+    
+    /**
+     * Based on the provided description will return the associated ProposalLogType. If no exact matches are found, then null is returned.
+     */
+    ProposalLogType getProposalLogTypeFromDescription(String description);
 }

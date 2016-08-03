@@ -1,7 +1,7 @@
 <%--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,7 @@
 	<div id="workarea">
 </c:if>
 	
-<kul:tab tabTitle="${title}" defaultOpen="${auditActivated}"  transparentBackground="${topTab || transparentBackground}" tabAuditKey="*">
+<kul:tab tabTitle="${title}" defaultOpen="${auditActivated}"  transparentBackground="${topTab || transparentBackground}" tabAuditKey="*" tabErrorKey="datavalidation">
 	<div class="tab-container" align="center">
 		<h3> 
 			<span class="subhead-left">${title}</span>

@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
  */
 package org.kuali.coeus.propdev.impl.person;
 
+import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocumentForm;
 import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyService;
@@ -34,13 +35,13 @@ public class ProposalPersonValueFinder extends UifKeyValuesFinderBase{
     @Override
     public List<KeyValue> getKeyValues(ViewModel model) {
         ProposalDevelopmentDocumentForm form = (ProposalDevelopmentDocumentForm) model;
-        List<KeyValue> keyValues = new ArrayList<KeyValue>();
+        List<KeyValue> keyValues = new ArrayList<>();
         // if a person is in multiple child proposals, then personnel attachments for that
         // person can only be managed at the parent. If however, the person is not in multiple children,
         // then they can only be managed at the child.
         for (ProposalPerson person : form.getDevelopmentProposal().getProposalPersons()) {
             if (form.getDevelopmentProposal().isInHierarchy()) {
-                if (renderEditForPersonnelAttachment(person.getPersonId(), form.getDevelopmentProposal())) {
+                if (renderEditForPersonnelAttachment(person.getPersonId(), person.getRolodexId(), form.getDevelopmentProposal())) {
                     keyValues.add(new ConcreteKeyValue(person.getProposalPersonNumber().toString(), person.getFullName()));
                 }
             } else {
@@ -50,15 +51,13 @@ public class ProposalPersonValueFinder extends UifKeyValuesFinderBase{
         return keyValues;
     }
 
-    protected boolean renderEditForPersonnelAttachment(String personId, DevelopmentProposal proposal) {
-        if (personId != null) {
-            boolean inMultiple = getHierarchyService().personInMultipleProposals(personId, proposal);
-            return (proposal.isParent()) ? inMultiple : !inMultiple;
-        }
-        return true;
+    protected boolean renderEditForPersonnelAttachment(String personId, Integer rolodexId, DevelopmentProposal proposal) {
+        boolean inMultiple = StringUtils.isNotBlank(personId) ? getProposalHierarchyService().employeePersonInMultipleProposals(personId, proposal)
+                : getProposalHierarchyService().nonEmployeePersonInMultipleProposals(rolodexId, proposal);
+        return (proposal.isParent()) ? inMultiple : !inMultiple;
     }
 
-    protected ProposalHierarchyService getHierarchyService() {
+    protected ProposalHierarchyService getProposalHierarchyService() {
         return KcServiceLocator.getService(ProposalHierarchyService.class);
     }
 

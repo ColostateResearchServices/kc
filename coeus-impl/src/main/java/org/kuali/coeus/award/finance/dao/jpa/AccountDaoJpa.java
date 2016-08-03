@@ -1,3 +1,21 @@
+/*
+ * Kuali Coeus, a comprehensive research administration system for higher education.
+ *
+ * Copyright 2005-2016 Kuali, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.kuali.coeus.award.finance.dao.jpa;
 
 import org.apache.commons.collections4.ListUtils;
@@ -48,7 +66,7 @@ public class AccountDaoJpa implements AccountDao {
         return ListUtils.emptyIfNull(accounts);
     }
 
-    public AwardAccount getAccount(String accountNumber) {
+    public AwardAccount getAccount(Long accountNumber) {
         AwardAccount account = getDataObjectService().findUnique(AwardAccount.class,
                 QueryByCriteria.Builder.forAttribute(ACCOUNT_NUMBER, accountNumber).build());
         return account;
@@ -59,11 +77,11 @@ public class AccountDaoJpa implements AccountDao {
         return account;
     }
 
-    public List<Award> getLinkedAwards(String accountNumber) {
+    public List<Award> getLinkedAwards(Long accountNumber) {
         return (List<Award>) getBusinessObjectService().findMatching(Award.class, Collections.singletonMap(ACCOUNT_NUMBER, accountNumber));
     }
 
-    public Award getAward(String awardId) {
+    public Award getAward(Long awardId) {
         return  getBusinessObjectService().findByPrimaryKey(Award.class, Collections.singletonMap(AWARD_ID, awardId));
     }
 

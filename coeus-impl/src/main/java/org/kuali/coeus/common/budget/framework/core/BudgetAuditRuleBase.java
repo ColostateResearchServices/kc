@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -53,9 +53,9 @@ public abstract class BudgetAuditRuleBase {
 			auditCategory = Constants.AUDIT_ERRORS;
 		}
 		
-        AuditCluster auditCluster = (AuditCluster) getGlobalVariableService().getAuditErrorMap().get(auditKey);
+        AuditCluster auditCluster = getGlobalVariableService().getAuditErrorMap().get(auditKey);
         if (auditCluster == null) {
-            List<AuditError> auditErrors = new ArrayList<AuditError>();
+            List<AuditError> auditErrors = new ArrayList<>();
             auditCluster = new AuditCluster(auditRule.getLabel(), auditErrors, auditCategory);
             getGlobalVariableService().getAuditErrorMap().put(auditKey, auditCluster);
         }

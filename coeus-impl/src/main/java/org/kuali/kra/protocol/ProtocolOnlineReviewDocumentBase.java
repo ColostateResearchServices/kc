@@ -1,7 +1,7 @@
 /*
  * Kuali Coeus, a comprehensive research administration system for higher education.
  * 
- * Copyright 2005-2015 Kuali, Inc.
+ * Copyright 2005-2016 Kuali, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,7 @@
 package org.kuali.kra.protocol;
 
 import org.apache.commons.lang3.StringUtils;
+import org.kuali.coeus.sys.framework.controller.KcHoldingPageConstants;
 import org.kuali.coeus.sys.framework.model.KcTransactionalDocumentBase;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.bo.RolePersons;
@@ -99,12 +100,18 @@ public abstract class ProtocolOnlineReviewDocumentBase extends KcTransactionalDo
     
     @Override
     public void doRouteStatusChange(DocumentRouteStatusChange statusChangeEvent) {
-        super.doRouteStatusChange(statusChangeEvent);
+        executeAsLastActionUser(() -> {
+            super.doRouteStatusChange(statusChangeEvent);
+            return null;
+        });
     }
   
     @Override
     public void doActionTaken( ActionTakenEvent event ) {
-        super.doActionTaken(event);
+        executeAsLastActionUser( () -> {
+            super.doActionTaken(event);
+            return null;
+        });
     }
 
     @Override
@@ -118,7 +125,7 @@ public abstract class ProtocolOnlineReviewDocumentBase extends KcTransactionalDo
     public boolean isProcessComplete() {
         boolean isComplete = true;
         
-        String backLocation = (String) GlobalVariables.getUserSession().retrieveObject(Constants.HOLDING_PAGE_RETURN_LOCATION);
+        String backLocation = (String) GlobalVariables.getUserSession().retrieveObject(KcHoldingPageConstants.HOLDING_PAGE_RETURN_LOCATION);
         String olrDocId = getURLParamValue(backLocation, OLR_DOC_ID_PARAM);
         if (olrDocId != null) {
             String olrEvent = getURLParamValue(backLocation, OLR_EVENT_PARAM);

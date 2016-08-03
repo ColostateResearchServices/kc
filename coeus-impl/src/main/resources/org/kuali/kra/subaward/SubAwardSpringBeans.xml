@@ -2,7 +2,7 @@
 <!--
    - Kuali Coeus, a comprehensive research administration system for higher education.
    - 
-   - Copyright 2005-2015 Kuali, Inc.
+   - Copyright 2005-2016 Kuali, Inc.
    - 
    - This program is free software: you can redistribute it and/or modify
    - it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -30,10 +31,14 @@
                            http://www.springframework.org/schema/tx
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://www.springframework.org/schema/util
-                           http://www.springframework.org/schema/util/spring-util.xsd">
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <tx:annotation-driven transaction-manager="transactionManager" />
     <context:annotation-config />
+    <context:component-scan base-package="org.kuali.kra.subaward" />
+    <mvc:annotation-driven />
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties" value="#{T(org.kuali.rice.core.api.config.property.ConfigContext).getCurrentContextConfig().getProperties()}" />
@@ -63,6 +68,11 @@
 			</list>
 		</property>
 	</bean>
+
+    <bean id="kualiConfigurationService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="kualiConfigurationService" />
+    </bean>
+
 	<bean id="dateTimeService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
         <property name="serviceName" value="dateTimeService" />
     </bean>
@@ -162,6 +172,11 @@
     </bean>
     
     <!-- SubAward Services -->
+    <bean id="subawardCustomDataResolverTypeServiceCallback" parent="kcCoreCallbackService"
+          p:callbackService-ref="subawardCustomDataResolverTypeService"
+          p:localServiceName="subawardCustomDataResolverTypeService"
+          p:serviceInterface="org.kuali.rice.krms.framework.type.TermResolverTypeService"/>
+
     <bean id="subAwardPrintingService" class="org.kuali.kra.subaward.reporting.printing.service.impl.SubAwardPrintingServiceImpl">
     	<property name="subAwardSF294Print" ref="subAwardSF294Print" />
     	<property name="subAwardSF295Print" ref="subAwardSF295Print" />
@@ -206,6 +221,7 @@
         <property name="sequenceAccessorService" ref="sequenceAccessorService" />
         <property name="parameterService" ref="parameterService" />
         <property name="versionHistoryService" ref="versionHistoryService" />
+        <property name="subAwardDao" ref="subAwardDao" />
     </bean>
     
 	<bean id="subAwardLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
@@ -267,5 +283,57 @@
 	<bean id="subAwardFactBuilderService" class="org.kuali.kra.subaward.service.impl.SubAwardFactBuilderServiceImpl">
 		  <property name="documentService" ref="documentService" />
 	</bean>
-	
-</beans>	
+
+    <bean id="subAwardDao" class="org.kuali.kra.subaward.dao.SubAwardDaoImpl">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="legacyDataAdapter" parent="grlImporter" p:serviceName="legacyDataAdapter" />
+    <bean id="permissionService" parent="grlImporter" p:serviceName="kimPermissionService" />
+    <bean id="globalVariableService" parent="grlImporter" p:serviceName="globalVariableService"/>
+    <bean id="dictionaryValidationService" parent="grlImporter" p:serviceName="dictionaryValidationService"/>
+    <bean id="errorHandlingUtilService" parent="grlImporter" p:serviceName="errorHandlingUtilService"/>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="persistenceVerificationService" parent="grlImporter" p:serviceName="persistenceVerificationService" />
+    <bean id="restAuditLoggerFactory" parent="grlImporter" p:serviceName="restAuditLoggerFactory" />
+
+    <import resource="classpath:org/kuali/coeus/sys/framework/ImportEndpointSpringBeans.xml" />
+    <import resource="classpath:org/kuali/coeus/sys/framework/ImportSimpleCrudRestSpringBeans.xml" />
+
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.CloseoutType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAward" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardAmountInfo" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardAmountReleased" p:camelCasePluralName="ReleasedSubAwardAmounts" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardApprovalType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardAttachmentType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardAttachments" p:camelCasePluralName="SubAwardAttachments" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardCloseout" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardContact" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardCopyRightsType" p:camelCasePluralName="SubAwardCopyrightTypes" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardCostType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.customdata.SubAwardCustomData" p:camelCasePluralName="SubAwardCustomData" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.document.SubAwardDocument" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardForms" p:camelCasePluralName="SubAwardForms" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardFundingSource" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardPrintAgreement" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardReportType" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardReports" p:camelCasePluralName="SubAwardReports"/>
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardStatus" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubAwardTemplateInfo" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.personmasschange.bo.SubawardPersonMassChange" p:camelCasePluralName="SubAwardPersonMassChanges" />
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.subaward.bo.SubawardTemplateType" p:camelCasePluralName="SubAwardTemplateTypes" />
+
+</beans>

@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+   - Kuali Coeus, a comprehensive research administration system for higher education.
+   -
+   - Copyright 2005-2016 Kuali, Inc.
+   -
+   - This program is free software: you can redistribute it and/or modify
+   - it under the terms of the GNU Affero General Public License as
+   - published by the Free Software Foundation, either version 3 of the
+   - License, or (at your option) any later version.
+   -
+   - This program is distributed in the hope that it will be useful,
+   - but WITHOUT ANY WARRANTY; without even the implied warranty of
+   - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   - GNU Affero General Public License for more details.
+   -
+   - You should have received a copy of the GNU Affero General Public License
+   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ -->
 <!DOCTYPE xml [
 <!ENTITY copy "©">
 <!ENTITY trade "_">
@@ -121,17 +139,17 @@ information. -->
                                 </fo:table-cell>
                                 <fo:table-cell text-align="center" display-align="center">
                                     <fo:block white-space-collapse="true" text-align="end" color="#000000"  font-size="8.0pt" font-weight="bold">
-                                        <xsl:if test="count(ReportPage/BudgetSummary/SalarySummaryFromEDI/Group/Details) != 0">Total Cost to Sponsor</xsl:if>
+                                        Total Cost to Sponsor
                                     </fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell text-align="center" display-align="center">
                                     <fo:block white-space-collapse="true" text-align="end" color="#000000"  font-size="8.0pt" font-weight="bold">
-                                        <xsl:if test="count(ReportPage/BudgetSummary/SalarySummaryFromEDI/Group/Details) != 0">Cost Sharing</xsl:if>
+                                        Cost Sharing
                                     </fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell text-align="center" display-align="center">
                                     <fo:block white-space-collapse="true" text-align="end" color="#000000"  font-size="8.0pt" font-weight="bold">
-                                        <xsl:if test="count(ReportPage/BudgetSummary/SalarySummaryFromEDI/Group/Details) != 0">Total Cost of Project</xsl:if>
+                                        Total Cost of Project
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
