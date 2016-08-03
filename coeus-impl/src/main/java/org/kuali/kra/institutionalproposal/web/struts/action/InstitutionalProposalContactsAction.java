@@ -35,6 +35,7 @@ import org.kuali.kra.institutionalproposal.web.struts.form.InstitutionalProposal
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -49,7 +50,11 @@ public class InstitutionalProposalContactsAction extends InstitutionalProposalAc
     private static final String CONFIRM_SYNC_UNIT_CONTACTS = "confirmSyncUnitContacts";
     private static final String CONFIRM_SYNC_UNIT_CONTACTS_KEY = "confirmSyncUnitContactsKey";
 
-    
+    @Override
+    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ((InstitutionalProposalForm)form).refreshDisclosureProjectStatuses();
+        return super.execute(mapping, form, request, response);
+    }
     
     @Override
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -70,29 +75,11 @@ public class InstitutionalProposalContactsAction extends InstitutionalProposalAc
     }
     
     /**
-     * This method is called to reset the Lead Unit on the InstitutionalProposal if the lead unit is changed on the PI.
-     * @param institutionalProposal
-     */
-//    private void setLeadUnitOnInstitutionalProposalFromPILeadUnit(InstitutionalProposal institutionalProposal) {
-//        for (InstitutionalProposalPerson person : institutionalProposal.getProjectPersons()) {
-//            if(person.isPrincipalInvestigator()) {
-//                Unit leadUnit = person.findLeadUnit();
-//                institutionalProposal.setLeadUnit(leadUnit);
-//                if (leadUnit != null) {
-//                    institutionalProposal.setUnitNumber(leadUnit.getUnitNumber());
-//                } else {
-//                    institutionalProposal.setUnitNumber(null);
-//                }
-//            }
-//        }
-//    }
-    
-    /**
      * This method is called to reset the Lead Unit on the award if the lead unit is changed on the PI.
      */
     @SuppressWarnings("unchecked")
     private void setLeadUnitOnInstitutionalProposalFromPILeadUnit(InstitutionalProposal institutionalProposal, InstitutionalProposalForm institutionalProposalForm) {
-        for (InstitutionalProposalPerson person : institutionalProposal.getProjectPersons()) {
+        for (InstitutionalProposalPerson person : new ArrayList<>(institutionalProposal.getProjectPersons())) {
             if(person.isPrincipalInvestigator()) {
                 List<Unit> units= (List<Unit>) getBusinessObjectService().findMatching(Unit.class,
                         Collections.singletonMap("unitName", institutionalProposalForm.getProjectPersonnelBean().getSelectedLeadUnit()));

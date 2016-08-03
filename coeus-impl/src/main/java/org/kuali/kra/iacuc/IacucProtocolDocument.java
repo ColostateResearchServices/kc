@@ -22,7 +22,9 @@ package org.kuali.kra.iacuc;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kuali.coeus.coi.framework.ProjectRetrievalService;
 import org.kuali.coeus.common.framework.custom.DocumentCustomData;
+import org.kuali.coeus.common.framework.krms.KcKrmsFactBuilderService;
 import org.kuali.coeus.common.notification.impl.bo.KcNotification;
 import org.kuali.coeus.sys.framework.controller.KcHoldingPageConstants;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
@@ -30,9 +32,11 @@ import org.kuali.kra.bo.ResearchAreaBase;
 import org.kuali.kra.iacuc.actions.IacucProtocolAction;
 import org.kuali.kra.iacuc.actions.IacucProtocolActionType;
 import org.kuali.kra.iacuc.actions.IacucProtocolStatus;
+import org.kuali.kra.iacuc.actions.IacucProtocolSubmissionDoc;
 import org.kuali.kra.iacuc.actions.genericactions.IacucProtocolGenericActionService;
 import org.kuali.kra.iacuc.actions.submit.IacucProtocolActionService;
 import org.kuali.kra.iacuc.actions.submit.IacucProtocolSubmission;
+import org.kuali.kra.iacuc.actions.submit.IacucProtocolSubmissionBuilder;
 import org.kuali.kra.iacuc.actions.submit.IacucProtocolSubmissionStatus;
 import org.kuali.kra.iacuc.notification.IacucProtocolNotification;
 import org.kuali.kra.iacuc.notification.IacucProtocolNotificationContext;
@@ -41,15 +45,12 @@ import org.kuali.kra.iacuc.protocol.location.IacucProtocolLocationService;
 import org.kuali.kra.iacuc.protocol.research.IacucProtocolResearchAreaService;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.krms.KcKrmsConstants;
-import org.kuali.coeus.common.framework.krms.KcKrmsFactBuilderService;
-import org.kuali.kra.protocol.ProtocolBase;
-import org.kuali.kra.protocol.ProtocolDocumentBase;
-import org.kuali.kra.protocol.ProtocolFinderDao;
-import org.kuali.kra.protocol.ProtocolVersionService;
+import org.kuali.kra.protocol.*;
 import org.kuali.kra.protocol.actions.ProtocolActionBase;
 import org.kuali.kra.protocol.actions.genericactions.ProtocolGenericActionService;
 import org.kuali.kra.protocol.actions.submit.ProtocolActionService;
 import org.kuali.kra.protocol.actions.submit.ProtocolSubmissionBase;
+import org.kuali.kra.protocol.noteattachment.ProtocolAttachmentProtocolBase;
 import org.kuali.kra.protocol.notification.ProtocolNotification;
 import org.kuali.kra.protocol.notification.ProtocolNotificationContextBase;
 import org.kuali.kra.protocol.protocol.location.ProtocolLocationService;
@@ -62,6 +63,7 @@ import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.ObjectUtils;
 import org.kuali.rice.krms.api.engine.Facts.Builder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -81,19 +83,18 @@ import java.util.Map;
 public class IacucProtocolDocument extends ProtocolDocumentBase { 
 
     private static final long serialVersionUID = -1014286912251147390L;
-    @SuppressWarnings("unused")
+
     private static final Log LOG = LogFactory.getLog(IacucProtocolDocument.class);
     public static final String DOCUMENT_TYPE_CODE = "ICPR";
     
-    private static final String CONTINUATION_KEY = "C";
-    
     private static final String DISAPPROVED_CONTEXT_NAME = "Disapproved";
-	
+    private transient ProjectRetrievalService projectRetrievalService;
 
 	public IacucProtocolDocument() { 
         super();
 	}
 
+    @Override
     public IacucProtocol getProtocol() {
         return (IacucProtocol)super.getProtocol();
     }
@@ -104,9 +105,10 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
     }
 	
 	public IacucProtocol getIacucProtocol() {
-	    return (IacucProtocol) this.getProtocol();
+	    return this.getProtocol();
 	}
 
+    @Override
     public String getDocumentTypeCode() {
         return DOCUMENT_TYPE_CODE;
     }
@@ -117,9 +119,8 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
      * Close to hack.  called by holdingpageaction
      * Different document type may have different routing set up, so each document type
      * can implement its own isProcessComplete
-     * @return
-     * @throws WorkflowException 
      */
+    @Override
     public boolean isProcessComplete() {
         boolean isComplete = true;
 
@@ -138,7 +139,7 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
             
             
             String status = getProtocol().getProtocolSubmission().getSubmissionStatusCode();
-            if (isAmendment() || isRenewal() || isContinuation()) {
+            if (!isNormal()) {
                 if (status.equals(IacucProtocolSubmissionStatus.APPROVED) 
                         && getWorkflowDocumentService().getCurrentRouteNodeNames(getDocumentHeader().getWorkflowDocument()).equalsIgnoreCase(Constants.PROTOCOL_IACUCREVIEW_ROUTE_NODE_NAME)) {
                     isComplete = false;
@@ -152,6 +153,7 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
              */
             if (getProtocol().getProtocolStatusCode().equals(IacucProtocolStatus.AMENDMENT_MERGED) || 
                     getProtocol().getProtocolStatusCode().equals(IacucProtocolStatus.RENEWAL_MERGED) ||
+                    getProtocol().getProtocolStatusCode().equals(IacucProtocolStatus.FYI_MERGED) ||
                     getProtocol().getProtocolStatusCode().equals(IacucProtocolStatus.CONTINUATION_MERGED)) {
                 String protocolId = getNewProtocolDocId();               
                 if (ObjectUtils.isNull(protocolId)) {
@@ -164,7 +166,7 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
                     String oldLocation = (String) GlobalVariables.getUserSession().retrieveObject(KcHoldingPageConstants.HOLDING_PAGE_RETURN_LOCATION);
                     String oldDocNbr = getProtocol().getProtocolDocument().getDocumentNumber();
                     String returnLocation = oldLocation.replaceFirst(oldDocNbr, protocolId);
-                    GlobalVariables.getUserSession().addObject(KcHoldingPageConstants.HOLDING_PAGE_RETURN_LOCATION, (Object) returnLocation);
+                    GlobalVariables.getUserSession().addObject(KcHoldingPageConstants.HOLDING_PAGE_RETURN_LOCATION, returnLocation);
                 }
             }         
             // approve/expedited approve/response approve
@@ -252,7 +254,7 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
 
 
     protected String getListOfStatusEligibleForMergingHook() {
-      StringBuffer listOfStatusEligibleForMerging = new StringBuffer(); 
+      StringBuilder listOfStatusEligibleForMerging = new StringBuilder();
       listOfStatusEligibleForMerging.append(IacucProtocolStatus.SUBMITTED_TO_IACUC);
       listOfStatusEligibleForMerging.append(" ");
       listOfStatusEligibleForMerging.append(IacucProtocolStatus.MINOR_REVISIONS_REQUIRED);
@@ -276,7 +278,7 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
     }
 
     public boolean isContinuation() {
-        return getProtocol().getProtocolNumber().contains(CONTINUATION_KEY);
+        return getProtocol().getProtocolNumber().contains(ProtocolSpecialVersion.CONTINUATION.getCode());
     }
 
     protected String getProtocolMergedStatus() {
@@ -285,25 +287,73 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
             mergedStatus = IacucProtocolStatus.RENEWAL_MERGED;
         }else if(isContinuation()) {
             mergedStatus = IacucProtocolStatus.CONTINUATION_MERGED;
+        }else if (isFYI()) {
+            mergedStatus = IacucProtocolStatus.FYI_MERGED;
         }
         return mergedStatus;
     }
 
     @Override
     public boolean isNormal() {
-        return !isAmendment() && !isRenewal() && !isContinuation();
+        return !isAmendment() && !isRenewal() && !isContinuation() && !isFYI();
     }
 
     @Override
     protected void mergeProtocolAmendment() {
         if (isAmendment()) {
-            mergeAmendment(getProtocolMergedStatus(), "Amendment");
+            mergeAmendment(getProtocolMergedStatus(), ProtocolSpecialVersion.AMENDMENT.getDescription());
         }
         else if (isRenewal()) {
-            mergeAmendment(getProtocolMergedStatus(), "Renewal");
+            mergeAmendment(getProtocolMergedStatus(), ProtocolSpecialVersion.RENEWAL.getDescription());
         }
         else if (isContinuation()) {
-            mergeAmendment(getProtocolMergedStatus(), "Continuation");
+            mergeAmendment(getProtocolMergedStatus(), ProtocolSpecialVersion.CONTINUATION.getDescription());
+        }
+        else if (isFYI()) {
+            mergeAmendment(getProtocolMergedStatus(), ProtocolSpecialVersion.FYI.getDescription());
+            mergeFyiAttachments();
+            getProtocol().reconcileActionsWithSubmissions();
+        }
+    }
+
+    protected void mergeFyiAttachments() {
+        IacucProtocolSubmission fyiSubmission = null;
+        ProtocolActionBase createFyiAction = null;
+
+        String fyiNumber = getProtocol().getProtocolNumber().substring(getProtocol().getProtocolNumber().indexOf(ProtocolSpecialVersion.FYI.getCode()) + 1);
+
+        ProtocolBase originalProtocol = getProtocolFinderDaoHook().findCurrentProtocolByNumber(getOriginalProtocolNumber());
+        for(ProtocolActionBase originalAction : originalProtocol.getProtocolActions()) {
+            if(originalAction.getProtocolActionTypeCode().equals(IacucProtocolActionType.NOTIFY_IACUC)
+                    && originalAction.getComments().contains(ProtocolSpecialVersion.FYI.getDescription() + "-" + fyiNumber + ": Created")) {
+                createFyiAction = originalAction;
+                break;
+            }
+        }
+
+        if(createFyiAction != null) {
+            fyiSubmission = (IacucProtocolSubmission) originalProtocol.getProtocolSubmission();
+            if(createFyiAction.getSubmissionIdFk() == null) {
+                createFyiAction.setProtocolSubmission(fyiSubmission);
+                createFyiAction.setSubmissionIdFk(fyiSubmission.getSubmissionId());
+                createFyiAction.setSubmissionNumber(fyiSubmission.getSubmissionNumber());
+                getBusinessObjectService().save(createFyiAction);
+            }
+        }
+
+        if(fyiSubmission != null) {
+            List<IacucProtocolSubmissionDoc> mergedAttachments = new ArrayList<>();
+            for(ProtocolAttachmentProtocolBase attachment : getProtocol().getActiveAttachmentProtocols()) {
+                IacucProtocolSubmissionDoc fyiAttachment = IacucProtocolSubmissionBuilder.createProtocolSubmissionDoc(fyiSubmission, attachment.getFile().getName(), attachment.getFile().getType(), attachment.getFile().getData(), attachment.getDescription());
+                fyiAttachment.setProtocolNumber(createFyiAction.getProtocolNumber());
+                fyiAttachment.setProtocolId(createFyiAction.getProtocolId());
+                fyiAttachment.setProtocol(originalProtocol);
+                mergedAttachments.add(fyiAttachment);
+            }
+            getBusinessObjectService().save(mergedAttachments);
+        }
+        else {
+            LOG.error("Couldn't merge FYI attachments into parent protocol-- no submission found for FYI #"+getProtocol().getProtocolNumber());
         }
     }
 
@@ -317,8 +367,6 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
      * Merge the amendment into the original protocol.  Actually, we must first make a new
      * version of the original and then merge the amendment into that new version.
      * Also merge changes into any versions of the protocol that are being amended/renewed.
-     * @param protocolStatusCode
-     * @throws Exception
      */
     protected void mergeAmendment(String protocolStatusCode, String type) {
         ProtocolBase currentProtocol = getProtocolFinderDaoHook().findCurrentProtocolByNumber(getOriginalProtocolNumber());
@@ -353,7 +401,10 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
         } catch (WorkflowException e) {
             throw new ProtocolMergeException(e);
         }
-        
+
+        // Have to map copied actions to copied submission FKs and re-save
+        newProtocolDocument.getProtocol().reconcileActionsWithSubmissions();
+        getBusinessObjectService().save(newProtocolDocument.getProtocol().getProtocolActions());
         this.getProtocol().setActive(false);
         
         // now that we've updated the approved protocol, we must find all others under modification and update them too.
@@ -448,4 +499,17 @@ public class IacucProtocolDocument extends ProtocolDocumentBase {
         return IacucProtocolStatus.DISAPPROVED;
     }
 
+
+    @Override
+    public ProjectRetrievalService getProjectRetrievalService() {
+        if (this.projectRetrievalService == null) {
+            this.projectRetrievalService = KcServiceLocator.getService("iacucProjectRetrievalService");
+        }
+        return this.projectRetrievalService;
+    }
+
+    @Override
+    public void setProjectRetrievalService(ProjectRetrievalService projectRetrievalService) {
+        this.projectRetrievalService = projectRetrievalService;
+    }
 }

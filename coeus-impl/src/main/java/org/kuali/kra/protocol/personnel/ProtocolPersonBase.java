@@ -20,14 +20,21 @@ package org.kuali.kra.protocol.personnel;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kuali.coeus.coi.framework.DisclosureProjectStatus;
+import org.kuali.coeus.coi.framework.DisclosureStatusRetrievalService;
 import org.kuali.coeus.common.framework.person.editable.PersonEditable;
 import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.coeus.common.framework.person.KcPersonService;
+import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.bo.AbstractProjectPerson;
+import org.kuali.kra.infrastructure.Constants;
+import org.kuali.kra.infrastructure.PermissionConstants;
 import org.kuali.kra.protocol.ProtocolAssociateBase;
 import org.kuali.kra.protocol.ProtocolBase;
 import org.kuali.kra.protocol.noteattachment.ProtocolAttachmentPersonnelBase;
+import org.kuali.rice.kim.api.permission.PermissionService;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -201,6 +208,10 @@ public abstract class ProtocolPersonBase extends ProtocolAssociateBase implement
     private Integer citizenshipTypeCode;
     
     private transient boolean affiliationTypeCodeChanged = false;
+    private transient DisclosureStatusRetrievalService disclosureStatusRetrievalService;
+    private transient GlobalVariableService globalVariableService;
+    private transient PermissionService permissionService;
+
 
     public ProtocolPersonBase() {
         this.protocolUnits = new ArrayList<ProtocolUnitBase>();
@@ -421,7 +432,11 @@ public abstract class ProtocolPersonBase extends ProtocolAssociateBase implement
      * @return true / false
      */
     public boolean isNonEmployee() {
-        return this.rolodex != null || (this.rolodexId != null && StringUtils.isNotBlank(this.rolodexId.toString()));
+        return this.rolodexId != null && StringUtils.isNotBlank(this.rolodexId.toString());
+    }
+
+    public String getGenericId() {
+        return isNonEmployee() ? rolodexId.toString() : personId;
     }
 
     /**
@@ -581,13 +596,6 @@ public abstract class ProtocolPersonBase extends ProtocolAssociateBase implement
     }
 
     public String getLastName() {
-        //        if (this.personId!=null) {  
-        //            return getPerson().geeptLastName();  
-        //        } else if (getRolodex()!=null) {  
-        //            return getRolodex().getLastName();  
-        //        } else {  
-        //            return null;  
-        //        }  
         return lastName;
     }
 
@@ -1082,5 +1090,28 @@ public abstract class ProtocolPersonBase extends ProtocolAssociateBase implement
 	public void setCitizenshipTypeCode(Integer citizenshipTypeCode) {
 		this.citizenshipTypeCode = citizenshipTypeCode;
 	}
+
+    protected abstract String getModuleNamespace();
+
+    protected GlobalVariableService getGlobalVariableService() {
+        if (globalVariableService == null) {
+            globalVariableService = KcServiceLocator.getService(GlobalVariableService.class);
+        }
+        return globalVariableService;
+    }
+
+    protected PermissionService getPermissionService() {
+        if (permissionService == null) {
+            permissionService = KimApiServiceLocator.getPermissionService();
+        }
+        return permissionService;
+    }
+
+    public boolean getCanViewDisclosureDisposition() {
+        String currentUser = getGlobalVariableService().getUserSession().getPerson().getPrincipalId();
+        final String genericId = getGenericId();
+        return (currentUser.equalsIgnoreCase(genericId) ||
+                getPermissionService().hasPermission(currentUser, Constants.KC_SYS, PermissionConstants.VIEW_COI_DISPOSITION_STATUS));
+    }
 
 }

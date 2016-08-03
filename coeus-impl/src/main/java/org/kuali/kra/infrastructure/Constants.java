@@ -96,7 +96,7 @@ public interface Constants {
 
     public static final String SPONSOR_HIERARCHY_ROUTING = "Routing";
 
-    public static final String MODULE_NAMESPACE_PROTOCOL = "KC-PROTOCOL"; 
+    public static final String MODULE_NAMESPACE_IRB = "KC-PROTOCOL";
     public static final String MODULE_DOC_ROLE_NAMESPACE_PROTOCOL = "KC-PROTOCOL-DOC"; 
     public static final String PARAMETER_MODULE_PROTOCOL_REFERENCEID1 = "irb.protocol.referenceID1";
     public static final String PARAMETER_MODULE_PROTOCOL_REFERENCEID2 = "irb.protocol.referenceID2";
@@ -163,6 +163,8 @@ public interface Constants {
 
     public static final String PROPOSAL_DEVELOPMENT_CREATE_IACUC_PROTOCOL_ENABLED_PARAMETER = "ENABLE_CREATE_PROPOSAL_TO_IACUC_PROTOCOL";
     public static final String PROPOSAL_DEVELOPMENT_CREATE_IRB_PROTOCOL_ENABLED_PARAMETER = "ENABLE_CREATE_PROPOSAL_TO_IRB_PROTOCOL";
+    public static final String ALTERNATE_NOTIFY_IRB_ACTION_PARAM = "ALTERNATE_NOTIFY_IRB_ACTION_PARAM";
+    public static final String ALTERNATE_NOTIFY_IACUC_ACTION_PARAM = "ALTERNATE_NOTIFY_IACUC_ACTION_PARAM";
 
     // Key Personnel Mojo
     public static final String KEY_PERSONNEL_PAGE = "PropDev-PersonnelPage";
@@ -445,7 +447,8 @@ public interface Constants {
     public static final String AWARD_SYNC_NOT_APPLICABLE = "Not applicable";
 
     // Award financial rest api constants
-    public static final String FINANCIAL_REST_API_ENABLED = "ENABLE_FINANCIAL_REST_API";
+    public static final String AWARD_POST_ENABLED = "AWARD_POST_ENABLED";
+    public static final String TM_POST_ENABLED = "TM_POST_ENABLED";
     public static final String DISPLAY_ACCOUNT_BALANCES = "DISPLAY_ACCOUNT_BALANCES";
 
     //Institutional Proposal
@@ -491,6 +494,8 @@ public interface Constants {
     public static final Integer MAX_FISCAL_YEAR = 2499;
     
     public static final String PARAMETER_MODULE_AWARD = "KC-AWARD";
+    public static final String PARAMETER_TIME_MONEY = "KC-T";
+
     public static final String SPECIAL_REVIEW_NUMBER = "SPECIAL_REVIEW_NUMBER";
     public static final String LEFT_SQUARE_BRACKET = "[";
     public static final String RIGHT_SQUARE_BRACKET = "]";
@@ -908,6 +913,7 @@ public interface Constants {
     public static final String SPONSOR_HIERACHY_REQ_DIV_PROG_CODES = "SPONSOR_HIERACHY_REQ_DIV_PROG_CODES";
     public static final String PROP_PERSON_COI_STATUS_FLAG = "PROP_PERSON_COI_STATUS_FLAG";
     String ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE = "ENABLE_DISCLOSURE_STATUS_FROM_COI_MODULE";
+    String ENABLE_DISCLOSURE_DISPOSITION_STATUS_FROM_COI_MODULE = "ENABLE_DISCLOSURE_DISPOSITION_STATUS_FROM_COI_MODULE";
 
 
     public static final String MM_DD_YYYY_HH_MM_A_DATE_FORMAT = "MM/dd/yyyy hh:mm a";
@@ -928,5 +934,10 @@ public interface Constants {
     String COI_PROJECTS_DISCLOSURE_STATUS_URL = "coi.projects.disclosure.status.url";
     String AUTHORIZATION_HEADER = "Authorization";
     String BEARER_TOKEN = "Bearer ";
+    String SUB_AWARD_CODE = "subAwardCode";
+    String CORRECTION_MODE = "correctionMode";
+    String ALL_SPONSOR_HIERARCHY_NIH_MULTI_PI = "ALL_SPONSOR_HIERARCHY_NIH_MULTI_PI";
+    String KC_SYS = "KC-SYS";
+    String PENDING = "PENDING";
 }
 

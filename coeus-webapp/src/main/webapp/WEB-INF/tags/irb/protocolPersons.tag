@@ -19,6 +19,10 @@
 <%@ include file="/WEB-INF/jsp/kraTldHeader.jsp"%>
 
 <c:set var="protocolPersonAttributes" value="${DataDictionary.ProtocolPerson.attributes}" />
+<c:set var="displayCoiDisclosureStatus" value="${KualiForm.displayCoiDisclosureStatus}" />
+<c:set var="coiDisclosureStatuses" value="${KualiForm.disclosureProjectStatuses}" />
+<c:set var="coiDispositionViewEnabled" value="${KualiForm.coiDispositionViewEnabled}" />
+
 <div id="workarea">
 <c:forEach items="${KualiForm.document.protocolList[0].protocolPersons}" var="person" varStatus="status">
     <c:set var="protocolPersonProperty" value="document.protocolList[0].protocolPersons[${status.index}]" />
@@ -31,9 +35,34 @@
     <c:if test="${status.first}">
       <c:set var="transparent" value="true" />
     </c:if> 
-    	<c:set var="descri" value="${person.protocolPersonRole.description}" />
+    <c:set var="descri" value="${person.protocolPersonRole.description}" />
 	<c:set var="personIndex" value="${status.index}" />
-	<kul:tab tabTitle="${fn:substring(person.personName, 0, 22)}"
+
+    <c:choose>
+        <c:when test="${displayCoiDisclosureStatus}">
+            <c:forEach items="${coiDisclosureStatuses}" var="projectStatus">
+                <c:choose>
+                    <c:when test="${KualiForm.document.protocolList[0].protocolPersons[personIndex].genericId eq projectStatus.userId}">
+                        <c:set var="descri" value="${descri}<br><b>COI Disclosure Status:</b>${projectStatus.status}" />
+                    </c:when>
+                </c:choose>
+            </c:forEach>
+        </c:when>
+    </c:choose>
+
+    <c:choose>
+        <c:when test="${coiDispositionViewEnabled && KualiForm.document.protocolList[0].protocolPersons[personIndex].canViewDisclosureDisposition}">
+            <c:forEach items="${coiDisclosureStatuses}" var="projectStatus">
+                <c:choose>
+                    <c:when test="${KualiForm.document.protocolList[0].protocolPersons[personIndex].genericId eq projectStatus.userId}">
+                        <c:set var="descri" value="${descri}<br><b>COI Disposition Status:</b>${projectStatus.disposition}" />
+                    </c:when>
+                </c:choose>
+            </c:forEach>
+        </c:when>
+    </c:choose>
+
+    <kul:tab tabTitle="${fn:substring(person.personName, 0, 22)} "
 			 tabErrorKey="document.protocolList[0].protocolPersons[${personIndex}].*"
 			 auditCluster="personnelAuditErrors" 
 			 tabAuditKey="document.protocolList[0].protocolPersons[${personIndex}].*" 
@@ -50,6 +79,7 @@
 				<h3>
 					<span class="subhead-left"><bean:write name="KualiForm" property="${protocolPersonProperty}.personName"/></span>
 				</h3>
+
 				<kra-irb:personDetailsSection personIndex="${status.index}" protocolPerson="${protocolPersonProperty}"/>
 				<kra-irb:personContactInformationSection personIndex="${status.index}" protocolPerson="${protocolPersonProperty}"/>
   				<kra-irb:personAttachmentSection personIndex="${status.index}" protocolPerson="${protocolPersonProperty}"/> 

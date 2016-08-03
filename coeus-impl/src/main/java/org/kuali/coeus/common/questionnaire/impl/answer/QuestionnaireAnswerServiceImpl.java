@@ -297,8 +297,6 @@ public class QuestionnaireAnswerServiceImpl implements QuestionnaireAnswerServic
     /**
      * This method returns the latest questionnaire instance associated with the given questionnaire ID; the latest instance 
      * is the one with the largest sequence number.
-     * @param questionnaireId
-     * @return
      */
     protected Questionnaire getLatestQuestionnaireVersion(Integer questionniareSeqId) {
         Questionnaire latestQnnrInstance = null;
@@ -586,6 +584,7 @@ public class QuestionnaireAnswerServiceImpl implements QuestionnaireAnswerServic
                     } else {
                         answer.setMatchedChild(NO);
                         answer.setRuleMatched(false);
+                        answer.setAnswer(null);
                     }
                 } else {
                     answer.setMatchedChild(YES);
@@ -596,6 +595,7 @@ public class QuestionnaireAnswerServiceImpl implements QuestionnaireAnswerServic
                 if (StringUtils.isBlank(questionnaireQuestion.getCondition())) {
                     if (isParentNotDisplayed(parentAnswers.get(questionnaireQuestion.getParentQuestionNumber()))) {
                         answer.setMatchedChild(NO);
+                        answer.setAnswer(null);
                     }
                     else {
                         answer.setMatchedChild(YES);
@@ -603,6 +603,8 @@ public class QuestionnaireAnswerServiceImpl implements QuestionnaireAnswerServic
                 }
                 else if (isParentNotDisplayed(parentAnswers.get(questionnaireQuestion.getParentQuestionNumber()))) {
                     answer.setMatchedChild(NO);
+                    answer.setAnswer(null);
+
                     if (ConditionType.RULE_EVALUATION.getCondition().equals(questionnaireQuestion.getCondition())) {
                         // evaluate this rule, so the ruleReferenced map can be populated
                         String ruleId = questionnaireQuestion.getConditionValue();
@@ -621,6 +623,7 @@ public class QuestionnaireAnswerServiceImpl implements QuestionnaireAnswerServic
                 }
                 else {
                     answer.setMatchedChild(NO);
+                    answer.setAnswer(null);
                 }
             }
         }
@@ -629,7 +632,7 @@ public class QuestionnaireAnswerServiceImpl implements QuestionnaireAnswerServic
     }
     
     protected void prepareQuestionnaireView(AnswerHeader answerHeader) {
-        answerHeader.setQuestions(new ArrayList<QuestionDTO>());
+        answerHeader.setQuestions(new ArrayList<>());
         for (Answer answer : answerHeader.getAnswers()) {
             QuestionDTO currentQuestion = null;
             for (QuestionDTO question : answerHeader.getQuestions()) {

@@ -18,7 +18,10 @@
  */
 package org.kuali.kra.award.home;
 
+import com.codiform.moo.annotation.Ignore;
+import com.codiform.moo.annotation.Property;
 import org.apache.commons.lang3.StringUtils;
+import org.kuali.coeus.award.finance.AwardPosts;
 import org.kuali.coeus.common.api.sponsor.hierarchy.SponsorHierarchyService;
 import org.kuali.coeus.common.framework.custom.CustomDataContainer;
 import org.kuali.coeus.common.framework.custom.DocumentCustomData;
@@ -63,6 +66,7 @@ import org.kuali.kra.award.document.AwardDocument;
 import org.kuali.kra.award.home.approvedsubawards.AwardApprovedSubaward;
 import org.kuali.kra.award.home.fundingproposal.AwardFundingProposal;
 import org.kuali.kra.award.home.keywords.AwardScienceKeyword;
+import org.kuali.kra.award.lookup.AwardDocumentStatusConstants;
 import org.kuali.kra.award.notesandattachments.attachments.AwardAttachment;
 import org.kuali.kra.award.notesandattachments.notes.AwardNotepad;
 import org.kuali.kra.award.paymentreports.awardreports.AwardReportTerm;
@@ -92,8 +96,11 @@ import org.kuali.kra.timeandmoney.service.TimeAndMoneyHistoryService;
 import org.kuali.kra.timeandmoney.transactions.AwardTransactionType;
 import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
+import org.kuali.rice.core.api.criteria.CountFlag;
+import org.kuali.rice.core.api.criteria.QueryByCriteria;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kim.api.role.Role;
+import org.kuali.rice.krad.data.DataObjectService;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.springframework.util.AutoPopulatingList;
 
@@ -104,12 +111,13 @@ import java.util.stream.Collectors;
 
 public class Award extends KcPersistableBusinessObjectBase implements KeywordsManager<AwardScienceKeyword>, Permissionable,
         SequenceOwner<Award>, BudgetParent, Sponsorable, Negotiable, CustomDataContainer, Disclosurable {
-    public static final String DEFAULT_AWARD_NUMBER = "000000-00000";
+    private static final String UNKNOWN_STATUS = "Unknown Status";
+	public static final String DEFAULT_AWARD_NUMBER = "000000-00000";
     public static final String BLANK_COMMENT = "";
     public static final String ICR_RATE_CODE_NONE = "ICRNONE";
     private static final String NONE = "None";
 
-    private static final String NO_FLAG = "N";
+    public static final String NO_FLAG = "N";
     private static final int TOTAL_STATIC_REPORTS = 5;
     public static final String CLOSE_OUT_REPORT_TYPE_FINANCIAL_REPORT = "1";
     public static final String CLOSE_OUT_REPORT_TYPE_TECHNICAL = "4";
@@ -147,9 +155,14 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     private static final String ACCOUNT_TYPE_CODE = "accountTypeCode";
     private static final String UNIT_NUMBER = "unitNumber";
     private static final String COLON = ":";
+    public static final String AWARD_ID = "awardId";
     private Long awardId;
     private AwardDocument awardDocument;
+    @Property(update = false)
+    @Ignore
     private String awardNumber;
+    @Property(update = false)
+    @Ignore
     private Integer sequenceNumber;
     @AwardSyncableProperty
     private String sponsorCode;
@@ -197,6 +210,7 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     private Date financialAccountCreationDate;
     private String financialChartOfAccountsCode;
     private String awardSequenceStatus;
+    private String awardSequenceStatusResult;
 
 
     private boolean newVersion;
@@ -302,7 +316,8 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     private List<SubAward> subAwardList;
     
     private transient boolean allowUpdateTimestampToBeReset = true;
-    
+    private transient boolean allowUpdateUserToBeReset = true;
+
     private VersionHistorySearchBo versionHistory;
     private transient KcPersonService kcPersonService;
     private transient SponsorHierarchyService sponsorHierarchyService;
@@ -314,6 +329,9 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     private String fainId;
     private Integer fedAwardYear;
     private Date fedAwardDate;
+
+    @SkipVersioning
+    private transient DataObjectService dataObjectService;
 
     public Award() {
         super();
@@ -352,6 +370,20 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
             }
         }
         return commentMap;
+    }
+
+    public boolean isPosted() {
+        Map<String, Object> criteria = new HashMap<>();
+        criteria.put(AWARD_ID, getAwardId());
+        return getDataObjectService().findMatching(AwardPosts.class,
+                QueryByCriteria.Builder.andAttributes(criteria).setCountFlag(CountFlag.ONLY).build()).getTotalRowCount() != 0;
+    }
+
+    public DataObjectService getDataObjectService() {
+        if(dataObjectService == null) {
+            dataObjectService = KcServiceLocator.getService(DataObjectService.class);
+        }
+        return dataObjectService;
     }
 
     public Integer getTemplateCode() {
@@ -603,10 +635,7 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     }
 
     public List<AwardPerson> getMultiplePis() {
-        if (isSponsorNihMultiplePi()) {
-            return projectPersons.stream().filter(AwardPerson::isMultiplePi).sorted().collect(Collectors.toList());
-        }
-        return new ArrayList<>();
+        return projectPersons.stream().filter(AwardPerson::isMultiplePi).sorted().collect(Collectors.toList());
     }
 
     public List<AwardPerson> getKeyPersons() {
@@ -727,8 +756,6 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
         this.beginDate = beginDate;
     }
 
-
-
     public String getCostSharingIndicator() {
         return costSharingIndicator;
     }
@@ -740,6 +767,10 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
 
     public List<AwardFundingProposal> getFundingProposals() {
         return fundingProposals;
+    }
+
+    public void setFundingProposals(List<AwardFundingProposal> fundingProposals) {
+        this.fundingProposals = fundingProposals;
     }
 
     /**
@@ -2468,6 +2499,7 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
         return getPrimeSponsor() == null ? EMPTY_STRING : getPrimeSponsor().getSponsorName();
     }
 
+
     @Override
     public String getSubAwardOrganizationName() {
         return EMPTY_STRING;
@@ -2556,6 +2588,18 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
         this.awardSequenceStatus = awardSequenceStatus;
     }
 
+    public String getAwardSequenceStatusResult() {
+    	try {
+    		AwardDocumentStatusConstants status = AwardDocumentStatusConstants.valueOf(getAwardSequenceStatus());
+    		return status.description();
+    	} catch (IllegalArgumentException|NullPointerException e) {
+    		LOG.warn("Unknown award sequence status error - " + getAwardSequenceStatus(), e);
+    		return UNKNOWN_STATUS;
+    	}
+    }
+
+    public void setAwardSequenceStatusResult(String awardSequenceStatusResult) { /*noop*/ }
+
     @Override
     public ProposalType getNegotiableProposalType() {
         return null;
@@ -2596,30 +2640,30 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
 
     @Override
     public String getProjectId() {
-
         return getAwardNumber();
-    }
-    
-    public boolean isAllowUpdateTimestampToBeReset() {
-        return allowUpdateTimestampToBeReset;
-    }
-    
-    /**
-     * 
-     * Setting this value to false will prevent the update timestamp field from being upddate just once.  After that, the update timestamp field will update as regular.
-     */
-    public void setAllowUpdateTimestampToBeReset(boolean allowUpdateTimestampToBeReset) {
-        this.allowUpdateTimestampToBeReset = allowUpdateTimestampToBeReset;
     }
 
     @Override
     public void setUpdateTimestamp(Timestamp updateTimestamp) {
-
-        if (isAllowUpdateTimestampToBeReset()) {
+        if (allowUpdateTimestampToBeReset) {
             super.setUpdateTimestamp(updateTimestamp);
         } else {
-            setAllowUpdateTimestampToBeReset(true);
+            allowUpdateTimestampToBeReset = true;
         }
+    }
+
+    @Override
+    public void setUpdateUser(String updateUser) {
+        if (allowUpdateUserToBeReset) {
+            super.setUpdateUser(updateUser);
+        } else {
+            allowUpdateUserToBeReset = true;
+        }
+    }
+
+    public void setAllowUpdateFieldsToBeReset(boolean updateFieldsToBeReset) {
+        allowUpdateTimestampToBeReset = updateFieldsToBeReset;
+        allowUpdateUserToBeReset = updateFieldsToBeReset;
     }
     
     public List<Award> getAwardVersions() {

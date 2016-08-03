@@ -68,7 +68,7 @@ public class ProtocolPersonnelAction extends ProtocolAction {
         ActionForward actionForward = super.execute(mapping, form, request, response);
         getProtocolPersonnelService().selectProtocolUnit(getProtocolPersons(form));
         ((ProtocolForm)form).getPersonnelHelper().prepareView();
-        
+        ((ProtocolForm) form).refreshDisclosureProjectStatuses();
         return actionForward;
     }
 
@@ -355,11 +355,10 @@ public class ProtocolPersonnelAction extends ProtocolAction {
                 protocol.setPrincipalInvestigatorId(null);
 
                 // Assign the PI the APPROVER role if PI has a personId (for doc cancel).
-                if (protocolPerson.getPersonId() != null) {
+                if (protocolPerson.getPersonId() != null && getProtocolPersonnelService().shouldPrincipalInvestigatorBeAddedToWorkflow()) {
                     KcAuthorizationService kraAuthService = KcServiceLocator.getService(KcAuthorizationService.class);
                     kraAuthService.addDocumentLevelRole(protocolPerson.getPersonId(), RoleConstants.PROTOCOL_APPROVER, protocol);
                     protocolForm.resetUserPermissionStates();
-                    
                 }
             }
             else if (!protocolPerson.isPrincipalInvestigator() &&
@@ -417,6 +416,6 @@ public class ProtocolPersonnelAction extends ProtocolAction {
             getBusinessObjectService().delete(((ProtocolForm) form).getNotesAttachmentsHelper().getFilesToDelete());
             ((ProtocolForm) form).getNotesAttachmentsHelper().getFilesToDelete().clear();
         }
-        
+
     }
 }
