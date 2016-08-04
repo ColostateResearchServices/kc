@@ -18,18 +18,6 @@
  */
 package org.kuali.kra.protocol.actions;
 
-import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -41,19 +29,20 @@ import org.kuali.coeus.common.committee.impl.meeting.ProtocolVoteAbstaineeBase;
 import org.kuali.coeus.common.committee.impl.meeting.ProtocolVoteRecusedBase;
 import org.kuali.coeus.common.committee.impl.service.CommitteeScheduleServiceBase;
 import org.kuali.coeus.common.framework.auth.SystemAuthorizationService;
+import org.kuali.coeus.common.framework.auth.task.TaskAuthorizationService;
 import org.kuali.coeus.common.framework.module.CoeusSubModule;
 import org.kuali.coeus.common.framework.person.KcPersonService;
-import org.kuali.coeus.common.framework.auth.task.TaskAuthorizationService;
+import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
+import org.kuali.coeus.common.questionnaire.framework.answer.ModuleQuestionnaireBean;
+import org.kuali.coeus.common.questionnaire.framework.answer.QuestionnaireAnswerService;
 import org.kuali.coeus.sys.framework.controller.DocHandlerService;
 import org.kuali.coeus.sys.framework.keyvalue.KeyValueComparator;
 import org.kuali.coeus.sys.framework.keyvalue.PrefixValuesFinder;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.TaskName;
-import org.kuali.kra.protocol.ProtocolBase;
-import org.kuali.kra.protocol.ProtocolDocumentBase;
-import org.kuali.kra.protocol.ProtocolFormBase;
-import org.kuali.kra.protocol.ProtocolVersionService;
+import org.kuali.kra.irb.actions.approve.ProtocolApproveService;
+import org.kuali.kra.protocol.*;
 import org.kuali.kra.protocol.actions.amendrenew.ProtocolAmendRenewService;
 import org.kuali.kra.protocol.actions.amendrenew.ProtocolAmendRenewalBase;
 import org.kuali.kra.protocol.actions.amendrenew.ProtocolAmendmentBean;
@@ -88,9 +77,6 @@ import org.kuali.kra.protocol.onlinereview.ProtocolReviewAttachmentBase;
 import org.kuali.kra.protocol.questionnaire.ProtocolModuleQuestionnaireBeanBase;
 import org.kuali.kra.protocol.questionnaire.ProtocolSubmissionQuestionnaireHelper;
 import org.kuali.kra.protocol.summary.ProtocolSummary;
-import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
-import org.kuali.coeus.common.questionnaire.framework.answer.ModuleQuestionnaireBean;
-import org.kuali.coeus.common.questionnaire.framework.answer.QuestionnaireAnswerService;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
@@ -103,6 +89,12 @@ import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.DocumentService;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.ObjectUtils;
+
+import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * The form helper class for the ProtocolBase Actions tab.
@@ -187,6 +179,8 @@ public abstract class ActionHelperBase implements Serializable {
     protected boolean canManageNotes = false;
     protected boolean canManageNotesUnavailable = false;
     protected boolean canAbandon = false;
+
+    protected boolean useAlternateNotifyAction = false;
 
     protected List<? extends ValidProtocolActionActionBase> followupActionActions;
     
@@ -486,11 +480,15 @@ public abstract class ActionHelperBase implements Serializable {
             bean.setActionDate(new Date(protocolAction.getActionDate().getTime()));
         }
         bean.setApprovalDate(buildApprovalDate(getProtocol()));
-        bean.setExpirationDate(buildExpirationDate(getProtocol(), bean.getApprovalDate()));
-        bean.setDefaultExpirationDateDifference(this.getDefaultExpirationDateDifference());
+        bean.setExpirationDate(getProtocolApproveService().buildExpirationDate(getProtocol(), bean.getApprovalDate()));
+        bean.setDefaultExpirationDateDifference(getProtocolApproveService().getDefaultExpirationDateDifference());
         return bean;
     }
 
+
+    public ProtocolApproveService getProtocolApproveService() {
+        return KcServiceLocator.getService(ProtocolApproveService.class);
+    }
         
     protected abstract ProtocolApproveBean getNewProtocolApproveBeanInstanceHook(ActionHelperBase actionHelper, String errorPropertyKey);
 
@@ -516,28 +514,6 @@ public abstract class ActionHelperBase implements Serializable {
         }
         
         return approvalDate;
-    }
-    
-    /**
-     * Builds an expiration date, defaulting to the expiration date from the protocol.  
-     * 
-     * If the expiration date from the protocol is null, or if the protocol is new or a renewal, creates an expiration date exactly one year ahead and one day 
-     * less than the approval date.
-     * 
-     * @param protocol
-     * @param approvalDate
-     * @return a non-null expiration date
-     */
-    protected Date buildExpirationDate(ProtocolBase protocol, Date approvalDate) {
-        Date expirationDate = protocol.getExpirationDate();
-        
-        if (expirationDate == null || protocol.isNew() || protocol.isRenewal()) {
-            java.util.Date newExpirationDate = DateUtils.addYears(approvalDate, getDefaultExpirationDateDifference());
-            newExpirationDate = DateUtils.addDays(newExpirationDate, -1);
-            expirationDate = org.kuali.coeus.sys.framework.util.DateUtils.convertToSqlDate(newExpirationDate);
-        }
-        
-        return expirationDate;
     }
 
     protected ProtocolActionBase findProtocolAction(String actionTypeCode, List<ProtocolActionBase> protocolActions, ProtocolSubmissionBase currentSubmission) {
@@ -688,7 +664,9 @@ public abstract class ActionHelperBase implements Serializable {
         canViewOnlineReviewerComments = hasCanViewOnlineReviewerCommentsPermission();        
         canAddSuspendReviewerComments = hasSuspendPermission();
         canAddTerminateReviewerComments = hasTerminatePermission();
-        
+
+        initializeAlternateNotifyActionFlag();
+
         initProtocolCorrespondenceAuthorizationFlags();
         
         hidePrivateFinalFlagsForPublicCommentsAttachments = checkToHidePrivateFinalFlagsForPublicCommentsAttachments();
@@ -702,7 +680,8 @@ public abstract class ActionHelperBase implements Serializable {
             
     protected abstract void initializeSubmissionConstraintHook();
 
-    
+    protected abstract void initializeAlternateNotifyActionFlag();
+
     protected List<KeyValue> getKeyValuesForCommitteeSelection(Collection<? extends CommitteeBase<?, ?, ?>> committees) {
         List<KeyValue> retVal = new ArrayList<KeyValue>();
         for(CommitteeBase<?, ?, ?> committee : committees) {
@@ -2605,9 +2584,9 @@ public abstract class ActionHelperBase implements Serializable {
     public boolean isCanReturnToPIUnavailable() {
         return canReturnToPIUnavailable;
     }
-    
+
     /**
-     * 
+     *
      * This method returns the number of years to add for the default expiration date.
      * @return
      */
@@ -2712,7 +2691,11 @@ public abstract class ActionHelperBase implements Serializable {
     public boolean isAllowedToRegenerateProtocolCorrespondence() {
         return this.allowedToRegenerateProtocolCorrespondence;
     }
-    
+
+    public boolean isUseAlternateNotifyAction() {
+        return useAlternateNotifyAction;
+    }
+
     public class AmendmentSummary {
         private String amendmentType;
 
@@ -2754,7 +2737,7 @@ public abstract class ActionHelperBase implements Serializable {
         }
         
         public AmendmentSummary(ProtocolBase protocol) {
-            amendmentType = protocol.isRenewalWithoutAmendment() ? "Renewal" : protocol.isRenewal() ? "Renewal with Amendment" : protocol.isAmendment() ? "Amendment" : "New";
+            amendmentType = protocol.isRenewalWithoutAmendment() ? ProtocolSpecialVersion.RENEWAL.getDescription() : protocol.isRenewal() ? ProtocolSpecialVersion.RENEWAL.getDescription() + " with " + ProtocolSpecialVersion.AMENDMENT.getDescription() : protocol.isAmendment() ? ProtocolSpecialVersion.AMENDMENT.getDescription() : "New";
             protocolNumber = protocol.getProtocolNumber();
             versionNumber = protocol.getProtocolNumber().substring(protocol.getProtocolNumber().length() - 3);
             versionNumberUrl = buildForwardUrl(protocol.getProtocolDocument().getDocumentNumber());

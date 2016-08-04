@@ -21,6 +21,9 @@
 <%@ attribute name="selectedTab" required="true"%>
 <%@ attribute name="channelTitle" required="false" %>
 
+<script src="${ConfigProperties.application.url}/scripts/common/header.js"></script>
+<script>Kc.Global.onKnsHeaderLoad();</script>
+
 <div class="navbar main-navbar navbar-static-top">
   <div class="navbar-inner">
     <div class="container-fluid">
@@ -77,6 +80,10 @@
                   <c:if test="${param.invalidUser}">
                       Impersonating User:&nbsp;${invalidUserMsg}
                   </c:if>
+                  <c:if test="${UserSession.objectMap['AUTH_SERVICE_FILTER_AUTHED_USER'] != null 
+    					&& UserSession.objectMap['AUTH_SERVICE_FILTER_AUTHED_USER'].actualUser != null}">
+   					CoreAuth User: <c:out value="${UserSession.objectMap['AUTH_SERVICE_FILTER_AUTHED_USER'].actualUser}"/>
+    			  </c:if>
                 </c:otherwise>
               </c:choose>
               &nbsp;

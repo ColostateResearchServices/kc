@@ -57,6 +57,7 @@
     <import resource="classpath:org/kuali/coeus/sys/framework/ImportRiceKradSpringBeans.xml"/>
     <import resource="classpath:org/kuali/rice/krad/config/KRADDependentModuleCommonImports.xml" />
 
+	<bean id="authServicePushService" parent="grlImporter" p:serviceName="authServicePushService" />
     <!-- only brought in on the grm profile -->
     <import resource="classpath:co/kuali/coeus/grm/impl/GrmCoreSpringBeans.xml" />
 
@@ -246,7 +247,6 @@
                 <value>classpath:org/kuali/kra/datadictionary/CorrespondentType.xml</value>
                 <value>classpath:org/kuali/coeus/common/budget/impl/core/CostElement.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/CostShareType.xml</value>
-                <value>classpath:org/kuali/kra/datadictionary/CreditType.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/custom/attr/CustomAttribute.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/custom/attr/CustomAttributeDataType.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/custom/attr/CustomAttributeDocument.xml</value>
@@ -385,14 +385,12 @@
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposal.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalAttachment.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalAttachmentType.xml</value>
-                <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalAdminDetails.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalComment.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalContact.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalCostShare.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalCreditSplit.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalCustomData.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalDocument.xml</value>
-                <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalLog.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalNotepad.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalPerson.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalPersonCreditSplit.xml</value>
@@ -402,7 +400,6 @@
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalScienceKeyword.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalSpecialReview.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalSpecialReviewExemption.xml</value>
-                <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalUnit.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalUnitContact.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalUnrecoveredFandA.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/IntellectualPropertyReview.xml</value>
@@ -477,6 +474,12 @@
                 <value>classpath:org/kuali/coeus/common/impl/person/signature/PersonSignature.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/person/signature/PersonSignatureModule.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/person/attr/PersonTraining.xml</value>
+                <value>classpath:org/kuali/coeus/common/impl/person/citi/PersonTrainingCitiRecord.xml</value>
+                <value>classpath:org/kuali/coeus/common/impl/person/citi/PersonTrainingCitiRecordMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/coeus/common/impl/person/citi/PersonTrainingCitiRecordError.xml</value>
+                <value>classpath:org/kuali/coeus/common/impl/person/citi/PersonTrainingCitiMap.xml</value>
+                <value>classpath:org/kuali/coeus/common/impl/person/citi/PersonTrainingCitiMapMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/coeus/common/impl/person/citi/PersonTrainingCitiCourse.xml</value>
                 <value>classpath:org/kuali/coeus/propdev/impl/abstrct/ProposalAbstract.xml</value>
                 <value>classpath:org/kuali/coeus/propdev/impl/editable/ProposalChangedData.xml</value>
                 <value>classpath:org/kuali/coeus/propdev/impl/editable/ProposalColumnsToAlter.xml</value>
@@ -1548,5 +1551,7 @@
     <bean id="errorHandlingUtilService" parent="grlImporter" p:serviceName="errorHandlingUtilService" />
     <bean id="restAuditLoggerFactory" parent="grlImporter" p:serviceName="restAuditLoggerFactory" />
     <bean id="persistenceVerificationService" parent="grlImporter" p:serviceName="persistenceVerificationService" />
+    <bean id="restBeanWrapperFactory" parent="grlImporter" p:serviceName="restBeanWrapperFactory" />
+    <bean id="restPropertyEditors" parent="grlImporter" p:serviceName="restPropertyEditors" />
 
 </beans>

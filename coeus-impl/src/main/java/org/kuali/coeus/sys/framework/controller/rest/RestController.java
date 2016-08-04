@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.kuali.coeus.sys.framework.rest.DataDictionaryValidationException;
 import org.kuali.coeus.sys.framework.rest.ResourceNotFoundException;
 import org.kuali.coeus.sys.framework.rest.UnauthorizedAccessException;
+import org.kuali.coeus.sys.framework.rest.UnprocessableEntityException;
+import org.kuali.coeus.sys.framework.rest.*;
 import org.kuali.coeus.sys.framework.validation.ErrorMessage;
 import org.kuali.coeus.sys.framework.validation.ErrorMessageMap;
 import org.springframework.core.Ordered;
@@ -37,12 +39,14 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.Instant;
+import java.beans.PropertyEditor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 /*
@@ -55,10 +59,13 @@ public abstract class RestController implements HandlerExceptionResolver, Ordere
 
 	private int order = 0;
 
+	@Resource(name="restPropertyEditors")
+	private Map<Class<?>, ? extends PropertyEditor> restPropertyEditors;
+
 	@InitBinder
 	public void initInstantBinder(WebDataBinder binder) {
-		binder.registerCustomEditor(Instant.class, new InstantCustomPropertyEditor());
-	}
+		restPropertyEditors.forEach(binder::registerCustomEditor);
+    }
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
@@ -70,7 +77,14 @@ public abstract class RestController implements HandlerExceptionResolver, Ordere
 			return resourceNotFoundError(request, response, handler, (ResourceNotFoundException) ex);
 		} else if (ex instanceof UnauthorizedAccessException) {
 			return unauthorizedError(request, response, handler, (UnauthorizedAccessException) ex);
-		} else {
+		} else if (ex instanceof UnprocessableEntityException) {
+            return unprocessableEntityError(request, response, handler, (UnprocessableEntityException) ex);
+        } else if (ex instanceof BadRequestException) {
+            return badRequestError(request, response, handler, (UnprocessableEntityException) ex);
+        } else if (ex instanceof NotImplementedException) {
+            return notImplementedError(request, response, handler, (NotImplementedException) ex);
+        }
+        else {
 			return unrecognizedException(request, response, handler, ex);
 		}
 	}
@@ -106,6 +120,18 @@ public abstract class RestController implements HandlerExceptionResolver, Ordere
 		return createJsonModelAndView(HttpStatus.NOT_FOUND.value(), generateSingleErrorFromExceptionMessage(ex), response);
 	}
 
+    protected ModelAndView unprocessableEntityError(HttpServletRequest request, HttpServletResponse response, Object handler, UnprocessableEntityException ex) {
+        if (ex.getCause() != null) {
+			LOG.info(ex.getMessage(), ex);
+		}
+
+		return createJsonModelAndView(HttpStatus.UNPROCESSABLE_ENTITY.value(), generateSingleErrorFromExceptionMessage(ex), response);
+    }
+
+    protected ModelAndView badRequestError(HttpServletRequest request, HttpServletResponse response, Object handler, UnprocessableEntityException ex) {
+        return createJsonModelAndView(HttpStatus.BAD_REQUEST.value(), generateSingleErrorFromExceptionMessage(ex), response);
+    }
+
 	protected ModelAndView unauthorizedError(HttpServletRequest request, HttpServletResponse response, Object handler, UnauthorizedAccessException ex) {
 		return createJsonModelAndView(HttpStatus.UNAUTHORIZED.value(), generateSingleErrorFromExceptionMessage(ex), response);
 	}
@@ -119,6 +145,11 @@ public abstract class RestController implements HandlerExceptionResolver, Ordere
 		return createJsonModelAndView(HttpStatus.INTERNAL_SERVER_ERROR.value(), generateSingleErrorFromExceptionMessage(ex), response);
 	}
 
+    protected ModelAndView notImplementedError(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        LOG.error(ex.getMessage(), ex);
+        return createJsonModelAndView(HttpStatus.NOT_IMPLEMENTED.value(), generateSingleErrorFromExceptionMessage(ex), response);
+    }
+
 	@Override
 	public int getOrder() {
 		return order;
@@ -126,5 +157,13 @@ public abstract class RestController implements HandlerExceptionResolver, Ordere
 
 	public void setOrder(int order) {
 		this.order = order;
+	}
+
+	public Map<Class<?>, ? extends PropertyEditor> getRestPropertyEditors() {
+		return restPropertyEditors;
+	}
+
+	public void setRestPropertyEditors(Map<Class<?>, ? extends PropertyEditor> restPropertyEditors) {
+		this.restPropertyEditors = restPropertyEditors;
 	}
 }

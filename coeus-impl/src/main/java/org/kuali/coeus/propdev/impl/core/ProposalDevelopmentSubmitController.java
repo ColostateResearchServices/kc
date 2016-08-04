@@ -42,6 +42,7 @@ import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyService;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationContext;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationRenderer;
 import org.kuali.coeus.propdev.impl.s2s.S2sSubmissionService;
+import org.kuali.coeus.propdev.impl.s2s.connect.S2sCommunicationException;
 import org.kuali.coeus.propdev.impl.specialreview.ProposalSpecialReview;
 import org.kuali.coeus.propdev.impl.state.ProposalState;
 import org.kuali.coeus.propdev.impl.state.ProposalStateService;
@@ -390,8 +391,11 @@ public class ProposalDevelopmentSubmitController extends
         try {
             submitS2sApplication(proposalDevelopmentDocument);
         } catch(S2SException ex) {
-            LOGGER.error(ex.getStackTrace(), ex);
+            LOGGER.error("Error submitting to s2s", ex);
             getGlobalVariableService().getMessageMap().putError(Constants.NO_FIELD, KeyConstants.ERROR_ON_GRANTS_GOV_SUBMISSION,ex.getErrorMessage());
+        } catch (S2sCommunicationException ex) {
+        	LOGGER.error("Error submitting to s2s", ex);
+        	getGlobalVariableService().getMessageMap().putError(Constants.NO_FIELD, ex.getErrorKey(), ex.getMessageWithParams());
         }
     }
 
@@ -468,7 +472,7 @@ public class ProposalDevelopmentSubmitController extends
     public void submitApplication(ProposalDevelopmentDocumentForm proposalDevelopmentForm)throws Exception {
         ProposalDevelopmentDocument proposalDevelopmentDocument = proposalDevelopmentForm.getProposalDevelopmentDocument();
         
-        boolean isIPProtocolLinkingEnabled = getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_PROTOCOL, ParameterConstants.DOCUMENT_COMPONENT, Constants.ENABLE_PROTOCOL_TO_PROPOSAL_LINK);
+        boolean isIPProtocolLinkingEnabled = getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_IRB, ParameterConstants.DOCUMENT_COMPONENT, Constants.ENABLE_PROTOCOL_TO_PROPOSAL_LINK);
         
         List<ProposalSpecialReview> specialReviews = proposalDevelopmentDocument.getDevelopmentProposal().getPropSpecialReviews();
         
@@ -689,6 +693,26 @@ public class ProposalDevelopmentSubmitController extends
 		proposalAdminDetails.setInstPropCreateDate(new Timestamp(System.currentTimeMillis()));
         proposalAdminDetails.setInstPropCreateUser(globalVariableService.getUserSession().getPrincipalName());
 	}
+
+    @Transactional @RequestMapping(value = "/proposalDevelopment", params="methodToCall=approveCheck")
+    public ModelAndView approveCheck(@ModelAttribute("KualiForm") ProposalDevelopmentDocumentForm form) throws Exception{
+        final Boolean featureFlag = getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT, Constants.PARAMETER_COMPONENT_DOCUMENT,
+                "proposal.approval.dialog.enabled");
+
+        if(!featureFlag) {
+            return approve(form);
+        }
+
+        AuditHelper.ValidationState severityLevel = getValidationState(form);
+
+        if(severityLevel.equals(AuditHelper.ValidationState.ERROR)) {
+            return getModelAndViewService().showDialog(ProposalDevelopmentConstants.KradConstants.DATA_VALIDATION_DIALOG_ID, true, form);
+        } else if (severityLevel.equals(AuditHelper.ValidationState.WARNING)) {
+            return getModelAndViewService().showDialog(ProposalDevelopmentConstants.KradConstants.DATA_VALIDATION_SECTION_WITH_APPROVE, true, form);
+        } else {
+            return approve(form);
+        }
+    }
 
     @Transactional @RequestMapping(value = "/proposalDevelopment", params="methodToCall=approve")
     public ModelAndView approve(@ModelAttribute("KualiForm") ProposalDevelopmentDocumentForm form) throws Exception{
