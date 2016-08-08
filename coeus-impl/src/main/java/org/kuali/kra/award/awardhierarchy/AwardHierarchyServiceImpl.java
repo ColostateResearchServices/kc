@@ -76,6 +76,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
+
 @Transactional
 public class AwardHierarchyServiceImpl implements AwardHierarchyService {
     private static final Log LOG = LogFactory.getLog(AwardHierarchyServiceImpl.class);
@@ -428,13 +430,20 @@ public class AwardHierarchyServiceImpl implements AwardHierarchyService {
         newAward.getSyncStatuses().clear();
         newAward.getAwardBudgetLimits().clear();
         
+		boolean inclPaymentInvRqtsOnCopy =
+				parameterService.getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_AWARD,
+						                                    ParameterConstants.DOCUMENT_COMPONENT,
+						                                    CSUKeyConstants.INCL_PAYMNT_INV_ON_COPY);
+
         /**
          * per KRACOEUS-5448 portions of the payment and invoices sub panel items should not be copied.
          */
         List<AwardReportTerm> newTerms = new ArrayList<AwardReportTerm>();
         String paymentReportClassCode = getPaymentAndInvoicesReportClass().getReportClassCode();
         for (AwardReportTerm term : newAward.getAwardReportTermItems()) {
-            if (!StringUtils.equals(paymentReportClassCode, term.getReportClassCode())) {
+			if (inclPaymentInvRqtsOnCopy
+					|| !StringUtils.equals(paymentReportClassCode,
+							term.getReportClassCode())) {
                 newTerms.add(term);
             }
         }
