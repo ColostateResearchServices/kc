@@ -7,9 +7,9 @@
 			<label>KC Award Account Reservation</label>
 			<parent>KC</parent>
 			<postProcessorName>org.kuali.coeus.sys.framework.workflow.KcPostProcessor</postProcessorName>
-			<superUserWorkgroupName>KC-WKFLW:KcAdmin</superUserWorkgroupName>
-			<blanketApproveWorkgroupName>KC-WKFLW:KcAdmin</blanketApproveWorkgroupName>
-			<defaultExceptionWorkgroupName>KC-WKFLW:KcAdmin</defaultExceptionWorkgroupName>
+			<superUserWorkgroupName>KC-WKFLW:AwardAdmin</superUserWorkgroupName>
+			<blanketApproveWorkgroupName>KC-WKFLW:AwardAdmin</blanketApproveWorkgroupName>
+			<defaultExceptionWorkgroupName>KC-WKFLW:AwardAdmin</defaultExceptionWorkgroupName>
 			<docHandler>${kuali.docHandler.url.prefix}/awardAccountReservation.do?methodToCall=docHandler</docHandler>
 			<helpDefinitionURL>default.htm?turl=Documents/awardAccountReservation.htm</helpDefinitionURL>
 			<active>true</active>

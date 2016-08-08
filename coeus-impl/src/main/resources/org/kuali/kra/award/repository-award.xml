@@ -58,6 +58,28 @@
 
 	<!-- CSU Customizations -->
 
+	<class-descriptor class="edu.colostate.kc.award.awardalternatenumber.AwardAlternateNumber" table="CSU_AWD_ALT_NUMBER_T">
+		<field-descriptor name="awardAlternateNumberId" column="ALT_NBR_ID" jdbc-type="VARCHAR" primarykey="true"  index="true" autoincrement="true" sequence-name="CSU_AWD_ALT_NBR_S"/>
+		<field-descriptor name="awardId" column="AWARD_ID" jdbc-type="BIGINT" />
+		<field-descriptor name="awardAlternateNumberTypeCode" column="ALT_NBR_TYPE_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="number" column="NBR" jdbc-type="VARCHAR" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="showOnInvoice" column="SHOW_ON_INV" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+
+		<reference-descriptor name="awardAlternateNumberType" class-ref="edu.colostate.kc.award.awardalternatenumber.AwardAlternateNumberType" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="awardAlternateNumberTypeCode" />
+		</reference-descriptor>
+
+		<reference-descriptor name="award" class-ref="org.kuali.kra.award.home.Award" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="awardId" />
+		</reference-descriptor>
+	</class-descriptor>
+
 	<class-descriptor class="edu.colostate.kc.award.contacts.CsuCentralAdminContact" table="CSU_CENTRAL_ADMIN_CONTACTS_T">
 		<field-descriptor name="awardContactId" column="CENTRAL_ADMIN_CONTACT_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="SEQUENCE_AWARD_ID" />
 
@@ -82,11 +104,25 @@
 		</reference-descriptor>
 	</class-descriptor>
 
+	<class-descriptor class="edu.colostate.kc.award.awardalternatenumber.AwardAlternateNumberType" table="CSU_AWD_ALT_NBR_TYPE_T">
+        <field-descriptor name="awardAlternateNumberTypeCode" column="ALT_NBR_TYPE_ID" jdbc-type="VARCHAR" primarykey="true"  index="true" autoincrement="true" sequence-name="CSU_AWD_ALT_NBR_TYPE_S"/>
+        <field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+        <field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
+        <field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+    </class-descriptor>
+
 	<class-descriptor class="edu.colostate.kc.award.AwardExtension" table="CSU_AWARD_EXT_T">
 		<field-descriptor name="awardId" column="AWARD_ID" jdbc-type="BIGINT" primarykey="true"  index="true" />
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
 		<field-descriptor name="fullAccountNumber" column="FULL_ACCOUNT_NUMBER" jdbc-type="VARCHAR" />
+
+    	<collection-descriptor name="awardAlternateNumbers" proxy="true" element-class-ref="edu.colostate.kc.award.awardalternatenumber.AwardAlternateNumber" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+        	<inverse-foreignkey field-ref="awardId" />
+    	</collection-descriptor>
+
 		<collection-descriptor name="centralAdminContacts" proxy="true" element-class-ref="edu.colostate.kc.award.contacts.CsuCentralAdminContact" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
 			<inverse-foreignkey field-ref="awardId" />
 		</collection-descriptor>

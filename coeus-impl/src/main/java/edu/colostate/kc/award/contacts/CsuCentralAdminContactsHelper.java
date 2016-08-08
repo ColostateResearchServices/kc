@@ -2,9 +2,6 @@ package edu.colostate.kc.award.contacts;
 
 import java.io.Serializable;
 
-import edu.colostate.kc.award.contacts.CentralAdminContactsAddEvent;
-import edu.colostate.kc.award.contacts.CentralAdminContactsAddRuleImpl;
-import edu.colostate.kc.award.contacts.CsuCentralAdminContact;
 import org.kuali.kra.award.AwardForm;
 import org.kuali.coeus.common.framework.unit.UnitContactType;
 

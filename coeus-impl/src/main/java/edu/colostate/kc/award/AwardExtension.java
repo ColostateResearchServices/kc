@@ -1,12 +1,9 @@
 package edu.colostate.kc.award;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import edu.colostate.kc.award.awardalternatenumber.AwardAlternateNumber;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.common.framework.version.sequence.associate.SequenceAssociate;
@@ -16,15 +13,16 @@ import org.kuali.kra.award.home.Award;
 import org.kuali.coeus.common.framework.unit.UnitContactType;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectExtensionBase;
 import org.kuali.rice.krad.service.BusinessObjectService;
-import org.springframework.util.AutoPopulatingList;
 
 import edu.colostate.kc.award.contacts.CsuCentralAdminContact;
 import edu.colostate.kc.award.reservation.AvailableResearchAccount;
-import edu.colostate.kc.award.reservation.AwardAccount;
 
 public class AwardExtension extends PersistableBusinessObjectExtensionBase implements SequenceAssociate<Award>  {
 	
     private Long awardId;
+
+
+    private List<AwardAlternateNumber> awardAlternateNumbers;
 
 
 	private List<CsuCentralAdminContact> centralAdminContacts;
@@ -41,13 +39,35 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
     }
     
     private void init() {
+    	awardAlternateNumbers = new ArrayList<AwardAlternateNumber>();
     }
+
+
+    public void addNewAwardAlternateNumber(AwardAlternateNumber newAwardAlternateNumber ) {
+    	awardAlternateNumbers.add(newAwardAlternateNumber);
+    }
+
+	public void deleteAwardAlternateNumber(int numberToDelete) {
+		getAwardAlternateNumbers().remove(numberToDelete);
+	}
+
+
 
 	public Long getAwardId() {
 		return awardId;
 	}
 	public void setAwardId(Long awardId) {
 		this.awardId = awardId;
+	}
+	public List<AwardAlternateNumber> getAwardAlternateNumbers() {
+		return awardAlternateNumbers;
+	}
+	public void setAwardAlternateNumbers(ArrayList<AwardAlternateNumber> awardAlternateNumbers) {
+		this.awardAlternateNumbers = awardAlternateNumbers;
+	}
+
+	public void setAwardAlternateNumbers(List<AwardAlternateNumber> awardAlternateNumbers) {
+		this.awardAlternateNumbers = awardAlternateNumbers;
 	}
 
 	@Override
