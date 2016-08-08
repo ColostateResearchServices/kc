@@ -36,10 +36,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
+
 @SuppressWarnings("deprecation")
 public class DisclosureFinancialEntityAuditRule extends KcTransactionalDocumentRuleBase implements DocumentAuditRule {
 
     private static final String FINANCIAL_ENTITY_AUDIT_ERRORS = "financialEntityDiscAuditErrors";
+    private static final String FINANCIAL_ENTITY_STATUS_MISSING_LABEL = "Please declare all Project-Financial Entity Statuses";
     private static final String NEW_TAG = "disclosureHelper.newCoiDisclProject.finEntityStatusMissing";
     private List<AuditError> auditErrors;
     
@@ -80,10 +83,11 @@ public class DisclosureFinancialEntityAuditRule extends KcTransactionalDocumentR
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(Constants.COI_DISCLOSURE_DISCLOSURE_PAGE);
         stringBuilder.append(".");
-        stringBuilder.append(Constants.DISCLOSURE_FINANCIAL_ENTITY_PANEL_ANCHOR);
+        stringBuilder.append(CSUKeyConstants.CSU_DISCLOSURE_FINANCIAL_ENTITY_PANEL_ANCHOR);
         auditErrors.add(new AuditError(String.format(errorKey, index, index1),
                                         KeyConstants.ERROR_COI_FINANCIAL_ENTITY_STATUS_REQUIRED,
-                                        stringBuilder.toString()));   
+                                        stringBuilder.toString(),
+                                        new String[]{FINANCIAL_ENTITY_STATUS_MISSING_LABEL}));   
     }
 
     protected void addErrorToAuditErrors(String property, int index, int index1, String errorKey) {
@@ -122,7 +126,7 @@ public class DisclosureFinancialEntityAuditRule extends KcTransactionalDocumentR
                     int j = 0;
                     for (CoiDiscDetail coiDiscDetail : disclProject.getCoiDiscDetails()) {
                         if (coiDiscDetail.getEntityDispositionCode() == null) {
-                            addErrorToAuditErrors(i, j, Constants.DISCLOSURE_ANNUAL_FINANCIAL_ENTITY_KEY2);
+                            addErrorToAuditErrors(i, j, CSUKeyConstants.CSU_DISCLOSURE_ANNUAL_FINANCIAL_ENTITY_KEY);
                             isSelected = false;
                         }
                         j++;

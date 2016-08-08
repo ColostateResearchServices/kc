@@ -29,11 +29,15 @@ import org.kuali.coeus.common.framework.krms.KcKrmsFactBuilderService;
 import org.kuali.rice.coreservice.framework.parameter.ParameterConstants;
 import org.kuali.rice.coreservice.framework.parameter.ParameterConstants.COMPONENT;
 import org.kuali.rice.coreservice.framework.parameter.ParameterConstants.NAMESPACE;
+import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.krad.document.Copyable;
 import org.kuali.rice.krad.document.SessionDocument;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krms.api.engine.Facts;
+import org.kuali.kra.authorization.KraAuthorizationConstants;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -142,10 +146,46 @@ public class CoiDisclosureDocument extends KcTransactionalDocumentBase implement
     public List<? extends DocumentCustomData> getDocumentCustomData() {
         return new ArrayList();
     }
+
+    @Override
+    public List<String> getLockClearningMethodNames() {
+        List<String> methodToCalls = super.getLockClearningMethodNames();
+        methodToCalls.add("completeReview");
+
+        return methodToCalls;
+    }
+
+    @Override
+    public String getCustomLockDescriptor(Person user) {
+        String activeLockRegion = (String) GlobalVariables.getUserSession().retrieveObject(KraAuthorizationConstants.ACTIVE_LOCK_REGION);
+       
+        if (StringUtils.isNotEmpty(activeLockRegion)) {
+            return this.getCoiDisclosure().getCoiDisclosureNumber() + "-" + activeLockRegion;  
+        }
+
+        return null;
+    }
+    
+    @Override
+    public boolean useCustomLockDescriptors() {
+        return true;
+    }
+
+    
+    public void defaultDocumentDescription() {
+    	if (getDocumentHeader().getDocumentDescription()==null || getDocumentHeader().getDocumentDescription().isEmpty()) {
+	        Date date = new Date();
+	        CoiDisclosure disclosure = getCoiDisclosure();
+	        String desc = String.format("COI %s Disclosure; Reporter: %s; Initiated: %s",
+	                disclosure.getCoiDisclosureEventType().getDescription(),
+	                disclosure.getDisclosureReporter().getReporter().getFullName() ,
+	                date.toString()); 
+	        getDocumentHeader().setDocumentDescription(desc);
+    	}
+    } 
     
     public String getDocumentBoNumber() {
         return getCoiDisclosure().getCoiDisclosureNumber();
         
     }
-
 }

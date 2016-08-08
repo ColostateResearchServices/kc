@@ -43,6 +43,7 @@ import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.kuali.rice.core.api.datetime.DateTimeService;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
+import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 import org.kuali.rice.krad.service.*;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.ObjectUtils;
@@ -313,6 +314,11 @@ public class CoiDisclosure extends KcPersistableBusinessObjectBase implements Se
 
 
     public CoiDisclosureDocument getCoiDisclosureDocument() {
+        if (coiDisclosureDocument == null) {
+            coiDisclosureDocument = new CoiDisclosureDocument();
+        } else if (coiDisclosureDocument.getDocumentHeader() != null && coiDisclosureDocument.getDocumentNumber() != null && !coiDisclosureDocument.getDocumentHeader().hasWorkflowDocument()) {
+            coiDisclosureDocument.getDocumentHeader().setWorkflowDocument(WorkflowDocumentFactory.loadDocument(GlobalVariables.getUserSession().getPrincipalId(), coiDisclosureDocument.getDocumentNumber()));
+        }
         return coiDisclosureDocument;
     }
 
@@ -913,7 +919,7 @@ public class CoiDisclosure extends KcPersistableBusinessObjectBase implements Se
             for (CoiNotification notification: unfilteredList) {
                 if (currentUser.equals(notification.getCreateUser())) {
                     filteredList.add(notification);
-                } else {
+                } else if (notification.getRecipients() != null) {
                     for (String recipient: notification.getRecipients().split(",")) {
                         if (currentUser.equals(recipient.trim())) {
                             filteredList.add(notification);

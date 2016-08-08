@@ -45,11 +45,18 @@ public class FinancialEntitySummaryHelper implements Serializable {
     private String[] relationshipType; 
     private String[] percentages; 
     private String[] remuneration;
+    private String[] timeCommit;
+    private String[] financialInt;
     private String entityStatus = "";
     
     private static final String newLine = "<BR>";
     private static final String remunerationRange = "remuneration_range";
     private static final String ownershipInterests = "ownership_interest";
+
+    private static final String timeCommitment = "time_commitment";
+    private static final String financialInterest = "financial_interest";
+
+    
     private static final String plusString = "+";
     
 
@@ -357,13 +364,19 @@ public class FinancialEntitySummaryHelper implements Serializable {
                     if (ObjectUtils.isNull(dm.getLookupArgument())) {
                         value = relationshipType[Integer.parseInt(detail.getRelationshipTypeCode()) - 1] + ", ";
                     } else {
-                        if (dm.getLookupArgument().equalsIgnoreCase(remunerationRange)) {
+                        if (dm.getLookupArgument().equalsIgnoreCase( timeCommitment)) {
                             value = relationshipType[Integer.parseInt(detail.getRelationshipTypeCode()) - 1]  + " : "
-                            + remuneration[columnValue - 1] + ", ";
+                            + timeCommit[columnValue - 1] + ", ";
                         } else if (dm.getLookupArgument().equalsIgnoreCase(ownershipInterests)) {
                             value = relationshipType[Integer.parseInt(detail.getRelationshipTypeCode()) - 1] + " : " 
                             + percentages[columnValue - 1] + ", ";
-                        } 
+                        } else if (dm.getLookupArgument().equalsIgnoreCase(remunerationRange)) {
+                            value = relationshipType[Integer.parseInt(detail.getRelationshipTypeCode()) - 1] + " : " 
+                            + remuneration[columnValue - 1] + ", ";
+                        } else if (dm.getLookupArgument().equalsIgnoreCase(financialInterest)) {
+                            value = relationshipType[Integer.parseInt(detail.getRelationshipTypeCode()) - 1] + " : " 
+                            + financialInt[columnValue - 1] + ", ";
+                        }
                     }
                     
                     String groupName = dataGroups.get(dm.getDataGroupId().toString());
@@ -448,6 +461,33 @@ public class FinancialEntitySummaryHelper implements Serializable {
         }
         setPercentages(tempPercentage);
         
+        finder.setArgName(timeCommitment);
+        kv = finder.getKeyValues();
+        index = 0;
+        String[] tempTime = new String[kv.size()];
+        for (KeyValue pair : kv) {
+            if (!pair.getValue().equalsIgnoreCase("select")) {
+                tempTime[index] = pair.getValue();
+                index++;
+            }
+        }
+        setTimeCommit(tempTime);
+        
+        
+        finder.setArgName(financialInterest);
+        kv = finder.getKeyValues();
+        index = 0;
+        String[] tempFinInt = new String[kv.size()];
+        for (KeyValue pair : kv) {
+            if (!pair.getValue().equalsIgnoreCase("select")) {
+                tempFinInt[index] = pair.getValue();
+                index++;
+            }
+        }
+        setFinancialInt(tempFinInt);
+        
+        
+        
         List<FinIntEntityRelType> relTypes = (List<FinIntEntityRelType>) getBusinessObjectService().findAll(FinIntEntityRelType.class);
         String[] types = new String[relTypes.size()];
         index = 0;
@@ -489,4 +529,20 @@ public class FinancialEntitySummaryHelper implements Serializable {
     public void setEntityStatus(String entityStatus) {
         this.entityStatus = entityStatus;
     }
+
+	public String[] getTimeCommit() {
+		return timeCommit;
+	}
+
+	public void setTimeCommit(String[] timeCommit) {
+		this.timeCommit = timeCommit;
+	}
+
+	public String[] getFinancialInt() {
+		return financialInt;
+	}
+
+	public void setFinancialInt(String[] financialInt) {
+		this.financialInt = financialInt;
+	}
 }

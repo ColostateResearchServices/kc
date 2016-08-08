@@ -18,45 +18,78 @@
  */
 package org.kuali.kra.coi.lookup;
 
-import org.apache.commons.lang3.StringUtils;
-import org.kuali.kra.coi.CoiDisclosure;
-import org.kuali.kra.coi.CoiReviewer;
-import org.kuali.kra.coi.CoiUserRole;
-import org.kuali.rice.krad.bo.BusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.QueryByCriteria;
+import org.kuali.kra.coi.CoiDisclProject;
+import org.kuali.kra.coi.CoiDisclosure;
+import org.kuali.kra.coi.CoiDisclosureEventType;
+import org.kuali.kra.coi.CoiReviewer;
+import org.kuali.kra.coi.CoiUserRole;
+import org.kuali.kra.coi.lookup.dao.CoiDisclosureDao;
+import org.kuali.kra.coi.lookup.dao.ojb.CoiDisclosureDaoOjb;
+import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 @SuppressWarnings("unchecked")
 public class CoiDisclosureReviewsLookupableHelper extends CoiDisclosureLookupableHelperBase {
 
-
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
     private static final long serialVersionUID = 5482769028074271782L;
+    
+    private CoiDisclosureDaoOjb coiDisclosureDao;
 
     @Override
     public List<? extends BusinessObject> getLookupSpecificSearchResults(Map<String, String> fieldValues) {
-        List<CoiDisclosure> allDisclosures = (List<CoiDisclosure>) super.getResults(fieldValues);
-        List<CoiDisclosure> coiDisclosureReviews = new ArrayList<CoiDisclosure>();
+
         String currentUser = GlobalVariables.getUserSession().getPrincipalName();
+        List<CoiDisclosure> disclosuresToReview = new ArrayList<CoiDisclosure>();
+
         
-        for (CoiDisclosure disclosure : allDisclosures) {
-            List<CoiUserRole> userRoles = disclosure.getCoiUserRoles();
-            for (CoiUserRole userRole : userRoles) {
-                if (StringUtils.equalsIgnoreCase(userRole.getReviewerCode(), CoiReviewer.ASSIGNED_REVIEWER)) {
-                    // userId is really the username . This should probably be "fixed" at some point.
-                    if (StringUtils.equalsIgnoreCase(currentUser, userRole.getUserId()) && !userRole.isReviewCompleted()) {
-                        coiDisclosureReviews.add(disclosure);
-                    }
-                }
-            }
+        HashMap<String, Object> roleFieldValues = new HashMap<String, Object>();
+        roleFieldValues.put("userId", currentUser);
+        roleFieldValues.put("reviewerCode", CoiReviewer.ASSIGNED_REVIEWER);
+        roleFieldValues.put("reviewCompleted", false);
+
+        List<CoiUserRole> coiUserRoles = (List<CoiUserRole>) businessObjectService.findMatching(CoiUserRole.class, roleFieldValues);
+        
+        List<Long> disclosureList =   new ArrayList<Long>();
+        
+        for (CoiUserRole role : coiUserRoles) {
+            disclosureList.add(role.getCoiDisclosureId());
         }
-        return coiDisclosureReviews;
+        
+        
+        Criteria crit = new Criteria();
+        crit.addIn("coiDisclosureId", disclosureList);
+        QueryByCriteria query = new QueryByCriteria(CoiDisclosure.class, crit);
+        
+        if (!disclosureList.isEmpty()) {
+           disclosuresToReview =  new ArrayList<CoiDisclosure>((Collection<CoiDisclosure>)getCoiDisclosureDao().getPersistenceBrokerTemplate().getCollectionByQuery(query));       
+        }
+        
+        return disclosuresToReview;
+        
     }
     
     @Override
     protected boolean isAuthorizedForCoiLookups() {
         return true;
     }
+
+	public CoiDisclosureDaoOjb getCoiDisclosureDao() {
+		return coiDisclosureDao;
+	}
+
+	public void setCoiDisclosureDao(CoiDisclosureDaoOjb coiDisclosureDao) {
+		this.coiDisclosureDao = coiDisclosureDao;
+	}
 }

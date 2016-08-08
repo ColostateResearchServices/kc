@@ -22,9 +22,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.kuali.coeus.sys.framework.controller.KcConfirmationQuestion;
+import org.kuali.coeus.sys.framework.controller.StrutsConfirmation;
 import org.kuali.kra.coi.CoiActionType;
+import org.kuali.kra.coi.CoiDisclosure;
+import org.kuali.kra.coi.CoiDisclosureDocument;
+import org.kuali.kra.coi.CoiDisclosureForm;
 import org.kuali.kra.coi.notesandattachments.attachments.FinancialEntityAttachment;
 import org.kuali.kra.infrastructure.Constants;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
@@ -33,12 +39,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
+
+
 /**
  * 
  * This class is the struts action for maintaining new financial entity page
  */
 public class FinancialEntityEditNewAction extends FinancialEntityAction {
     private static final String NEW_FINANCIAL_ENTITY = "financialEntityHelper.newPersonFinancialEntity";
+
+    private static final String CONFIRM_YES_DELETE_ATTACHMENT = "confirmDeleteAttachment";
+    private static final String CONFIRM_NO_DELETE = "";
+    private static final String CONFIRM_YES_ADD_ANOTHER_FE_Q_ID = "yesDeclareAdditionalFE";
+    private static final String CONFIRM_NO_ADD_ANOTHER_FE_Q_ID = "noDeclareAdditionalFE";
+    
+    
 
     /**
      * 
@@ -61,18 +77,115 @@ public class FinancialEntityEditNewAction extends FinancialEntityAction {
             // send notification to admins that FE has been modified
             sendNotificationAndPersist(CoiActionType.FE_CREATED_EVENT, "Financial Entity Modified", newFinancialEntityDisclosure);
             if (StringUtils.isNotBlank(financialEntityForm.getCoiDocId())) {
-                String forward = buildForwardUrl(financialEntityForm.getCoiDocId());
-                financialEntityForm.setCoiDocId(null);
-                financialEntityForm.getFinancialEntityHelper().setReporterId(null);
-                return new ActionForward(forward, true);
+                return promptForAdditionalFE(mapping, form, request, response);            
             }
         }
 
-//        ((FinancialEntityForm) form).getFinancialEntityHelper().setActiveFinancialEntities(getFinancialEntities(true));
-//        ((FinancialEntityForm) form).getFinancialEntityHelper().setInactiveFinancialEntities(getFinancialEntities(false));
         return mapping.findForward(Constants.MAPPING_BASIC);
     }
 
+
+    public ActionForward promptForAdditionalFE(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        final StrutsConfirmation confirm = buildParameterizedConfirmationQuestion(mapping, form, request, response, 
+        		CONFIRM_YES_ADD_ANOTHER_FE_Q_ID, CSUKeyConstants.ADD_ANOTHER_FE_QUESTION);
+        
+        return confirmAdditionalFE(confirm, CONFIRM_YES_ADD_ANOTHER_FE_Q_ID, CONFIRM_NO_ADD_ANOTHER_FE_Q_ID);
+    }    
+    
+    /**
+     * "borrowed" from KraTransactionalDocumentActionBase class
+     */
+    public ActionForward confirmAdditionalFE(StrutsConfirmation question, String yesMethodName, String noMethodName) throws Exception {
+        // Figure out what the caller is. We want the direct caller of confirm()
+      //  question.setCaller(((KualiForm) question.getForm()).getMethodToCall());
+        question.setCaller("promptForAdditionalFE");
+
+        if (question.hasQuestionInstAttributeName()) {
+            Object buttonClicked = question.getRequest().getParameter(KRADConstants.QUESTION_CLICKED_BUTTON);
+            if (KcConfirmationQuestion.YES.equals(buttonClicked) && StringUtils.isNotBlank(yesMethodName)) {
+                return dispatchMethod(question.getMapping(), question.getForm(), question.getRequest(), question.getResponse(),
+                        yesMethodName);
+            }
+            else if (StringUtils.isNotBlank(noMethodName)) {
+                return dispatchMethod(question.getMapping(), question.getForm(), question.getRequest(), question.getResponse(),
+                        noMethodName);
+            }
+        }
+        else {
+        	// to skip the initial submit logic the next time through.
+        	question.getRequest().setAttribute(KRADConstants.METHOD_TO_CALL_ATTRIBUTE, KRADConstants.DISPATCH_REQUEST_PARAMETER + "."
+					+ "promptForAdditionalFE" + ".x");
+            return this.performQuestionWithoutInput(question, KRADConstants.EMPTY_STRING);
+        }
+
+        return question.getMapping().findForward(Constants.MAPPING_BASIC);
+    }    
+
+
+    /*
+     * 
+     */
+    public ActionForward yesDeclareAdditionalFE(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+                                                                                                                throws Exception {
+    	return additionalNewFinancialEntity(mapping, form, request, response);
+    }
+    
+    /*
+     * 
+     */
+    public ActionForward additionalNewFinancialEntity(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        ActionForward actionForward = editNew(mapping, form, request, response);
+        if (GlobalVariables.getMessageMap().hasNoErrors()) {
+            FinancialEntityForm financialEntityForm = (FinancialEntityForm) form;
+            String forward = ConfigContext.getCurrentContextConfig().getProperty("kuali.docHandler.url.prefix")
+                    + "/financialEntityEditNew.do?methodToCall=addNewCoiDiscFinancialEntity&coiDocId="
+                    + financialEntityForm.getCoiDocId() + "&financialEntityHelper.reporterId="
+                    + financialEntityForm.getFinancialEntityHelper().getFinancialEntityReporter().getPersonId();
+            return new ActionForward(forward, true);
+        }
+        return actionForward;
+    }    
+    
+    
+    /*
+     * if user answers "no", then return to Disclosure if we came from there
+     */
+    public ActionForward noDeclareAdditionalFE(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        FinancialEntityForm financialEntityForm = (FinancialEntityForm) form;
+
+        if (StringUtils.isNotBlank(financialEntityForm.getCoiDocId())) {
+            String forward = buildForwardUrl(financialEntityForm.getCoiDocId());
+            financialEntityForm.setCoiDocId(null);
+            financialEntityForm.getFinancialEntityHelper().setReporterId(null);
+            return new ActionForward(forward, true);
+        }
+        return whereToGoAfterCancel(mapping, form, request, response);
+    }
+        
+    
+    /*
+     * 
+     */
+    public ActionForward newFinancialEntity(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        ActionForward actionForward = editNew(mapping, form, request, response);
+        if (GlobalVariables.getMessageMap().hasNoErrors()) {
+            CoiDisclosureForm coiDisclosureForm = (CoiDisclosureForm) form;
+            CoiDisclosure coiDisclosure = ((CoiDisclosureDocument)coiDisclosureForm.getDocument()).getCoiDisclosure();
+            String forward = ConfigContext.getCurrentContextConfig().getProperty("kuali.docHandler.url.prefix")
+                    + "/financialEntityEditNew.do?methodToCall=addNewCoiDiscFinancialEntity&coiDocId="
+                    + ((CoiDisclosureForm) form).getDocument().getDocumentNumber() + "&financialEntityHelper.reporterId="
+                    + coiDisclosure.getPersonId();
+            return new ActionForward(forward, true);
+        }
+        return actionForward;
+    }    
+    
+
+    
     /*
      * utility method to set up the new financial entity for save
      */

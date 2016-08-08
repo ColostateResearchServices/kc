@@ -41,6 +41,7 @@ public class CoiDisclosureEventType extends KcPersistableBusinessObjectBase impl
     public static final String MANUAL_IRB_PROTOCOL = "13";
     public static final String MANUAL_IACUC_PROTOCOL = "16";
     public static final String MANUAL_TRAVEL = "15";
+    public static final String CSU_WORK_ACTIVITY = "17";
     
     private String eventTypeCode; 
     private String description;

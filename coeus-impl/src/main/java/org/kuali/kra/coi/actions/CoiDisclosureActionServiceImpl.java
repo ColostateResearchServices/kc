@@ -1,44 +1,43 @@
 /*
- * Kuali Coeus, a comprehensive research administration system for higher education.
+ * Copyright 2005-2013 The Kuali Foundation
  * 
- * Copyright 2005-2016 Kuali, Inc.
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.opensource.org/licenses/ecl1.php
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.kuali.kra.coi.actions;
 
+import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.kuali.coeus.common.framework.module.CoeusModule;
-import org.kuali.coeus.common.notification.impl.bo.NotificationTypeRecipient;
-import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
-import org.kuali.coeus.common.notification.impl.NotificationHelper;
-import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
-import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.coi.*;
 import org.kuali.kra.coi.certification.SubmitDisclosureAction;
 import org.kuali.kra.coi.notesandattachments.attachments.CoiDisclosureAttachment;
 import org.kuali.kra.coi.notesandattachments.notes.CoiDisclosureNotepad;
 import org.kuali.kra.coi.notification.*;
+import org.kuali.coeus.common.notification.impl.NotificationHelper;
+import org.kuali.coeus.common.notification.impl.bo.NotificationTypeRecipient;
+
+import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.coeus.common.questionnaire.framework.answer.Answer;
 import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
+import org.kuali.coeus.common.questionnaire.framework.answer.QuestionnaireAnswerService;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.krad.bo.AdHocRouteRecipient;
 import org.kuali.rice.krad.service.BusinessObjectService;
@@ -60,8 +59,11 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
     private DocumentService documentService;
     private KcNotificationService kcNotificationService;
     private static final Log LOG = LogFactory.getLog(CoiDisclosureActionServiceImpl.class);
+    private QuestionnaireAnswerService questionnaireAnswerService;
     private static final String MODULE_ITEM_CODE = "moduleItemCode";
     private static final String MODULE_ITEM_KEY = "moduleItemKey";
+    private static final String MODULE_SUB_ITEM_KEY = "moduleSubItemKey";
+    private static final String MODULE_NAMESPACE = "KC-COIDISCLOSURE";
     
     /**
      * copy disc details from previous master disclosure if it exists.
@@ -104,7 +106,7 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
         documentService.approveDocument(coiDisclosure.getCoiDisclosureDocument(), "Document approved.", new ArrayList<AdHocRouteRecipient>());
 
         disclosures.add(createDisclosureHistory(coiDisclosure));
-        businessObjectService.save(disclosures);
+        getBusinessObjectService().save(disclosures);
         sendNotification(coiDisclosure, CoiActionType.APPROVED_EVENT, "Approved");        
     }
     
@@ -122,8 +124,8 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
       
         setDisclosureReviewStatus(coiDisclosure, CoiReviewStatus.REVIEW_COMPLETE);
 
-        businessObjectService.save(coiDisclosure);
-        businessObjectService.save(createDisclosureHistory(coiDisclosure));
+        getBusinessObjectService().save(coiDisclosure);
+        getBusinessObjectService().save(createDisclosureHistory(coiDisclosure));
         documentService.disapproveDocument(coiDisclosure.getCoiDisclosureDocument(), "Document approved.");       
         sendNotification(coiDisclosure, CoiActionType.DISAPPROVED_EVENT, "Disapproved");        
     }
@@ -141,7 +143,7 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
 
         coiDisclosure.getCoiUserRoles().add(coiUserRole);
         setDisclosureReviewStatus(coiDisclosure, CoiReviewStatus.ASSIGNED_TO_REVIEWER);
-        businessObjectService.save(coiDisclosure);
+        getBusinessObjectService().save(coiDisclosure);
         return sendNotification(mapping, form, forward, coiUserRole, "Assigned");
     }
     
@@ -151,7 +153,7 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
         if (index >= 0 && index < coiDisclosure.getCoiUserRoles().size()) {
             CoiUserRole coiUserRole = coiDisclosure.getCoiUserRoles().remove(index);
             resetDisclosureReviewStatus(coiDisclosure);
-            businessObjectService.save(coiDisclosure);
+            getBusinessObjectService().save(coiDisclosure);
             return sendNotification(mapping, form, forward, coiUserRole, "Removed");
         }
         return forward;
@@ -166,7 +168,7 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
         fieldValues.put("coiDisclosureNumber", coiDisclosureNumber);
         fieldValues.put("currentDisclosure", "Y");
 
-        List<CoiDisclosure> disclosures = (List<CoiDisclosure>)businessObjectService.findMatching(CoiDisclosure.class, fieldValues);
+        List<CoiDisclosure> disclosures = (List<CoiDisclosure>)getBusinessObjectService().findMatching(CoiDisclosure.class, fieldValues);
         if (CollectionUtils.isNotEmpty(disclosures)) {
             return disclosures.get(0);
         } else {
@@ -186,13 +188,14 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
         String moduleSubKey = coiDisclosure.getCoiDisclProjects().get(0).getCoiProjectId();
         for (AnswerHeader answerHeader : retrieveAnswerHeaders(coiDisclosure)) {
             answerHeader.setModuleSubItemKey(moduleSubKey);
-            businessObjectService.save(answerHeader);
+            getBusinessObjectService().save(answerHeader);
         }
         
     }
     
     private void copyDisclosureQuestionnaire(CoiDisclosure masterCoiDisclosure, CoiDisclosure coiDisclosure) {
         // versioning questionnaire answer
+//        if (masterCoiDisclosure.getCoiDisclosureDocument().getDocumentHeader().getWorkflowDocument() == null) {
             try {
             CoiDisclosureDocument coiDisclosureDocument = (CoiDisclosureDocument) KcServiceLocator
                     .getService(DocumentService.class).getByDocumentHeaderId(masterCoiDisclosure.getCoiDisclosureDocument().getDocumentNumber());
@@ -201,12 +204,16 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
             } catch (Exception e) {
                 
             }
+//        }
+
+        //    List<AnswerHeader> newAnswerHeaders = questionnaireAnswerService.versioningQuestionnaireAnswer(new DisclosureModuleQuestionnaireBean(masterCoiDisclosure)
+        //    , coiDisclosure.getSequenceNumber());
             List<AnswerHeader> newAnswerHeaders = versioningQuestionnaireAnswer(masterCoiDisclosure);
          if (!newAnswerHeaders.isEmpty()) {
              for (AnswerHeader answerHeader : newAnswerHeaders) {
                  answerHeader.setModuleItemKey(coiDisclosure.getCoiDisclosureId().toString());
              }
-            businessObjectService.save(newAnswerHeaders);
+            getBusinessObjectService().save(newAnswerHeaders);
         }
     
     }
@@ -228,9 +235,31 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
         Map<String, Object> fieldValues = new HashMap<String, Object>();
         fieldValues.put(MODULE_ITEM_CODE, CoeusModule.COI_DISCLOSURE_MODULE_CODE);
         fieldValues.put(MODULE_ITEM_KEY, coiDisclosure.getCoiDisclosureId().toString());
-        return (List<AnswerHeader>) businessObjectService.findMatching(AnswerHeader.class, fieldValues);
+        return (List<AnswerHeader>) getBusinessObjectService().findMatching(AnswerHeader.class, fieldValues);
     }
+    
 
+    /*
+     * copy disclosure details of current master disclosure to the disclosure that is bing approved
+     * because the current disclosure becomes the master.
+     */
+    /*
+    private void copyDisclosureDetails(CoiDisclosure masterCoiDisclosure, CoiDisclosure coiDisclosure) {
+        for (CoiDiscDetail coiDiscDetail : masterCoiDisclosure.getCoiDiscDetails()) {
+            if (!isDisclosureDetailExist(coiDisclosure, coiDiscDetail)) {
+                CoiDiscDetail copiedDiscDetail = (CoiDiscDetail) ObjectUtils.deepCopy(coiDiscDetail);
+                copiedDiscDetail.setCopiedCoiDiscDetailId(copiedDiscDetail.getCoiDiscDetailId());
+                copiedDiscDetail.setSequenceNumber(coiDisclosure.getSequenceNumber());
+                copiedDiscDetail.setCoiDiscDetailId(null);
+                if (copiedDiscDetail.getOriginalCoiDisclosureId() == null) {
+                    copiedDiscDetail.setOriginalCoiDisclosureId(masterCoiDisclosure.getCoiDisclosureId());
+                }
+                coiDisclosure.getCoiDiscDetails().add(copiedDiscDetail);
+            }
+        }
+    }
+    */
+    
     private void copyDisclosureDetails(List<CoiDiscDetail> originalDiscDetails, CoiDisclProject copiedDisclProject) {
         List<CoiDiscDetail> copiedDiscDetails = new ArrayList<CoiDiscDetail>();
         for (CoiDiscDetail coiDiscDetail : originalDiscDetails) {
@@ -305,6 +334,23 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
 //            }
         }
     }
+
+    /*
+     * check if disclosure detail is exist in the disclosure being approved
+     * if it is, then there is no need to copy over.
+     */
+    private boolean isDisclosureDetailExist(CoiDisclosure coiDisclosure,CoiDiscDetail coiDiscDetail) {
+        boolean isExist = false;
+        for (CoiDisclProject disclProject : coiDisclosure.getCoiDisclProjects()) {
+            for (CoiDiscDetail discDetail : disclProject.getCoiDiscDetails()) {
+                if (StringUtils.equals(discDetail.getProjectType(), coiDiscDetail.getProjectType()) && StringUtils.equals(discDetail.getProjectIdFk(), coiDiscDetail.getProjectIdFk()) && discDetail.getPersonFinIntDisclosureId().equals(coiDiscDetail.getPersonFinIntDisclosureId())) {
+                    isExist = true;
+                    break;
+                }
+            }
+        }
+        return isExist;
+    }
     
     /*
      * create a disclosure history record for the disclosure being approved
@@ -376,11 +422,15 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
         return documentService;
     }
 
+    public void setQuestionnaireAnswerService(QuestionnaireAnswerService questionnaireAnswerService) {
+        this.questionnaireAnswerService = questionnaireAnswerService;
+    }
+
     public void updateCoiDisclProjectStatus(CoiDisclosure coiDisclosure, String disclosureStatus) {
         List<CoiDisclProject> disclProjects = coiDisclosure.getCoiDisclProjects();
         
         for (CoiDisclProject tmpProj : disclProjects) {
-            if (StringUtils.equals(tmpProj.getDisclosureEventType(), coiDisclosure.getEventTypeCode())
+            if (StringUtils.equals(tmpProj.getDisclosureEventType(), coiDisclosure.getCoiDisclosureEventType().getEventTypeCode())
                 && StringUtils.equals(tmpProj.getModuleItemKey(), coiDisclosure.getModuleItemKey()) ) {
                 tmpProj.setDisclosureStatusCode(disclosureStatus);
             }
@@ -540,7 +590,7 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
             }
         }
         
-        businessObjectService.save(updateAnswerHeaders);       
+        getBusinessObjectService().save(updateAnswerHeaders);       
     }
 
     public ActionForward sendNotification(ActionMapping mapping, ActionForm form, ActionForward forward, 
@@ -601,7 +651,7 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
             if(coiUserRole.isMarkedToCompleteReview()) {
                 String oldCoiRecomendedTypeCode = coiUserRole.getOldCoiRecomendedTypeCode() == null  ? "" : coiUserRole.getOldCoiRecomendedTypeCode();
                 String newCoiRecomendedTypeCode = coiUserRole.getCoiRecomendedTypeCode() == null  ? "" : coiUserRole.getCoiRecomendedTypeCode();
-                if(!oldCoiRecomendedTypeCode.equals(newCoiRecomendedTypeCode)) {
+                if(!coiUserRole.isReviewCompleted() || !oldCoiRecomendedTypeCode.equals(newCoiRecomendedTypeCode)) {
                     if(ObjectUtils.isNotNull(coiUserRole.getCoiRecomendedTypeCode())) {
                         coiUserRole.setReviewCompleted(true);
                         coiUserRole.setDateCompleted(new Date(System.currentTimeMillis()));
@@ -613,26 +663,24 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
                 }
                 for (CoiDisclProject project: disclosure.getCoiDisclProjects()) {
                     for (CoiDiscDetail detail: project.getCoiDiscDetails()) {
-                        if (org.apache.commons.lang3.ObjectUtils.equals(detail.getOldEntityDispositionCode(), detail.getEntityDispositionCode())) {
+                        if (org.apache.commons.lang.ObjectUtils.equals(detail.getOldEntityDispositionCode(), detail.getEntityDispositionCode())) {
                             detail.setUpdateUser(GlobalVariables.getUserSession().getPerson().getPrincipalName());
-                            businessObjectService.save(detail);
+                            getBusinessObjectService().save(detail);
                             detail.setOldEntityDispositionCode();
                         }
                     }
                 }
             }
-            if (coiUserRole.isReviewCompleted()) {
-                sendNotification(disclosure, CoiActionType.REVIEW_COMPLETE_EVENT, "Review Completed");        
-            } else {
+            if(!coiUserRole.isReviewCompleted()) {
                 reviewStatus = CoiReviewStatus.ASSIGNED_TO_REVIEWER;
             }
         }
         setDisclosureReviewStatus(disclosure, reviewStatus);
-        businessObjectService.save(disclosure);
+        getBusinessObjectService().save(disclosure);
     }
 
     public void updateDisclosureReviewStatus(CoiDisclosure coiDisclosure) {
-        businessObjectService.save(coiDisclosure);
+        getBusinessObjectService().save(coiDisclosure);
         coiDisclosure.refreshReferenceObject("coiReviewStatus");
     }
     
@@ -645,6 +693,10 @@ public class CoiDisclosureActionServiceImpl implements CoiDisclosureActionServic
             }
         }
         return allReviewsComplete;
-    }   
+    }
+
+	public BusinessObjectService getBusinessObjectService() {
+		return businessObjectService;
+	}   
     
 }

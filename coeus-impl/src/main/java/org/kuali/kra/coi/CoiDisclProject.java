@@ -510,7 +510,7 @@ public class CoiDisclProject extends KcPersistableBusinessObjectBase implements 
     }
     
     public void initHeaderItems() {
-        DateFormat df = new SimpleDateFormat("MM/dd/yyyyy");
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         headerItems = new ArrayList<LabelValuePair>();
         if (coiDisclosureEventType == null) {
            this.refreshReferenceObject("coiDisclosureEventType");

@@ -59,7 +59,7 @@ public class CoiDisclosurePersonSearchAction extends CoiDisclosureAction {
         return KcServiceLocator.getService(TaskAuthorizationService.class);
     }
     
-    private String getUserIdentifier() {
+    protected String getUserIdentifier() {
         return GlobalVariables.getUserSession().getPrincipalId();
     }
 }

@@ -67,13 +67,16 @@ public class DisclosureQuestionnaireAuditRule extends BaseQuestionnaireAuditRule
         DisclosureModuleQuestionnaireBean disclosureModuleQuestionnaireBean = new DisclosureModuleQuestionnaireBean(coiDisclosure);
         List<AnswerHeader> headers = getQuestionnaireAnswerService().getQuestionnaireAnswer(disclosureModuleQuestionnaireBean);
 
-        if (headers != null) {
-            isValid &= checkAnswerHeaders(headers, DISCLOSURE_QUESTIONNAIRE_KEY);
-        }
-        
-        headers = getQuestionnaireAnswerService().getQuestionnaireAnswer(new DisclosureModuleQuestionnaireBean(coiDisclosure, CoeusSubModule.COI_SCREENING_SUBMODULE));
-        if (headers != null) {
-            isValid &= checkAnswerHeaders(headers, SCREENING_QUESTIONNAIRE_KEY);
+        org.kuali.rice.kew.api.WorkflowDocument workflowDocument = document.getDocumentHeader().getWorkflowDocument();
+        if (workflowDocument.isInitiated() || workflowDocument.isSaved()) {        
+        	if (headers != null) {
+        		isValid &= checkAnswerHeaders(headers, DISCLOSURE_QUESTIONNAIRE_KEY);
+        	}
+
+        	headers = getQuestionnaireAnswerService().getQuestionnaireAnswer(new DisclosureModuleQuestionnaireBean(coiDisclosure, CoeusSubModule.COI_SCREENING_SUBMODULE));
+        	if (headers != null) {
+        		isValid &= checkAnswerHeaders(headers, SCREENING_QUESTIONNAIRE_KEY);
+        	}
         }
         
         MasterDisclosureBean masterBean = new MasterDisclosureBean();

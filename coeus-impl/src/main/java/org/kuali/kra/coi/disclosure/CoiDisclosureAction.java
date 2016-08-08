@@ -27,6 +27,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.kuali.coeus.common.framework.attachment.AttachmentFile;
+import org.kuali.coeus.common.framework.auth.task.TaskAuthorizationService;
 import org.kuali.coeus.common.framework.print.AbstractPrint;
 import org.kuali.coeus.common.framework.print.Printable;
 import org.kuali.coeus.common.framework.print.watermark.WatermarkService;
@@ -37,6 +38,7 @@ import org.kuali.coeus.sys.framework.controller.SysFrameworkControllerConstants;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.coi.*;
 import org.kuali.kra.coi.actions.CoiDisclosureActionService;
+import org.kuali.kra.coi.auth.CoiDisclosureTask;
 import org.kuali.kra.coi.certification.CertifyDisclosureEvent;
 import org.kuali.kra.coi.certification.SubmitDisclosureAction;
 import org.kuali.kra.coi.notesandattachments.CoiNotesAndAttachmentsHelper;
@@ -55,6 +57,7 @@ import org.kuali.coeus.common.questionnaire.framework.answer.AnswerHeader;
 import org.kuali.coeus.common.questionnaire.framework.answer.QuestionnaireAnswerService;
 import org.kuali.coeus.common.questionnaire.framework.answer.SaveQuestionnaireAnswerEvent;
 import org.kuali.coeus.common.questionnaire.framework.print.QuestionnairePrintingService;
+import org.kuali.kra.infrastructure.TaskName;
 import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.kew.api.KewApiConstants;
@@ -76,10 +79,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class CoiDisclosureAction extends CoiAction {
     private static final ActionForward RESPONSE_ALREADY_HANDLED = null;
@@ -165,7 +166,11 @@ public class CoiDisclosureAction extends CoiAction {
         
         if (KRADConstants.SAVE_METHOD.equals(coiDisclosureForm.getMethodToCall()) && coiDisclosureForm.isAuditActivated() 
                 && GlobalVariables.getMessageMap().hasNoErrors()) {
-            actionForward = mapping.findForward("disclosureActions");
+            CoiDisclosureTask task = new CoiDisclosureTask(TaskName.VIEW_COI_DISCLOSURE_ACTIONS, coiDisclosure);
+            // if  coi reviewer/approver redirect to actions panel
+            if (getTaskAuthorizationService().isAuthorized(getUserIdentifier(), task)) {
+                actionForward = mapping.findForward("disclosureActions");
+            }
         }
         else if (coiDisclosure.isUpdateEvent() || (coiDisclosure.isAnnualEvent() && coiDisclosure.isAnnualUpdate())) {
             actionForward = mapping.findForward(UPDATE_DISCLOSURE);
@@ -374,6 +379,20 @@ public class CoiDisclosureAction extends CoiAction {
                     ((CoiDisclosureForm) form).getMethodToCall(), coiDisclosureForm.getDisclosureHelper().getNewProjectId(),
                     coiDisclosureForm.getDisclosureHelper().getNewModuleItemKey());
         }
+        
+        
+        if (command.startsWith(KewApiConstants.INITIATE_COMMAND) &&
+                KRADConstants.DOC_HANDLER_METHOD.equals(coiDisclosureForm.getMethodToCall()) &&
+                eventTypeCode.equalsIgnoreCase(CoiDisclosureEventType.MANUAL_TRAVEL) ) {
+        	CoiDisclosureEventType coiDisclosureEventType = new CoiDisclosureEventType();
+        	coiDisclosureEventType.setEventTypeCode(eventTypeCode);
+        	((CoiDisclosureForm)form).getDisclosureHelper().getNewCoiDisclProject().setDisclosureEventType(coiDisclosureEventType.getEventTypeCode());
+        	String travelProjId = "TRVL-" + (new SimpleDateFormat("yyMMddHHmmss")).format(new Date());
+        	((CoiDisclosureForm)form).getDisclosureHelper().getNewCoiDisclProject().setCoiProjectId(travelProjId);
+        	((CoiDisclosureForm)form).getDisclosureHelper().getNewCoiDisclProject().setLongTextField1("TravelEntity");
+
+        }
+        
         coiDisclosureForm.getCoiDisclosureDocument().getCoiDisclosure().refreshReferenceObject("coiDispositionStatus");
         coiDisclosureForm.getCoiDisclosureDocument().getCoiDisclosure().setCoiDisclosureAttachmentFilter(coiDisclosureForm.getCoiNotesAndAttachmentsHelper().getNewAttachmentFilter());
         return forward;
@@ -751,6 +770,20 @@ public class CoiDisclosureAction extends CoiAction {
         return mapping.findForward(Constants.MAPPING_BASIC);
     } 
 
+    
+    @Override
+    public void preSave(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        super.preSave(mapping, form, request, response);
+        CoiDisclosureForm coiForm = (CoiDisclosureForm) form;
+        coiForm.getCoiDisclosureDocument().defaultDocumentDescription();
+    }
+    
+    @Override
+    protected void preDocumentSave(KualiDocumentFormBase form) {
+        CoiDisclosureForm coiForm = (CoiDisclosureForm) form;
+        coiForm.getCoiDisclosureDocument().defaultDocumentDescription();    	
+    }
+    
     @Override
     public void postSave(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
     throws Exception {
@@ -1129,6 +1162,14 @@ public class CoiDisclosureAction extends CoiAction {
         List<CoiNotification> notifications = (List<CoiNotification>) getBusinessObjectService().findMatching(CoiNotification.class, fieldValues);
         coiDisclosureForm.getDisclosureHelper().setViewNotification(notifications.get(0));
         return mapping.findForward("viewNotification");
+    }
+
+    protected TaskAuthorizationService getTaskAuthorizationService() {
+        return KcServiceLocator.getService(TaskAuthorizationService.class);
+    }
+
+    protected String getUserIdentifier() {
+        return GlobalVariables.getUserSession().getPrincipalId();
     }
     
 }

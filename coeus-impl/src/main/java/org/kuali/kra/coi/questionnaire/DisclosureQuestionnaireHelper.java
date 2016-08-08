@@ -20,6 +20,8 @@ package org.kuali.kra.coi.questionnaire;
 
 import org.kuali.coeus.common.framework.module.CoeusModule;
 import org.kuali.kra.coi.CoiDisclosure;
+import org.kuali.kra.coi.CoiDisclosureDocument;
+import org.kuali.kra.coi.CoiDisclosureForm;
 import org.kuali.kra.coi.auth.CoiDisclosureTask;
 import org.kuali.kra.infrastructure.TaskName;
 import org.kuali.coeus.common.questionnaire.framework.core.QuestionnaireHelperBase;
@@ -74,9 +76,12 @@ public class DisclosureQuestionnaireHelper extends QuestionnaireHelperBase {
             refreshed = true;
         } 
         // have to update the child indicator, otherwise, the questionnaire may be hidden
-        if (!refreshed && !CollectionUtils.isEmpty(this.getAnswerHeaders())) {
+        if (!CollectionUtils.isEmpty(this.getAnswerHeaders())) {
             for (AnswerHeader answerHeader : this.getAnswerHeaders()) {
-                    getQuestionnaireAnswerService().setupChildAnswerIndicator(answerHeader);
+                    answerHeader.setShowQuestions("Y");
+                    if (!refreshed ) {
+                     getQuestionnaireAnswerService().setupChildAnswerIndicator(answerHeader); 
+                    }
                 }
 
         }

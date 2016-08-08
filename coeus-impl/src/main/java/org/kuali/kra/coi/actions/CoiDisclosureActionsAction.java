@@ -18,6 +18,7 @@
  */
 package org.kuali.kra.coi.actions;
 
+import edu.colostate.kc.coi.CsuCoiDisclosureActionService;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -56,6 +57,9 @@ public class CoiDisclosureActionsAction extends CoiNoteAndAttachmentAction {
                 return forward;
             }
             coiDisclosureForm.getDisclosureActionHelper().approveDisclosure(dispositionCode);
+            
+            getCsuCoiDisclosureActionService().closeoutReviews(coiDisclosureDocument);
+            
             ActionForward basicForward = mapping.findForward(KRADConstants.MAPPING_PORTAL);
             String routeHeaderId = coiDisclosureDocument.getDocumentNumber();
             String returnLocation = buildActionUrl(routeHeaderId, Constants.MAPPING_COI_DISCLOSURE_ACTIONS_PAGE, "CoiDisclosureDocument");
@@ -105,12 +109,17 @@ public class CoiDisclosureActionsAction extends CoiNoteAndAttachmentAction {
         return forward;
     }
     
+    protected CsuCoiDisclosureActionService getCsuCoiDisclosureActionService() {
+        return KcServiceLocator.getService(CsuCoiDisclosureActionService.class);
+    }
     
     public ActionForward completeReview(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
     throws Exception {
         ActionForward forward = mapping.findForward(Constants.MAPPING_BASIC);
         CoiDisclosureForm coiDisclosureForm = (CoiDisclosureForm) form;
-        getCoiDisclosureActionService().completeCoiReview(coiDisclosureForm.getCoiDisclosureDocument().getCoiDisclosure());
+        getCsuCoiDisclosureActionService().completeCoiReview(coiDisclosureForm, mapping);
+//        releaseLocks(coiDisclosureForm.getCoiDisclosureDocument(), "completeReview");
+
         return forward;
     }
     
