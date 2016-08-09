@@ -172,7 +172,24 @@
           p:callbackService-ref="collegeLevelUnitHeadDerivedRoleTypeService"
           p:localServiceName="collegeLevelUnitHeadDerivedRoleTypeService"
           p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService"/>
-          
+
+    <!-- BEGIN CSU Changes -->
+    <bean id="departmentPreApproverDerivedRoleTypeServiceCallback" parent="kcCoreCallbackService"
+          p:callbackService-ref="departmentPreApproverDerivedRoleTypeService"
+          p:localServiceName="departmentPreApproverDerivedRoleTypeService"
+          p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService"/>
+
+    <bean id="departmentLevelApproverDerivedRoleTypeServiceCallback" parent="kcCoreCallbackService"
+          p:callbackService-ref="departmentLevelApproverDerivedRoleTypeService"
+          p:localServiceName="departmentLevelApproverDerivedRoleTypeService"
+          p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService"/>
+
+    <bean id="collegeLevelApproverDerivedRoleTypeServiceCallback" parent="kcCoreCallbackService"
+          p:callbackService-ref="collegeLevelApproverDerivedRoleTypeService"
+          p:localServiceName="collegeLevelApproverDerivedRoleTypeService"
+          p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService"/>
+
+    <!-- END CSU Changes -->
     <bean id="genericUnitAdminDerivedRoleTypeServiceCallback" parent="kcCoreCallbackService"
           p:callbackService-ref="genericUnitAdminDerivedRoleTypeService"
           p:localServiceName="genericUnitAdminDerivedRoleTypeService"
