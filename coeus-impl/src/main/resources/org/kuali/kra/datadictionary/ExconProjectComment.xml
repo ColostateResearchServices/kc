@@ -1,0 +1,214 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectComment" parent="ExconProjectComment-parentBean" />
+
+  <bean id="ExconProjectComment-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectComment" />
+		<property name="objectLabel" value="ExconProjectComment" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProjectComment-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProjectComment-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="exconProjectComment" />
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProjectComment-exconProjectCommentId" />
+      	<ref bean="ExconProjectComment-projectId" />
+        <ref bean="ExconProjectComment-commentTypeCode" />
+        <ref bean="ExconProjectComment-commentType.description" />
+        <ref bean="ExconProjectComment-commentAuthor" />
+        <ref bean="ExconProjectComment-commentDate" />
+        <ref bean="ExconProjectComment-checklistPrintFlag" />
+        <ref bean="ExconProjectComment-comments" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="ExconProjectComment-exconProjectCommentId" parent="ExconProjectComment-exconProjectCommentId-parentBean" />
+  <bean id="ExconProjectComment-exconProjectCommentId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="exconProjectCommentId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Export Control Comment Project ID" />
+    <property name="shortLabel" value="Export Control Comment Project ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Export Control Comment Project ID" />
+    <property name="description" value="Export Control Comment Project ID" />
+  </bean>
+  
+  <bean id="ExconProjectComment-projectId" parent="ExconProjectComment-projectId-parentBean" />
+  <bean id="ExconProjectComment-projectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Id" />
+    <property name="shortLabel" value="Project Id" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project Id" />
+    <property name="description" value="Project Id" />
+  </bean>
+  
+  <bean id="ExconProjectComment-commentTypeCode" parent="ExconProjectComment-commentTypeCode-parentBean" />
+  <bean id="ExconProjectComment-commentTypeCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="commentTypeCode" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Comment Type Code" />
+    <property name="shortLabel" value="Comment Type Code" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:businessObjectClass="org.kuali.kra.excon.project.ExconProjectCommentType"
+            p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="false"
+            p:keyAttribute="exconProjectCommentTypeCode"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Comment Type Code" />
+    <property name="description" value="Comment Type Code" />
+  </bean>
+  
+  <bean id="ExconProjectComment-commentType.description" parent="ExconProjectComment-commentType.description-parentBean" />
+  <bean id="ExconProjectComment-commentType.description-parentBean" abstract="true" parent="KraAttributeReferenceDummy-description">
+	<property name="name" value="commentType.description" />
+  </bean>
+  
+  <bean id="ExconProjectComment-checklistPrintFlag" parent="ExconProjectComment-checklistPrintFlag-parentBean" />
+  <bean id="ExconProjectComment-checklistPrintFlag-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="checklistPrintFlag" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Checklist Print Flag" />
+    <property name="shortLabel" value="Checklist Print Flag" />
+    <property name="maxLength" value="1" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="CheckboxControlDefinition" />
+    </property>
+    <property name="summary" value="Checklist Print Flag" />
+    <property name="description" value="Checklist Print Flag" />
+  </bean>
+  	
+  <bean id="ExconProjectComment-comments" parent="ExconProjectComment-comments-parentBean" />
+  <bean id="ExconProjectComment-comments-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="comments" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Comments" />
+    <property name="shortLabel" value="Comments" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="100" />
+    </property>
+    <property name="summary" value="Comments" />
+    <property name="description" value="Comments" />
+  </bean>
+  
+    <bean id="ExconProjectComment-commentAuthor" parent="ExconProjectComment-commentAuthor-parentBean" />
+	<bean id="ExconProjectComment-commentAuthor-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="commentAuthor" />
+		<property name="label" value="Comment Author" />
+		<property name="shortLabel" value="Comment Author" />
+	</bean>
+	
+  	<bean id="ExconProjectComment-commentDate" parent="ExconProjectComment-commentDate-parentBean" />
+	<bean id="ExconProjectComment-commentDate-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="commentDate" />
+		<property name="label" value="Comment Date" />
+		<property name="shortLabel" value="Comment Date" />
+	</bean>	
+	
+    <bean id="ExconProjectComment-updateUser" parent="ExconProjectComment-updateUser-parentBean" />
+	<bean id="ExconProjectComment-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProjectComment-updateTimestamp" parent="ExconProjectComment-updateTimestamp-parentBean" />
+	<bean id="ExconProjectComment-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+  
+    <bean id="ExconProjectComment-inquiryDefinition" parent="ExconProjectComment-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProjectComment-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Export Control Project Comment" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Export Control Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectCommentId" parent="FieldDefinition" />
+			  	<bean p:attributeName="commentTypeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="checklistPrintFlag" parent="FieldDefinition" />
+			    <bean p:attributeName="comments" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectComment-lookupDefinition" parent="ExconProjectComment-lookupDefinition-parentBean" />
+  	<bean id="ExconProjectComment-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Comment Lookup" />
+		<property name="lookupableID" value="exconProjectCommentLookup" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="exconProjectCommentId" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectId" parent="FieldDefinition" />
+			  	<bean p:attributeName="commentTypeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="checklistPrintFlag" parent="FieldDefinition" />
+			    <bean p:attributeName="comments" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+		    	<bean p:attributeName="exconProjectCommentId" parent="FieldDefinition" />
+			  	<bean p:attributeName="commentType.description" parent="FieldDefinition" />
+			    <bean p:attributeName="checklistPrintFlag" parent="FieldDefinition" />
+			    <bean p:attributeName="comments" parent="FieldDefinition" />		
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

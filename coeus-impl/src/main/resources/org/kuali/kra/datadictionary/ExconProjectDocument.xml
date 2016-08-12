@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xsi:schemaLocation="http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectDocument" parent="ExconProjectDocument-parentBean"/>
+
+  <bean id="ExconProjectDocument-parentBean" abstract="true" parent="TransactionalDocumentEntry">
+     
+    <property name="usePessimisticLocking" value="true"/>
+    <property name="useWorkflowPessimisticLocking" value="false"/>
+    
+    <property name="documentTypeName" value="ExconProjectDocument"/>
+    <property name="documentClass" value="org.kuali.kra.excon.document.ExconProjectDocument"/> 
+    <property name="businessRulesClass" value="org.kuali.kra.excon.document.ExconProjectDocumentRule"/>
+    <property name="documentAuthorizerClass" value="org.kuali.kra.excon.document.authorization.ExconProjectDocumentAuthorizer"/>
+     
+    <property name="allowsCopy" value="false"/>
+    <property name="headerNavigationList">
+      <list>
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconHomeHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Project"/>
+          <property name="headerTabNavigateTo" value="home"/>
+        </bean>
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconContactsHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="People"/>
+          <property name="headerTabNavigateTo" value="contacts"/>
+        </bean>
+		<bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconAgreementsHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Agreements"/>
+          <property name="headerTabNavigateTo" value="agreements"/>
+        </bean>
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconEventsHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Events"/>
+          <property name="headerTabNavigateTo" value="events"/>
+        </bean>
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconDestinationsHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Destinations"/>
+          <property name="headerTabNavigateTo" value="destinations"/>
+        </bean>
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconCommentsAndAttachmentsHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Comments &amp; Attachments"/>
+          <property name="headerTabNavigateTo" value="commentsAndAttachments"/>
+        </bean>   
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconCustomDataHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Custom Data"/>
+          <property name="headerTabNavigateTo" value="customData"/>
+        </bean>     
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconProjectActionsHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Project Actions"/>
+          <property name="headerTabNavigateTo" value="exconProjectActions"/>
+        </bean>
+ 
+      </list>  
+    </property>
+    
+    <property name="workflowProperties">
+    	<ref bean="ExconProjectDocument-workflowProperties"/>
+    </property>
+    
+    <property name="attributes">
+      <list>      	
+        <ref bean="ExconProjectDocument-versionNumber"/>
+        <ref bean="ExconProjectDocument-documentNumber"/>
+      </list>
+    </property>
+  </bean>
+
+<!-- Attribute Definitions -->	
+  
+  <bean id="ExconProjectDocument-versionNumber" parent="ExconProjectDocument-versionNumber-parentBean"/>
+
+  <bean id="ExconProjectDocument-versionNumber-parentBean" abstract="true" parent="AttributeReferenceDummy-versionNumber">
+  </bean>
+  
+  <bean id="ExconProjectDocument-documentNumber" parent="ExconProjectDocument-documentNumber-parentBean" />
+  <bean id="ExconProjectDocument-documentNumber-parentBean" abstract="true" parent="DocumentHeader-documentNumber">
+      <property name="shortLabel" value="Document Id"/>
+  </bean>
+    
+  <bean id="ExconProjectDocument-workflowProperties" parent="ExconProjectDocument-workflowProperties-parentBean"/>
+  <bean id="ExconProjectDocument-workflowProperties-parentBean" abstract="true" parent="WorkflowProperties" >
+    <property name="workflowPropertyGroups">
+      <list>
+        <bean parent="WorkflowPropertyGroup">
+          <property name="workflowProperties">
+            <list>
+              <bean parent="WorkflowProperty" p:path="documentHeader"/>
+              <bean parent="WorkflowProperty" p:path="exconProjectList.projectId"/>
+              <bean parent="WorkflowProperty" p:path="exconProjectList.title"/>
+              <bean parent="WorkflowProperty" p:path="exconProjectList.projectTypeCode"/>
+              <bean parent="WorkflowProperty" p:path="exconProjectList.unitNumber"/>
+              <bean parent="WorkflowProperty" p:path="exconProjectList.sponsorCode"/>
+              <!--
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.sequenceNumber"/>
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.awardStatus.description"/>
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.awardStatus.statusCode"/>
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.awardTypeCode"/>
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.activityTypeCode"/>
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.leadUnit.unitNumber"/>
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.projectPersons"/>
+			  <bean parent="WorkflowProperty" p:path="exconProjectList.projectPersons.units"/>
+			  -->
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+</beans>

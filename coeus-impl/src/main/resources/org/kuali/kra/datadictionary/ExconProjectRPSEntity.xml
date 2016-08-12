@@ -1,0 +1,327 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectRPSEntity" parent="ExconProjectRPSEntity-parentBean" />
+
+  <bean id="ExconProjectRPSEntity-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectRPSEntity" />
+		<property name="objectLabel" value="ExconProjectRPSEntity" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProjectRPSEntity-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProjectRPSEntity-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="exconProjectRPSEntity" />
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProjectRPSEntity-rpsEntityId" />
+      	<ref bean="ExconProjectRPSEntity-projectId" />
+        <ref bean="ExconProjectRPSEntity-firstName" />
+        <ref bean="ExconProjectRPSEntity-lastName" />
+        <ref bean="ExconProjectRPSEntity-otherNames" />
+        <ref bean="ExconProjectRPSEntity-companyName" />
+        <ref bean="ExconProjectRPSEntity-streetAddress" />
+        <ref bean="ExconProjectRPSEntity-city" />
+        <ref bean="ExconProjectRPSEntity-state" /> 
+        <ref bean="ExconProjectRPSEntity-countryCode" />
+        <ref bean="ExconProjectRPSEntity-birthdate" />
+        <ref bean="ExconProjectRPSEntity-otherInfo" />
+        <ref bean="ExconProjectRPSEntity-rpsMatchCode" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-rpsEntityId" parent="ExconProjectRPSEntity-rpsEntityId-parentBean" />
+  <bean id="ExconProjectRPSEntity-rpsEntityId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="rpsEntityId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Export Control RPSEntity ID" />
+    <property name="shortLabel" value="Export Control RPSEntity ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Export Control RPSEntity ID" />
+    <property name="description" value="Export Control RPSEntity ID" />
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-projectId" parent="ExconProjectRPSEntity-projectId-parentBean" />
+  <bean id="ExconProjectRPSEntity-projectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Id" />
+    <property name="shortLabel" value="Project Id" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project Id" />
+    <property name="description" value="Project Id" />
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-firstName" parent="ExconProjectRPSEntity-firstName-parentBean" />
+  <bean id="ExconProjectRPSEntity-firstName-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="firstName" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="First Name" />
+    <property name="shortLabel" value="First Name" />
+    <property name="maxLength" value="60" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="40" />
+    </property>
+    <property name="summary" value="First Name" />
+    <property name="description" value="First Name" />
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-lastName" parent="ExconProjectRPSEntity-lastName-parentBean" />
+  <bean id="ExconProjectRPSEntity-lastName-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="lastName" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Last Name" />
+    <property name="shortLabel" value="Last Name" />
+    <property name="maxLength" value="60" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="40" />
+    </property>
+    <property name="summary" value="Last Name" />
+    <property name="description" value="Last Name" />
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-otherNames" parent="ExconProjectRPSEntity-otherNames-parentBean" />
+  <bean id="ExconProjectRPSEntity-otherNames-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="otherNames" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Other Names/Aliases" />
+    <property name="shortLabel" value="Other Names" />
+    <property name="maxLength" value="200" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="40" />
+    </property>
+    <property name="summary" value="Other Names" />
+    <property name="description" value="Other Names" />
+  </bean>
+  
+    <bean id="ExconProjectRPSEntity-companyName" parent="ExconProjectRPSEntity-companyName-parentBean" />
+  <bean id="ExconProjectRPSEntity-companyName-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="companyName" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Company Name" />
+    <property name="shortLabel" value="Company Name" />
+    <property name="maxLength" value="100" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="40" />
+    </property>
+    <property name="summary" value="Company Name" />
+    <property name="description" value="Company Name" />
+  </bean>
+  
+    <bean id="ExconProjectRPSEntity-streetAddress" parent="ExconProjectRPSEntity-streetAddress-parentBean" />
+  <bean id="ExconProjectRPSEntity-streetAddress-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="streetAddress" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Street Address" />
+    <property name="shortLabel" value="Street Address" />
+    <property name="maxLength" value="80" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="40" />
+    </property>
+    <property name="summary" value="Street Address" />
+    <property name="description" value="Street Address" />
+  </bean>
+  
+    <bean id="ExconProjectRPSEntity-city" parent="ExconProjectRPSEntity-city-parentBean" />
+  <bean id="ExconProjectRPSEntity-city-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="city" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="City" />
+    <property name="shortLabel" value="City" />
+    <property name="maxLength" value="50" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="40" />
+    </property>
+    <property name="summary" value="City" />
+    <property name="description" value="City" />
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-state" parent="ExconProjectRPSEntity-state-parentBean" />
+  <bean id="ExconProjectRPSEntity-state-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="state" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="State" />
+    <property name="shortLabel" value="State" />
+    <property name="maxLength" value="50" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="40" />
+    </property>
+    <property name="summary" value="State" />
+    <property name="description" value="State" />
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-countryCode" parent="ExconProjectRPSEntity-countryCode-parentBean"/>
+  <bean abstract="true" id="ExconProjectRPSEntity-countryCode-parentBean" parent="KraAttributeReferenceDummy-countryCode">
+        <property name="required" value="false" />
+        <property name="name" value="countryCode" />
+  </bean>
+  
+    <bean id="ExconProjectRPSEntity-birthdate" parent="ExconProjectRPSEntity-birthdate-parentBean" />
+	<bean id="ExconProjectRPSEntity-birthdate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
+	    <property name="name" value="birthdate" />
+	    <property name="label" value="Birthdate" />
+	    <property name="shortLabel" value="Birthdate" />
+	    <property name="required" value="false" />
+	    <property name="summary" value="Birthdate" />
+	    <property name="description" value="Birthdate" />
+  	</bean>
+  	
+  <bean id="ExconProjectRPSEntity-otherInfo" parent="ExconProjectRPSEntity-otherInfo-parentBean" />
+  <bean id="ExconProjectRPSEntity-otherInfo-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="otherInfo" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Other Information" />
+    <property name="shortLabel" value="Other Info" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="80" />
+    </property>
+    <property name="summary" value="Other Info" />
+    <property name="description" value="Other Info" />
+  </bean>
+  
+  <bean id="ExconProjectRPSEntity-rpsMatchCode" parent="ExconProjectRPSEntity-rpsMatchCode-parentBean" />
+  <bean id="ExconProjectRPSEntity-rpsMatchCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="rpsMatchCode" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="RPS Match Code" />
+    <property name="shortLabel" value="RPS Match Code" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectRPSMatchCodeFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="true"
+            p:keyAttribute="value"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="RPS Match Code" />
+    <property name="description" value="RPS Match Code" />
+  </bean>
+  
+    <bean id="ExconProjectRPSEntity-updateUser" parent="ExconProjectRPSEntity-updateUser-parentBean" />
+	<bean id="ExconProjectRPSEntity-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProjectRPSEntity-updateTimestamp" parent="ExconProjectRPSEntity-updateTimestamp-parentBean" />
+	<bean id="ExconProjectRPSEntity-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+  
+    <bean id="ExconProjectRPSEntity-inquiryDefinition" parent="ExconProjectRPSEntity-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProjectRPSEntity-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Export Control Project RPSEntity" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Export Control Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="rpsEntityId" parent="FieldDefinition" />
+			  	<bean p:attributeName="rpsMatchCode" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectRPSEntity-lookupDefinition" parent="ExconProjectRPSEntity-lookupDefinition-parentBean" />
+  	<bean id="ExconProjectRPSEntity-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Lookup RPSEntity" />
+		<property name="lookupableID" value="exconProjectRPSEntityLookup" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="rpsEntityId" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectId" parent="FieldDefinition" />
+			  	<bean p:attributeName="rpsMatchCode" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+		    	<bean p:attributeName="rpsEntityId" parent="FieldDefinition" />
+			  	<bean p:attributeName="rpsMatchCode" parent="FieldDefinition" />		
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>
