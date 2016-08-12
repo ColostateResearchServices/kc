@@ -980,6 +980,42 @@
                 <value>classpath:edu/colostate/kc/datadictionary/AwardAccountReservationDocument.xml</value>
                 <value>classpath:edu/colostate/kc/datadictionary/ResearchAccount.xml</value>
                 <value>classpath:edu/colostate/kc/datadictionary/ReservedAwardAccount.xml</value>
+
+                <value>classpath:org/kuali/kra/datadictionary/ExconProject.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectAssociatedDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectAssociatedDocumentType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectAttachment.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectAttachmentType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectComment.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectCommentType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectContentType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectCustomData.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectDestination.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectEmailContent.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectEvent.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectEventType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectExternalInstitution.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectPerson.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectPersonRoleType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectRestrictedCountry.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectRestrictedUnit.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectReview.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectRPSEntity.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectStatusType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectUnitPerson.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectAttachmentTypeMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectCommentTypeMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectContentTypeMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectEmailContentMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectEventTypeMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectPersonRoleTypeMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectRestrictedCountryMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectRestrictedUnitMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectStatusTypeMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectTypeMaintenanceDocument.xml</value>
+
                 <!-- END CSU Customization -->
             </list>
         </property>
