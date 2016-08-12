@@ -26,6 +26,7 @@
 <td class="content" valign="top">
       <channel:unitPreSubmissionCompliance />
       <channel:unitPostSubmissionCompliance />
+      <channel:centralExcon />
 </td>
 
 <td class="content" valign="top">

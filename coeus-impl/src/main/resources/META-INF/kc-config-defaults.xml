@@ -33,6 +33,7 @@
 	<param name="kc.negotiation.mode">LOCAL</param>
 	<param name="kc.coi.mode">LOCAL</param>
     <param name="kc.healthcheck.mode">LOCAL</param>
+    <param name="kc.excon.mode">LOCAL</param>
 
 	<param name="rice.krad.componentPublishing.enabled">false</param>
 	<param name="service.namespace">KC</param>
