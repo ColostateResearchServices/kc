@@ -1,0 +1,194 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectDestination" parent="ExconProjectDestination-parentBean" />
+
+  <bean id="ExconProjectDestination-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectDestination" />
+		<property name="objectLabel" value="ExconProjectDestination" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProjectDestination-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProjectDestination-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="exconProjectDestination" />
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProjectDestination-exconProjectDestId" />
+      	<ref bean="ExconProjectDestination-projectId" />
+        <ref bean="ExconProjectDestination-destinationCountryCode" />
+        <ref bean="ExconProjectDestination-arrivalDate" />
+        <ref bean="ExconProjectDestination-departureDate" />
+        <ref bean="ExconProjectDestination-destinationComment" />
+        <ref bean="ExconProjectDestination-sanctionList" /> 
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="ExconProjectDestination-exconProjectDestId" parent="ExconProjectDestination-exconProjectDestId-parentBean" />
+  <bean id="ExconProjectDestination-exconProjectDestId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="exconProjectDestId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Export Control Destination ID" />
+    <property name="shortLabel" value="Export Control Destination ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Export Control Destination ID" />
+    <property name="description" value="Export Control Destination ID" />
+  </bean>
+  
+  <bean id="ExconProjectDestination-projectId" parent="ExconProjectDestination-projectId-parentBean" />
+  <bean id="ExconProjectDestination-projectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Id" />
+    <property name="shortLabel" value="Project Id" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project Id" />
+    <property name="description" value="Project Id" />
+  </bean>
+  
+  <bean id="ExconProjectDestination-destinationCountryCode" parent="ExconProjectDestination-destinationCountryCode-parentBean" />
+  <bean id="ExconProjectDestination-destinationCountryCode-parentBean" abstract="true" parent="KraAttributeReferenceDummy-countryCode">
+    <property name="name" value="destinationCountryCode" />
+    <property name="label" value="Destination Country" />
+    <property name="shortLabel" value="Destination Country" />
+    <property name="summary" value="Destination Country" />
+    <property name="description" value="Destination Country" />
+  </bean>
+
+    <bean id="ExconProjectDestination-arrivalDate" parent="ExconProjectDestination-arrivalDate-parentBean" />
+	<bean id="ExconProjectDestination-arrivalDate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
+	    <property name="name" value="arrivalDate" />
+	    <property name="label" value="Destination Arrival Date" />
+	    <property name="shortLabel" value="Destination Arrival Date" />
+	    <property name="required" value="false" />
+	    <property name="summary" value="Destination Arrival Date" />
+	    <property name="description" value="Destination Arrival Date" />
+  	</bean>
+  	
+    <bean id="ExconProjectDestination-departureDate" parent="ExconProjectDestination-departureDate-parentBean" />
+	<bean id="ExconProjectDestination-departureDate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
+	    <property name="name" value="departureDate" />
+	    <property name="label" value="Destination Departure Date" />
+	    <property name="shortLabel" value="Destination Departure Date" />
+	    <property name="required" value="false" />
+	    <property name="summary" value="Destination Departure Date" />
+	    <property name="description" value="Destination Departure Date" />
+  	</bean>
+  	
+  <bean id="ExconProjectDestination-destinationComment" parent="ExconProjectDestination-destinationComment-parentBean" />
+  <bean id="ExconProjectDestination-destinationComment-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="destinationComment" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Destination Comment" />
+    <property name="shortLabel" value="Destination Comment" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="80" />
+    </property>
+    <property name="summary" value="Destination Comment" />
+    <property name="description" value="Destination Comment" />
+  </bean>
+  
+  <bean id="ExconProjectDestination-sanctionList" parent="ExconProjectDestination-sanctionList-parentBean" />
+  <bean id="ExconProjectDestination-sanctionList-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="sanctionList" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Sanction List" />
+    <property name="shortLabel" value="Sanction List" />
+    <property name="required" value="false" />
+    <property name="maxLength" value="4" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="4" />
+    </property>
+    <property name="summary" value="Sanction List" />
+    <property name="description" value="Sanction List" />
+  </bean>
+  
+    <bean id="ExconProjectDestination-updateUser" parent="ExconProjectDestination-updateUser-parentBean" />
+	<bean id="ExconProjectDestination-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProjectDestination-updateTimestamp" parent="ExconProjectDestination-updateTimestamp-parentBean" />
+	<bean id="ExconProjectDestination-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+  
+    <bean id="ExconProjectDestination-inquiryDefinition" parent="ExconProjectDestination-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProjectDestination-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Export Control Project Destination" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Export Control Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectDestId" parent="FieldDefinition" />
+			  	<bean p:attributeName="destinationCountryCode" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectDestination-lookupDefinition" parent="ExconProjectDestination-lookupDefinition-parentBean" />
+  	<bean id="ExconProjectDestination-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Destination Lookup" />
+		<property name="lookupableID" value="exconProjectDestinationLookup" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="exconProjectDestId" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectId" parent="FieldDefinition" />
+			  	<bean p:attributeName="destinationCountryCode" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+		    	<bean p:attributeName="exconProjectDestId" parent="FieldDefinition" />
+			  	<bean p:attributeName="destinationCountryCode" parent="FieldDefinition" />		
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

@@ -80,6 +80,7 @@
 		<form-bean name="IsrSsrReportGenerationForm" type="org.kuali.kra.subaward.reporting.web.struts.form.IsrSsrReportGenerationForm" />
 		<!-- CSU Custom beans -->
 		<form-bean name="CsuAwardForm" type="edu.colostate.kc.award.CsuAwardForm" />
+		<form-bean name="ExconProjectForm" type="org.kuali.kra.excon.project.ExconProjectForm" />
 		<form-bean name="AwardAccountReservationForm" type="edu.colostate.kc.award.reservation.web.struts.form.AwardAccountReservationForm" />
 		<!-- End CSU Custom Beans -->
       <!-- AAP: report form -->
@@ -268,12 +269,36 @@
           <!--<forward name="commentViewHistory" path="/WEB-INF/jsp/award/AwardCommentViewHistory.jsp" />-->                                  
           <forward name="notificationEditor" path="/WEB-INF/jsp/award/AwardNotificationEditor.jsp" />            
      </action>
-     
+
 	<action path="/awardAccountReservation" name="AwardAccountReservationForm" input="/WEB-INF/jsp/award/reservation/AwardAccountReservation.jsp" type="edu.colostate.kc.award.reservation.web.struts.action.AwardAccountReservationAction" scope="request" parameter="methodToCall" validate="true" attribute="KualiForm">
 		<forward name="basic" path="/WEB-INF/jsp/award/reservation/AwardAccountReservation.jsp" />
 		<forward name="home" path="/WEB-INF/jsp/award/reservation/AwardAccountReservation.jsp" />
 	</action>
 
+<!--
+      <action path="/awardContacts" name="CsuAwardForm" input="/WEB-INF/jsp/award/AwardContacts.jsp" type="edu.colostate.kc.award.contacts.CsuAwardContactsAction" scope="request" parameter="methodToCall" validate="true" attribute="KualiForm">
+            <forward name="basic" path="/WEB-INF/jsp/award/AwardContacts.jsp" />
+            <forward name="home" path="/WEB-INF/jsp/award/AwardHome.jsp" />
+          <forward name="budgets" path="/WEB-INF/jsp/award/AwardBudgetVersions.jsp" />
+          <forward name="contacts" path="/WEB-INF/jsp/award/AwardContacts.jsp" />
+          <forward name="commitments" path="/WEB-INF/jsp/award/AwardCommitments.jsp" />
+          <forward name="timeAndMoney" path="/WEB-INF/jsp/timeAndMoney/TimeAndMoney.jsp" />
+          <forward name="paymentReportsAndTerms" path="/WEB-INF/jsp/award/AwardPaymentReportsAndTerms.jsp" />
+          <forward name="specialReview" path="/WEB-INF/jsp/award/AwardSpecialReview.jsp" />
+          <forward name="customData" path="/WEB-INF/jsp/award/AwardCustomData.jsp" />
+          <forward name="questions" path="/WEB-INF/jsp/award/AwardQuestions.jsp" />
+          <forward name="permissions" path="/WEB-INF/jsp/award/AwardPermissions.jsp" />
+          <forward name="permissionsRoleRights" path="/WEB-INF/jsp/award/AwardPermissionsRoleRights.jsp" />
+          <forward name="permissionsEditRoles" path="/WEB-INF/jsp/award/AwardPermissionsEditRoles.jsp" />
+          <forward name="permissionsCloseEditRoles" path="/WEB-INF/jsp/award/AwardPermissionsCloseEditRoles.jsp" />
+          <forward name="notesAndAttachments" path="/WEB-INF/jsp/award/AwardNotesAndAttachments.jsp" />
+          <forward name="awardActions" path="/WEB-INF/jsp/award/AwardActions.jsp" />
+          <forward name="medusa" path="/WEB-INF/jsp/award/AwardMedusa.jsp" />   
+          <forward name="icrRateCodePrompt" path="/WEB-INF/jsp/award/IcrRateCodePrompt.jsp" />
+          &lt;!&ndash;<forward name="commentViewHistory" path="/WEB-INF/jsp/award/AwardCommentViewHistory.jsp" />&ndash;&gt;
+          <forward name="notificationEditor" path="/WEB-INF/jsp/award/AwardNotificationEditor.jsp" />            
+     </action>
+-->
       <!-- End CSU Customization -->
       <action path="/awardCommentViewHistory" name="AwardForm" input="/WEB-INF/jsp/award/AwardCommentViewHistory.jsp" type="org.kuali.kra.award.web.struts.action.AwardNotesAndAttachmentsAction" scope="request" parameter="methodToCall" validate="true" attribute="KualiForm">
             <forward name="basic" path="/WEB-INF/jsp/award/AwardCommentViewHistory.jsp" />
@@ -735,6 +760,20 @@
             <forward name="home" path="/WEB-INF/jsp/personmasschange/PersonMassChangeHome.jsp" />
             <forward name="view" path="/WEB-INF/jsp/personmasschange/PersonMassChangeView.jsp" />
         </action>
+      <!-- CSU Customization -->
+        <action path="/exconProject*" name="ExconProjectForm" input="/WEB-INF/jsp/excon/ExconProject{1}.jsp" type="org.kuali.kra.excon.web.struts.action.ExconProject{1}Action"  scope="request" parameter="methodToCall" validate="true" attribute="KualiForm">
+          	<forward name="basic" path="/WEB-INF/jsp/excon/ExconProject{1}.jsp" />
+          	<forward name="home" path="/WEB-INF/jsp/excon/ExconProjectHome.jsp" />
+          	<forward name="agreements" path="/WEB-INF/jsp/excon/ExconProjectAgreements.jsp" />
+          	<forward name="contacts" path="/WEB-INF/jsp/excon/ExconProjectContacts.jsp" />
+          	<forward name="events" path="/WEB-INF/jsp/excon/ExconProjectEvents.jsp" />
+          	<forward name="destinations" path="/WEB-INF/jsp/excon/ExconProjectDestinations.jsp" />
+          	<forward name="commentsAndAttachments" path="/WEB-INF/jsp/excon/ExconProjectCommentsAndAttachments.jsp" />
+          	<forward name="customData" path="/WEB-INF/jsp/excon/ExconProjectCustomData.jsp" />
+          	<forward name="projectActions" path="/WEB-INF/jsp/excon/ExconProjectActions.jsp" />
+		</action>
+
+		<!-- End CSU Customization -->
       <!-- AAP: adding report controller -->
       <action path="/displayExternalReport" name="ReportForm" type="co.kuali.coeus.reporting.web.struts.action.ReportForwardAction"/>
 

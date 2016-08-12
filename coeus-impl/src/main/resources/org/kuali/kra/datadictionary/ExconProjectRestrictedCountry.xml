@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+ Copyright 2005-2014 The Kuali Foundation
+
+ Licensed under the Educational Community License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.osedu.org/licenses/ECL-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="ExconProjectRestrictedCountry" parent="ExconProjectRestrictedCountry-parentBean"/>
+	<bean abstract="true" id="ExconProjectRestrictedCountry-parentBean" parent="BusinessObjectEntry">
+		<property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectRestrictedCountry"/>
+		<property name="objectLabel" value="Export Control Restricted Country"/>
+		<property name="inquiryDefinition">
+			<ref bean="ExconProjectRestrictedCountry-inquiryDefinition"/>
+		</property>
+		<property name="lookupDefinition">
+			<ref bean="ExconProjectRestrictedCountry-lookupDefinition"/>
+		</property>
+		<property name="titleAttribute" value="postalCountryCode"/>
+		<property name="attributes">
+			<list>
+				<ref bean="ExconProjectRestrictedCountry-postalCountryCode"/>
+				<ref bean="ExconProjectRestrictedCountry-sanctionListCode"/>
+				<ref bean="ExconProjectRestrictedCountry-countryName" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- Attribute Definitions -->
+	
+  <bean id="ExconProjectRestrictedCountry-postalCountryCode" parent="ExconProjectRestrictedCountry-postalCountryCode-parentBean"/>
+  <bean abstract="true" id="ExconProjectRestrictedCountry-postalCountryCode-parentBean" parent="KraAttributeReferenceDummy-countryCode">
+        <property name="required" value="true" />
+        <property name="name" value="postalCountryCode" />
+  </bean>
+
+   <bean id="ExconProjectRestrictedCountry-sanctionListCode" parent="ExconProjectRestrictedCountry-sanctionListCode-parentBean" />
+  <bean id="ExconProjectRestrictedCountry-sanctionListCode-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="sanctionListCode"/>
+		<property name="forceUppercase" value="false"/>
+		<property name="label" value="Export Control Sanction List"/>
+		<property name="shortLabel" value="Export Control Sanction List"/>
+		<property name="maxLength" value="4"/>
+		<property name="validationPattern">
+			<bean parent="AlphaNumericValidationPattern"/>
+		</property>
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectSanctionListFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="true"
+            p:keyAttribute="value"
+            p:labelAttribute="description" />
+    </property>
+		<property name="summary" value="Export Control Sanction List"/>
+		<property name="description" value="Export Control Sanction List"/>
+	</bean>
+
+   <bean id="ExconProjectRestrictedCountry-countryName" parent="ExconProjectRestrictedCountry-countryName-parentBean" />
+  <bean id="ExconProjectRestrictedCountry-countryName-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="countryName"/>
+		<property name="forceUppercase" value="false"/>
+		<property name="label" value="Country Name"/>
+		<property name="shortLabel" value="Country Name"/>
+		<property name="maxLength" value="80"/>
+		<property name="validationPattern">
+			<bean parent="AlphaNumericValidationPattern"/>
+		</property>
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="40" />
+    </property>
+		<property name="summary" value="Country Name"/>
+		<property name="description" value="Country Name"/>
+	</bean>      
+
+   <bean id="ExconProjectRestrictedCountry-versionNumber" parent="ExconProjectRestrictedCountry-versionNumber-parentBean" />
+    <bean id="ExconProjectRestrictedCountry-versionNumber-parentBean" abstract="true" parent="AttributeReferenceDummy-versionNumber"/>
+
+	<!-- Business Object Inquiry Definition -->
+	<bean id="ExconProjectRestrictedCountry-inquiryDefinition" parent="ExconProjectRestrictedCountry-inquiryDefinition-parentBean"/>
+	<bean abstract="true" id="ExconProjectRestrictedCountry-inquiryDefinition-parentBean" parent="InquiryDefinition">
+		<property name="title" value="Export Control Restricted Country"/>
+		<property name="inquirySections">
+			<list>
+				<bean parent="InquirySectionDefinition">
+					<property name="title" value="Export Control Restricted Country"/>
+					<property name="numberOfColumns" value="1"/>
+					<property name="inquiryFields">
+						<list>
+							<bean p:attributeName="postalCountryCode" p:forceInquiry="true" parent="FieldDefinition"/>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectRestrictedCountry-lookupDefinition" parent="ExconProjectRestrictedCountry-lookupDefinition-parentBean"/>
+	<bean abstract="true" id="ExconProjectRestrictedCountry-lookupDefinition-parentBean" parent="LookupDefinition">
+		<property name="title" value="Export Control Restricted Country Lookup"/>
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;"/>
+
+		<property name="defaultSort">
+			<bean parent="SortDefinition">
+		</bean>
+		</property>
+		<property name="helpDefinition" >
+    	    <bean parent="HelpDefinition"
+        	    p:parameterNamespace="KC-EXCON"
+            	p:parameterName="exconProjectRestrictedCountryMaintenanceHelp"
+       	   		p:parameterDetailType="Document" />
+    	</property>   				
+		<property name="lookupFields">
+			<list>
+				<bean p:attributeName="postalCountryCode" p:forceInquiry="true" parent="FieldDefinition"/>
+				<bean p:attributeName="sanctionListCode" parent="FieldDefinition"/>
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean p:attributeName="postalCountryCode" p:forceInquiry="true" parent="FieldDefinition"/>
+				<bean p:attributeName="countryName" parent="FieldDefinition" />
+				<bean p:attributeName="sanctionListCode" parent="FieldDefinition"/>
+			</list>
+		</property>
+	</bean>
+</beans>

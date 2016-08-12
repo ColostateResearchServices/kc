@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+ Copyright 2005-2014 The Kuali Foundation
+
+ Licensed under the Educational Community License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.osedu.org/licenses/ECL-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="ExconProjectRestrictedUnit" parent="ExconProjectRestrictedUnit-parentBean"/>
+	<bean abstract="true" id="ExconProjectRestrictedUnit-parentBean" parent="BusinessObjectEntry">
+		<property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectRestrictedUnit"/>
+		<property name="objectLabel" value="Export Control Restricted Unit"/>
+		<property name="inquiryDefinition">
+			<ref bean="ExconProjectRestrictedUnit-inquiryDefinition"/>
+		</property>
+		<property name="lookupDefinition">
+			<ref bean="ExconProjectRestrictedUnit-lookupDefinition"/>
+		</property>
+		<property name="titleAttribute" value="unitNumber"/>
+		<property name="attributes">
+			<list>
+				<ref bean="ExconProjectRestrictedUnit-unitNumber"/>
+				<ref bean="ExconProjectRestrictedUnit-unitName" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- Attribute Definitions -->
+	
+  <bean id="ExconProjectRestrictedUnit-unitNumber" parent="ExconProjectRestrictedUnit-unitNumber-parentBean"/>
+  <bean abstract="true" id="ExconProjectRestrictedUnit-unitNumber-parentBean" parent="AttributeDefinition">
+	<property name="name" value="unitNumber" />
+	<property name="forceUppercase" value="false" />
+	<property name="label" value="Restricted Unit ID" />
+	<property name="shortLabel" value="Restricted Unit ID" />
+	<property name="maxLength" value="8" />
+	<property name="validationPattern" >
+	  <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+	</property>
+	<property name="control" >
+		<bean p:size="8" parent="TextControlDefinition" />
+	</property>
+	<property name="summary" value="Restricted Unit ID." />
+	<property name="description" value="Restricted Unit ID." />
+	<property name="required" value="true" />
+  </bean>
+
+   <bean id="ExconProjectRestrictedUnit-unitName" parent="ExconProjectRestrictedUnit-unitName-parentBean" />
+  <bean id="ExconProjectRestrictedUnit-unitName-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="unitName"/>
+		<property name="forceUppercase" value="false"/>
+		<property name="label" value="Unit Name"/>
+		<property name="shortLabel" value="Unit Name"/>
+		<property name="maxLength" value="60"/>
+		<property name="validationPattern">
+			<bean parent="AlphaNumericValidationPattern"/>
+		</property>
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="60" />
+    </property>
+		<property name="summary" value="Unit Name"/>
+		<property name="description" value="Unit Name"/>
+	</bean>      
+
+   <bean id="ExconProjectRestrictedUnit-versionNumber" parent="ExconProjectRestrictedUnit-versionNumber-parentBean" />
+    <bean id="ExconProjectRestrictedUnit-versionNumber-parentBean" abstract="true" parent="AttributeReferenceDummy-versionNumber"/>
+
+	<!-- Business Object Inquiry Definition -->
+	<bean id="ExconProjectRestrictedUnit-inquiryDefinition" parent="ExconProjectRestrictedUnit-inquiryDefinition-parentBean"/>
+	<bean abstract="true" id="ExconProjectRestrictedUnit-inquiryDefinition-parentBean" parent="InquiryDefinition">
+		<property name="title" value="Export Control Restricted Unit"/>
+		<property name="inquirySections">
+			<list>
+				<bean parent="InquirySectionDefinition">
+					<property name="title" value="Export Control Restricted Unit"/>
+					<property name="numberOfColumns" value="1"/>
+					<property name="inquiryFields">
+						<list>
+							<bean p:attributeName="unitNumber" p:forceInquiry="true" parent="FieldDefinition"/>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectRestrictedUnit-lookupDefinition" parent="ExconProjectRestrictedUnit-lookupDefinition-parentBean"/>
+	<bean abstract="true" id="ExconProjectRestrictedUnit-lookupDefinition-parentBean" parent="LookupDefinition">
+		<property name="title" value="Export Control Restricted Unit Lookup"/>
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;"/>
+
+		<property name="defaultSort">
+			<bean parent="SortDefinition">
+		</bean>
+		</property>
+		<property name="helpDefinition" >
+    	    <bean parent="HelpDefinition"
+        	    p:parameterNamespace="KC-EXCON"
+            	p:parameterName="exconProjectRestrictedUnitMaintenanceHelp"
+       	   		p:parameterDetailType="Document" />
+    	</property>   				
+		<property name="lookupFields">
+			<list>
+				<bean p:attributeName="unitNumber" p:forceInquiry="true" parent="FieldDefinition"/>
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean p:attributeName="unitNumber" p:forceInquiry="true" parent="FieldDefinition"/>
+				<bean p:attributeName="unitName" parent="FieldDefinition" />
+			</list>
+		</property>
+	</bean>
+</beans>
