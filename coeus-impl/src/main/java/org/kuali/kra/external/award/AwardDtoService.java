@@ -137,13 +137,8 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 					dto.setFundManagerId(contact.getPersonId());
 				}
 			}
-/*			String invoiceReportDesc =  getParameterService().getParameterValueAsString(AwardDocument.class, AwardConstants.INVOICE_REPORT_DESC_PARAM);
-			for (AwardReportTerm reportItem : award.getAwardReportTermItems()) {
-				if (StringUtils.equals(invoiceReportDesc, reportItem.getReport().getDescription())) {
-					dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(reportItem.getFrequency()));
-				}
-			}*/
-		//	dto.setInvoiceBillingFrequency(frequencyDtoService.buildDto(award.getAwardCgb().getBillingFrequency()));
+
+			dto.setInvoiceBillingFrequency(award.getAwardCgb().getBillFreqCode());
 
 			dto.setAwardAccounts(getAwardAccountsHierarchy(hierarchyMap, orderList));
 			return dto;

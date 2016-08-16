@@ -119,7 +119,7 @@ public class AwardDTO implements Serializable {
     private String excludedFromInvoicingReason;
     private BigDecimal minInvoiceAmount;
     private AwardMethodOfPaymentDTO methodOfPayment;
-    private FrequencyDto invoiceBillingFrequency;
+    private String invoiceBillingFrequency;
     private String sequenceNumber;
     private String sequenceStatus;
 
@@ -308,10 +308,10 @@ public class AwardDTO implements Serializable {
 	public void setMethodOfPayment(AwardMethodOfPaymentDTO methodOfPayment) {
 		this.methodOfPayment = methodOfPayment;
 	}
-	public FrequencyDto getInvoiceBillingFrequency() {
+	public String getInvoiceBillingFrequency() {
 		return invoiceBillingFrequency;
 	}
-	public void setInvoiceBillingFrequency(FrequencyDto invoiceBillingFrequency) {
+	public void setInvoiceBillingFrequency(String invoiceBillingFrequency) {
 		this.invoiceBillingFrequency = invoiceBillingFrequency;
 	}
 	public String getInvoicingOptionDescription() {
