@@ -40,7 +40,9 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
     
     private void init() {
     	awardAlternateNumbers = new ArrayList<AwardAlternateNumber>();
-    }
+		centralAdminContacts = new ArrayList<CsuCentralAdminContact>();
+
+	}
 
 
     public void addNewAwardAlternateNumber(AwardAlternateNumber newAwardAlternateNumber ) {
@@ -106,7 +108,7 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
 	}
 
 	public List<CsuCentralAdminContact> getCentralAdminContacts() {
-		if (centralAdminContacts == null || centralAdminContacts.size() == 0) {
+		if ((centralAdminContacts == null || centralAdminContacts.size() == 0) && getAward()!=null) {
 			setContactsFromAwardUnitContacts(getAward().getCentralAdminContacts());
 		}
 		return centralAdminContacts;
@@ -120,7 +122,6 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
 
 
 	private List<CsuCentralAdminContact> setContactsFromAwardUnitContacts(List<AwardUnitContact> contacts) {
-		this.centralAdminContacts = new ArrayList<CsuCentralAdminContact>();
 
 		// This code is only safe/reasonable while our default list of
 		// Central admin contacts is small - typically 4-6 elements only
@@ -134,7 +135,7 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
 			}
 			contactToInsert.setAward(contact.getAward());
             contactToInsert.setUnitAdministratorType(contact.getUnitAdministratorType());
-            contactToInsert.setUnitAdministratorTypeCode(contact.getUnitAdministratorTypeCode());
+            contactToInsert.setUnitAdministratorTypeCode(contact.getUnitAdministratorType().getCode());
 			contactToInsert.setUnitContactType(UnitContactType.CONTACT);
 			this.centralAdminContacts.add(contactToInsert);
 		}

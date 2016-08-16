@@ -20,7 +20,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="Award" parent="Award-parentBean"/>
+    <bean id="Award" parent="Award-parentBean">
+        <property name="attributes">
+            <list merge="true">
+                <ref bean="Award-extension-description"/>
+                <ref bean="Award-extension-number"/>
+                <ref bean="Award-extension-showOnInvoice"/>
+            </list>
+        </property>
+    </bean>
+
     <bean id="Award-parentBean" abstract="true" parent="BusinessObjectEntry">
         <property name="businessObjectClass" value="org.kuali.kra.award.home.Award"/>
         <property name="objectLabel" value="Award"/>
@@ -1623,6 +1632,24 @@
                 <bean p:propertyName="awardSequenceStatusResult" parent="Uif-DataField" />
             </list>
         </property>
+    </bean>
+
+
+
+    <bean id="Award-extension-description" parent="AwardAlternateNumber-description">
+        <property name="name" value="extension.awardAlternateNumbers.description"/>
+    </bean>
+
+    <bean id="Award-extension-number" parent="AwardAlternateNumber-number">
+        <property name="name" value="extension.awardAlternateNumbers.number"/>
+    </bean>
+
+    <bean id="Award-extension-showOnInvoice" parent="AwardAlternateNumber-showOnInvoice">
+        <property name="name" value="extension.awardAlternateNumbers.showOnInvoice"/>
+    </bean>
+
+    <bean id="Award-extension-alternateNumberTypeCode" parent="AwardAlternateNumberType-awardAlternateNumberTypeCode">
+        <property name="name" value="extension.awardAlternateNumbers.awardAlternateNumberType.awardAlternateNumberTypeCode"/>
     </bean>
 
 </beans>

@@ -1,33 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-   - Kuali Coeus, a comprehensive research administration system for higher education.
-   - 
-   - Copyright 2005-2016 Kuali, Inc.
-   - 
-   - This program is free software: you can redistribute it and/or modify
-   - it under the terms of the GNU Affero General Public License as
-   - published by the Free Software Foundation, either version 3 of the
-   - License, or (at your option) any later version.
-   - 
-   - This program is distributed in the hope that it will be useful,
-   - but WITHOUT ANY WARRANTY; without even the implied warranty of
-   - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   - GNU Affero General Public License for more details.
-   - 
-   - You should have received a copy of the GNU Affero General Public License
-   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
- -->
 <data xmlns="ns:workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ns:workflow resource:WorkflowData">
-	 <groups xmlns="ns:workflow/Group" xsi:schemaLocation="ns:workflow/Group resource:Group">
-        <group>
-            <name>AwardAdmin</name>
-            <namespace>KC-WKFLW</namespace>
-            <description>Award Administrator</description>
-			<members>
-				<principalName>kc</principalName>
-			</members>
-        </group>
-    </groups>
 	<documentTypes xmlns="ns:workflow/DocumentType" xsi:schemaLocation="ns:workflow/DocumentType resource:DocumentType">
 		<documentType>
 			<name>AwardDocument</name>
@@ -35,9 +7,9 @@
 			<label>KC Award</label>
 			<parent>KC</parent>
 			<postProcessorName>org.kuali.coeus.sys.framework.workflow.KcPostProcessor</postProcessorName>
-			<superUserWorkgroupName>KC-WKFLW:AwardAdmin</superUserWorkgroupName>
-			<blanketApproveWorkgroupName>KC-WKFLW:AwardAdmin</blanketApproveWorkgroupName>
-			<defaultExceptionWorkgroupName>KC-WKFLW:AwardAdmin</defaultExceptionWorkgroupName>
+			<superUserWorkgroupName>KC-WKFLW:KcAdmin</superUserWorkgroupName>
+			<blanketApproveWorkgroupName>KC-WKFLW:KcAdmin</blanketApproveWorkgroupName>
+			<defaultExceptionWorkgroupName>KC-WKFLW:KcAdmin</defaultExceptionWorkgroupName>
 			<docHandler>${kuali.docHandler.url.prefix}/awardHome.do?methodToCall=docHandler</docHandler>
 			<helpDefinitionURL>default.htm?turl=Documents/award.htm</helpDefinitionURL>
 			<active>true</active>
@@ -61,39 +33,38 @@
 					<name>SponsorSearchAttribute</name>
 				</attribute>
 			</attributes>
-		        <policies>
+			<policies>
 				<policy>
-				   	<name>DOCUMENT_STATUS_POLICY</name>
-				   	<stringValue>app</stringValue>
-			        </policy>
-				<policy>
-                    			<name>INITIATOR_MUST_ROUTE</name>
-                    			<value>false</value>
-                		</policy>
-
-  				<policy>
-                    			<name>INITIATOR_MUST_CANCEL</name>
-                    			<value>false</value>
-                		</policy>
-                		<policy>
-                    			<name>INITIATOR_MUST_BLANKET_APPROVE</name>
-                    			<value>false</value>
-                		</policy>
-			</policies>
+                    <name>INITIATOR_MUST_ROUTE</name>
+                    <value>false</value>
+                </policy>				
+            </policies>
 			<routePaths>
 				<routePath>
 					<start name="Initiated" nextNode="hasSync"/>
 					<split name="hasSync">
 						<branch name="True">
 							<requests name="SyncValidationApproval" nextNode="AwardStandardApprovalInSync"/>
-							<requests name="AwardStandardApprovalInSync" nextNode="ApplySync"/>
+							<requests name="AwardStandardApprovalInSync" nextNode="AwardRicroIRBApprovalInSync"/>
+							<requests name="AwardRicroIRBApprovalInSync" nextNode="AwardRicroIACUCApprovalInSync"/>
+							<requests name="AwardRicroIACUCApprovalInSync" nextNode="AwardRicroSpecialReviewFYIInSync"/>
+							<requests name="AwardRicroSpecialReviewFYIInSync"  nextNode="RadioactivesControlledSubsSpecRevInSync"/>
+							<requests name="RadioactivesControlledSubsSpecRevInSync"  nextNode="AdministrativeSpecRevInSync"/>
+							<requests name="AdministrativeSpecRevInSync"  nextNode="UniversityVetCongruencyReviewInSynch"/>
+							<requests name="UniversityVetCongruencyReviewInSynch"  nextNode="ApplySync"/>
 							<requests name="ApplySync" nextNode="SyncFYIs"/>
 							<requests name="SyncFYIs" nextNode="JoinSync"/>
 						</branch>
 						<branch name="False">
 							<split name="isSyncChild" nextNode="JoinSync">
 								<branch name="False">
-									<requests name="AwardStandardApproval" nextNode="JoinSyncChild"/>
+							        <requests name="AwardStandardApproval" nextNode="AwardRicroIRBApproval"/>
+									<requests name="AwardRicroIRBApproval"  nextNode="AwardRicroIACUCApproval"/>
+									<requests name="AwardRicroIACUCApproval"  nextNode="AwardRicroSpecialReviewFYI"/>
+									<requests name="AwardRicroSpecialReviewFYI"  nextNode="RadioactivesControlledSubsSpecRev"/>
+									<requests name="RadioactivesControlledSubsSpecRev"  nextNode="AdministrativeSpecRev"/>
+						        	<requests name="AdministrativeSpecRev"  nextNode="UniversityVetCongruencyReview"/>
+									<requests name="UniversityVetCongruencyReview"   nextNode="JoinSyncChild"/>
 								</branch>
 							</split>
 							<join name="JoinSyncChild"/>
@@ -136,12 +107,75 @@
 					<activationType>S</activationType>
 					<ruleTemplate>AwardStandardApproval</ruleTemplate>
 					<mandatoryRoute>false</mandatoryRoute>
-				</requests>
+				</requests>				
 				<requests name="AwardStandardApprovalInSync">
 					<activationType>S</activationType>
 					<ruleTemplate>AwardStandardApproval</ruleTemplate>
 					<mandatoryRoute>false</mandatoryRoute>
 				</requests>				
+				<requests name="AwardRicroIRBApproval">
+					<activationType>S</activationType>
+					<ruleTemplate>AwardRicroIRBApproval</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>						
+				<requests name="AwardRicroIRBApprovalInSync">
+					<activationType>S</activationType>
+					<ruleTemplate>AwardRicroIRBApproval</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>	
+				<requests name="AwardRicroIACUCApproval">
+					<activationType>S</activationType>
+					<ruleTemplate>AwardRicroIACUCApproval</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>						
+				<requests name="AwardRicroIACUCApprovalInSync">
+					<activationType>S</activationType>
+					<ruleTemplate>AwardRicroIACUCApproval</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>		
+				<requests name="AwardRicroSpecialReviewFYI">
+					<activationType>S</activationType>
+					<ruleTemplate>AwardRicroSpecialReviewFYI</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>						
+				<requests name="AwardRicroSpecialReviewFYIInSync">
+					<activationType>S</activationType>
+					<ruleTemplate>AwardRicroSpecialReviewFYI</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>		
+				<requests name="RadioactivesControlledSubsSpecRev">
+					<activationType>S</activationType>
+					<ruleTemplate>RadioactivesControlledSubsSRTemplate</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>						
+				<requests name="RadioactivesControlledSubsSpecRevInSync">
+					<activationType>S</activationType>
+					<ruleTemplate>RadioactivesControlledSubsSRTemplate</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>		
+				<requests name="AdministrativeSpecRev">
+					<activationType>S</activationType>
+					<ruleTemplate>AdministrativeSRTemplate</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>						
+				<requests name="AdministrativeSpecRevInSync">
+					<activationType>S</activationType>
+					<ruleTemplate>AdministrativeSRTemplate</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>						
+				
+				<requests name="UniversityVetCongruencyReview">
+					<activationType>S</activationType>
+					<ruleTemplate>UniversityVetCongruencyReview</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>	
+
+				<requests name="UniversityVetCongruencyReviewInSynch">
+					<activationType>S</activationType>
+					<ruleTemplate>UniversityVetCongruencyReview</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>	
+
 			</routeNodes>
 		</documentType>
 	</documentTypes>
@@ -301,7 +335,7 @@
 					<display>
 						<type>text</type>
 					</display>
-					<lookup businessObjectClass="org.kuali.coeus.common.framework.person.KcPerson">
+					<lookup businessObjectClass="org.kuali.kra.bo.KcPerson">
 				      <fieldConversions>
 				        <fieldConversion lookupFieldName="fullName" localFieldName="principalInvestigatorName"/>
 				      </fieldConversions>
@@ -324,7 +358,7 @@
 					<display>
 						<type>text</type>
 					</display>
-					<lookup businessObjectClass="org.kuali.coeus.common.framework.unit.Unit">
+					<lookup businessObjectClass="org.kuali.kra.bo.Unit">
 				      <fieldConversions>
 				        <fieldConversion lookupFieldName="unitNumber" localFieldName="leadUnit"/>
 				      </fieldConversions>
@@ -347,7 +381,7 @@
 					<display>
 						<type>text</type>
 					</display>
-					<lookup businessObjectClass="org.kuali.coeus.common.framework.sponsor.Sponsor">
+					<lookup businessObjectClass="org.kuali.kra.bo.Sponsor">
 				      <fieldConversions>
 				        <fieldConversion lookupFieldName="sponsorCode" localFieldName="sponsor"/>
 				      </fieldConversions>
@@ -358,6 +392,123 @@
 				</fieldDef>
 			</searchingConfig>
 		</ruleAttribute>
+		
+		<ruleAttribute>
+			<name>SpecialReviewTypeAttribute</name>
+			<serviceNamespace>KC</serviceNamespace>
+			<className>
+				org.kuali.rice.kew.rule.xmlrouting.StandardGenericXMLRuleAttribute
+			</className>
+			<label>SpecialReviewTypeAttribute</label>
+			<description>SpecialReviewTypeAttribute</description>
+			<type>RuleXmlAttribute</type>
+            <routingConfig>
+                <fieldDef name="reviewType" title="Special Review Type Description" 
+                    workflowType="RULE">
+                    <display>
+                        <type>text</type>
+                    </display>
+                    <validation required="false" />
+					<fieldEvaluation>
+						<xpathexpression>
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= wf:ruledata('reviewType') and 
+						   (wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('newAwardXnTypeCode') or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('addSRXnTypeCode'))
+						</xpathexpression>
+					</fieldEvaluation>
+				</fieldDef>
+			</routingConfig>		
+		</ruleAttribute>
+
+		<ruleAttribute>
+			<name>SpecialReviewFYITypeAttribute</name>
+			<serviceNamespace>KC</serviceNamespace>
+			<className>
+				org.kuali.rice.kew.rule.xmlrouting.StandardGenericXMLRuleAttribute
+			</className>
+			<label>SpecialReviewFYITypeAttribute</label>
+			<description>SpecialReviewTypeAttribute</description>
+			<type>RuleXmlAttribute</type>
+            <routingConfig>
+                <fieldDef name="reviewType" title="Special Review Type Description"  workflowType="RULE">
+                    <display>
+                        <type>text</type>
+                    </display>
+                    <validation required="false" />
+					<fieldEvaluation>
+						<xpathexpression>
+						   (wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('newAwardXnTypeCode') or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('addSRXnTypeCode')) and 
+						   (wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= wf:ruledata('reviewType') or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Human Tissue/Fluids' or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Exempt rDNA' or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Non-Exempt rDNA') 						   
+						</xpathexpression>
+					</fieldEvaluation>
+				</fieldDef>
+			</routingConfig>		
+		</ruleAttribute>
+
+
+		<!-- Post go-live award route Radioactive/Controlled-substances SR node attribute -->
+		<ruleAttribute>
+			<name>RadioactiveControlledSubsSRAttribute</name>
+			<serviceNamespace>KC</serviceNamespace>
+			<className>
+				org.kuali.rice.kew.rule.xmlrouting.StandardGenericXMLRuleAttribute
+			</className>
+			<label>RadioactiveControlledSubsSRAttribute</label>
+			<description>RadioactiveControlledSubsSRAttribute</description>
+			<type>RuleXmlAttribute</type>
+            <routingConfig>
+                <fieldDef name="newAwardXnTypeCode" title="Award Transaction Type Description"  workflowType="RULE">
+                    <display>
+                        <type>text</type>
+                    </display>
+                    <validation required="false" />
+					<fieldEvaluation>
+						<xpathexpression>
+						   (wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('newAwardXnTypeCode') or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('addSRXnTypeCode')) and 
+						   (wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Radioactives' or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Controlled Substances (Drugs)' 	)					   
+						</xpathexpression>
+					</fieldEvaluation>
+				</fieldDef>
+			</routingConfig>		
+		</ruleAttribute>							
+		
+
+		<!-- Post go-live award route Radioactive/Controlled-substances SR node attribute -->
+		<ruleAttribute>
+			<name>AdministrativeSRAttribute</name>
+			<serviceNamespace>KC</serviceNamespace>
+			<className>
+				org.kuali.rice.kew.rule.xmlrouting.StandardGenericXMLRuleAttribute
+			</className>
+			<label>AdministrativeSRAttribute</label>
+			<description>AdministrativeSRAttribute</description>
+			<type>RuleXmlAttribute</type>
+            <routingConfig>
+                <fieldDef name="newAwardXnTypeCode" title="Award Transaction Type Description"  workflowType="RULE">
+                    <display>
+                        <type>text</type>
+                    </display>
+                    <validation required="false" />
+					<fieldEvaluation>
+						<xpathexpression>
+						   (wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('newAwardXnTypeCode') or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/awardTransactionTypeCode')= wf:ruledata('addSRXnTypeCode')) and 
+						   (wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Waive F&amp;A Request' or
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Institutional Commitments' 	or					   
+						   wf:xstreamsafe('//awardList/org.kuali.kra.award.home.Award/specialReviews/org.kuali.kra.award.specialreview.AwardSpecialReview/specialReviewType/description')= 'Limited Submission Program' )					   
+						</xpathexpression>
+					</fieldEvaluation>
+				</fieldDef>
+			</routingConfig>		
+		</ruleAttribute>			
+		
+		
 	</ruleAttributes>
      <ruleTemplates xmlns="ns:workflow/RuleTemplate" xsi:schemaLocation="ns:workflow/RuleTemplate resource:RuleTemplate">
         <ruleTemplate allowOverwrite="true">
@@ -368,6 +519,73 @@
 	      <name>AwardStandardApproval</name>
 	      <description>Standard Approval Template for Awards</description>
 	    </ruleTemplate>
+	    
+        <ruleTemplate allowOverwrite="true">
+	      <name>AwardRicroIRBApproval</name>
+	      <description>RICRO Approval Template for Awards with IRB review</description>
+	      <attributes>
+            <attribute>
+              <name>SpecialReviewTypeAttribute</name>
+              <required>true</required>
+            </attribute>
+	      </attributes>          
+	    </ruleTemplate>	    
+
+        <ruleTemplate allowOverwrite="true">
+	      <name>AwardRicroIACUCApproval</name>
+	      <description>RICRO Approval Template for Awards with IACUC review</description>
+	      <attributes>
+            <attribute>
+              <name>SpecialReviewTypeAttribute</name>
+              <required>true</required>
+            </attribute>
+	      </attributes>          
+	    </ruleTemplate>	
+	    	    
+        <ruleTemplate allowOverwrite="true">
+	      <name>UniversityVetCongruencyReview</name>
+	      <description>Congruency for PHS Awards with IACUC review</description>
+	      <attributes>
+            <attribute>
+              <name>SpecialReviewTypeAttribute</name>
+              <required>true</required>
+            </attribute>
+	      </attributes>          
+	    </ruleTemplate>	
+
+        <ruleTemplate allowOverwrite="true">
+	      <name>AwardRicroSpecialReviewFYI</name>
+	      <description>RICRO Approval Template for Awards with FYI required special reviews</description>
+	      <attributes>
+            <attribute>
+              <name>SpecialReviewFYITypeAttribute</name>
+              <required>true</required>
+            </attribute>
+	      </attributes>          
+	    </ruleTemplate>	
+
+        <ruleTemplate allowOverwrite="true">
+	      <name>RadioactivesControlledSubsSRTemplate</name>
+	      <description>RICRO Approval Template for Awards with Radioactives/Controlled Substances special reviews</description>
+	      <attributes>
+            <attribute>
+              <name>RadioactiveControlledSubsSRAttribute</name>
+              <required>true</required>
+            </attribute>
+	      </attributes>          
+	    </ruleTemplate>	
+
+        <ruleTemplate allowOverwrite="true">
+	      <name>AdministrativeSRTemplate</name>
+	      <description>Approval Template for Awards with Waive F&amp;A/Institutional-Commitments/Limited-Submission special reviews</description>
+	      <attributes>
+            <attribute>
+              <name>AdministrativeSRAttribute</name>
+              <required>true</required>
+            </attribute>
+	      </attributes>          
+	    </ruleTemplate>	
+
      </ruleTemplates>     
 	 <rules xmlns="ns:workflow/Rule" xsi:schemaLocation="ns:workflow/Rule resource:Rule">     
          <rule>
@@ -391,5 +609,219 @@
       		<description>Standard Approval Node for Awards</description>
 			<forceAction>false</forceAction>
     	</rule>      
-    </rules>
+      <rule>
+            <name>AwardRicroIRBApproval</name>
+      		<documentType>AwardDocument</documentType>
+      		<ruleTemplate>AwardRicroIRBApproval</ruleTemplate>
+      		<description>Standard Approval Node for Awards</description>
+			<forceAction>false</forceAction>
+            <ruleExtensions>
+            <ruleExtension>            
+              <attribute>SpecialReviewTypeAttribute</attribute>
+              <ruleTemplate>AwardRicroIRBApproval</ruleTemplate>
+              <ruleExtensionValues>
+                <ruleExtensionValue>
+                  <key>reviewType</key>
+                  <value>Human Subjects</value>
+                </ruleExtensionValue>
+                <ruleExtensionValue>
+                  <key>newAwardXnTypeCode</key>
+                  <value>1</value>
+                </ruleExtensionValue>
+                <ruleExtensionValue>
+                  <key>addSRXnTypeCode</key>
+                  <value>7</value>
+                </ruleExtensionValue>
+              </ruleExtensionValues>
+              </ruleExtension>            
+            </ruleExtensions>	
+            
+			<responsibilities>
+        		<responsibility>
+          			<workgroup>KC-WKFLW:Award - RICRO IRB Reviewers</workgroup>
+          			<approvePolicy>F</approvePolicy>
+          			<actionRequested>F</actionRequested>
+          			<priority>1</priority>
+        		</responsibility>
+			</responsibilities>	            				
+    	</rule>
+ 
+       <rule>
+            <name>AwardRicroIACUCApproval</name>
+      		<documentType>AwardDocument</documentType>
+      		<ruleTemplate>AwardRicroIACUCApproval</ruleTemplate>
+      		<description>Standard Approval Node for Awards</description>
+			<forceAction>false</forceAction>
+            <ruleExtensions>
+            <ruleExtension>            
+              <attribute>SpecialReviewTypeAttribute</attribute>
+              <ruleTemplate>AwardRicroIACUCApproval</ruleTemplate>
+              <ruleExtensionValues>
+                <ruleExtensionValue>
+                  <key>reviewType</key>
+                  <value>Animal Subjects</value>
+                </ruleExtensionValue>
+                <ruleExtensionValue>
+                  <key>newAwardXnTypeCode</key>
+                  <value>1</value>
+                </ruleExtensionValue>
+                    <ruleExtensionValue>
+                    <key>newAwardXnTypeCode</key>
+                    <value>1</value>
+                    </ruleExtensionValue>
+              </ruleExtensionValues>
+              </ruleExtension>            
+            </ruleExtensions>	
+            
+			<responsibilities>
+        		<responsibility>
+          			<workgroup>KC-WKFLW:Award - RICRO IACUC Reviewers</workgroup>
+          			<approvePolicy>F</approvePolicy>
+          			<actionRequested>F</actionRequested>
+          			<priority>1</priority>
+        		</responsibility>
+			</responsibilities>	            				
+    	</rule>
+ 
+        <rule>
+            <name>AwardRicroSpecialReviewFYI</name>
+      		<documentType>AwardDocument</documentType>
+      		<ruleTemplate>AwardRicroSpecialReviewFYI</ruleTemplate>
+      		<description>FYI Node for Awards with FYI required Special Reviews</description>
+			<forceAction>false</forceAction>
+            <ruleExtensions>
+	            <ruleExtension>            
+	              <attribute>SpecialReviewFYITypeAttribute</attribute>
+	              <ruleTemplate>AwardRicroSpecialReviewFYI</ruleTemplate>
+	              <ruleExtensionValues>
+	                <ruleExtensionValue>
+	                  <key>reviewType</key>
+	                  <value>Infectious Agents</value>
+	                </ruleExtensionValue>
+                    <ruleExtensionValue>
+                    <key>newAwardXnTypeCode</key>
+                    <value>1</value>
+                    </ruleExtensionValue>
+                    <ruleExtensionValue>
+                    <key>newAwardXnTypeCode</key>
+                    <value>1</value>
+                    </ruleExtensionValue>
+	              </ruleExtensionValues>
+              </ruleExtension>         
+            </ruleExtensions>
+                 
+			<responsibilities>
+        		<responsibility>
+          			<workgroup>KC-WKFLW:Award - RICRO IBC Reviewers</workgroup>
+          			<approvePolicy>F</approvePolicy>
+          			<actionRequested>F</actionRequested>
+          			<priority>1</priority>
+        		</responsibility>
+			</responsibilities>	            				
+    	</rule>
+ 
+  
+        <rule>
+            <name>RadioactivesControlledSubsSRRule</name>
+      		<documentType>AwardDocument</documentType>
+      		<ruleTemplate>RadioactivesControlledSubsSRTemplate</ruleTemplate>
+      		<description>FYI Node for Awards with FYI required Special Reviews</description>
+			<forceAction>false</forceAction>
+            <ruleExtensions>
+	            <ruleExtension>            
+	              <attribute>RadioactiveControlledSubsSRAttribute</attribute>
+	              <ruleTemplate>RadioactivesControlledSubsSRTemplate</ruleTemplate>
+	              <ruleExtensionValues>
+                    <ruleExtensionValue>
+                    <key>newAwardXnTypeCode</key>
+                    <value>1</value>
+                    </ruleExtensionValue>
+                    <ruleExtensionValue>
+                    <key>newAwardXnTypeCode</key>
+                    <value>1</value>
+                    </ruleExtensionValue>
+	              </ruleExtensionValues>
+              </ruleExtension>         
+            </ruleExtensions>
+                 
+			<responsibilities>
+        		<responsibility>
+          			<workgroup>KC-WKFLW:Award - Radioactives/Controlled-Substance Reviewers</workgroup>
+          			<approvePolicy>F</approvePolicy>
+          			<actionRequested>F</actionRequested>
+          			<priority>1</priority>
+        		</responsibility>
+			</responsibilities>	            				
+    	</rule>
+ 
+ 
+        <rule>
+            <name>AdministrativeSRRule</name>
+      		<documentType>AwardDocument</documentType>
+      		<ruleTemplate>AdministrativeSRTemplate</ruleTemplate>
+      		<description>Node for Awards with Waive F&amp;A/Institutional-Commitments/Limited-Submission Special Reviews</description>
+			<forceAction>false</forceAction>
+            <ruleExtensions>
+	            <ruleExtension>            
+	              <attribute>AdministrativeSRAttribute</attribute>
+	              <ruleTemplate>AdministrativeSRTemplate</ruleTemplate>
+	              <ruleExtensionValues>
+	                <ruleExtensionValue>
+	                  <key>reviewType</key>
+	                  <value>Radioactives</value>
+	                </ruleExtensionValue>
+                    <ruleExtensionValue>
+                    <key>newAwardXnTypeCode</key>
+                    <value>1</value>
+                    </ruleExtensionValue>
+                    <ruleExtensionValue>
+                    <key>newAwardXnTypeCode</key>
+                    <value>7</value>
+                    </ruleExtensionValue>
+	              </ruleExtensionValues>
+              </ruleExtension>         
+            </ruleExtensions>
+                 
+			<responsibilities>
+        		<responsibility>
+          			<workgroup>KC-WKFLW:Award - Administrative Special Review Reviewers</workgroup>
+          			<approvePolicy>F</approvePolicy>
+          			<actionRequested>F</actionRequested>
+          			<priority>1</priority>
+        		</responsibility>
+			</responsibilities>	            				
+    	</rule> 
+ 
+ 		<rule>
+			<name>UniversityVetCongruencyReview</name>
+			<documentType>AwardDocument</documentType>
+			<ruleTemplate>UniversityVetCongruencyReview</ruleTemplate>
+			<description>Sponsored Programs Approval Routing Rule - only to Lead Unit OSP Staff</description>
+
+            <ruleExtensions>
+            <ruleExtension>            
+              <attribute>SpecialReviewTypeAttribute</attribute>
+              <ruleTemplate>UniversityVetCongruencyReview</ruleTemplate>
+              <ruleExtensionValues>
+                <ruleExtensionValue>
+                  <key>reviewType</key>
+                  <value>Animal Subjects</value>
+                </ruleExtensionValue>
+              </ruleExtensionValues>
+              </ruleExtension>            
+            </ruleExtensions>	
+
+			<responsibilities>
+				<responsibility>
+					<roleName attributeClassName="edu.colostate.kc.workflow.UniversityVetCongruencyRoleAttribute">UniversityVetCongruencyRoleAttribute!UniversityVetCongruencyReviewer
+					</roleName>
+					<approvePolicy>F</approvePolicy>
+					<actionRequested>F</actionRequested>
+					<priority>1</priority>
+				</responsibility>
+			</responsibilities>
+		</rule>
+ 
+ 
+    	</rules>
 </data>
