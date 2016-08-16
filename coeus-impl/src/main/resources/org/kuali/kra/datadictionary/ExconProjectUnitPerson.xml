@@ -1,0 +1,261 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectUnitPerson" parent="ExconProjectUnitPerson-parentBean" />
+
+  <bean id="ExconProjectUnitPerson-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectUnitPerson" />
+		<property name="objectLabel" value="ExconProjectUnitPerson" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProjectUnitPerson-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProjectUnitPerson-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="exconProjectEvent" />
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProjectUnitPerson-exconProjectUnitPersonId" />
+      	<ref bean="ExconProjectUnitPerson-personId" />
+        <ref bean="ExconProjectUnitPerson-rolodexId" />
+        <ref bean="ExconProjectUnitPerson-fullName" />
+        <ref bean="ExconProjectUnitPerson-unitAdministratorTypeCode" /> 
+        <ref bean="ExconProjectUnitPerson-unitAdministratorUnitNumber" />
+        <ref bean="ExconProjectUnitPerson-projectId" />
+        <ref bean="ExconProjectUnitPerson-userName" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="ExconProjectUnitPerson-exconProjectUnitPersonId" parent="ExconProjectUnitPerson-exconProjectUnitPersonId-parentBean" />
+  <bean id="ExconProjectUnitPerson-exconProjectUnitPersonId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="exconProjectUnitPersonId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Export Control Unit Person ID" />
+    <property name="shortLabel" value="Export Control Unit Person ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Export Control Unit Person ID" />
+    <property name="description" value="Export Control Unit Person ID" />
+  </bean>
+  
+  <bean id="ExconProjectUnitPerson-personId" parent="ExconProjectUnitPerson-personId-parentBean" />
+  <bean id="ExconProjectUnitPerson-personId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="personId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Person ID" />
+    <property name="shortLabel" value="Person ID" />
+    <property name="maxLength" value="40" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Person ID" />
+    <property name="description" value="Person ID" />
+  </bean>
+  
+  <bean id="ExconProjectUnitPerson-rolodexId" parent="ExconProjectUnitPerson-rolodexId-parentBean" />
+  <bean id="ExconProjectUnitPerson-rolodexId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="rolodexId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Rolodex ID" />
+    <property name="shortLabel" value="Rolodex ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Rolodex ID" />
+    <property name="description" value="Rolodex ID" />
+  </bean>
+  
+  <bean id="ExconProjectUnitPerson-projectId" parent="ExconProjectUnitPerson-projectId-parentBean" />
+  <bean id="ExconProjectUnitPerson-projectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project ID" />
+    <property name="shortLabel" value="Project ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project ID" />
+    <property name="description" value="Project ID" />
+  </bean>
+  
+  <bean id="ExconProjectUnitPerson-fullName" parent="ExconProjectUnitPerson-fullName-parentBean" />
+  <bean id="ExconProjectUnitPerson-fullName-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="fullName" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Full Name" />
+    <property name="shortLabel" value="Full Name" />
+    <property name="maxLength" value="90" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Full Name" />
+    <property name="description" value="Full Name" />
+  </bean>
+  
+  <bean id="ExconProjectUnitPerson-unitAdministratorTypeCode" parent="ExconProjectUnitPerson-unitAdministratorTypeCode-parentBean" />
+  <bean id="ExconProjectUnitPerson-unitAdministratorTypeCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="unitAdministratorTypeCode" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Unit Administrator Type Code" />
+    <property name="shortLabel" value="Unit Administrator Type Code" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+       <bean parent="SelectControlDefinition"
+       		p:includeBlankRow="true"
+			p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectUnitContactTypeValuesFinder" />
+    </property>
+    <property name="summary" value="Unit Administrator Type Code" />
+    <property name="description" value="Unit Administrator Type Code" />
+  </bean>
+  
+  <bean id="ExconProjectUnitPerson-unitAdministratorUnitNumber" parent="ExconProjectUnitPerson-unitAdministratorUnitNumber-parentBean" />
+  <bean id="ExconProjectUnitPerson-unitAdministratorUnitNumber-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="unitAdministratorUnitNumber" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Unit Administrator Unit  Number" />
+    <property name="shortLabel" value="Unit Administrator Unit  Number" />
+    <property name="maxLength" value="8" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:businessObjectClass="org.kuali.kra.excon.project.ExconProjectUnitPerson"
+            p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="false"
+            p:keyAttribute="unitAdministratorUnitNumber"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Unit Administrator Unit  Number" />
+    <property name="description" value="Unit Administrator Unit  Number" />
+  </bean>
+
+    <bean id="ExconProjectUnitPerson-updateUser" parent="ExconProjectUnitPerson-updateUser-parentBean" />
+	<bean id="ExconProjectUnitPerson-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProjectUnitPerson-updateTimestamp" parent="ExconProjectUnitPerson-updateTimestamp-parentBean" />
+	<bean id="ExconProjectUnitPerson-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+	
+	<bean id="ExconProjectUnitPerson-userName" parent="ExconProjectUnitPerson-userName-parentBean" />
+  	<bean id="ExconProjectUnitPerson-userName-parentBean" abstract="true" parent="AttributeDefinition">
+    	<property name="name" value="userName" />
+    	<property name="forceUppercase" value="false" />
+    	<property name="label" value="User Name" />
+    	<property name="shortLabel" value="User Name" />
+    	<property name="maxLength" value="60" />
+    	<property name="required" value="false" />
+    	<property name="control" >
+      	<bean parent="TextControlDefinition"
+            p:size="20" />
+    	</property>
+    	<property name="summary" value="User Name" />
+    	<property name="description" value="User Name" />
+  	</bean>
+  
+    <bean id="ExconProjectUnitPerson-inquiryDefinition" parent="ExconProjectUnitPerson-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProjectUnitPerson-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Export Control Project Event" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Export Control Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectUnitPersonId" parent="FieldDefinition" />
+			  	<bean p:attributeName="personId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexId" parent="FieldDefinition" />
+			    <bean p:attributeName="fullName" parent="FieldDefinition" />
+			    <bean p:attributeName="unitAdministratorTypeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="unitAdministratorUnitNumber" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectUnitPerson-lookupDefinition" parent="ExconProjectUnitPerson-lookupDefinition-parentBean" />
+  	<bean id="ExconProjectUnitPerson-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Lookup Event" />
+		<property name="lookupableID" value="exconProjectEventLookup" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectUnitPersonId" parent="FieldDefinition" />
+			  	<bean p:attributeName="personId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexId" parent="FieldDefinition" />
+			    <bean p:attributeName="fullName" parent="FieldDefinition" />
+			    <bean p:attributeName="unitAdministratorTypeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="unitAdministratorUnitNumber" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectUnitPersonId" parent="FieldDefinition" />
+			  	<bean p:attributeName="personId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexId" parent="FieldDefinition" />
+			    <bean p:attributeName="fullName" parent="FieldDefinition" />
+			    <bean p:attributeName="unitAdministratorTypeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="unitAdministratorUnitNumber" parent="FieldDefinition" />		
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

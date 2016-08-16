@@ -28,6 +28,7 @@
       <channel:maintenanceAwards />
       <channel:maintenanceNegotiations />
       <channel:maintenanceSubAwards />
+      <channel:maintenanceExcon />
 </td>
 
 <td class="content" valign="top">

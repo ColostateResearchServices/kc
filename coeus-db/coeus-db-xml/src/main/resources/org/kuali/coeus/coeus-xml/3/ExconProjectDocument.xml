@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data xmlns="ns:workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ns:workflow resource:WorkflowData">
+	<documentTypes xmlns="ns:workflow/DocumentType" xsi:schemaLocation="ns:workflow/DocumentType resource:DocumentType">
+		<documentType>
+			<name>ExconProjectDocument</name>
+			<description>Manage Export Control Projects</description>
+			<label>KC Export Control Project</label>
+			<parent>KC</parent>
+			<postProcessorName>org.kuali.coeus.sys.framework.workflow.KcPostProcessor</postProcessorName>
+			<superUserWorkgroupName>KC-WKFLW:KcAdmin</superUserWorkgroupName>
+			<blanketApproveWorkgroupName>KC-WKFLW:KcAdmin</blanketApproveWorkgroupName>
+			<defaultExceptionWorkgroupName>KC-WKFLW:KcAdmin</defaultExceptionWorkgroupName>
+			<docHandler>${kuali.docHandler.url.prefix}/exconProjectHome.do?methodToCall=docHandler</docHandler>
+			<helpDefinitionURL>default.htm?turl=Documents/exconProject.htm</helpDefinitionURL>
+			<active>true</active>
+			<policies>
+                <policy>
+                    <name>INITIATOR_MUST_ROUTE</name>
+                    <value>false</value>
+                </policy>
+            </policies>
+			<routingVersion>2</routingVersion>
+			<routePaths>
+				<routePath>
+					<start name="Initiated" nextNode="isActualMatch" />
+					<split name="isActualMatch">
+						<branch name="True">
+							<requests name="ExConOfficeApproval" nextNode="JoinMatch"/>
+						</branch>
+					</split>
+					<join name="JoinMatch"/>
+				</routePath>
+			</routePaths>
+			<routeNodes>
+				<start name="Initiated">
+					<activationType>S</activationType>
+					<mandatoryRoute>false</mandatoryRoute>
+					<finalApproval>false</finalApproval>
+				</start>
+				<split name="isActualMatch">
+       			   <type>org.kuali.coeus.sys.framework.workflow.SimpleBooleanSplitNode</type>
+        		</split>
+				<requests name="ExConOfficeApproval">
+					<activationType>S</activationType>
+					<ruleTemplate>ExConOfficeApprovalTemplate</ruleTemplate>
+					<mandatoryRoute>false</mandatoryRoute>
+				</requests>
+				<join name="JoinMatch"/>
+			</routeNodes>
+		</documentType>
+	</documentTypes>
+	<ruleTemplates xmlns="ns:workflow/RuleTemplate" xsi:schemaLocation="ns:workflow/RuleTemplate resource:RuleTemplate">
+		<ruleTemplate allowOverwrite="true">
+          <name>ExConOfficeApprovalTemplate</name>
+          <description>Approval By The Export Control Office Template</description>
+        </ruleTemplate>
+	</ruleTemplates>
+	<rules xmlns="ns:workflow/Rule" xsi:schemaLocation="ns:workflow/Rule resource:Rule">           
+		<rule>
+            <name>ExConOfficeApproval</name>
+      		<documentType>ExconProjectDocument</documentType>
+      		<ruleTemplate>ExConOfficeApprovalTemplate</ruleTemplate>
+      		<description>Standard Approval Node for Export Control Projects</description>
+			<forceAction>false</forceAction>
+	            
+			<responsibilities>
+        		<responsibility>
+          			<workgroup>KC-WKFLW:Export Control Project Approvers</workgroup>
+          			<approvePolicy>F</approvePolicy>
+          			<actionRequested>A</actionRequested>
+          			<priority>1</priority>
+        		</responsibility>
+			</responsibilities>	            				
+    	</rule>
+ 	</rules>
+</data>
