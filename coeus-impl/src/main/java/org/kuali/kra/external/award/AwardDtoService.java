@@ -104,6 +104,10 @@ public class AwardDtoService extends KcDtoServiceBase<AwardDTO, Award> {
 			dto.setSequenceNumber(award.getSequenceNumber().toString());
 			dto.setSequenceStatus(award.getAwardSequenceStatus());
 
+			dto.setObligationStartDate(award.getLastAwardAmountInfo().getCurrentFundEffectiveDate());
+			dto.setObligationEndDate(award.getLastAwardAmountInfo().getObligationExpirationDate());
+
+			
 			if (award.getAwardCgb().getLocFund() != null) {
 				dto.setLocFund(award.getAwardCgb().getLocFund().getDescription());
 				dto.setLocFundAmount(award.getAwardCgb().getLocFund().getAmount() != null ? award.getAwardCgb().getLocFund().getAmount().bigDecimalValue() : null );

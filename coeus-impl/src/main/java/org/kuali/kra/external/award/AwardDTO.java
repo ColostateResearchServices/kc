@@ -78,6 +78,8 @@ import org.kuali.kra.external.sponsor.SponsorDTO;
     "locFundAmount",
     "locFundGroup",
     "locFundGroupCode",
+    "obligationStartDate",
+    "obligationEndDate",
     "awardAccounts"
 })
 public class AwardDTO implements Serializable {
@@ -131,6 +133,9 @@ public class AwardDTO implements Serializable {
     private String locFundGroup;
     private String locFundGroupCode;
     
+	private Date obligationStartDate;
+	private Date obligationEndDate;
+	
     private List<AwardAccountDTO> awardAccounts;
 
 
@@ -409,5 +414,17 @@ public class AwardDTO implements Serializable {
 	}
 	public void setLocFundGroupCode(String locFundGroupCode) {
 		this.locFundGroupCode = locFundGroupCode;
+	}
+	public Date getObligationStartDate() {
+		return obligationStartDate;
+	}
+	public void setObligationStartDate(Date obligationStartDate) {
+		this.obligationStartDate = obligationStartDate;
+	}
+	public Date getObligationEndDate() {
+		return obligationEndDate;
+	}
+	public void setObligationEndDate(Date obligationEndDate) {
+		this.obligationEndDate = obligationEndDate;
 	}
 }
