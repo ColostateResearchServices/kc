@@ -1,0 +1,185 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectExternalInstitution" parent="ExconProjectExternalInstitution-parentBean" />
+
+  <bean id="ExconProjectExternalInstitution-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectExternalInstitution" />
+		<property name="objectLabel" value="ExconProjectExternalInstitution" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProjectExternalInstitution-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProjectExternalInstitution-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="exconProjectExternalInstitution" />
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProjectExternalInstitution-projectExternalInstitutionId" />
+        <ref bean="ExconProjectExternalInstitution-rolodexId" />
+        <ref bean="ExconProjectExternalInstitution-projectId" />
+        <ref bean="ExconProjectExternalInstitution-rolodexEntry.organization" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="ExconProjectExternalInstitution-projectExternalInstitutionId" parent="ExconProjectExternalInstitution-projectExternalInstitutionId-parentBean" />
+  <bean id="ExconProjectExternalInstitution-projectExternalInstitutionId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectExternalInstitutionId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Export Control Unit ExternalInstitution ID" />
+    <property name="shortLabel" value="Export Control Unit ExternalInstitution ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Export Control Unit ExternalInstitution ID" />
+    <property name="description" value="Export Control Unit ExternalInstitution ID" />
+  </bean>
+  
+  <bean id="ExconProjectExternalInstitution-rolodexId" parent="ExconProjectExternalInstitution-rolodexId-parentBean" />
+  <bean id="ExconProjectExternalInstitution-rolodexId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="rolodexId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="External Institution" />
+    <property name="shortLabel" value="External Institution" />
+    <property name="maxLength" value="6" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="6" />
+    </property>
+    <property name="summary" value="External Institution" />
+    <property name="description" value="External Institution" />
+  </bean>
+  
+  <bean id="ExconProjectExternalInstitution-projectId" parent="ExconProjectExternalInstitution-projectId-parentBean" />
+  <bean id="ExconProjectExternalInstitution-projectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project ID" />
+    <property name="shortLabel" value="Project ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project ID" />
+    <property name="description" value="Project ID" />
+  </bean>
+   
+  <bean id="ExconProjectExternalInstitution-rolodexEntry.organization" parent="ExconProjectExternalInstitution-rolodexEntry.organization-parentBean" />
+  <bean id="ExconProjectExternalInstitution-rolodexEntry.organization-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="rolodexEntry.organization" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Organization" />
+    <property name="shortLabel" value="Organization" />
+    <property name="maxLength" value="90" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="30" />
+    </property>
+    <property name="summary" value="Organization" />
+    <property name="description" value="Organization" />
+  </bean>
+  
+    <bean id="ExconProjectExternalInstitution-updateUser" parent="ExconProjectExternalInstitution-updateUser-parentBean" />
+	<bean id="ExconProjectExternalInstitution-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProjectExternalInstitution-updateTimestamp" parent="ExconProjectExternalInstitution-updateTimestamp-parentBean" />
+	<bean id="ExconProjectExternalInstitution-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+	
+	<bean id="ExconProjectExternalInstitution-userName" parent="ExconProjectExternalInstitution-userName-parentBean" />
+  	<bean id="ExconProjectExternalInstitution-userName-parentBean" abstract="true" parent="AttributeDefinition">
+    	<property name="name" value="userName" />
+    	<property name="forceUppercase" value="false" />
+    	<property name="label" value="User Name" />
+    	<property name="shortLabel" value="User Name" />
+    	<property name="maxLength" value="60" />
+    	<property name="required" value="false" />
+    	<property name="control" >
+      	<bean parent="TextControlDefinition"
+            p:size="20" />
+    	</property>
+    	<property name="summary" value="User Name" />
+    	<property name="description" value="User Name" />
+  	</bean>
+  
+    <bean id="ExconProjectExternalInstitution-inquiryDefinition" parent="ExconProjectExternalInstitution-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProjectExternalInstitution-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Export Control Project Event" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Export Control Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectExternalInstitutionId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexEntry.organization" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectExternalInstitution-lookupDefinition" parent="ExconProjectExternalInstitution-lookupDefinition-parentBean" />
+  	<bean id="ExconProjectExternalInstitution-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Lookup Event" />
+		<property name="lookupableID" value="exconProjectEventLookup" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectExternalInstitutionId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexEntry.organization" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectExternalInstitutionId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexId" parent="FieldDefinition" />
+			    <bean p:attributeName="rolodexEntry.organization" parent="FieldDefinition" />	
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

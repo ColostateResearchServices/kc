@@ -34,6 +34,8 @@ import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
 
+import edu.colostate.kc.award.AwardExtension;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;

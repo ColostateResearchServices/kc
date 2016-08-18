@@ -1,0 +1,540 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProject" parent="ExconProject-parentBean" />
+
+  <bean id="ExconProject-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProject" />
+		<property name="objectLabel" value="ExconProject" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProject-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProject-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="projectId" />
+    <property name="helpDefinition" >
+      <bean parent="HelpDefinition"
+            p:parameterNamespace="KC-EXCON"
+            p:parameterName="exconProjectHelpUrl"
+            p:parameterDetailType="Document" />
+    </property>
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProject-projectNumber" />
+      	<ref bean="ExconProject-sequenceNumber" />
+      	<ref bean="ExconProject-projectId" />
+        <ref bean="ExconProject-title" />
+        <ref bean="ExconProject-projectTypeCode" />
+        <ref bean="ExconProject-projectType.description" />
+        <ref bean="ExconProject-fundamentalResearch" />
+        <ref bean="ExconProject-unitNumber" />
+        <ref bean="ExconProject-unitName" />
+        <ref bean="ExconProject-unit.unitName" />
+        <ref bean="ExconProject-sponsorCode" />  
+        <ref bean="ExconProject-sponsor.sponsorName" />
+        <ref bean="ExconProject-projectStatusCode" />
+        <ref bean="ExconProject-projectStatus.description" />
+        <ref bean="ExconProject-projectStartDate" />
+        <ref bean="ExconProject-projectEndDate" /> 
+        <ref bean="ExconProject-updateUser" />
+        <ref bean="ExconProject-updateTimestamp" /> 
+        <ref bean="ExconProject-documentStatus" />
+        <ref bean="ExconProject-exconProjectPersons.fullName" />
+        <ref bean="ExconProject-exconProjectUnitPersons.fullName" />
+        <ref bean="ExconProject-exconProjectRPSEntities.concatNames" />
+        <ref bean="ExconProject-agreementRole" />
+        <ref bean="ExconProject-responsibleParty" />
+        <ref bean="ExconProject-respPartyUsername" />
+        <ref bean="ExconProject-exconProjectExternalInstitutions.rolodexId" />
+      </list>
+    </property>
+    <property name="collections">
+    	<list>
+			<bean parent="CollectionDefinition" p:name="exconProjectPersons" p:label="Project Persons" p:shortLabel="Project Persons" p:elementLabel="Project Person" />
+			<bean parent="CollectionDefinition" p:name="exconProjectUnitPersons" p:label="Unit Persons" p:shortLabel="Unit Persons" p:elementLabel="Unit Person" />
+        </list>
+    </property>
+  </bean>
+
+  <bean id="ExconProject-projectNumber" parent="ExconProject-projectNumber-parentBean" />
+  <bean id="ExconProject-projectNumber-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectNumber" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Number" />
+    <property name="shortLabel" value="Project Number" />
+    <property name="maxLength" value="12" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project Number" />
+    <property name="description" value="Project Number" />
+  </bean>
+  
+  <bean id="ExconProject-sequenceNumber" parent="ExconProject-sequenceNumber-parentBean" />
+  <bean id="ExconProject-sequenceNumber-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="sequenceNumber" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Sequence Number" />
+    <property name="shortLabel" value="Sequence Number" />
+    <property name="maxLength" value="4" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="4" />
+    </property>
+    <property name="summary" value="Sequence Number" />
+    <property name="description" value="Sequence Number" />
+  </bean>
+  
+  <bean id="ExconProject-projectId" parent="ExconProject-projectId-parentBean" />
+  <bean id="ExconProject-projectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Id" />
+    <property name="shortLabel" value="Project Id" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project Id" />
+    <property name="description" value="Project Id" />
+  </bean>
+  
+  <bean id="ExconProject-title" parent="ExconProject-title-parentBean" />
+  <bean id="ExconProject-title-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="title" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Title" />
+    <property name="shortLabel" value="Project Title" />
+    <property name="maxLength" value="100" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="80" />
+    </property>
+    <property name="summary" value="Project Title" />
+    <property name="description" value="Project Title" />
+  </bean>
+  
+  <bean id="ExconProject-projectTypeCode" parent="ExconProject-projectTypeCode-parentBean" />
+  <bean id="ExconProject-projectTypeCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectTypeCode" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Project Type Code" />
+    <property name="shortLabel" value="Project Type Code" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:businessObjectClass="org.kuali.kra.excon.project.ExconProjectType"
+            p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectTypeCodeValuesFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="false"
+            p:keyAttribute="exconProjectTypeCode"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Project Type Code" />
+    <property name="description" value="Project Type Code" />
+  </bean>
+  
+  <bean id="ExconProject-projectType.description" parent="ExconProject-projectType.description-parentBean" />
+  <bean id="ExconProject-projectType.description-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectType.description" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Type" />
+    <property name="shortLabel" value="Project Type" />
+    <property name="maxLength" value="60" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="60" />
+    </property>
+    <property name="summary" value="Project Type" />
+    <property name="description" value="Project Type" />
+  </bean>
+  
+  <bean id="ExconProject-fundamentalResearch" parent="ExconProject-fundamentalResearch-parentBean" />
+  <bean id="ExconProject-fundamentalResearch-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="fundamentalResearch" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Fundamental Research" />
+    <property name="shortLabel" value="Fundamental Research" />
+    <property name="maxLength" value="1" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="CheckboxControlDefinition" />
+    </property>
+    <property name="summary" value="Fundamental Research" />
+    <property name="description" value="Fundamental Research" />
+  </bean>
+   
+  <bean id="ExconProject-unitNumber" parent="ExconProject-unitNumber-parentBean" />
+  <bean id="ExconProject-unitNumber-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="unitNumber" />
+		<property name="forceUppercase" value="false" />
+		<property name="label" value="Lead Unit ID" />
+		<property name="shortLabel" value="Lead Unit ID" />
+		<property name="maxLength" value="8" />
+		<property name="validationPattern" >
+		  <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+		</property>
+		<property name="control" >
+      		<bean p:size="8" parent="TextControlDefinition" />
+    	</property>
+        <property name="required" value="false" />
+		<property name="summary" value="The lead unit number for the ExconProject." />
+		<property name="description" value="The lead unit number for the ExconProject." />
+	</bean>
+	
+	<bean id="ExconProject-unitName" parent="ExconProject-unitName-parentBean" />
+	<bean id="ExconProject-unitName-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="unitName" />
+		<property name="forceUppercase" value="false" />
+		<property name="label" value="Lead Unit" />
+		<property name="shortLabel" value="Lead Unit" />
+		<property name="maxLength" value="150" />
+		<property name="validationPattern" >
+		  <bean p:allowWhitespace="true" parent="AnyCharacterValidationPattern" />
+		</property>
+		<property name="control" >
+		  <bean p:size="60" parent="TextControlDefinition" />
+		</property>
+		<property name="summary" value="The lead unit name for the Project" />
+		<property name="description" value="The lead unit name for the Project" />
+	</bean>
+	
+	<bean id="ExconProject-unit.unitName" parent="ExconProject-unit.unitName-parentBean" />
+	<bean id="ExconProject-unit.unitName-parentBean" abstract="true" parent="ExconProject-unitName">
+		<property name="name" value="unit.unitName" />
+	</bean>
+	
+	<bean id="ExconProject-sponsorCode" parent="ExconProject-sponsorCode-parentBean" />
+  <bean id="ExconProject-sponsorCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="sponsorCode" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Sponsor ID" />
+    <property name="shortLabel" value="Sponsor" />
+    <property name="maxLength" value="6" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Agency/Sponsor #" />
+    <property name="description" value="The identification number of the organization or agency that is providing support for the sponsored project." />
+  </bean>
+  
+  	<bean id="ExconProject-sponsorName" parent="ExconProject-sponsorName-parentBean" />
+	<bean id="ExconProject-sponsorName-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="sponsorName" />
+		<property name="forceUppercase" value="false" />
+		<property name="label" value="Sponsor Name" />
+		<property name="shortLabel" value="Sponsor Name" />
+		<property name="maxLength" value="150" />
+		<property name="validationPattern" >
+		  <bean p:allowWhitespace="true" parent="AnyCharacterValidationPattern" />
+		</property>
+		<property name="control" >
+		  <bean p:size="60" parent="TextControlDefinition" />
+		</property>
+		<property name="summary" value="The sponsor name for the Project" />
+		<property name="description" value="The sponsor name for the Project" />
+	</bean>
+
+    <bean id="ExconProject-sponsor.sponsorName" parent="ExconProject-sponsor.sponsorName-parentBean" />
+    <bean id="ExconProject-sponsor.sponsorName-parentBean" abstract="true" parent="ExconProject-sponsorName">
+        <property name="name" value="sponsor.sponsorName" />
+        <property name="label" value="Sponsor Name" />
+        <property name="shortLabel" value="Sponsor Name" />
+        <property name="required" value="false" />    
+    </bean>
+     
+   <bean id="ExconProject-projectStatusCode" parent="ExconProject-projectStatusCode-parentBean" />
+  <bean id="ExconProject-projectStatusCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectStatusCode" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Project Status" />
+    <property name="shortLabel" value="Project Status" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:businessObjectClass="org.kuali.kra.excon.project.ExconProjectStatusType"
+            p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="false"
+            p:keyAttribute="exconProjectStatusTypeCode"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Project Status" />
+    <property name="description" value="Project Status" />
+  </bean> 
+  
+  <bean id="ExconProject-projectStatus.description" parent="ExconProject-projectStatus.description-parentBean" />
+  <bean id="ExconProject-projectStatus.description-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectStatus.description" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Status" />
+    <property name="shortLabel" value="Project Status" />
+    <property name="maxLength" value="60" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="60" />
+    </property>
+    <property name="summary" value="Project Status" />
+    <property name="description" value="Project Status" />
+  </bean>
+
+  	<bean id="ExconProject-projectStartDate" parent="ExconProject-projectStartDate-parentBean" />
+	<bean id="ExconProject-projectStartDate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
+	    <property name="name" value="projectStartDate" />
+	    <property name="label" value="Project Start Date" />
+	    <property name="shortLabel" value="Project Start Date" />
+	    <property name="required" value="false" />
+	    <property name="summary" value="Project Start Date" />
+	    <property name="description" value="Project Start Date" />
+  	</bean>
+  
+  	<bean id="ExconProject-projectEndDate" parent="ExconProject-projectEndDate-parentBean" />
+	<bean id="ExconProject-projectEndDate-parentBean" abstract="true" parent="AttributeReferenceDummy-genericDate">
+	    <property name="name" value="projectEndDate" />
+	    <property name="label" value="Project End Date" />
+	    <property name="shortLabel" value="Project End Date" />
+	    <property name="required" value="false" />
+	    <property name="summary" value="Project End Date" />
+	    <property name="description" value="Project End Date" />
+  	</bean>
+  	
+  <bean id="ExconProject-agreementRole" parent="ExconProject-agreementRole-parentBean" />
+  <bean id="ExconProject-agreementRole-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="agreementRole" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Agreement Role" />
+    <property name="shortLabel" value="Agreement Role" />
+    <property name="maxLength" value="1" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectAgreementRoleFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="true"
+            p:keyAttribute="value"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Agreement Role" />
+    <property name="description" value="Agreement Role" />
+  </bean>
+  
+   <bean id="ExconProject-responsibleParty" parent="ExconProject-responsibleParty-parentBean" />
+  <bean id="ExconProject-responsibleParty-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="responsibleParty" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Responsible Party" />
+    <property name="shortLabel" value="Responsible Party" />
+    <property name="maxLength" value="40" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Responsible Party" />
+    <property name="description" value="Responsible Party" />
+  </bean>
+  
+  <bean id="ExconProject-respPartyUsername" parent="ExconProject-respPartyUsername-parentBean" />
+  <bean id="ExconProject-respPartyUsername-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="respPartyUsername" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Responsible Party" />
+    <property name="shortLabel" value="Responsible Party" />
+    <property name="maxLength" value="60" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="20" />
+    </property>
+    <property name="summary" value="Responsible Party" />
+    <property name="description" value="Responsible Party" />
+  </bean>
+  
+    <bean id="ExconProject-updateUser" parent="ExconProject-updateUser-parentBean" />
+	<bean id="ExconProject-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProject-updateTimestamp" parent="ExconProject-updateTimestamp-parentBean" />
+	<bean id="ExconProject-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+	
+	<bean id="ExconProject-documentStatus" parent="ExconProject-documentStatus-parentBean" />
+	<bean id="ExconProject-documentStatus-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="documentStatus" />
+		<property name="label" value="Routing Status" />
+		<property name="shortLabel" value="Routing Status" />
+    <property name="maxLength" value="10" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="10" />
+    </property>
+		<property name="summary" value="Label for export control project header fields" />
+		<property name="description" value="Label for export control project header fields" />
+	</bean>
+	
+	<bean id="ExconProject-exconProjectPersons.fullName" parent="ExconProject-exconProjectPersons.fullName-parentBean" />
+	<bean id="ExconProject-exconProjectPersons.fullName-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="exconProjectPersons.fullName" />
+		<property name="label" value="Project Person Name" />
+		<property name="shortLabel" value="Project Person Name" />
+    	<property name="required" value="false" />
+    	<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="50" />
+    	</property>
+		<property name="summary" value="Project Person Name" />
+		<property name="description" value="Project Person Name" />
+	</bean>
+	
+	<bean id="ExconProject-exconProjectUnitPersons.fullName" parent="ExconProject-exconProjectUnitPersons.fullName-parentBean" />
+	<bean id="ExconProject-exconProjectUnitPersons.fullName-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="exconProjectUnitPersons.fullName" />
+		<property name="label" value="Unit Contact Name" />
+		<property name="shortLabel" value="Unit Contact Name" />
+    	<property name="required" value="false" />
+    	<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="50" />
+    	</property>
+		<property name="summary" value="Unit Contact Name" />
+		<property name="description" value="Unit Contact Name" />
+	</bean>
+	
+	<bean id="ExconProject-exconProjectRPSEntities.concatNames" parent="ExconProject-exconProjectRPSEntities.concatNames-parentBean" />
+	<bean id="ExconProject-exconProjectRPSEntities.concatNames-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="exconProjectRPSEntities.concatNames" />
+		<property name="label" value="RPS Entity Name" />
+		<property name="shortLabel" value="RPS Entity Name" />
+    	<property name="required" value="false" />
+    	<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="50" />
+    	</property>
+		<property name="summary" value="RPS Entity Name" />
+		<property name="description" value="RPS Entity Name" />
+	</bean>
+	
+	<bean id="ExconProject-exconProjectExternalInstitutions.rolodexId" parent="ExconProjectExternalInstitution-rolodexId">
+		<property name="name" value="exconProjectExternalInstitutions.rolodexId" />
+	</bean>
+  
+    <bean id="ExconProject-inquiryDefinition" parent="ExconProject-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProject-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Excon Project" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Excon Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectNumber" parent="FieldDefinition" />
+			  	<bean p:attributeName="title" parent="FieldDefinition" />
+			    <bean p:attributeName="projectTypeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="unitNumber" parent="FieldDefinition" />
+			    <bean p:attributeName="sponsorCode" parent="FieldDefinition" />
+			    <bean p:attributeName="projectStatusCode" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProject-lookupDefinition" parent="ExconProject-lookupDefinition-parentBean" />
+  	<bean id="ExconProject-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Lookup" />
+		<property name="lookupableID" value="exconProjectLookupable" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="projectId" parent="FieldDefinition" />
+			  	<bean p:attributeName="projectNumber" parent="FieldDefinition" />
+			  	<bean p:attributeName="title" parent="FieldDefinition" />
+			    <bean p:attributeName="projectTypeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="unitNumber" parent="FieldDefinition" />
+			    <bean p:attributeName="sponsorCode" parent="FieldDefinition" />
+			    <bean p:attributeName="projectStatusCode" parent="FieldDefinition" />
+			    <bean p:attributeName="exconProjectPersons.fullName" parent="FieldDefinition" />
+			    <bean p:attributeName="exconProjectUnitPersons.fullName" parent="FieldDefinition" />
+			    <bean p:attributeName="exconProjectRPSEntities.concatNames" parent="FieldDefinition" />
+			    <bean p:attributeName="exconProjectExternalInstitutions.rolodexId" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="projectNumber" parent="FieldDefinition" />
+			  	<bean p:attributeName="title" parent="FieldDefinition" />
+			    <bean p:attributeName="projectType.description" parent="FieldDefinition" />
+			    <bean p:attributeName="unit.unitName" parent="FieldDefinition" />
+			    <bean p:attributeName="sponsor.sponsorName" parent="FieldDefinition" />
+			    <bean p:attributeName="projectStatus.description" parent="FieldDefinition" />
+			    <bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />		
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

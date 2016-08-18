@@ -1,0 +1,494 @@
+<!--
+ Copyright 2005-2014 The Kuali Foundation.
+ 
+ Licensed under the Educational Community License, Version 1.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.opensource.org/licenses/ecl1.php
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<descriptor-repository version="1.0">
+	  
+	<class-descriptor class="org.kuali.kra.excon.document.ExconProjectDocument" table="EXCON_PROJECT_DOCUMENT">			
+		<field-descriptor name="documentNumber" column="DOCUMENT_NUMBER" jdbc-type="VARCHAR" primarykey="true" />		
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+    	<collection-descriptor name="exconProjectList" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProject" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+        	<inverse-foreignkey field-ref="documentNumber" />
+    	</collection-descriptor>  	
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProject" table="EXCON_PROJECT">
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_S" />	
+		<field-descriptor id="1" name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" />
+		<field-descriptor id="2" name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER"/>
+		<field-descriptor name="documentNumber" column="DOCUMENT_NUMBER" jdbc-type="VARCHAR" access="anonymous" />
+		<field-descriptor name="title" column="PROJECT_TITLE" jdbc-type="VARCHAR" />
+		<field-descriptor name="projectTypeCode" column="PROJECT_TYPE_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="unitNumber" column="LEAD_UNIT_NUMBER" jdbc-type="VARCHAR" />
+		<field-descriptor name="sponsorCode" column="SPONSOR_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="fundamentalResearch" column="FUNDMNTL_RESEARCH_IND" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="projectStartDate" column="PROJECT_START_DATE" jdbc-type="DATE"/>
+		<field-descriptor name="projectEndDate" column="PROJECT_END_DATE" jdbc-type="DATE"/>
+		<field-descriptor name="projectStatusCode" column="PROJECT_STATUS_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="agreementRole" column="AGREEMENT_ROLE" jdbc-type="VARCHAR" />
+		<field-descriptor name="responsibleParty" column="RESPONSIBLE_PARTY" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="exconProjectSequenceStatus" column="PROJECT_SEQUENCE_STATUS" jdbc-type="VARCHAR"/>
+		
+		<reference-descriptor name="exconProjectDocument" class-ref="org.kuali.kra.excon.document.ExconProjectDocument" auto-retrieve="true" auto-update="none" auto-delete="none">
+            <foreignkey field-ref="documentNumber" />
+        </reference-descriptor>
+        
+		<reference-descriptor name="projectType" class-ref="org.kuali.kra.excon.project.ExconProjectType" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectTypeCode"/>			
+		</reference-descriptor>
+		
+		<reference-descriptor name="unit" class-ref="org.kuali.coeus.common.framework.unit.Unit" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="unitNumber"/>
+		</reference-descriptor>
+		
+		<reference-descriptor name="sponsor" class-ref="org.kuali.coeus.common.framework.sponsor.Sponsor" auto-retrieve="true" auto-update="none" auto-delete="none">
+            <foreignkey field-ref="sponsorCode" />
+        </reference-descriptor>
+        
+        <reference-descriptor name="projectStatus" class-ref="org.kuali.kra.excon.project.ExconProjectStatusType" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectStatusCode"/>
+		</reference-descriptor>
+        
+        <collection-descriptor name="exconProjectPersons" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectPerson" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+            <inverse-foreignkey field-ref="projectId"/>
+        </collection-descriptor>
+              
+        <collection-descriptor name="exconProjectUnitPersons" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectUnitPerson" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+            <inverse-foreignkey field-ref="projectId"/>
+        </collection-descriptor>
+        
+        <collection-descriptor name="exconProjectRPSEntities" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectRPSEntity" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+        	<inverse-foreignkey field-ref="projectId"/>
+        </collection-descriptor>
+		
+		<collection-descriptor name="exconProjectEvents" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectEvent" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+			<inverse-foreignkey field-ref="projectId"/>
+		</collection-descriptor> 
+
+		<collection-descriptor name="exconProjectDestinations" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectDestination" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+			<inverse-foreignkey field-ref="projectId"/>
+		</collection-descriptor>
+		
+     	<collection-descriptor name="exconProjectComments" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectComment" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+            <inverse-foreignkey field-ref="projectId"/>
+        </collection-descriptor>
+    
+		<collection-descriptor name="exconProjectAttachments" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectAttachment" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="none">
+			<inverse-foreignkey field-ref="projectId"/>
+			<orderby name="exconProjectAttachmentId" sort="ASC" />
+		</collection-descriptor>
+		
+		<collection-descriptor name="exconProjectCustomDataList" proxy="true" element-class-ref="org.kuali.kra.excon.customdata.ExconProjectCustomData" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+			<inverse-foreignkey field-ref="projectId"/>
+		</collection-descriptor>
+		
+		<collection-descriptor name="exconProjectExternalInstitutions" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectExternalInstitution" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+			<inverse-foreignkey field-ref="projectId"/>
+		</collection-descriptor>
+		
+		<collection-descriptor name="exconProjectReviews" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectReview" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+			<inverse-foreignkey field-ref="projectId"/>
+		</collection-descriptor>
+		
+		<collection-descriptor name="exconProjectAssociatedDocuments" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectAssociatedDocument" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+			<inverse-foreignkey field-ref="projectId"/>
+		</collection-descriptor>
+		
+		<reference-descriptor name="versionHistory" class-ref="org.kuali.coeus.common.framework.version.history.VersionHistorySearchBo" auto-retrieve="true" auto-update="none" auto-delete="none">
+            <foreignkey field-id-ref="1" />
+            <foreignkey field-id-ref="2" />	
+        </reference-descriptor>	
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectPerson" table="EXCON_PROJECT_PERSONS">
+		<field-descriptor name="exconProjectPersonId" column="PROJECT_PERSON_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_PERSON_S" />		
+		<field-descriptor name="personId" column="PERSON_ID" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="rolodexId" column="ROLODEX_ID" jdbc-type="INTEGER" nullable="true" />
+		<field-descriptor name="fullName" column="FULL_NAME" jdbc-type="VARCHAR" nullable="false"  />				
+		<field-descriptor name="roleTypeCode" column="PERSON_ROLE_TYPE_CODE" jdbc-type="VARCHAR" nullable="false" />		
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+				
+ 		<reference-descriptor name="roleType" class-ref="org.kuali.kra.excon.project.ExconProjectPersonRoleType" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="roleTypeCode"/> 
+		</reference-descriptor>
+		
+		<reference-descriptor name="traveler" class-ref="org.kuali.kra.excon.project.ExconProjectTraveler" auto-retrieve="true" auto-update="object" auto-delete="none">
+			<foreignkey field-ref="personId"/>
+		</reference-descriptor>
+				    
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectTraveler" table="EXCON_PROJECT_TRAVELERS">
+		<field-descriptor name="personId" column="PERSON_ID" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<collection-descriptor name="travelerCommunications" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectTravelerCommunication" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="none"> 
+            <inverse-foreignkey field-ref="personId" />
+            <orderby name="communicationDate" sort="DESC" />
+        </collection-descriptor>
+	</class-descriptor>		
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectPersonRoleType" table="EXCON_PROJECT_PERSON_ROLE_TYPE">
+		<field-descriptor name="exconProjectPersonRoleTypeCode" column="PROJECT_PERSON_ROLE_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectRPSEntity" table="EXCON_PROJECT_RPS_ENTITY">
+		<field-descriptor name="rpsEntityId" column="RPS_ENTITY_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_RPS_ENTITY_S" />
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous"/>
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="firstName" column="FIRST_NAME" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="lastName" column="LAST_NAME" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="otherNames" column="OTHER_NAMES" jdbc-type="VARCHAR" />
+		<field-descriptor name="concatNames" column="CONCAT_NAMES" jdbc-type="VARCHAR" />
+		<field-descriptor name="companyName" column="COMPANY_NAME" jdbc-type="VARCHAR" />
+		<field-descriptor name="streetAddress" column="STREET_ADDRESS" jdbc-type="VARCHAR" />
+		<field-descriptor name="city" column="CITY" jdbc-type="VARCHAR" />
+		<field-descriptor name="state" column="STATE" jdbc-type="VARCHAR" />
+		<field-descriptor name="countryCode" column="COUNTRY_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="birthdate" column="BIRTHDATE" jdbc-type="DATE" />
+		<field-descriptor name="otherInfo" column="OTHER_INFO" jdbc-type="VARCHAR" />
+		<field-descriptor name="rpsMatchCode" column="RPS_MATCH_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectEvent" table="EXCON_PROJECT_EVENTS">
+		<field-descriptor name="exconProjectEventId" column="PROJECT_EVENT_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_EVENT_S" />
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous"/>
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="projectEventTypeCode" column="PROJECT_EVENT_TYPE_CODE" jdbc-type="VARCHAR"/>
+		<field-descriptor name="eventDate" column="EVENT_DATE" jdbc-type="DATE"/>
+		<field-descriptor name="eventComment" column="EVENT_COMMENT" jdbc-type="VARCHAR"/>
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<reference-descriptor name="projectEventType" class-ref="org.kuali.kra.excon.project.ExconProjectEventType" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="projectEventTypeCode"/>
+		</reference-descriptor>
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+	</class-descriptor>		
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectEventType" table="EXCON_PROJECT_EVENT_TYPE">
+		<field-descriptor name="exconProjectEventTypeCode" column="PROJECT_EVENT_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT"  locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+	</class-descriptor>	
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectDestination" table="EXCON_PROJECT_DESTINATIONS">
+		<field-descriptor name="exconProjectDestId" column="PROJECT_DEST_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_DEST_S" />
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous"/>
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="destinationCountryCode" column="DESTINATION_COUNTRY_CD" jdbc-type="VARCHAR"/>
+		<field-descriptor name="arrivalDate" column="ARRIVAL_DATE" jdbc-type="DATE"/>
+		<field-descriptor name="departureDate" column="DEPARTURE_DATE" jdbc-type="DATE"/>
+		<field-descriptor name="destinationComment" column="DESTINATION_COMMENT" jdbc-type="VARCHAR"/>
+		<field-descriptor name="sanctionList" column="SANCTION_LIST" jdbc-type="VARCHAR"/>
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectComment" table="EXCON_PROJECT_COMMENTS">
+		<field-descriptor name="exconProjectCommentId" column="PROJECT_COMMENT_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_COMMENT_S" />
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous"/>
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="commentTypeCode" column="COMMENT_TYPE_CODE" jdbc-type="VARCHAR" nullable="false"/>
+		<field-descriptor name="comments" column="COMMENTS" jdbc-type="CLOB"/>
+		<field-descriptor name="commentAuthor" column="COMMENT_AUTHOR" jdbc-type="VARCHAR"/>
+		<field-descriptor name="commentDate" column="COMMENT_DATE" jdbc-type="DATE"/>
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<reference-descriptor name="commentType" class-ref="org.kuali.kra.excon.project.ExconProjectCommentType" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="commentTypeCode"/> 
+		</reference-descriptor>	
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectCommentType" table="EXCON_PROJECT_COMMENT_TYPE">
+		<field-descriptor name="exconProjectCommentTypeCode" column="PROJECT_COMMENT_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true"/>
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR"/>
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectUnitPerson" table="EXCON_PROJECT_UNIT_PERSONS">
+		<field-descriptor name="exconProjectUnitPersonId" column="PROJECT_UNIT_PERSON_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_UNIT_PERSON_S" />		
+		<field-descriptor name="personId" column="PERSON_ID" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="fullName" column="FULL_NAME" jdbc-type="VARCHAR" nullable="false"  />		
+		<field-descriptor name="unitAdministratorTypeCode" column="UNIT_ADMINISTRATOR_TYPE_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous" />
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="unitAdministratorUnitNumber" column="UNIT_ADMINISTRATOR_UNIT_NUMBER" jdbc-type="VARCHAR" />
+		<!-- <reference-descriptor name="unitAdministratorType" class-ref="org.kuali.coeus.common.framework.unit.UnitAdministratorType" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="unitAdministratorTypeCode"/> 
+		</reference-descriptor> -->
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>			
+	</class-descriptor>
+
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectStatusType" table="EXCON_PROJECT_STATUS_TYPE">
+		<field-descriptor name="exconProjectStatusTypeCode" column="STATUS_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT"  locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+	</class-descriptor>	
+
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectType" table="EXCON_PROJECT_TYPE">
+		<field-descriptor name="exconProjectTypeCode" column="PROJECT_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.customdata.ExconProjectCustomData" table="EXCON_PROJECT_CUSTOM_DATA">
+		<field-descriptor name="exconProjectCustomDataId" column="EXCON_PROJECT_CUSTOM_DATA_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EXCON_PROJECT_CUSTOM_DATA_S" />
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous"/>
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="customAttributeId" column="CUSTOM_ATTRIBUTE_ID" jdbc-type="BIGINT"/>
+		<field-descriptor name="value" column="VALUE" jdbc-type="VARCHAR"/>
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<reference-descriptor name="customAttribute" class-ref="org.kuali.coeus.common.framework.custom.attr.CustomAttribute" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="customAttributeId"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectAttachment" table="EXCON_PROJECT_ATTACHMENTS">
+		<field-descriptor name="exconProjectAttachmentId" column="PROJECT_ATTACHMENT_ID" jdbc-type="BIGINT" primarykey="true" sequence-name="EXCON_PROJECT_ATTACHMENT_S" autoincrement="true"/>
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" />
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="typeCode" column="TYPE_CODE" jdbc-type="VARCHAR" nullable="false"/>
+		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="INTEGER" />
+		<field-descriptor name="fileId" column="FILE_ID" jdbc-type="BIGINT" nullable="false"/>
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+
+		<reference-descriptor name="type" class-ref="org.kuali.kra.excon.project.ExconProjectAttachmentType" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="typeCode"/>
+		</reference-descriptor>
+		
+		<reference-descriptor name="file" proxy="true" class-ref="org.kuali.coeus.common.framework.attachment.AttachmentFile" auto-retrieve="true" auto-update="object" auto-delete="true">
+			<foreignkey field-ref="fileId"/>
+		</reference-descriptor>		
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectAttachmentType" table="EXCON_PROJECT_ATTACHMENT_TYPE">
+		<field-descriptor name="exconProjectAttachmentTypeCode" column="TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
+	 
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectRestrictedCountry" table="EXCON_PROJECT_RSTRCT_CNTRY">
+		<field-descriptor name="postalCountryCode" column="POSTAL_CNTRY_CD" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="sanctionListCode" column="SANCTION_LIST_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectEmailContent" table="EXCON_PROJECT_EMAIL_CONTENT">
+		<field-descriptor name="contentCode" column="CONTENT_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="contentTypeCode" column="CONTENT_TYPE_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="fileName" column="FILE_NAME" jdbc-type="VARCHAR" />
+		<field-descriptor name="contentType" column="CONTENT_TYPE" jdbc-type="VARCHAR" />
+		<field-descriptor name="attachmentContent" column="CONTENT" jdbc-type="BLOB" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<reference-descriptor name="contentTypeObj" class-ref="org.kuali.kra.excon.project.ExconProjectContentType" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="contentTypeCode"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectContentType" table="EXCON_PROJECT_CNTNT_TYPE_CODE">
+		<field-descriptor name="contentTypeCode" column="CONTENT_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>	
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectRestrictedUnit" table="EXCON_PROJECT_RSTRCT_UNIT">
+		<field-descriptor name="unitNumber" column="unit_number" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<reference-descriptor name="unit" class-ref="org.kuali.coeus.common.framework.unit.Unit" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="unitNumber"/> 
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectTravelerCommunication" table="EXCON_PROJECT_TRAVELER_COM">
+		<field-descriptor name="projectTravelerComId" column="project_traveler_com_id" jdbc-type="BIGINT" primarykey="true" sequence-name="EXCON_PROJECT_TRAVELER_COM_S" autoincrement="true"/> 
+		<field-descriptor name="personId" column="person_id" jdbc-type="VARCHAR" access="anonymous" />
+		<field-descriptor name="communicationDate" column="communication_date" jdbc-type="DATE"/>
+		<field-descriptor name="emailBodyContentCode" column="email_body_content_code" jdbc-type="VARCHAR" />
+		<field-descriptor name="emailAttachmentContentCode" column="email_attachment_content_code" jdbc-type="VARCHAR" />
+		<field-descriptor name="agendaContentCode" column="agenda_content_code" jdbc-type="VARCHAR" />
+		<field-descriptor name="travelComment" column="travel_comment" jdbc-type="CLOB" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<reference-descriptor name="traveler" class-ref="org.kuali.kra.excon.project.ExconProjectTraveler" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="personId"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectExternalInstitution" table="EXCON_PROJECT_EXT_INSTS">
+		<field-descriptor name="projectExternalInstitutionId" column="project_ext_inst_id" jdbc-type="BIGINT" primarykey="true" sequence-name="EXCON_PROJECT_EXT_INSTS_S" autoincrement="true"/>
+		<field-descriptor name="rolodexId" column="ROLODEX_ID" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />		
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		
+		<reference-descriptor name="rolodexEntry" class-ref="org.kuali.coeus.common.framework.rolodex.Rolodex" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="rolodexId"/>
+		</reference-descriptor>
+				    
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectReview" table="EXCON_PROJECT_REVIEWS">
+		<field-descriptor name="exconProjectReviewId" column="project_review_id" jdbc-type="BIGINT" primarykey="true" sequence-name="EXCON_PROJECT_REVIEWS_S" autoincrement="true"/>
+		<field-descriptor name="projectReviewTypeCode" column="review_type_code" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="reviewComment" column="review_comment" jdbc-type="VARCHAR" />
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />		
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+				    
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectAssociatedDocument" table="EXCON_PROJECT_ASSOC_DOCS">
+		<field-descriptor name="exconProjectAssocDocId" column="assoc_doc_id" jdbc-type="BIGINT" primarykey="true" sequence-name="EXCON_PROJECT_ASSOC_DOCS_S" autoincrement="true"/>
+		<field-descriptor name="assocDocTypeCode" column="assoc_doc_type_code" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="assocDocNumber" column="assoc_doc_number" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="assocDocTitle" column="assoc_doc_title" jdbc-type="VARCHAR" />
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />		
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" access="anonymous" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+				    
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+		
+		<reference-descriptor name="assocDocType" class-ref="org.kuali.kra.excon.project.ExconProjectAssociatedDocumentType" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="assocDocTypeCode"/>
+		</reference-descriptor>
+	</class-descriptor>	
+	
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectAssociatedDocumentType" table="EXCON_PROJECT_ASSOC_DOC_TYPE">
+		<field-descriptor name="assocDocTypeCode" column="assoc_doc_type_code" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="assocDocTypeName" column="assoc_doc_type_name" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="assocDocTypeClassName" column="assoc_doc_type_class_name" jdbc-type="VARCHAR" />
+		<field-descriptor name="assocDocTypeNumberAttr" column="assoc_doc_type_nbr_attr" jdbc-type="VARCHAR" />
+		<field-descriptor name="returnsVals" column="RETURNS_VALS" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />		
+	</class-descriptor>	
+	
+</descriptor-repository>

@@ -1,0 +1,170 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectReview" parent="ExconProjectReview-parentBean" />
+
+  <bean id="ExconProjectReview-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectReview" />
+		<property name="objectLabel" value="ExconProjectReview" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProjectReview-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProjectReview-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="exconProjectReview" />
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProjectReview-exconProjectReviewId" />
+        <ref bean="ExconProjectReview-projectReviewTypeCode" />
+        <ref bean="ExconProjectReview-projectId" />
+        <ref bean="ExconProjectReview-reviewComment" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="ExconProjectReview-exconProjectReviewId" parent="ExconProjectReview-exconProjectReviewId-parentBean" />
+  <bean id="ExconProjectReview-exconProjectReviewId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="exconProjectReviewId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Export Control Review ID" />
+    <property name="shortLabel" value="Export Control Review ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Export Control Review ID" />
+    <property name="description" value="Export Control Review ID" />
+  </bean>
+    
+  <bean id="ExconProjectReview-projectId" parent="ExconProjectReview-projectId-parentBean" />
+  <bean id="ExconProjectReview-projectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project ID" />
+    <property name="shortLabel" value="Project ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project ID" />
+    <property name="description" value="Project ID" />
+  </bean>
+  
+  <bean id="ExconProjectReview-projectReviewTypeCode" parent="ExconProjectReview-projectReviewTypeCode-parentBean" />
+  <bean id="ExconProjectReview-projectReviewTypeCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="projectReviewTypeCode" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Review Type Code" />
+    <property name="shortLabel" value="Review Type Code" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectReviewTypeCodeFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="true"
+            p:keyAttribute="value"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Review Type Code" />
+    <property name="description" value="Review Type Code" />
+  </bean>
+  
+  <bean id="ExconProjectReview-reviewComment" parent="ExconProjectReview-reviewComment-parentBean" />
+  <bean id="ExconProjectReview-reviewComment-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="reviewComment" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Comment" />
+    <property name="shortLabel" value="Comment" />
+    <property name="maxLength" value="100" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="80" />
+    </property>
+    <property name="summary" value="Comment" />
+    <property name="description" value="Comment" />
+  </bean>
+
+    <bean id="ExconProjectReview-updateUser" parent="ExconProjectReview-updateUser-parentBean" />
+	<bean id="ExconProjectReview-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProjectReview-updateTimestamp" parent="ExconProjectReview-updateTimestamp-parentBean" />
+	<bean id="ExconProjectReview-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+	 
+    <bean id="ExconProjectReview-inquiryDefinition" parent="ExconProjectReview-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProjectReview-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Export Control Project Event" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Export Control Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectReviewId" parent="FieldDefinition" />
+			    <bean p:attributeName="projectReviewTypeCode" parent="FieldDefinition" />
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectReview-lookupDefinition" parent="ExconProjectReview-lookupDefinition-parentBean" />
+  	<bean id="ExconProjectReview-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Lookup Review" />
+		<property name="lookupableID" value="exconProjectReviewLookup" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectReviewId" parent="FieldDefinition" />
+			    <bean p:attributeName="projectReviewTypeCode" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectReviewId" parent="FieldDefinition" />
+			    <bean p:attributeName="projectReviewTypeCode" parent="FieldDefinition" />	
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

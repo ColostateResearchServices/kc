@@ -1,0 +1,221 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="ExconProjectAttachment" parent="ExconProjectAttachment-parentBean" />
+
+  <bean id="ExconProjectAttachment-parentBean" abstract="true" parent="BusinessObjectEntry">
+    <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectAttachment" />
+		<property name="objectLabel" value="ExconProjectAttachment" />
+    <property name="inquiryDefinition" >
+      <ref bean="ExconProjectAttachment-inquiryDefinition" />
+    </property>
+    <property name="lookupDefinition" >
+      <ref bean="ExconProjectAttachment-lookupDefinition" />
+    </property>
+    
+    <property name="titleAttribute" value="exconProjectAttachment" />
+    <property name="attributes" >
+      <list>
+      	<ref bean="ExconProjectAttachment-exconProjectAttachmentId" />
+      	<ref bean="ExconProjectAttachment-fileId" />
+        <ref bean="ExconProjectAttachment-exconProjectId" />
+        <ref bean="ExconProjectAttachment-typeCode" />
+        <ref bean="ExconProjectAttachment-documentId" /> 
+        <ref bean="ExconProjectAttachment-description" /> 
+        <ref bean="ExconProjectAttachment-updateUser" />
+        <ref bean="ExconProjectAttachment-updateTimestamp" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="ExconProjectAttachment-exconProjectAttachmentId" parent="ExconProjectAttachment-exconProjectAttachmentId-parentBean" />
+  <bean id="ExconProjectAttachment-exconProjectAttachmentId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="exconProjectAttachmentId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Export Control Attachment ID" />
+    <property name="shortLabel" value="Export Control Attachment ID" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Export Control Attachment ID" />
+    <property name="description" value="Export Control Attachment ID" />
+  </bean>
+  
+  <bean id="ExconProjectAttachment-fileId" parent="ExconProjectAttachment-fileId-parentBean" />
+  <bean id="ExconProjectAttachment-fileId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="fileId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="File Id" />
+    <property name="shortLabel" value="File Id" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="File Id" />
+    <property name="description" value="File Id" />
+  </bean>
+  
+  <bean id="ExconProjectAttachment-exconProjectId" parent="ExconProjectAttachment-exconProjectId-parentBean" />
+  <bean id="ExconProjectAttachment-exconProjectId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="exconProjectId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Project Id" />
+    <property name="shortLabel" value="Project Id" />
+    <property name="maxLength" value="22" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Project Id" />
+    <property name="description" value="Project Id" />
+  </bean>
+  
+  <bean id="ExconProjectAttachment-typeCode" parent="ExconProjectAttachment-typeCode-parentBean" />
+  <bean id="ExconProjectAttachment-typeCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="typeCode" />
+    <property name="forceUppercase" value="true" />
+    <property name="label" value="Type Code" />
+    <property name="shortLabel" value="Type Code" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern" >
+      <bean parent="AlphaNumericValidationPattern" />
+    </property>
+    <property name="required" value="true" />
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:businessObjectClass="org.kuali.kra.excon.project.ExconProjectAttachmentType"
+            p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="false"
+            p:keyAttribute="exconProjectAttachmentTypeCode"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Type Code" />
+    <property name="description" value="Type Code" />
+  </bean>
+
+  <bean id="ExconProjectAttachment-documentId" parent="ExconProjectAttachment-documentId-parentBean" />
+  <bean id="ExconProjectAttachment-documentId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="documentId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Document ID" />
+    <property name="shortLabel" value="Document ID" />
+    <property name="maxLength" value="4" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="12" />
+    </property>
+    <property name="summary" value="Document ID" />
+    <property name="description" value="Document ID" />
+  </bean>
+
+  <bean id="ExconProjectAttachment-description" parent="ExconProjectAttachment-description-parentBean" />
+  <bean id="ExconProjectAttachment-description-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="description" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Description" />
+    <property name="shortLabel" value="Description" />
+    <property name="required" value="false" />
+    <property name="control" >
+      <bean parent="TextControlDefinition"
+            p:size="60" />
+    </property>
+    <property name="summary" value="Description" />
+    <property name="description" value="Description" />
+  </bean>
+  
+    <bean id="ExconProjectAttachment-updateUser" parent="ExconProjectAttachment-updateUser-parentBean" />
+	<bean id="ExconProjectAttachment-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+		<property name="name" value="updateUser" />
+		<property name="label" value="Last Update User" />
+		<property name="shortLabel" value="Last Update User" />
+	</bean>
+	
+  	<bean id="ExconProjectAttachment-updateTimestamp" parent="ExconProjectAttachment-updateTimestamp-parentBean" />
+	<bean id="ExconProjectAttachment-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+		<property name="name" value="updateTimestamp" />
+		<property name="label" value="Last Update" />
+		<property name="shortLabel" value="Last Update" />
+	</bean>
+  
+    <bean id="ExconProjectAttachment-inquiryDefinition" parent="ExconProjectAttachment-inquiryDefinition-parentBean" />
+
+  <bean id="ExconProjectAttachment-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+    <property name="title" value="Export Control Project Attachment" />
+    <property name="inquirySections" >
+      <list>
+        <bean parent="InquirySectionDefinition">
+          <property name="title" value="Export Control Project" />
+          <property name="numberOfColumns" value="1" />
+          <property name="inquiryFields" >
+            <list>
+			  	<bean p:attributeName="exconProjectId" p:forceInquiry="true" parent="FieldDefinition" />
+		    	<bean p:attributeName="exconProjectAttachmentId" parent="FieldDefinition" />
+			  	<bean p:attributeName="fileId" parent="FieldDefinition" />
+			  	<bean p:attributeName="typeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="documentId" parent="FieldDefinition" />
+			    <bean p:attributeName="description" parent="FieldDefinition" />		
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+	
+  	<!-- Business Object Lookup Definition -->
+	<bean id="ExconProjectAttachment-lookupDefinition" parent="ExconProjectAttachment-lookupDefinition-parentBean" />
+  	<bean id="ExconProjectAttachment-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Excon Project Attachment Lookup" />
+		<property name="lookupableID" value="exconProjectAttachmentLookup" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+			  	<bean p:attributeName="exconProjectAttachmentId" parent="FieldDefinition" />
+			  	<bean p:attributeName="exconProjectId" parent="FieldDefinition" />
+			  	<bean p:attributeName="fileId" parent="FieldDefinition" />
+			  	<bean p:attributeName="typeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="documentId" parent="FieldDefinition" />
+			    <bean p:attributeName="description" parent="FieldDefinition" />
+		  </list>
+		</property>
+		<property name="resultFields" >
+		  <list>
+		    	<bean p:attributeName="exconProjectId" p:forceInquiry="true" parent="FieldDefinition" />
+		    	<bean p:attributeName="exconProjectAttachmentId" parent="FieldDefinition" />
+		    	<bean p:attributeName="fileId" parent="FieldDefinition" />
+			  	<bean p:attributeName="typeCode" parent="FieldDefinition" />
+			    <bean p:attributeName="documentId" parent="FieldDefinition" />
+			    <bean p:attributeName="description" parent="FieldDefinition" />		
+		  </list>
+		</property>
+		<property name="resultSetLimit" value="50" />
+	</bean>
+  
+</beans>

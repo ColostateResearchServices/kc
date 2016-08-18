@@ -139,6 +139,7 @@
                 <bean p:attributeName="accountNumber" parent="FieldDefinition"/>
                 <bean p:attributeName="coaCode" parent="FieldDefinition"/>
                 <bean p:attributeName="awardAccountList.reservationUser" parent="FieldDefinition"/>
+			  	<bean p:attributeName="accountUsed" p:defaultValue="N" parent="FieldDefinition" />
             </list>
         </property>
         <property name="resultFields">
@@ -146,6 +147,7 @@
                 <bean p:attributeName="accountNumber" parent="FieldDefinition"/>
                 <bean p:attributeName="coaCode" parent="FieldDefinition"/>
                 <bean p:attributeName="awardAccount.reservationUser" parent="FieldDefinition"/>
+			  	<bean p:attributeName="accountUsed" parent="FieldDefinition" />
             </list>
         </property>
         <property name="resultSetLimit" value="50"/>
