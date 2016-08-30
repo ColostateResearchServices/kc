@@ -1,0 +1,71 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic);
+
+body {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  color: #333333;
+  background-color: #aa003e;
+}
+.headerarea {
+  height: 72px;
+  padding-bottom: 10px;
+}
+.horz-links-bkgrnd {
+  background: #efefef;
+  padding: 0px;
+}
+.horz-links-bkgrnd #tabs {
+  border-bottom: 1px solid #DDDDDD;
+  height: 30px;
+  background: #ffffff;
+  margin-bottom: 0px;
+}
+#workarea > table.tab {
+  min-height: 20px;
+  margin-bottom: 0px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  border-collapse: separate !important;
+  padding: 5px, 0px, 0px, 0px;
+}
+
+#workarea .tab-container h3 .subhead-left {
+  font-size: 18px;
+  font-weight: normal;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: #999999;
+  width: 100%;
+  padding-bottom: 5px;
+}
+#workarea .tab-container table {
+  width: 100%;
+  margin-bottom: 0px;
+  clear: both;
+}
+#workarea .tab-container table td,
+#workarea .tab-container table th {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #efefef;
+  padding: 1px;
+}
+.kc-applicationFooter {
+  background-color: #2a5135;
+  color: #FFF;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
+  padding-top: 20px;
+  background-repeat: no-repeat;
+  background-position: right 5px;
+  height: 95px;
+}

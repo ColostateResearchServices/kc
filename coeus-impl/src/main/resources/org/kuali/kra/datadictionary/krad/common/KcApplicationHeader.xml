@@ -32,6 +32,7 @@
                 <value>css/common/core.css</value>
                 <value>rice-contrib/plugins/bootstrap-select/bootstrap-select.css</value>
                 <value>rice-contrib/multiselect.css</value>
+                <value>css/colostate/css/colostate-override.css</value>
             </list>
         </property>
         <property name="scriptFiles">
