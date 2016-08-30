@@ -38,5 +38,84 @@
    		</property>
    </bean>
 
+	<bean id="AwardExtension-awardAlternateNumberId" parent="AttributeDefinition">
+      <property name="name" value="awardAlternateNumberId" />
+	  <property name="label" value="Alternate Award Id" />
+	  <property name="shortLabel" value="Alt Awd Id" />
+	  <property name="forceUppercase" value="true" />
+	  <property name="maxLength" value="80" />
+	  <property name="required" value="false" />
+	  <property name="control">
+	    <bean parent="TextControlDefinition" p:size="20" />
+	  </property>
+	  <property name="validationPattern">
+	    <bean parent="AlphaNumericValidationPattern" />
+	  </property>
+
+	</bean>
+
+
+	<bean id="AwardExtension-awardAlternateNumber.description" parent="AttributeDefinition">
+      <property name="name" value="awardAlternateNumber.description" />
+	  <property name="label" value="Alternate Award Number Description" />
+	  <property name="shortLabel" value="Alt Awd Num Desc" />
+	  <property name="forceUppercase" value="false" />
+	  <property name="maxLength" value="80" />
+	  <property name="required" value="true" />
+	  <property name="validationPattern">
+			<bean p:allowWhitespace="true" parent="AnyCharacterValidationPattern" />
+	  </property>
+      <property name="control">
+			<bean p:size="60" parent="TextControlDefinition" />
+	  </property>
+		<property name="summary"
+			value="The Alternate Award Number description." />
+		<property name="description"
+			value="The Alternate Award Number description." />
+	</bean>
+
+	<bean id="AwardExtension-awardAlternateNumber.number" parent="AttributeDefinition">
+      <property name="name" value="awardAlternateNumber.number" />
+	  <property name="label" value="Alternate Award Number" />
+	  <property name="shortLabel" value="Alt Awd Num" />
+	  <property name="forceUppercase" value="false" />
+	  <property name="maxLength" value="40" />
+	  <property name="required" value="true" />
+	  <property name="validationPattern">
+			<bean p:allowWhitespace="true" parent="AnyCharacterValidationPattern" />
+	  </property>
+      <property name="control">
+			<bean p:size="20" parent="TextControlDefinition" />
+	  </property>
+		<property name="summary"
+			value="The Alternate Award Number." />
+		<property name="description"
+			value="The Alternate Award Number." />
+	</bean>
+
+	<bean id="AwardExtension-awardAlternateNumber.showOnInvoice" parent="AttributeReferenceDummy-genericBoolean">
+      <property name="name" value="awardAlternateNumber.showOnInvoice" />
+	  <property name="label" value="Show On Invoice" />
+	  <property name="shortLabel" value="showOnInvoice" />
+       <property name="summary" value="Show On Invoice Flag" />
+        <property name="description" value="Show On Invoice Flag" />
+	</bean>
+
+
+
+
+<!-- 	<bean id="Award-awardAlternateNumbers.awardAlternateNumberId"
+		parent="Award-awardAlternateNumbers.awardAlternateNumberId-parentBean" />
+	<bean id="Award-awardAlternateNumbers.awardAlternateNumberId-parentBean"
+		abstract="true" parent="AwardExtension-awardAlternateNumberId">
+		<property name="name" value="awardAlternateNumbers.awardAlternateNumberId" />
+		<property name="label" value="Award Alternate Number" />
+		<property name="shortLabel" value="Award Alternate Number" />
+	</bean> -->
+
+
+
+
+
 </beans>
 

@@ -29,12 +29,11 @@ public final class CSUKeyConstants {
     public static final String CSU_PHS_SPONSOR_HIERARCHY_NAME = "CSU_PHS_SPONSOR_HIERARCHY_NAME";
     
 
-    
     public static final String CSU_AWARD_ALT_NBR_EMPTY_NBR = "error.award.alternate.nbr.number.empty";
     public static final String CSU_AWARD_ALT_NBR_EMPTY_TYPE = "error.award.alternate.nbr.type.empty";
 
     public static final String CSU_AWARD_CENTRAL_ADMIN_CONTACT_NAME = "error.award.central.admin.contact.name.empty";
-    
+
     public static final String INCL_PAYMNT_INV_ON_COPY = "INCLUDE_PAYMNT_INV_REQMTS_ON_COPY";
     public static final String ADD_ANOTHER_FE_QUESTION = "coi.fe.add.another.dialog";
     
@@ -47,4 +46,6 @@ public final class CSUKeyConstants {
     public static final String ERROR_PROTOCOL_ATTACHMENT_FILE_NULL="The attachment file is null.";
 
 	public static final String HIDE_AND_DEFAULT_NEGOTIATION_DOC_DESC_PARAM = "HIDE_AND_DEFAULT_NEGOTIATION_DOC_DESC_PARAM";
+
+
 }

@@ -155,6 +155,14 @@
                 <value>classpath:org/kuali/kra/datadictionary/AwardTransferringSponsor.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/AwardType.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/AwardUnitContact.xml</value>
+
+                <value>classpath:org/kuali/kra/datadictionary/AwardExtension.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/AlternateAwardNumber.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/AwardAlternateNumberType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/CsuCentralAdminContact.xml</value>
+
+
+
                 <value>classpath:org/kuali/kra/datadictionary/BatchCorrespondence.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/BatchCorrespondenceDetail.xml</value>
                 <value>classpath:org/kuali/coeus/common/budget/impl/core/Budget.xml</value>
@@ -980,6 +988,8 @@
                 <value>classpath:edu/colostate/kc/datadictionary/AwardAccountReservationDocument.xml</value>
                 <value>classpath:edu/colostate/kc/datadictionary/ResearchAccount.xml</value>
                 <value>classpath:edu/colostate/kc/datadictionary/ReservedAwardAccount.xml</value>
+
+                <value>classpath:org/kuali/kra/datadictionary/CsuCentralAdminContact.xml</value>
 
                 <value>classpath:org/kuali/kra/datadictionary/ExconProject.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/ExconProjectAssociatedDocument.xml</value>

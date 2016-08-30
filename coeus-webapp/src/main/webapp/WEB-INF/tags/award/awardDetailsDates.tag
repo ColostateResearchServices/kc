@@ -180,7 +180,8 @@
 
 <!-- Sponsor -->
 
-<kul:innerTab parentTab="Details & Dates" tabItemCount="" defaultOpen="true" tabTitle="Sponsor" tabErrorKey="" >
+<kul:innerTab parentTab="Details & Dates" tabItemCount="" defaultOpen="true" tabTitle="Sponsor" tabErrorKey=""
+	tabAuditKey="document.awardList[0].sponsorCode,document.awardList[0].cfdaNumber" auditCluster="homePageAuditErrors">
 
 <table cellpadding="0" cellspacing="0" summary="">
     <tr>

@@ -39,6 +39,7 @@
 <kul:documentOverview editingMode="${KualiForm.editingMode}" />
 <kra-a:awardFundingProposals />
 <kra-a:awardDetailsDates />
+<kra-a:awardAlternateAccountIds />
 <kra-a:awardSubaward />
 <kra-a:awardSponsorTemplate />
 
