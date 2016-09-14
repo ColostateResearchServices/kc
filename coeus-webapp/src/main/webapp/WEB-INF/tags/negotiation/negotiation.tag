@@ -16,6 +16,7 @@
    - You should have received a copy of the GNU Affero General Public License
    - along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+
 <%@ include file="/WEB-INF/jsp/kraTldHeader.jsp"%>
 
 <c:set var="negotiationAttributes" value="${DataDictionary.Negotiation.attributes}" />
@@ -26,9 +27,9 @@
 <c:set var="medusaLink" value="${KualiForm.methodToCall eq 'medusa'}"/>
 <script type='text/javascript' src='dwr/interface/KraPersonService.js'></script>
 
-<kul:tab tabTitle="Negotiation" defaultOpen="${!medusaLink}" 
+<kul:tabTop tabTitle="Negotiation" defaultOpen="${!medusaLink}"
 					tabErrorKey="document.negotiationList[0].negotiation*,document.negotiationList[0].negotiator*,document.negotiationList[0].anticipatedAwardDate,document.negotiationList[0].documentFolder,document.negotiationList[0].associatedDocumentId,document.negotiationList[0].unAssociatedDetail*" 
-					auditCluster="requiredFieldsAuditErrors" tabAuditKey="document.title" useRiceAuditMode="true">
+					auditCluster="requiredFieldsAuditErrors" tabAuditKey="document.title">
 	<div class="tab-container" align="center">
     	<h3>
     	    <c:choose><c:when test="${empty KualiForm.document.negotiationList[0].negotiationId}">
@@ -479,4 +480,4 @@
             </c:if>
 		</table>
 	</div>	
-</kul:tab>
+</kul:tabTop>
