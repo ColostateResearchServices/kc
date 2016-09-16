@@ -18,9 +18,12 @@
  */
 package org.kuali.kra.negotiations.document;
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
+
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.common.framework.custom.DocumentCustomData;
 import org.kuali.coeus.sys.framework.model.KcTransactionalDocumentBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.negotiations.bo.Negotiation;
 import org.kuali.kra.negotiations.bo.NegotiationActivity;
@@ -28,6 +31,7 @@ import org.kuali.kra.negotiations.bo.NegotiationActivityAttachment;
 import org.kuali.rice.coreservice.framework.parameter.ParameterConstants;
 import org.kuali.rice.coreservice.framework.parameter.ParameterConstants.COMPONENT;
 import org.kuali.rice.coreservice.framework.parameter.ParameterConstants.NAMESPACE;
+import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
 
@@ -159,4 +163,23 @@ public class NegotiationDocument extends KcTransactionalDocumentBase implements 
         return getNegotiation().getNegotiationId().toString();
         
     }
+
+    public void defaultDocumentDescription() {
+        Negotiation negotiation = getNegotiation();
+        String desc = String.format("%s; NGTR - %s; PI - %s",
+                negotiation.getNegotiationAgreementType()!=null?negotiation.getNegotiationAgreementType().getDescription():"",
+                negotiation.getNegotiatorName(),
+                negotiation.getAssociatedDocument()!=null?negotiation.getAssociatedDocument().getPiName():"");
+        getDocumentHeader().setDocumentDescription(desc);
+    }
+
+    public boolean isDefaultDocumentDescription() {
+        return getParameterService().getParameterValueAsBoolean(NegotiationDocument.class, CSUKeyConstants.HIDE_AND_DEFAULT_NEGOTIATION_DOC_DESC_PARAM);
+    }
+
+    protected ParameterService getParameterService() {
+        return KcServiceLocator.getService(ParameterService.class);
+    }
+
+
 }

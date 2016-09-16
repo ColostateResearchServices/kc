@@ -27,8 +27,11 @@
   	headerDispatch="${KualiForm.headerDispatch}"
   	headerTabActive="paymentReportsAndTerms"
   	extraTopButtons="${KualiForm.extraTopButtons}" >
- 	
- 	<c:set var="readOnly" value="${not KualiForm.editingMode['fullEntry']}" scope="request" />
+
+	<c:set var="financialIntegration" value='<%=org.kuali.rice.coreservice.framework.CoreFrameworkServiceLocator.getParameterService().getParameterValueAsBoolean("KC-AWARD", "Document", "FIN_SYSTEM_INTEGRATION_ON")%>' />
+	<c:set var="awardCgbEnabled" value='<%=org.kuali.rice.coreservice.framework.CoreFrameworkServiceLocator.getParameterService().getParameterValueAsBoolean("KC-AWARD", "Document", "AWARD_CGB_ENABLED")%>' />
+
+	<c:set var="readOnly" value="${not KualiForm.editingMode['fullEntry']}" scope="request" />
 
 <div align="right">
 	<kra:shortUrl shortUrl="${KualiForm.shortUrl}"/>
@@ -36,7 +39,10 @@
 </div>
 
 <kra-a:awardPaymentAndInvoices />
-<kra-a:awardCgb />
+
+<c:if test="${awardCgbEnabled==true && financialIntegration==true}">
+	<kra-a:awardCgb />
+</c:if>
 <kra-a:awardReports />
 <kra-a:awardTerms />
 <kra-a:awardSpecialApproval />

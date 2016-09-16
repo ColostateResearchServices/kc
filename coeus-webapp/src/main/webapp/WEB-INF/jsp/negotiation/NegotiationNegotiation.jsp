@@ -20,6 +20,12 @@
 <%@ include file="/WEB-INF/jsp/kraTldHeader.jsp"%>
 
 <c:set var="negotiationAttributes" value="${DataDictionary.NegotiationDocument.attributes}" />
+<c:set var="suppressCancelButton" value="false" />
+
+<c:if test="${KualiForm.documentActions['canReload']}">
+	<c:set var="suppressCancelButton" value="true" />
+</c:if>
+
 
 <kul:documentPage
 	showDocumentInfo="true"
@@ -42,9 +48,14 @@
     <kra:shortUrl shortUrl="${KualiForm.shortUrl}"/>
     <kul:help documentTypeName="NegotiationDocument" pageName="Negotiation" />
 </div>
-<kul:documentOverview editingMode="${KualiForm.editingMode}" />
 
- <kra-negotiation:negotiation />
+<c:if test="${!KualiForm.hideDocDescriptionPanel}">
+	<kul:documentOverview editingMode="${KualiForm.editingMode}" />
+</c:if>
+
+
+<kra-negotiation:negotiation/>
+
 
  <c:if test="${fn:length(KualiForm.customDataHelper.customAttributeGroups) > 0}">
  <kul:tab tabTitle="Custom Data" defaultOpen="false" tabErrorKey="customDataHelper.customDataList*" useRiceAuditMode="false">
@@ -69,7 +80,8 @@
 	<kul:documentControls 
 		transactionalDocument="true"
 		suppressRoutingControls="true"
-		extraButtonSource="${extraButtonSource}"
+        suppressCancelButton="${suppressCancelButton}"
+        extraButtonSource="${extraButtonSource}"
 		extraButtonProperty="${extraButtonProperty}"
 		extraButtonAlt="${extraButtonAlt}"
 		viewOnly="${!KualiForm.editingMode['create'] && !KualiForm.editingMode['modify'] && !KualiForm.editingMode['modify_activity']}"
