@@ -33,6 +33,10 @@ public class ArgValueLookup extends KcPersistableBusinessObjectBase {
 
     private String description;
 
+    private boolean actvInd;
+
+
+
     public Long getId() {
         return id;
     }
@@ -63,5 +67,13 @@ public class ArgValueLookup extends KcPersistableBusinessObjectBase {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isActvInd() {
+        return actvInd;
+    }
+
+    public void setActvInd(boolean actvInd) {
+        this.actvInd = actvInd;
     }
 }

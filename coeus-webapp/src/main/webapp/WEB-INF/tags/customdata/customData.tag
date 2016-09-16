@@ -85,16 +85,71 @@
                 	</c:when>
                 	<c:otherwise>
                 		${kfunc:registerEditableProperty(KualiForm, customAttributeId)}
-                        <input size="60" id="${customAttributeId}" type="text" name="${customAttributeId}" value='${fn:escapeXml(customAttributeValue)}' style="${customAttributeErrorStyle}"/>
 
+
+						<c:if test="${customAttributeDocument.customAttribute.customAttributeDataType.description != 'Boolean'  and
+							customAttributeDocument.customAttribute.lookupClass ne 'org.kuali.coeus.common.framework.custom.arg.ArgValueLookup' }">
+							<input size="60" id="${customAttributeId}" type="text" name="${customAttributeId}" value='${customAttributeValue}'
+								   style="${customAttributeErrorStyle}" ${readOnly == 'true' ? "disabled" : ''} />
+						</c:if>
+
+
+
+						<!-- UITSRA-3298  Create Custom Data Field type of DropDown ArgValue -->
 						<c:if test="${not empty customAttributeDocument.customAttribute.lookupClass}">
+							<c:choose>
+								<c:when test="${empty customAttributeValue}" >
+									<c:set var="savedRecord" value="false" />
+								</c:when>
+								<c:otherwise>
+									<c:set var="savedRecord" value="yes" />
+								</c:otherwise>
+							</c:choose>
+							<jsp:useBean id="paramMap"  class="java.util.HashMap"/>
+							<c:set target="${paramMap}" property="argName" value="${customAttributeDocument.customAttribute.lookupReturn}" />
+							<c:set target="${paramMap}" property="savedArgValue" value="${savedRecord}" />
+
+
 						 <c:choose>
-						   <c:when test="${customAttributeDocument.customAttribute.lookupClass eq 'org.kuali.coeus.common.framework.custom.arg.ArgValueLookup'}">
-							<kul:lookup boClassName="${customAttributeDocument.customAttribute.lookupClass}" 
-								lookupParameters="'${customAttributeDocument.customAttribute.lookupReturn}':argumentName"
-								readOnlyFields="argumentName"
-								fieldConversions="value:${customAttributeId}," 
-								fieldLabel="${customAttributeDocument.customAttribute.label}"  anchor="${tabKey}" />
+
+							 <c:when test="${customAttributeDocument.customAttribute.lookupClass eq 'org.kuali.coeus.common.framework.custom.arg.ArgValueLookup' or
+							  customAttributeDocument.customAttribute.customAttributeDataType.description == 'Drop Down List' }">
+								 <c:set var="customDataArgValueLookupId" value="" />
+								 <html:select property="${customAttributeId}" tabindex="0" disabled="${readOnly}"   >
+									 <option value="">select</option>
+									 <c:forEach items="${krafn:getOptionList('edu.iu.uits.kra.lookup.keyvalue.CustomDataArgValueLookupValuesFinder', paramMap)}" var="option">
+										 <c:if test="${!fn:contains(option.key, '(inactive)')}">
+											 <c:choose>
+												 <c:when test="${customAttributeValue == option.value}">
+													 <option value="${option.value}" selected="selected">${option.value}</option>
+													 <c:set var="customDataArgValueLookupId" value="${option.key}" />
+												 </c:when>
+												 <c:otherwise>
+													 <option value="${option.value}">${option.value}</option>
+												 </c:otherwise>
+											 </c:choose>
+										 </c:if>
+
+										 <c:if test="${fn:contains(option.key, '(inactive)')}">
+											 <c:choose>
+												 <c:when test="${customAttributeValue == option.value}">
+													 <option value="${option.value}" selected="selected">${option.value}(inactive)</option>
+													 <c:set var="customDataArgValueLookupId" value="${fn:substringBefore(option.key, '(inactive)')}" />
+												 </c:when>
+												 <c:otherwise>
+													 <c:if test="${!fn:contains(option.key, '(inactive)')}">
+														 <option value="${option.value}">${option.value}</option>
+													 </c:if>
+												 </c:otherwise>
+											 </c:choose>
+										 </c:if>
+									 </c:forEach>
+								 </html:select>
+
+								 <!-- End of UITSRA-3298 -->
+
+
+
 						   </c:when>
 						   <c:otherwise>						   
 							<kul:lookup boClassName="${customAttributeDocument.customAttribute.lookupClass}" fieldConversions="${customAttributeDocument.customAttribute.lookupReturn}:${customAttributeId}," fieldLabel="${customAttributeDocument.customAttribute.label}"  anchor="${tabKey}"/>
@@ -118,6 +173,17 @@
 						</c:if>
 						</c:otherwise>
 					</c:choose>
+
+					<!-- IU Customization Starts: UITSRA-3070 -->
+					<c:if test="${customAttributeDocument.customAttribute.customAttributeDataType.description == 'Boolean'}">
+
+						<input type="radio" class="Custom Data answer QanswerYesNo" name="${customAttributeId}" value="Y"
+							${customAttributeValue == 'Y' ? "checked='true'" : ''} />Yes
+						<input type="radio" class="Custom Data answer QanswerYesNo" name="${customAttributeId}" value="N"
+							${customAttributeValue == 'N' ? "checked='true'" : ''} />No
+					</c:if>
+					<!-- IU Customization Ends -->
+
 				</td>
 			</tr>
 		</c:if>

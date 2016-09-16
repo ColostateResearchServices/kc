@@ -43,6 +43,24 @@ public class CustomAttributeDocument extends KcPersistableBusinessObjectBase imp
 
     private boolean active;
 
+
+    private Integer sortId;
+
+    /**
+     * @return the sortId
+     */
+    public Integer getSortId() {
+        return sortId;
+    }
+
+    /**
+     * @param sortId the sortId to set
+     */
+    public void setSortId(Integer sortId) {
+        this.sortId = sortId;
+    }
+
+
     public CustomAttributeDocument() {
         super();
     }
