@@ -96,6 +96,8 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
     private List<ExconProjectExternalInstitution> exconProjectExternalInstitutions;
     private List<ExconProjectReview> exconProjectReviews;
     private List<ExconProjectAssociatedDocument> exconProjectAssociatedDocuments;
+	private ExconProjectHRExtension hrExtension;
+	private ExconProjectHRExtension tempHRExtension;
 	private Integer sequenceNumber;
 	private boolean allowUpdateTimestampToBeReset=true;
 	private VersionHistorySearchBo versionHistory;
@@ -510,6 +512,17 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
 	public void setExconProjectCustomDataList(List<ExconProjectCustomData> exconProjectCustomDataList) {
 		this.exconProjectCustomDataList=exconProjectCustomDataList;
 	}
+
+	public ExconProjectHRExtension getHrExtension() {
+		if (hrExtension==null) {
+			this.refreshReferenceObject("hrExtension");
+		}
+		return hrExtension;
+	}
+
+	public void setHrExtension(ExconProjectHRExtension hrExtension) {
+		this.hrExtension = hrExtension;
+	}
 		 
     public void add(ExconProjectEvent newExconProjectEvent) {
     	exconProjectEvents.add(newExconProjectEvent);
@@ -604,8 +617,14 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
     protected void initialize() {
     	setProjectNumber("000000");
     	setSequenceNumber(1);
+		initHRExtension();
         return;
     }
+
+	protected void initHRExtension() {
+		hrExtension=new ExconProjectHRExtension();
+		hrExtension.setExconProject(this);
+	}
 
 	/**.
 	 * This is the Getter Method for initializeCollections
@@ -813,4 +832,31 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
         }
     }
 
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void preUpdate() {
+		super.preUpdate();
+		if (getHrExtension()==null) {
+			initHRExtension();
+		}
+		if (getHrExtension().getProjectId()==null && getProjectId()!=null) {
+			getHrExtension().setProjectId(getProjectId());
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void postPersist() {
+		if (getHrExtension()==null) {
+			hrExtension=tempHRExtension;
+			tempHRExtension=null;
+			if (getHrExtension()==null) {
+				initHRExtension();
+			}
+			getHrExtension().setExconProject(this);
+			getHrExtension().setProjectId(this.getProjectId());
+		}
+		super.postPersist();
+	}
 }

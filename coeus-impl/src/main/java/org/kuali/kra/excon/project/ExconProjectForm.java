@@ -16,6 +16,12 @@ import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kns.web.ui.HeaderField;
+import org.kuali.rice.kim.api.permission.PermissionService;
+import org.kuali.rice.kns.datadictionary.HeaderNavigation;
+import org.kuali.rice.krad.util.GlobalVariables;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import java.util.Map;
 
@@ -242,4 +248,31 @@ public class ExconProjectForm extends KcTransactionalDocumentFormBase
             initialize();
         }
     }
+
+
+	/**
+	 * Gets the headerNavigationTabs attribute.
+	 *
+	 * @return Returns the headerNavigationTabs.
+	 */
+	public HeaderNavigation[] getHeaderNavigationTabs() {
+		ArrayList<HeaderNavigation> visibleTabList = new ArrayList<HeaderNavigation>();
+		String namespace=getExconProject().getNamespace();
+		for (HeaderNavigation thisTab : super.getHeaderNavigationTabs()) {
+			String permName="view"+thisTab.getHeaderTabNavigateTo()+"Tab";
+			if (getPermissionService().isPermissionDefined(namespace, permName)) {
+				if (!getPermissionService().isAuthorized(GlobalVariables.getUserSession().getPrincipalId(), namespace,
+						permName, new HashMap<String,String>())) {
+					continue;
+				}
+			}
+			visibleTabList.add(thisTab);
+		}
+		HeaderNavigation[] visibleTabs=new HeaderNavigation[visibleTabList.size()];
+		return visibleTabList.toArray(visibleTabs);
+	}
+
+	protected PermissionService getPermissionService() {
+		return KcServiceLocator.getService(PermissionService.class);
+	}
 }
