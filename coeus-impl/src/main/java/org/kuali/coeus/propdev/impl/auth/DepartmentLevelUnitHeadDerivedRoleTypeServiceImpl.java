@@ -20,27 +20,36 @@ package org.kuali.coeus.propdev.impl.auth;
 
 import java.util.Map;
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
+import org.kuali.kra.infrastructure.Constants;
+import org.kuali.rice.coreservice.framework.parameter.ParameterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component("departmentLevelUnitHeadDerivedRoleTypeService")
 public class DepartmentLevelUnitHeadDerivedRoleTypeServiceImpl extends ProposalAllUnitAdministratorDerivedRoleTypeServiceImpl {
 
-	private static final String UNIT_HEAD_ADMIN_TYPE_CODE = "3";
+//	private static final String UNIT_HEAD_ADMIN_TYPE_CODE = "7";
 	
-	@Value(UNIT_HEAD_ADMIN_TYPE_CODE)
-	private String unitAdministratorTypeCode;
-	
+//	@Value(UNIT_HEAD_ADMIN_TYPE_CODE)
+//	private String unitAdministratorTypeCode;
+
+	@Autowired
+	@Qualifier("parameterService")
+	private ParameterService parameterService;
+
 	@Override
 	protected String getUnitAdministratorTypeCode(Map<String, String> qualifications, String roleName) {
 		return getUnitAdministratorTypeCode();
 	}
 
 	public String getUnitAdministratorTypeCode() {
-		return unitAdministratorTypeCode;
+		return parameterService.getParameterValueAsString(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT, Constants.PARAMETER_COMPONENT_DOCUMENT, CSUKeyConstants.UNIT_HEAD_ADMIN_TYPE_CODE);
 	}
 
-	public void setUnitAdministratorTypeCode(String unitAdministratorTypeCode) {
-		this.unitAdministratorTypeCode = unitAdministratorTypeCode;
-	}
+//	public void setUnitAdministratorTypeCode(String unitAdministratorTypeCode) {
+//		this.unitAdministratorTypeCode = unitAdministratorTypeCode;
+//	}
 }

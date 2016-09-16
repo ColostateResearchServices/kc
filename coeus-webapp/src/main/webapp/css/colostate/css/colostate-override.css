@@ -69,3 +69,7 @@ body {
   background-position: right 5px;
   height: 95px;
 }
+
+.modal-dialog {
+  top: 107px;
+}

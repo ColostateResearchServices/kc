@@ -22,18 +22,44 @@ package org.kuali.coeus.propdev.impl.auth;
  * Created by tjwilson on 8/8/2016.
  */
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.kuali.coeus.common.framework.unit.UnitService;
+import org.kuali.coeus.common.framework.unit.admin.AbstractUnitAdministrator;
+import org.kuali.coeus.common.framework.unit.admin.UnitAdministrator;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
+import org.kuali.kra.kim.bo.KcKimAttributes;
+import org.kuali.rice.coreservice.framework.parameter.ParameterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.kuali.kra.infrastructure.Constants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-@Component("departmentPreApproverDerivedRoleTypeService")
+@Component("departmentLevelApproverDerivedRoleTypeService")
 public class DepartmentLevelApproverDerivedRoleTypeServiceImpl extends ProposalAllUnitAdministratorDerivedRoleTypeServiceImpl {
 
-    private static final String UNIT_APPROVER_TYPE_CODE = "16";
+    @Autowired
+    @Qualifier("parameterService")
+    private ParameterService parameterService;
 
-    @Value(UNIT_APPROVER_TYPE_CODE)
-    private String unitAdministratorTypeCode;
+    @Autowired
+    @Qualifier("unitService")
+    private UnitService unitService;
+
+//    @Override
+//    public List<? extends AbstractUnitAdministrator> getUnitAdministrators(Map<String, String> qualifiers) {
+//        String unitNumber = qualifiers.get(KcKimAttributes.UNIT_NUMBER);
+//        List<UnitAdministrator> result = new ArrayList<UnitAdministrator>();
+//       if (unitNumber != null) {
+//            result.addAll(unitService.retrieveUnitAdministratorsByUnitNumber(getUnitNumberForPersonUnit(unitService.getUnit(unitNumber))));
+//        }
+//        return result;
+//    }
 
     @Override
     protected String getUnitAdministratorTypeCode(Map<String, String> qualifications, String roleName) {
@@ -41,10 +67,7 @@ public class DepartmentLevelApproverDerivedRoleTypeServiceImpl extends ProposalA
     }
 
     public String getUnitAdministratorTypeCode() {
-        return unitAdministratorTypeCode;
+        return parameterService.getParameterValueAsString(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT, Constants.PARAMETER_COMPONENT_DOCUMENT, CSUKeyConstants.UNIT_APPROVER_TYPE_CODE);
     }
 
-    public void setUnitAdministratorTypeCode(String unitAdministratorTypeCode) {
-        this.unitAdministratorTypeCode = unitAdministratorTypeCode;
-    }
 }

@@ -8,6 +8,8 @@ public final class CSUKeyConstants {
     public static final String UNIT_APPROVER_TYPE_CODE = "csu.unit.approver.type.code";
 
     public static final String UNIT_PREAPPROVER_TYPE_CODE = "csu.unit.preapprover.type.code";
+    
+    public static final String UNIT_HEAD_ADMIN_TYPE_CODE = "csu.unit.head.admin.type.code";
 
     public static final String UNIT_OSPAPPROVER_TYPE_CODE = "csu.unit.ospapprover.type.code";
 
