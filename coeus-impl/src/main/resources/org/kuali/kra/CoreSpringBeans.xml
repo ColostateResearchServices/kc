@@ -1006,6 +1006,7 @@
                 <value>classpath:org/kuali/kra/datadictionary/ExconProjectEvent.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/ExconProjectEventType.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/ExconProjectExternalInstitution.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/ExconProjectHRExtension.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/ExconProjectPerson.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/ExconProjectPersonRoleType.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/ExconProjectUnitPersonRoleType.xml</value>

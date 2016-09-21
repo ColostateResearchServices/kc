@@ -50,8 +50,8 @@ public class ExconProjectLookupableHelperServiceImpl extends KraLookupableHelper
     public List<? extends BusinessObject>
     getSearchResults(Map<String, String> fieldValues) {
         super.setBackLocationDocFormKey(fieldValues);
-        String projectNumber = fieldValues.get(PROJECT_NUMBER);
-        fieldValues.remove(PROJECT_NUMBER);
+    //    String projectNumber = fieldValues.get(PROJECT_NUMBER);
+    //    fieldValues.remove(PROJECT_NUMBER);
         fieldValues.remove(ExconProject.EXCON_SEQUENCE_STATUS_PROPERTY_STRING);
         fieldValues.put(ExconProject.EXCON_SEQUENCE_STATUS_PROPERTY_STRING, VersionStatus.ACTIVE.toString());
         List<ExconProject> unboundedResults =

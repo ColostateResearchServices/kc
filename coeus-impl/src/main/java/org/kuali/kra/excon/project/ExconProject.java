@@ -835,6 +835,16 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
         }
     }
 
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void prePersist() {
+		super.prePersist();
+		if (getProjectId()==null) {
+			tempHRExtension=hrExtension;
+			hrExtension=null;
+		}
+
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
