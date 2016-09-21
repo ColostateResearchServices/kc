@@ -769,7 +769,8 @@
           	<forward name="events" path="/WEB-INF/jsp/excon/ExconProjectEvents.jsp" />
           	<forward name="destinations" path="/WEB-INF/jsp/excon/ExconProjectDestinations.jsp" />
           	<forward name="commentsAndAttachments" path="/WEB-INF/jsp/excon/ExconProjectCommentsAndAttachments.jsp" />
-          	<forward name="customData" path="/WEB-INF/jsp/excon/ExconProjectCustomData.jsp" />
+            <forward name="backgroundCheck" path="/WEB-INF/jsp/excon/ExconProjectBackgroundCheck.jsp" />
+            <forward name="customData" path="/WEB-INF/jsp/excon/ExconProjectCustomData.jsp" />
           	<forward name="projectActions" path="/WEB-INF/jsp/excon/ExconProjectActions.jsp" />
 		</action>
 

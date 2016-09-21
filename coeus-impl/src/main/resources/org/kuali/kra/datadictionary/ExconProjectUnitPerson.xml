@@ -129,15 +129,19 @@
     <property name="forceUppercase" value="true" />
     <property name="label" value="Unit Administrator Type Code" />
     <property name="shortLabel" value="Unit Administrator Type Code" />
-    <property name="maxLength" value="3" />
+    <property name="maxLength" value="5" />
     <property name="validationPattern" >
       <bean parent="AlphaNumericValidationPattern" />
     </property>
     <property name="required" value="true" />
     <property name="control" >
-       <bean parent="SelectControlDefinition"
-       		p:includeBlankRow="true"
-			p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectUnitContactTypeValuesFinder" />
+        <bean parent="SelectControlDefinition"
+              p:businessObjectClass="org.kuali.kra.excon.project.ExconProjectUnitPersonRoleType"
+              p:valuesFinderClass="org.kuali.kra.lookup.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+              p:includeKeyInLabel="false"
+              p:includeBlankRow="false"
+              p:keyAttribute="exconProjectUnitPersonRoleTypeCode"
+              p:labelAttribute="description" />
     </property>
     <property name="summary" value="Unit Administrator Type Code" />
     <property name="description" value="Unit Administrator Type Code" />

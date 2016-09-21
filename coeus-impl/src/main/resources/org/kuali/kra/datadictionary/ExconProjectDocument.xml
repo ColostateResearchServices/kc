@@ -56,7 +56,14 @@
           </property>
           <property name="headerTabDisplayName" value="Comments &amp; Attachments"/>
           <property name="headerTabNavigateTo" value="commentsAndAttachments"/>
-        </bean>   
+        </bean>
+        <bean parent="HeaderNavigation">
+          <property name="helpDefinition">
+            <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconBackgroundCheckHelp" p:parameterDetailType="Document"/>
+          </property>
+          <property name="headerTabDisplayName" value="Background Check"/>
+          <property name="headerTabNavigateTo" value="backgroundCheck"/>
+        </bean>
         <bean parent="HeaderNavigation">
           <property name="helpDefinition">
             <bean parent="HelpDefinition" p:parameterNamespace="KC-EXCON" p:parameterName="exconCustomDataHelp" p:parameterDetailType="Document"/>

@@ -1,0 +1,530 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="ExconProjectHRExtension" parent="ExconProjectHRExtension-parentBean" />
+
+    <bean id="ExconProjectHRExtension-parentBean" abstract="true" parent="BusinessObjectEntry">
+        <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectHRExtension" />
+        <property name="objectLabel" value="ExconProjectHRExtension" />
+        <property name="inquiryDefinition" >
+            <ref bean="ExconProjectHRExtension-inquiryDefinition" />
+        </property>
+        <property name="lookupDefinition" >
+            <ref bean="ExconProjectHRExtension-lookupDefinition" />
+        </property>
+
+        <property name="titleAttribute" value="projectId" />
+        <property name="helpDefinition" >
+            <bean parent="HelpDefinition"
+                  p:parameterNamespace="KC-EXCON"
+                  p:parameterName="exconProjectHelpUrl"
+                  p:parameterDetailType="Document" />
+        </property>
+        <property name="attributes" >
+            <list>
+                <ref bean="ExconProjectHRExtension-requestType" />
+                <ref bean="ExconProjectHRExtension-employeeType" />
+                <ref bean="ExconProjectHRExtension-jobCode" />
+                <ref bean="ExconProjectHRExtension-bcResult" />
+                <ref bean="ExconProjectHRExtension-bcStatus" />
+                <ref bean="ExconProjectHRExtension-selfDisclosed" />
+                <ref bean="ExconProjectHRExtension-criminalDiscrepancy" />
+                <ref bean="ExconProjectHRExtension-criminalOffenses" />
+                <ref bean="ExconProjectHRExtension-mvrDiscrepancy" />
+                <ref bean="ExconProjectHRExtension-notes" />
+                <ref bean="ExconProjectHRExtension-contact" />
+                <ref bean="ExconProjectHRExtension-criminalCheck" />
+                <ref bean="ExconProjectHRExtension-criminalPrevious" />
+                <ref bean="ExconProjectHRExtension-mvrCheck" />
+                <ref bean="ExconProjectHRExtension-mvrPrevious" />
+                <ref bean="ExconProjectHRExtension-stateCheck" />
+                <ref bean="ExconProjectHRExtension-creditCheck" />
+                <ref bean="ExconProjectHRExtension-sexOffenderCheck" />
+                <ref bean="ExconProjectHRExtension-educationCheck" />
+                <ref bean="ExconProjectHRExtension-ssnNoData" />
+                <ref bean="ExconProjectHRExtension-hardCopyReq" />
+                <ref bean="ExconProjectHRExtension-candDispute" />
+                <ref bean="ExconProjectHRExtension-rerunReason" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ExconProjectHRExtension-requestType" parent="ExconProjectHRExtension-requestType-parentBean" />
+    <bean id="ExconProjectHRExtension-requestType-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="requestType" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Request Type" />
+        <property name="shortLabel" value="Request Type" />
+        <property name="maxLength" value="3" />
+        <property name="validationPattern" >
+            <bean parent="NumericValidationPattern" />
+        </property>
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="SelectControlDefinition"
+                  p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectHRRequestTypeCodeFinder"
+                  p:includeKeyInLabel="false"
+                  p:includeBlankRow="true"
+                  p:keyAttribute="value"
+                  p:labelAttribute="description" />
+        </property>
+        <property name="summary" value="Request Type" />
+        <property name="description" value="Request Type" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-employeeType" parent="ExconProjectHRExtension-employeeType-parentBean" />
+    <bean id="ExconProjectHRExtension-employeeType-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="employeeType" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Employee Type" />
+        <property name="shortLabel" value="Employee Type" />
+        <property name="maxLength" value="3" />
+        <property name="validationPattern" >
+            <bean parent="NumericValidationPattern" />
+        </property>
+        <property name="control" >
+            <bean parent="SelectControlDefinition"
+                  p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectHREmployeeTypeCodeFinder"
+                  p:includeKeyInLabel="false"
+                  p:includeBlankRow="true"
+                  p:keyAttribute="value"
+                  p:labelAttribute="description" />
+        </property>
+        <property name="summary" value="Employee Type" />
+        <property name="description" value="Employee Type" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-jobCode" parent="ExconProjectHRExtension-jobCode-parentBean" />
+    <bean id="ExconProjectHRExtension-jobCode-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="jobCode" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Job Code" />
+        <property name="shortLabel" value="Job Code" />
+        <property name="maxLength" value="6" />
+        <property name="validationPattern" >
+            <bean parent="AlphaNumericValidationPattern" />
+        </property>
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="TextControlDefinition"
+                  p:size="6" />
+        </property>
+        <property name="summary" value="Job Code" />
+        <property name="description" value="Job Code" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-bcResult" parent="ExconProjectHRExtension-bcResult-parentBean" />
+    <bean id="ExconProjectHRExtension-bcResult-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="bcResult" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Background Check Result" />
+        <property name="shortLabel" value="Background Check Result" />
+        <property name="maxLength" value="3" />
+        <property name="validationPattern" >
+            <bean parent="NumericValidationPattern" />
+        </property>
+        <property name="control" >
+            <bean parent="SelectControlDefinition"
+                  p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectHRBCResultCodeFinder"
+                  p:includeKeyInLabel="false"
+                  p:includeBlankRow="true"
+                  p:keyAttribute="value"
+                  p:labelAttribute="description" />
+        </property>
+        <property name="summary" value="Background Check Result" />
+        <property name="description" value="Background Check Result" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-bcStatus" parent="ExconProjectHRExtension-bcStatus-parentBean" />
+    <bean id="ExconProjectHRExtension-bcStatus-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="bcStatus" />
+        <property name="forceUppercase" value="true" />
+        <property name="label" value="Background Check Status" />
+        <property name="shortLabel" value="Background Check Status" />
+        <property name="maxLength" value="3" />
+        <property name="validationPattern" >
+            <bean parent="NumericValidationPattern" />
+        </property>
+        <property name="control" >
+            <bean parent="SelectControlDefinition"
+                  p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectHRBCStatusCodeFinder"
+                  p:includeKeyInLabel="false"
+                  p:includeBlankRow="true"
+                  p:keyAttribute="value"
+                  p:labelAttribute="description" />
+        </property>
+        <property name="summary" value="Background Check Status" />
+        <property name="description" value="Background Check Status" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-selfDisclosed" parent="ExconProjectHRExtension-selfDisclosed-parentBean" />
+    <bean id="ExconProjectHRExtension-selfDisclosed-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="selfDisclosed" />
+        <property name="forceUppercase" value="true" />
+        <property name="label" value="Self Disclosed" />
+        <property name="shortLabel" value="Self Disclosed" />
+        <property name="maxLength" value="3" />
+        <property name="validationPattern" >
+            <bean parent="NumericValidationPattern" />
+        </property>
+        <property name="control" >
+            <bean parent="SelectControlDefinition"
+                  p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectHRSelfDisclosedCodeFinder"
+                  p:includeKeyInLabel="false"
+                  p:includeBlankRow="true"
+                  p:keyAttribute="value"
+                  p:labelAttribute="description" />
+        </property>
+        <property name="summary" value="Self Disclosed" />
+        <property name="description" value="Self Disclosed" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-criminalDiscrepancy" parent="ExconProjectHRExtension-criminalDiscrepancy-parentBean" />
+    <bean id="ExconProjectHRExtension-criminalDiscrepancy-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="criminalDiscrepancy" />
+        <property name="label" value="Criminal Discrepancy" />
+        <property name="shortLabel" value="Criminal Discrepancy" />
+        <property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern"
+                  p:allowWhitespace="true" />
+        </property>
+        <property name="control" >
+            <bean parent="TextareaControlDefinition"
+                  p:rows="5"
+                  p:cols="60" />
+        </property>
+        <property name="summary" value="Criminal Discrepancy" />
+        <property name="description" value="Criminal Discrepancy" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-criminalOffenses" parent="ExconProjectHRExtension-criminalOffenses-parentBean" />
+    <bean id="ExconProjectHRExtension-criminalOffenses-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="criminalOffenses" />
+        <property name="label" value="Criminal Offenses" />
+        <property name="shortLabel" value="Criminal Offenses" />
+        <property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern"
+                  p:allowWhitespace="true" />
+        </property>
+        <property name="control" >
+            <bean parent="TextareaControlDefinition"
+                  p:rows="5"
+                  p:cols="60" />
+        </property>
+        <property name="summary" value="Criminal Offenses" />
+        <property name="description" value="Criminal Offenses" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-mvrDiscrepancy" parent="ExconProjectHRExtension-mvrDiscrepancy-parentBean" />
+    <bean id="ExconProjectHRExtension-mvrDiscrepancy-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="mvrDiscrepancy" />
+        <property name="label" value="MVR Discrepancy" />
+        <property name="shortLabel" value="MVR Discrepancy" />
+        <property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern"
+                  p:allowWhitespace="true" />
+        </property>
+        <property name="control" >
+            <bean parent="TextareaControlDefinition"
+                  p:rows="5"
+                  p:cols="60" />
+        </property>
+        <property name="summary" value="MVR Discrepancy" />
+        <property name="description" value="MVR Discrepancy" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-notes" parent="ExconProjectHRExtension-notes-parentBean" />
+    <bean id="ExconProjectHRExtension-notes-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="notes" />
+        <property name="label" value="Notes" />
+        <property name="shortLabel" value="Notes" />
+        <property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern"
+                  p:allowWhitespace="true" />
+        </property>
+        <property name="control" >
+            <bean parent="TextareaControlDefinition"
+                  p:rows="10"
+                  p:cols="160" />
+        </property>
+        <property name="summary" value="Notes" />
+        <property name="description" value="Notes" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-contact" parent="ExconProjectHRExtension-contact-parentBean" />
+    <bean id="ExconProjectHRExtension-contact-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="contact" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Contact" />
+        <property name="shortLabel" value="Contact" />
+        <property name="maxLength" value="80" />
+        <property name="validationPattern" >
+            <bean parent="AlphaNumericValidationPattern" />
+        </property>
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="TextControlDefinition"
+                  p:size="40" />
+        </property>
+        <property name="summary" value="Contact" />
+        <property name="description" value="Contact" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-criminalCheck" parent="ExconProjectHRExtension-criminalCheck-parentBean" />
+    <bean id="ExconProjectHRExtension-criminalCheck-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="criminalCheck" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Criminal Check" />
+        <property name="shortLabel" value="Criminal Check" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Criminal Check" />
+        <property name="description" value="Criminal Check" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-criminalPrevious" parent="ExconProjectHRExtension-criminalPrevious-parentBean" />
+    <bean id="ExconProjectHRExtension-criminalPrevious-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="criminalPrevious" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Criminal Previous" />
+        <property name="shortLabel" value="Criminal Previous" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Criminal Previous" />
+        <property name="description" value="Criminal Previous" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-mvrCheck" parent="ExconProjectHRExtension-mvrCheck-parentBean" />
+    <bean id="ExconProjectHRExtension-mvrCheck-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="mvrCheck" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="MVR Check" />
+        <property name="shortLabel" value="MVR Check" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="MVR Check" />
+        <property name="description" value="MVR Check" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-mvrPrevious" parent="ExconProjectHRExtension-mvrPrevious-parentBean" />
+    <bean id="ExconProjectHRExtension-mvrPrevious-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="mvrPrevious" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="MVR Previous" />
+        <property name="shortLabel" value="MVR Previous" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="MVR Previous" />
+        <property name="description" value="MVR Previous" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-stateCheck" parent="ExconProjectHRExtension-stateCheck-parentBean" />
+    <bean id="ExconProjectHRExtension-stateCheck-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="stateCheck" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="State Check" />
+        <property name="shortLabel" value="State Check" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="State Check" />
+        <property name="description" value="State Check" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-creditCheck" parent="ExconProjectHRExtension-creditCheck-parentBean" />
+    <bean id="ExconProjectHRExtension-creditCheck-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="creditCheck" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Credit Check" />
+        <property name="shortLabel" value="Credit Check" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Credit Check" />
+        <property name="description" value="Credit Check" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-sexOffenderCheck" parent="ExconProjectHRExtension-sexOffenderCheck-parentBean" />
+    <bean id="ExconProjectHRExtension-sexOffenderCheck-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="sexOffenderCheck" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Sex Offender Check" />
+        <property name="shortLabel" value="Sex Offender Check" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Sex Offender Check" />
+        <property name="description" value="Sex Offender Check" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-educationCheck" parent="ExconProjectHRExtension-educationCheck-parentBean" />
+    <bean id="ExconProjectHRExtension-educationCheck-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="educationCheck" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Education Check" />
+        <property name="shortLabel" value="Education Check" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Education Check" />
+        <property name="description" value="Education Check" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-ssnNoData" parent="ExconProjectHRExtension-ssnNoData-parentBean" />
+    <bean id="ExconProjectHRExtension-ssnNoData-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="ssnNoData" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="SSN No Data" />
+        <property name="shortLabel" value="SSN No Data" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="SSN No Data" />
+        <property name="description" value="SSN No Data" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-hardCopyReq" parent="ExconProjectHRExtension-hardCopyReq-parentBean" />
+    <bean id="ExconProjectHRExtension-hardCopyReq-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="hardCopyReq" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Hard Copy Request" />
+        <property name="shortLabel" value="Hard Copy Request" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Hard Copy Request" />
+        <property name="description" value="Hard Copy Request" />
+    </bean>
+
+
+    <bean id="ExconProjectHRExtension-candDispute" parent="ExconProjectHRExtension-candDispute-parentBean" />
+    <bean id="ExconProjectHRExtension-candDispute-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="candDispute" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Candidate Dispute" />
+        <property name="shortLabel" value="Candidate Dispute" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Candidate Dispute" />
+        <property name="description" value="Candidate Dispute" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-rerunReason" parent="ExconProjectHRExtension-rerunReason-parentBean" />
+    <bean id="ExconProjectHRExtension-rerunReason-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="rerunReason" />
+        <property name="forceUppercase" value="true" />
+        <property name="label" value="Rerun Reason" />
+        <property name="shortLabel" value="Rerun Reason" />
+        <property name="maxLength" value="3" />
+        <property name="validationPattern" >
+            <bean parent="NumericValidationPattern" />
+        </property>
+        <property name="control" >
+            <bean parent="SelectControlDefinition"
+                  p:valuesFinderClass="org.kuali.kra.excon.project.ExconProjectHRRerunReasonCodeFinder"
+                  p:includeKeyInLabel="false"
+                  p:includeBlankRow="true"
+                  p:keyAttribute="value"
+                  p:labelAttribute="description" />
+        </property>
+        <property name="summary" value="Rerun Reason" />
+        <property name="description" value="Rerun Reason" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-updateUser" parent="ExconProjectHRExtension-updateUser-parentBean" />
+    <bean id="ExconProjectHRExtension-updateUser-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateUser" >
+        <property name="name" value="updateUser" />
+        <property name="label" value="Last Update User" />
+        <property name="shortLabel" value="Last Update User" />
+    </bean>
+
+    <bean id="ExconProjectHRExtension-updateTimestamp" parent="ExconProjectHRExtension-updateTimestamp-parentBean" />
+    <bean id="ExconProjectHRExtension-updateTimestamp-parentBean" abstract="true" parent="KraAttributeReferenceDummy-updateTimestamp" >
+        <property name="name" value="updateTimestamp" />
+        <property name="label" value="Last Update" />
+        <property name="shortLabel" value="Last Update" />
+    </bean>
+
+
+
+    <bean id="ExconProjectHRExtension-inquiryDefinition" parent="ExconProjectHRExtension-inquiryDefinition-parentBean" />
+
+    <bean id="ExconProjectHRExtension-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+        <property name="title" value="Excon Project HR Extension" />
+        <property name="inquirySections" >
+            <list>
+                <bean parent="InquirySectionDefinition">
+                    <property name="title" value="Excon Project HR Extension" />
+                    <property name="numberOfColumns" value="1" />
+                    <property name="inquiryFields" >
+                        <list>
+                            <bean p:attributeName="jobCode" p:forceInquiry="true" parent="FieldDefinition" />
+                            <bean p:attributeName="requestType" parent="FieldDefinition" />
+                            <bean p:attributeName="bcResult" parent="FieldDefinition" />
+                            <bean p:attributeName="bcStatus" parent="FieldDefinition" />
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Business Object Lookup Definition -->
+    <bean id="ExconProjectHRExtension-lookupDefinition" parent="ExconProjectHRExtension-lookupDefinition-parentBean" />
+    <bean id="ExconProjectHRExtension-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+        <property name="title" value="Excon Project HR Extension Lookup" />
+        <property name="lookupableID" value="exconProjectLookupable" />
+        <property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+
+        <property name="defaultSort" >
+            <bean parent="SortDefinition">
+            </bean>
+        </property>
+        <property name="lookupFields" >
+            <list>
+                <bean p:attributeName="jobCode" parent="FieldDefinition" />
+                <bean p:attributeName="requestType" parent="FieldDefinition" />
+                <bean p:attributeName="bcResult" parent="FieldDefinition" />
+                <bean p:attributeName="bcStatus" parent="FieldDefinition" />
+            </list>
+        </property>
+        <property name="resultFields" >
+            <list>
+                <bean p:attributeName="requestType" parent="FieldDefinition" />
+                <bean p:attributeName="bcResult" parent="FieldDefinition" />
+            </list>
+        </property>
+        <property name="resultSetLimit" value="50" />
+    </bean>
+
+</beans>

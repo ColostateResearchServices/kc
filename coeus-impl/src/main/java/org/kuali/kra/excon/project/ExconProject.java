@@ -106,8 +106,11 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
 	private String responsibleParty;
 	private String respPartyUsername;
 	private String respPartyFullname;
-    
-    public ExconProjectType getProjectType() {
+
+	public static String EXCON_SEQUENCE_STATUS_PROPERTY_STRING = "exconProjectSequenceStatus";
+
+
+	public ExconProjectType getProjectType() {
     	if (!StringUtils.isEmpty(projectTypeCode)) {
             this.refreshReferenceObject("projectType");
         }

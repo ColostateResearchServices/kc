@@ -15,6 +15,7 @@
  */
 package org.kuali.kra.excon.service.impl;
 
+import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.kuali.coeus.common.framework.version.history.VersionHistoryService;
 import org.kuali.coeus.common.framework.version.history.VersionHistory;
 import org.kuali.kra.excon.document.ExconProjectDocument;
@@ -51,16 +52,12 @@ public class ExconProjectLookupableHelperServiceImpl extends KraLookupableHelper
         super.setBackLocationDocFormKey(fieldValues);
         String projectNumber = fieldValues.get(PROJECT_NUMBER);
         fieldValues.remove(PROJECT_NUMBER);
+        fieldValues.remove(ExconProject.EXCON_SEQUENCE_STATUS_PROPERTY_STRING);
+        fieldValues.put(ExconProject.EXCON_SEQUENCE_STATUS_PROPERTY_STRING, VersionStatus.ACTIVE.toString());
         List<ExconProject> unboundedResults =
-        (List<ExconProject>) super.getSearchResultsUnbounded(fieldValues);
-        List<ExconProject> returnResults = new ArrayList<ExconProject>();
-        try {
-        	returnResults = filterForActiveExconProjects(unboundedResults, projectNumber, "");
-        } catch (WorkflowException e) {
-            throw new RuntimeException(e);
-        }
+                (List<ExconProject>) super.getSearchResultsUnbounded(fieldValues);
 
-        return returnResults;
+        return unboundedResults;
     }
 
 

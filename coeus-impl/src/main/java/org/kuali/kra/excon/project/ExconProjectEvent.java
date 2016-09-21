@@ -98,7 +98,7 @@ public class ExconProjectEvent extends ExconProjectAssociate implements Comparab
     }
 
     public int compareTo(ExconProjectEvent exconProjectEventArg) {
-        return exconProjectEventArg.getUpdateTimestamp().compareTo(this.getUpdateTimestamp());
+		return exconProjectEventArg.getEventDate().compareTo(this.getEventDate());
     }
 
 	@Override
@@ -131,31 +131,13 @@ public class ExconProjectEvent extends ExconProjectAssociate implements Comparab
 		if (getClass() != obj.getClass())
 			return false;
 		ExconProjectEvent other = (ExconProjectEvent) obj;
-		if (eventComment == null) {
-			if (other.eventComment != null)
-				return false;
-		} else if (!eventComment.equals(other.eventComment))
-			return false;
-		if (eventDate == null) {
-			if (other.eventDate != null)
-				return false;
-		} else if (!eventDate.equals(other.eventDate))
-			return false;
+
 		if (exconProjectEventId == null) {
 			if (other.exconProjectEventId != null)
 				return false;
 		} else if (!exconProjectEventId.equals(other.exconProjectEventId))
 			return false;
-		if (projectEventTypeCode == null) {
-			if (other.projectEventTypeCode != null)
-				return false;
-		} else if (!projectEventTypeCode.equals(other.projectEventTypeCode))
-			return false;
-		if (projectId == null) {
-			if (other.projectId != null)
-				return false;
-		} else if (!projectId.equals(other.projectId))
-			return false;
+
 		return true;
 	}
     

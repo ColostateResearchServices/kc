@@ -111,6 +111,10 @@
 		<collection-descriptor name="exconProjectAssociatedDocuments" proxy="true" element-class-ref="org.kuali.kra.excon.project.ExconProjectAssociatedDocument" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
 			<inverse-foreignkey field-ref="projectId"/>
 		</collection-descriptor>
+
+		<reference-descriptor name="hrExtension" class-ref="org.kuali.kra.excon.project.ExconProjectHRExtension" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false">
+			<foreignkey field-ref="projectId" />
+		</reference-descriptor>
 		
 		<reference-descriptor name="versionHistory" class-ref="org.kuali.coeus.common.framework.version.history.VersionHistorySearchBo" auto-retrieve="true" auto-update="none" auto-delete="none">
             <foreignkey field-id-ref="1" />
@@ -159,6 +163,15 @@
 	
 	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectPersonRoleType" table="EXCON_PROJECT_PERSON_ROLE_TYPE">
 		<field-descriptor name="exconProjectPersonRoleTypeCode" column="PROJECT_PERSON_ROLE_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
+
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectUnitPersonRoleType" table="EXCON_PROJECT_UNIT_ROLE_TYPE">
+		<field-descriptor name="exconProjectUnitPersonRoleTypeCode" column="UNIT_PERSON_ROLE_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
 		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
 		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
@@ -280,9 +293,6 @@
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
 		<field-descriptor name="unitAdministratorUnitNumber" column="UNIT_ADMINISTRATOR_UNIT_NUMBER" jdbc-type="VARCHAR" />
-		<!-- <reference-descriptor name="unitAdministratorType" class-ref="org.kuali.coeus.common.framework.unit.UnitAdministratorType" auto-retrieve="true" auto-update="none" auto-delete="none">
-			<foreignkey field-ref="unitAdministratorTypeCode"/> 
-		</reference-descriptor> -->
 		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none"> 
 			<foreignkey field-ref="projectId"/>
 		</reference-descriptor>			
@@ -489,6 +499,43 @@
 		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />		
-	</class-descriptor>	
-	
+	</class-descriptor>
+
+	<class-descriptor class="org.kuali.kra.excon.project.ExconProjectHRExtension" table="EXCON_PROJECT_HR_EXTENSION">
+		<field-descriptor name="projectId" column="PROJECT_ID" jdbc-type="BIGINT" primarykey="true" />
+		<field-descriptor name="requestType" column="REQUEST_TYPE" jdbc-type="VARCHAR" />
+		<field-descriptor name="employeeType" column="EMPLOYEE_TYPE" jdbc-type="VARCHAR" />
+		<field-descriptor name="jobCode" column="JOB_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="bcResult" column="BC_RESULT" jdbc-type="VARCHAR" />
+		<field-descriptor name="bcStatus" column="BC_STATUS" jdbc-type="VARCHAR" />
+		<field-descriptor name="selfDisclosed" column="SELF_DISCLOSED" jdbc-type="VARCHAR" />
+		<field-descriptor name="criminalDiscrepancy" column="CRIMINAL_DISC" jdbc-type="CLOB" />
+		<field-descriptor name="criminalOffenses" column="CRIMINAL_OFFENSES" jdbc-type="CLOB" />
+		<field-descriptor name="mvrDiscrepancy" column="MVR_DISC" jdbc-type="CLOB" />
+		<field-descriptor name="notes" column="NOTES" jdbc-type="CLOB" />
+		<field-descriptor name="contact" column="CONTACT" jdbc-type="VARCHAR" />
+		<field-descriptor name="criminalCheck" column="CRIMINAL_CHK" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="criminalPrevious" column="CRIMINAL_PRV" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="mvrCheck" column="MVR_CHK" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="mvrPrevious" column="MVR_PRV" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="stateCheck" column="STATE_CHK" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="creditCheck" column="CREDIT_CHK" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="sexOffenderCheck" column="SEX_OFFENDER_CHK" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="educationCheck" column="EDUCATION_CHK" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="ssnNoData" column="SSN_NO_DATA" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="hardCopyReq" column="HARD_COPY_REQ" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="candDispute" column="CAND_DISPUTE" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="rerunReason" column="RERUN_REASON" jdbc-type="VARCHAR" />
+		<field-descriptor name="projectNumber" column="PROJECT_NUMBER" jdbc-type="VARCHAR" nullable="false" />
+		<field-descriptor name="sequenceNumber" column="SEQUENCE_NUMBER" jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+
+		<reference-descriptor name="exconProject" class-ref="org.kuali.kra.excon.project.ExconProject" auto-retrieve="true" auto-update="none" auto-delete="none">
+			<foreignkey field-ref="projectId"/>
+		</reference-descriptor>
+	</class-descriptor>
+
 </descriptor-repository>

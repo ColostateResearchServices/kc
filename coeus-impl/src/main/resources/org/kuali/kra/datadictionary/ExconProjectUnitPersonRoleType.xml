@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+ Copyright 2005-2014 The Kuali Foundation
+
+ Licensed under the Educational Community License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.osedu.org/licenses/ECL-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+--><beans xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="ExconProjectUnitPersonRoleType" parent="ExconProjectUnitPersonRoleType-parentBean"/>
+    <bean abstract="true" id="ExconProjectUnitPersonRoleType-parentBean" parent="BusinessObjectEntry">
+        <property name="businessObjectClass" value="org.kuali.kra.excon.project.ExconProjectUnitPersonRoleType"/>
+        <property name="objectLabel" value="Export Control Project Person Role Type"/>
+        <property name="inquiryDefinition">
+            <ref bean="ExconProjectUnitPersonRoleType-inquiryDefinition"/>
+        </property>
+        <property name="lookupDefinition">
+            <ref bean="ExconProjectUnitPersonRoleType-lookupDefinition"/>
+        </property>
+        <property name="titleAttribute" value="exconProjectUnitPersonRoleTypeCode"/>
+        <property name="attributes">
+            <list>
+                <ref bean="ExconProjectUnitPersonRoleType-exconProjectUnitPersonRoleTypeCode"/>
+                <ref bean="ExconProjectUnitPersonRoleType-description"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Attribute Definitions -->
+
+    <bean id="ExconProjectUnitPersonRoleType-exconProjectUnitPersonRoleTypeCode" parent="ExconProjectUnitPersonRoleType-exconProjectUnitPersonRoleTypeCode-parentBean"/>
+    <bean abstract="true" id="ExconProjectUnitPersonRoleType-exconProjectUnitPersonRoleTypeCode-parentBean" parent="AttributeDefinition">
+        <property name="name" value="exconProjectUnitPersonRoleTypeCode"/>
+        <property name="forceUppercase" value="true"/>
+        <property name="label" value="Export Control Project Unit Person Role Type Code"/>
+        <property name="shortLabel" value="Export Control Project Unit Person Role Type Code"/>
+        <property name="maxLength" value="5"/>
+        <property name="validationPattern">
+            <bean parent="AlphaNumericValidationPattern"/>
+        </property>
+        <property name="control" >
+            <bean p:size="5" parent="TextControlDefinition" />
+        </property>
+        <property name="summary" value="Export Control Project Unit Person Role Type Code"/>
+        <property name="description" value="Export Control Project Unit Person Role Type Code"/>
+    </bean>
+
+    <bean id="ExconProjectUnitPersonRoleType-description" parent="ExconProjectUnitPersonRoleType-description-parentBean" />
+    <bean id="ExconProjectUnitPersonRoleType-description-parentBean" abstract="true" parent="KraAttributeReferenceDummy-description"/>
+
+
+    <bean id="ExconProjectUnitPersonRoleType-versionNumber" parent="ExconProjectUnitPersonRoleType-versionNumber-parentBean" />
+    <bean id="ExconProjectUnitPersonRoleType-versionNumber-parentBean" abstract="true" parent="AttributeReferenceDummy-versionNumber"/>
+
+    <!-- Business Object Inquiry Definition -->
+    <bean id="ExconProjectUnitPersonRoleType-inquiryDefinition" parent="ExconProjectUnitPersonRoleType-inquiryDefinition-parentBean"/>
+    <bean abstract="true" id="ExconProjectUnitPersonRoleType-inquiryDefinition-parentBean" parent="InquiryDefinition">
+        <property name="title" value="Export Control Project Person Role Type Code"/>
+        <property name="inquirySections">
+            <list>
+                <bean parent="InquirySectionDefinition">
+                    <property name="title" value="Export Control Project Person Role Type Code"/>
+                    <property name="numberOfColumns" value="1"/>
+                    <property name="inquiryFields">
+                        <list>
+                            <bean p:attributeName="exconProjectUnitPersonRoleTypeCode" p:forceInquiry="true" parent="FieldDefinition"/>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Business Object Lookup Definition -->
+    <bean id="ExconProjectUnitPersonRoleType-lookupDefinition" parent="ExconProjectUnitPersonRoleType-lookupDefinition-parentBean"/>
+    <bean abstract="true" id="ExconProjectUnitPersonRoleType-lookupDefinition-parentBean" parent="LookupDefinition">
+        <property name="title" value="Export Control Project Person Role Type Lookup"/>
+        <property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;"/>
+
+        <property name="defaultSort">
+            <bean parent="SortDefinition">
+            </bean>
+        </property>
+        <property name="helpDefinition" >
+            <bean parent="HelpDefinition"
+                  p:parameterNamespace="KC-EXCON"
+                  p:parameterName="exconProjectUnitPersonRoleTypeMaintenanceHelp"
+                  p:parameterDetailType="Document" />
+        </property>
+        <property name="lookupFields">
+            <list>
+                <bean p:attributeName="exconProjectUnitPersonRoleTypeCode" p:forceInquiry="true" parent="FieldDefinition"/>
+                <bean p:attributeName="description" parent="FieldDefinition"/>
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean p:attributeName="exconProjectUnitPersonRoleTypeCode" p:forceInquiry="true" parent="FieldDefinition"/>
+                <bean p:attributeName="description" parent="FieldDefinition"/>
+            </list>
+        </property>
+    </bean>
+</beans>

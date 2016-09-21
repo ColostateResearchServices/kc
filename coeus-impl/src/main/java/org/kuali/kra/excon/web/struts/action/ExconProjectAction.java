@@ -347,7 +347,13 @@ public ActionForward commentsAndAttachments(ActionMapping mapping, ActionForm fo
     return mapping.findForward("commentsAndAttachments");
 }
 
-/**
+public ActionForward backgroundCheck(ActionMapping mapping, ActionForm form
+        , HttpServletRequest request, HttpServletResponse response) {
+    return mapping.findForward("backgroundCheck");
+}
+
+
+    /**
 *
 * This method gets called upon navigation to custom data tab.
   * @param mapping the ActionMapping

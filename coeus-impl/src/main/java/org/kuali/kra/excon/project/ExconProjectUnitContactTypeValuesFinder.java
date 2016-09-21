@@ -16,7 +16,6 @@
 package org.kuali.kra.excon.project;
 
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
-import org.kuali.coeus.common.framework.unit.admin.UnitAdministratorType;
 import org.kuali.coeus.sys.framework.keyvalue.KeyValueComparator;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
@@ -26,13 +25,13 @@ import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
 import java.util.*;
 
 public class ExconProjectUnitContactTypeValuesFinder extends UifKeyValuesFinderBase {
-    
+
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 12345890723457L;
 	private BusinessObjectService businessObjectService;
-    
+
     public ExconProjectUnitContactTypeValuesFinder() {
         businessObjectService = KcServiceLocator.getService(BusinessObjectService.class);
     }
@@ -42,18 +41,18 @@ public class ExconProjectUnitContactTypeValuesFinder extends UifKeyValuesFinderB
         Map<String, Object> values = new HashMap<String, Object>();
         values.put("defaultGroupFlag", "U");
         List<KeyValue> result = new ArrayList<KeyValue>();
-        Collection<UnitAdministratorType> types = getBusinessObjectService().findMatching(UnitAdministratorType.class, values);
-        for (UnitAdministratorType type : types) {
+        Collection<ExconProjectUnitPersonRoleType> types = getBusinessObjectService().findMatching(ExconProjectUnitPersonRoleType.class, values);
+        for (ExconProjectUnitPersonRoleType type : types) {
             ConcreteKeyValue pair = new ConcreteKeyValue();
-            pair.setKey(type.getRoleCode());
-            pair.setValue(type.getRoleDescription());
+            pair.setKey(type.getExconProjectUnitPersonRoleTypeCode());
+            pair.setValue(type.getDescription());
             result.add(pair);
         }
         Collections.sort(result,new KeyValueComparator());
         result.add(0,new ConcreteKeyValue("","select"));
         return result;
     }
-    
+
     protected BusinessObjectService getBusinessObjectService() {
         return businessObjectService;
     }

@@ -43,7 +43,20 @@ public class ExconProjectEventsBean implements Serializable {
     public void addExconProjectEvent() {
         boolean success = new ExconProjectEventAddRuleImpl().processAddExconProjectEventBusinessRules(getExconProject(), getExconProjectEvent());
         if(success){
-            getExconProject().add(getExconProjectEvent());
+            ExconProjectEvent exconProjectEvent=getExconProjectEvent();
+            if (exconProjectEvent.getProjectEventTypeCode().equals("HRD")) {
+                ExconProjectHRExtension hrExtension=getExconProject().getHrExtension();
+                String commentStr="";
+                if (hrExtension.getCriminalCheck()) {commentStr+="CBC ";}
+                if (hrExtension.getSexOffenderCheck()) {commentStr+="SOR ";}
+                if (hrExtension.getMvrCheck()) {commentStr+="MVR ";}
+                if (hrExtension.getCreditCheck()) {commentStr+="FH ";}
+                if (hrExtension.getEducationCheck()) {commentStr+="EDU ";}
+                if (hrExtension.getStateCheck()) {commentStr+="STC ";}
+                commentStr=commentStr.trim();
+                exconProjectEvent.setEventComment(commentStr);
+            }
+            getExconProject().add(exconProjectEvent);
             init();
         }
     }
