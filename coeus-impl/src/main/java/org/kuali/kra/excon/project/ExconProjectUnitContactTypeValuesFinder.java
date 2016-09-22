@@ -39,7 +39,7 @@ public class ExconProjectUnitContactTypeValuesFinder extends UifKeyValuesFinderB
     @Override
     public List<KeyValue> getKeyValues() {
         Map<String, Object> values = new HashMap<String, Object>();
-        values.put("defaultGroupFlag", "U");
+//        values.put("defaultGroupFlag", "U");
         List<KeyValue> result = new ArrayList<KeyValue>();
         Collection<ExconProjectUnitPersonRoleType> types = getBusinessObjectService().findMatching(ExconProjectUnitPersonRoleType.class, values);
         for (ExconProjectUnitPersonRoleType type : types) {
