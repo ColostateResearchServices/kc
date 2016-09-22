@@ -55,7 +55,7 @@
 								attributeEntry="${exconProjectExternalInstitutionAttributes.rolodexId}"
 								readOnly="${readOnly}" /> 
 							<c:if test="${!readOnly}">
-								<kul:lookup boClassName="org.kuali.kra.bo.Rolodex"
+								<kul:lookup boClassName="org.kuali.coeus.common.framework.rolodex.Rolodex"
 									fieldConversions="rolodexId:exconProjectExternalInstitutionsBean.newExternalInstitution.rolodexId"
 									lookupParameters="exconProjectExternalInstitutionsBean.newExternalInstitution.rolodexId:rolodexId"
 									anchor="${tabKey}" />

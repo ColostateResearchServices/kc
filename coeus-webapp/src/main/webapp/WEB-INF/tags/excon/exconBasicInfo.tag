@@ -82,12 +82,12 @@
         	<kul:htmlControlAttribute property="document.exconProjectList[0].sponsorCode" attributeEntry="${exconProjectAttributes.sponsorCode}" 
         	                          onblur="loadSponsorName('document.exconProjectList[0].sponsorCode', 'sponsorName');" readOnly="${readOnly}" /> 
         	<c:if test="${!readOnly}">
-                <kul:lookup boClassName="org.kuali.kra.bo.Sponsor" fieldConversions="sponsorCode:document.exconProjectList[0].sponsorCode,sponsorName:document.exconProjectList[0].sponsor.sponsorName" anchor="${tabKey}" />
+                <kul:lookup boClassName="org.kuali.coeus.common.framework.sponsor.Sponsor" fieldConversions="sponsorCode:document.exconProjectList[0].sponsorCode,sponsorName:document.exconProjectList[0].sponsor.sponsorName" anchor="${tabKey}" />
             </c:if>
 	        <c:if test="${readOnly}">
 	           <html:hidden property="document.exconProjectList[0].sponsorCode" />
 	        </c:if>
-            <kul:directInquiry boClassName="org.kuali.kra.bo.Sponsor" inquiryParameters="document.exconProjectList[0].sponsorCode:sponsorCode" anchor="${tabKey}" />
+            <kul:directInquiry boClassName="org.kuali.coeus.common.framework.sponsor.Sponsor" inquiryParameters="document.exconProjectList[0].sponsorCode:sponsorCode" anchor="${tabKey}" />
             <div id="sponsorName.div" >
             	<c:if test="${!empty KualiForm.document.exconProjectList[0].sponsorCode}">
             		<c:choose>
@@ -107,7 +107,7 @@
     	<td>
             <kul:htmlControlAttribute property="document.exconProjectList[0].unitNumber" attributeEntry="${exconProjectAttributes.unitNumber}" readOnly="${readOnly}" /> 
             <c:if test="${!readOnly}">
-               <kul:lookup boClassName="org.kuali.kra.bo.Unit" fieldConversions="unitNumber:document.exconProjectList[0].unitNumber"
+               <kul:lookup boClassName="org.kuali.coeus.common.framework.unit.Unit" fieldConversions="unitNumber:document.exconProjectList[0].unitNumber"
   			         anchor="${tabKey}" lookupParameters="document.exconProjectList[0].unitNumber:unitNumber"/>
   			</c:if>
             <c:if test="${readOnly}">
@@ -115,7 +115,7 @@
                 -
                 <kul:htmlControlAttribute property="document.exconProjectList[0].unitName" attributeEntry="${exconProjectAttributes.unitName}" readOnly="true" />
             </c:if>
-            <kul:directInquiry boClassName="org.kuali.kra.bo.Unit" inquiryParameters="document.exconProjectList[0].unitNumber:unitNumber" anchor="${tabKey}" />
+            <kul:directInquiry boClassName="org.kuali.coeus.common.framework.unit.Unit" inquiryParameters="document.exconProjectList[0].unitNumber:unitNumber" anchor="${tabKey}" />
     	</td>
 	</tr>
 </table>

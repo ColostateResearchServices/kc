@@ -62,7 +62,7 @@
            	        							  			'personId');"
 								readOnly="${readOnly}" /> 
 							<c:if test="${!readOnly}">
-								<kul:lookup boClassName="org.kuali.kra.bo.KcPerson"
+								<kul:lookup boClassName="org.kuali.coeus.common.framework.person.KcPerson"
 									fieldConversions="userName:document.exconProjectList[0].respPartyUsername"
 									lookupParameters="document.exconProjectList[0].respPartyUsername:userName"
 									anchor="${tabKey}" />

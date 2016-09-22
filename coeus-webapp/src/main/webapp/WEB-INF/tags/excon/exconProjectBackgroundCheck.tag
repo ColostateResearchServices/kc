@@ -120,14 +120,14 @@
                     <kul:htmlControlAttribute property="document.exconProjectList[0].hrExtension.jobCode" attributeEntry="${exconProjectBCAttributes.jobCode}"
                                               onblur="loadJobCodeTitle('document.exconProjectList[0].hrExtension.jobCode', 'jobTitle');" readOnly="${readOnly}" />
                     <c:if test="${!readOnly}">
-                        <kul:lookup boClassName="org.kuali.kra.budget.personnel.JobCode"
+                        <kul:lookup boClassName="org.kuali.coeus.common.budget.framework.personnel.JobCode"
                                     fieldConversions="jobCode:document.exconProjectList[0].hrExtension.jobCode,jobTitle:document.exconProjectList[0].hrExtension.job.jobTitle"
                                     anchor="${tabKey}" />
                     </c:if>
                     <c:if test="${readOnly}">
                         <html:hidden property="document.exconProjectList[0].hrExtension.jobCode" />
                     </c:if>
-                    <kul:directInquiry boClassName="org.kuali.kra.budget.personnel.JobCode" inquiryParameters="document.exconProjectList[0].hrExtension.jobCode:jobCode" anchor="${tabKey}" />
+                    <kul:directInquiry boClassName="org.kuali.coeus.common.budget.framework.personnel.JobCode" inquiryParameters="document.exconProjectList[0].hrExtension.jobCode:jobCode" anchor="${tabKey}" />
                     <div id="jobTitle.div" >
                         <c:if test="${!empty KualiForm.document.exconProjectList[0].hrExtension.jobCode}">
                             <c:choose>
