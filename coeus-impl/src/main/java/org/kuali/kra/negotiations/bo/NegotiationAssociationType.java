@@ -31,7 +31,9 @@ public class NegotiationAssociationType  extends NegotiationsGroupingBase implem
     public static final String INSTITUATIONAL_PROPOSAL_ASSOCIATION = "IP";
     public static final String AWARD_ASSOCIATION = "AWD";
     public static final String SUB_AWARD_ASSOCIATION = "SWD";
-
+    /* Begin UITSRA-3668 */
+    public static final String AWARD_IN_PROGRESS_ASSOCIATION = "AIP";
+    /* End UITSRA-3668 */
 
     private static final long serialVersionUID = 8163060629967261671L;
     

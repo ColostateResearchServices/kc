@@ -489,6 +489,19 @@ public class NegotiationUnassociatedDetail extends KcPersistableBusinessObjectBa
         return EMPTY_STRING;
     }
 
+    @Override
+    public String getPrincipalInvestigatorUserName() {
+        return getPiEmployeeUserName();
+    }
+
+    @Override
+    public String getPrincipalInvestigatorPersonId() {
+        return getPiPersonId();
+    }
+
+    @Override
+    public String getRequisitionerUserName() { return EMPTY_STRING; }
+
     /**
      * Looks up and returns the KcPersonService.
      * @return the person service.

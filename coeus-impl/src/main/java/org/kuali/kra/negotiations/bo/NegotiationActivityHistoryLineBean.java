@@ -40,7 +40,15 @@ public class NegotiationActivityHistoryLineBean extends ResultRow implements Com
     private Date efectiveLocationEndDate;
     private String locationDays;
     private String lineNumber;
-    
+
+    //UITSRA-3673
+    private String activityDescription;
+
+
+
+    private String restrictedActivityDescription;
+
+    private Boolean activityRestricted;
 
     public NegotiationActivityHistoryLineBean() {
         super(null, "", "");
@@ -58,6 +66,9 @@ public class NegotiationActivityHistoryLineBean extends ResultRow implements Com
         this.setStartDate(negotiationActivity.getStartDate());
         this.setEndDate(negotiationActivity.getEndDate());
         this.setActivityDays(negotiationActivity.getNumberOfDays());
+        this.setActivityDescription(negotiationActivity.getDescription());
+        this.setActivityRestricted(negotiationActivity.getRestricted());
+        this.setRestrictedActivityDescription(getActivityRestricted()?"":this.getActivityDescription());
     }
 
     public String getActivityType() {
@@ -161,6 +172,39 @@ public class NegotiationActivityHistoryLineBean extends ResultRow implements Com
     public void setLineNumber(String lineNumber) {
         this.lineNumber = lineNumber;
     }
+
+
+    /**
+     * @return the activityDescription
+     */
+    public String getActivityDescription() {
+        return activityDescription;
+    }
+
+
+
+    public String getRestrictedActivityDescription() {
+        return restrictedActivityDescription;
+    }
+
+    public void setRestrictedActivityDescription(String restrictedActivityDescription) {
+        this.restrictedActivityDescription = restrictedActivityDescription;
+    }
+
+    /**
+     * @param activityDescription the activityDescription to set
+     */
+    public void setActivityDescription(String activityDescription) {
+        this.activityDescription = activityDescription;
+    }
+
+
+
+
+    public Boolean getActivityRestricted() {       return activityRestricted;   }
+
+    public void setActivityRestricted(Boolean activityRestricted) {      this.activityRestricted = activityRestricted;}
+
 
     @Override
     public int compareTo(NegotiationActivityHistoryLineBean o) {

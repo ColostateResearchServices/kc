@@ -10,7 +10,7 @@ import org.kuali.kra.negotiations.bo.NegotiationActivityAttachment;
 import org.kuali.coeus.sys.framework.validation.ErrorReporter;
 
 import edu.colostate.kc.infrastructure.CSUKeyConstants;
-import edu.iu.uits.kra.dao.ojb.ProtocolAttachmentDao;
+import edu.iu.uits.kra.dao.ProtocolAttachmentDao;
 
 public class IUNegotiationAttachmentFileDataNotNullRuleImpl {
 

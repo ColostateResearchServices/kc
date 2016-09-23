@@ -83,8 +83,8 @@ $jq(document).ready(function() {
    </tr>
     <th style="text-align: right; width: 5em;">Display:</th>
     <th colspan="2" style="text-align:left;">
-      <label><html:radio property="filterActivities" value="${KualiForm.filterAllActivities}" onchange="doFilterActivities();">All</html:radio></label>
-      <label><html:radio property="filterActivities" value="${KualiForm.filterPendingActivities}" onchange="doFilterActivities();">Pending</html:radio></label>
+      <html:radio property="filterActivities" value="${KualiForm.filterAllActivities}" onchange="doFilterActivities();">&nbsp; All</html:radio>
+      <html:radio property="filterActivities" value="${KualiForm.filterPendingActivities}" onchange="doFilterActivities();">&nbsp; Pending</html:radio>
       <html:image property="methodToCall.printNegotiationActivity"
 						src='${ConfigProperties.kra.externalizable.images.url}tinybutton-print.gif'
 						alt="Print Negotiation Activity" styleClass="tinybutton" onclick="excludeSubmitRestriction=true" align="right"/>
@@ -113,7 +113,7 @@ $jq(document).ready(function() {
   <table>
    <tr>
     <th style="text-align: right; width: 5em;">Sort By:</th>
-    <td><html:select style="width: 100%;" property="negotiationActivityHelper.attachmentSortingTypeName">
+    <td><html:select style="width: 50%;" property="negotiationActivityHelper.attachmentSortingTypeName">
           <c:forEach items="${krafn:getOptionList('org.kuali.kra.negotiations.sorting.AttachmentSortingTypeValuesFinder', paramMap)}" var="option">
             <html:option value="${option.key}"><c:out value="${option.value}"/></html:option>
           </c:forEach>
@@ -130,6 +130,8 @@ $jq(document).ready(function() {
     <tr>
     <th>&nbsp;</th>
     <th><kul:htmlAttributeLabel attributeEntry="${activityAttributes.startDate}" readOnly="true" noColon="true"/></th>
+    <th><kul:htmlAttributeLabel attributeEntry="${attachmentAttributes.updateTimestamp}" readOnly="true" noColon="true"/></th>
+    <th><kul:htmlAttributeLabel attributeEntry="${attachmentAttributes.updateUser}" readOnly="true" noColon="true"/></th>
     <th>File</th>
     <th><kul:htmlAttributeLabel attributeEntry="${attachmentAttributes.description}" readOnly="true" noColon="true"/></th>
     <th><kul:htmlAttributeLabel attributeEntry="${activityAttributes.locationId}" readOnly="true" noColon="true"/></th>
@@ -142,6 +144,12 @@ $jq(document).ready(function() {
       <tr>
         <th style="text-align:right;">${ctr.count}</th>
         <td><kul:htmlControlAttribute property="negotiationActivityHelper.allAttachments[${ctr.count-1}].activity.startDate" attributeEntry="${activityAttributes.startDate}" readOnly="true"/></td>
+
+              <%-- UITSRA-4048 UITSRA-4142 --%>
+          <td><fmt:formatDate value="${KualiForm.negotiationActivityHelper.allAttachments[ctr.count-1].updateTimestamp}" pattern="MM/dd/yyyy hh:mm a"/> </td>
+          <td><kul:htmlControlAttribute property="negotiationActivityHelper.allAttachments[${ctr.count-1}].updateUserName" attributeEntry="${attachmentAttributes.updateUser}" readOnly="true"/></td>
+              <%-- End of UITSRA-4048 UITSRA-4142 --%>
+
         <td><a href="#" class="attachmentLink"><kra:fileicon attachment="${attachment.file}"/><c:out value="${attachment.file.name}"/></a>
         	<html:image property="methodToCall.viewAttachmentFromAllAttachments.attachmentIndex${ctr.count-1}"
    		  				src="${ConfigProperties.kra.externalizable.images.url}tinybutton-view.gif" styleClass="tinybutton" />
@@ -152,10 +160,22 @@ $jq(document).ready(function() {
       </tr>
       </c:if>
     </c:forEach>
+
+    <%--<tr id="negotiation-attachment-download-all">
+        <td colspan="6" class="infoline">
+            <div align="center">
+                <html:image property="methodToCall.downloadAllNegotiationAttachments"
+                            src='${ConfigProperties.kra.externalizable.images.url}tinybutton-save-all.gif' styleClass="tinybutton"
+                            alt="Save All Negotiation Attachments" onclick="excludeSubmitRestriction = true;" />
+            </div>
+        </td>
+    </tr> --%>
     </tbody>
   </table>
 </kul:innerTab>
 
+
+<c:set var="tabItemCount" value="0" />
 <c:if test="${!empty KualiForm.negotiationDocument.negotiation.negotiationNotifications}">
     <c:forEach var="notifications" items="${KualiForm.negotiationDocument.negotiation.negotiationNotifications}" varStatus="status">
         <c:set var="tabItemCount" value="${tabItemCount+1}" />

@@ -34,8 +34,16 @@
   <display:column property="startDate" title="Start Date"/>
   <display:column property="endDate" title="End Date"/>
   <display:column property="activityDays" title="Activity Days"/>
-  <display:column property="efectiveLocationStartDate" title="Effective Location Start Date"/>
-  <display:column property="efectiveLocationEndDate" title="Effective Location End Date"/>
+
+    <c:choose>
+    <c:when test="${KualiForm.editingMode['view_unrestricted']}">
+       <display:column property="activityDescription" title="Activity Description"/>
+    </c:when>
+        <c:otherwise>
+            <display:column property="restrictedActivityDescription" title="Activity Description"/>
+        </c:otherwise>
+    </c:choose>
+
   <display:column property="locationDays" title="Location Days"/>
 </display:table>
 <c:if test="${empty KualiForm.negotiationDocument.negotiation.objectId}">

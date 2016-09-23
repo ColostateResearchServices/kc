@@ -19,6 +19,7 @@
 package org.kuali.kra.negotiations.web.struts.form;
 
 import org.kuali.coeus.common.framework.attachment.AttachmentFile;
+import org.kuali.coeus.sys.framework.util.CollectionUtils;
 import org.kuali.kra.negotiations.bo.Negotiation;
 import org.kuali.kra.negotiations.bo.NegotiationActivity;
 import org.kuali.kra.negotiations.bo.NegotiationActivityAttachment;
@@ -47,7 +48,8 @@ public class NegotiationActivityHelper implements Serializable {
     private ActivitySortingType activitySortingType;
     private AttachmentSortingType attachmentSortingType;
     private List<NegotiationActivityAttachment> allAttachments;
-    
+    private String defaultActivitySortCode = "ST"; //IU Customization UITSRA-3592
+    private String defaultAttachmentSortCode = "POST"; //IU Customization UITSRA-4048
     /**
      * 
      * Constructs a NegotiationActivityHelper.java.
@@ -223,6 +225,8 @@ public class NegotiationActivityHelper implements Serializable {
         if (allAttachments == null) {
             generateAllAttachments();
         }
+        // UITSRA-4136
+        sortAttachments();
         return allAttachments;
     }
     
@@ -232,13 +236,26 @@ public class NegotiationActivityHelper implements Serializable {
             allAttachments.addAll(activity.getAttachments());
         }
         if (attachmentSortingType != null) {
-            Collections.sort(allAttachments, attachmentSortingType.getComparator());
+            CollectionUtils.sort(allAttachments, attachmentSortingType.getComparator());
         }
     }
-    
+
+    public void sortAttachments() {
+        // UITSRA-4048 UITSRA-4136
+        if (getAttachmentSortingType() == null) {
+            setAttachmentSortingTypeName(defaultAttachmentSortCode);
+        }
+        CollectionUtils.sort(allAttachments, attachmentSortingType.getComparator()); //UITSRA-4320
+    }
+
     public void sortActivities() {
+        //IU Customization UITSRA-3592
+        if (getActivitySortingType() == null) {
+            setActivitySortingTypeName(defaultActivitySortCode);
+        }
+        //End IU Customization
         if (getActivitySortingType() != null) {
-            Collections.sort(getForm().getNegotiationDocument().getNegotiation().getActivities(), 
+            CollectionUtils.sort(getForm().getNegotiationDocument().getNegotiation().getActivities(), //UITSRA-4320
                     getActivitySortingType().getComparator());
         }
     }

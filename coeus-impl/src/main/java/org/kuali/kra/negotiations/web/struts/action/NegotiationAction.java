@@ -158,4 +158,19 @@ public class NegotiationAction extends KcTransactionalDocumentActionBase {
         return kualiRuleService;
     }
 
+    /**
+     * This method allows logic to be executed before a save, after authorization is confirmed.
+     *
+     * @param mapping the Action Mapping
+     * @param form the Action Form
+     * @param request the Http Request
+     * @param response Http Response
+     * @throws Exception if bad happens
+     */
+    public void preSave(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        NegotiationForm nForm = (NegotiationForm) form;
+        if (nForm.isHideDocDescriptionPanel()) {
+            nForm.getNegotiationDocument().defaultDocumentDescription();
+        }
+    }
 }

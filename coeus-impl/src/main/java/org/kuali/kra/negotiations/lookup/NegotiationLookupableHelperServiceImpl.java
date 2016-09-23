@@ -37,6 +37,7 @@ import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.util.BeanPropertyComparator;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
+import org.kuali.coeus.sys.framework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -64,7 +65,7 @@ public class NegotiationLookupableHelperServiceImpl extends KraLookupableHelperS
 
         List defaultSortColumns = getDefaultSortColumns();
         if (defaultSortColumns.size() > 0) {
-            Collections.sort(searchResults, new BeanPropertyComparator(defaultSortColumns, true));
+            org.kuali.coeus.sys.framework.util.CollectionUtils.sort(searchResults, new BeanPropertyComparator(defaultSortColumns, true));
         }
         return searchResults;
         

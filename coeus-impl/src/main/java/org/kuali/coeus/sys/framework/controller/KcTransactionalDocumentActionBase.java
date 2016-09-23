@@ -101,6 +101,10 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import org.kuali.kra.web.struts.action.GenericAttachmentObject;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.replace;
 import static org.kuali.rice.krad.util.KRADConstants.*;
@@ -1203,6 +1207,60 @@ public class KcTransactionalDocumentActionBase extends KualiTransactionalDocumen
             return forward;
         }
     }
-    
+
+
+    /** Begin IU Customization: UITSRA-3151 */
+    protected void downloadAllAttachments(List <GenericAttachmentObject> attachments, ActionForm form, HttpServletResponse response, String outputFileName) throws Exception {
+        HashMap<String, Integer> duplicateFileNameMap = new HashMap<String, Integer>();
+        ZipOutputStream zipOutput = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            baos = new ByteArrayOutputStream();
+            zipOutput = new ZipOutputStream(baos);
+            for(GenericAttachmentObject attachment : attachments) {
+                // Check for duplicate file names, since this will cause a ZipException
+                Integer duplicateFileNumber = duplicateFileNameMap.get(attachment.getFileName());
+                String zipEntryName = attachment.getFileName();
+                if(duplicateFileNumber != null) {
+                    duplicateFileNumber++;
+                    if(zipEntryName.contains(".")) {
+                        int fileExtIndex = zipEntryName.lastIndexOf(".");
+                        zipEntryName = zipEntryName.substring(0, fileExtIndex) + "-" + duplicateFileNumber + zipEntryName.substring(fileExtIndex);
+                    }
+                    else {
+                        zipEntryName = zipEntryName + "-" + duplicateFileNumber;
+                    }
+                }
+                else {
+                    duplicateFileNumber = 1;
+                }
+                duplicateFileNameMap.put(attachment.getFileName(), duplicateFileNumber);
+                zipOutput.putNextEntry(new ZipEntry(zipEntryName));
+
+                try {
+                    zipOutput.write(attachment.getContent());
+                    zipOutput.closeEntry();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    zipOutput.closeEntry();
+                }
+            }
+
+            zipOutput.finish();
+            WebUtils.saveMimeOutputStreamAsFile(response, getValidHeaderString("application/zip"), baos, getValidHeaderString(outputFileName));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(baos != null) {
+                baos.close();
+                baos = null;
+            }
+        }
+    }
+
+    /** End IU Customization: UITSRA-3151 */
 
 }

@@ -28,5 +28,6 @@
     <context:annotation-config />
 
     <import resource="classpath:org/kuali/kra/negotiation/NegotiationSpringBeans.xml"/>
+    <import resource="classpath:org/kuali/kra/custom/CustomNegotiationSpringBeans.xml"/>
 
 </beans>
