@@ -54,6 +54,9 @@
 		        <ref bean="SubAwardTemplateInfo-treatmentPrgmIncomeAdditive" />
 		        <ref bean="SubAwardTemplateInfo-applicableProgramRegulations" />
 		        <ref bean="SubAwardTemplateInfo-applicableProgramRegsDate" />
+                <ref bean="SubAwardTemplateInfo-rAndD" />
+                <ref bean="SubAwardTemplateInfo-includesCostSharing" />
+                <ref bean="SubAwardTemplateInfo-fcio" />
 		      </list>
 		     </property>
     </bean>
@@ -419,10 +422,36 @@
     <property name="shortLabel" value="Applicable Program Regulations Date" />
     <property name="summary" value="Applicable Program Regulations Date" />
     <property name="description" value="Applicable Program Regulations Date" />    
-  </bean> 
- 
-                
- <!-- Business Object Inquiry Definition -->
+  </bean>
+
+    <bean id="SubAwardTemplateInfo-rAndD" parent="SubAwardTemplateInfo-rAndD-parentBean"/>
+    <bean id="SubAwardTemplateInfo-rAndD-parentBean" abstract="true" parent="AttributeReferenceDummy-genericBoolean">
+        <property name="name" value="rAndD" />
+        <property name="label" value="Is R&amp;D" />
+        <property name="shortLabel" value="Is R&amp;D" />
+        <property name="summary" value="Is R&amp;D" />
+        <property name="description" value="Is R&amp;D" />
+    </bean>
+
+    <bean id="SubAwardTemplateInfo-includesCostSharing" parent="SubAwardTemplateInfo-includesCostSharing-parentBean"/>
+    <bean id="SubAwardTemplateInfo-includesCostSharing-parentBean" abstract="true" parent="AttributeReferenceDummy-genericBoolean">
+        <property name="name" value="includesCostSharing" />
+        <property name="label" value="Includes Cost Sharing" />
+        <property name="shortLabel" value="Includes Cost Sharing" />
+        <property name="summary" value="Includes Cost Sharing" />
+        <property name="description" value="Includes Cost Sharing" />
+    </bean>
+
+    <bean id="SubAwardTemplateInfo-fcio" parent="SubAwardTemplateInfo-fcio-parentBean"/>
+    <bean id="SubAwardTemplateInfo-fcio-parentBean" abstract="true" parent="AttributeReferenceDummy-genericBoolean">
+        <property name="name" value="fcio" />
+        <property name="label" value="Prime Sponsor is PHS for FCOI regulation" />
+        <property name="shortLabel" value="Prime Sponsor is PHS for FCOI regulation" />
+        <property name="summary" value="Prime Sponsor is PHS for FCOI regulation" />
+        <property name="description" value="Prime Sponsor is PHS for FCOI regulation" />
+    </bean>
+
+    <!-- Business Object Inquiry Definition -->
  <bean id="SubAwardTemplateInfo-inquiryDefinition" parent="SubAwardTemplateInfo-inquiryDefinition-parentBean" />
 
   <bean id="SubAwardTemplateInfo-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">

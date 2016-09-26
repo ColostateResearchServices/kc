@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kuali.coeus.common.committee.impl.web.struts.form.schedule.Time12HrFmt;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
+import org.kuali.coeus.sys.test.MockFormFile;
 import org.kuali.kra.bo.DocumentNextvalue;
 import org.kuali.kra.committee.bo.Committee;
 import org.kuali.kra.committee.bo.CommitteeSchedule;
@@ -126,9 +127,13 @@ public class ProtocolRequestServiceTest extends KcIntegrationTestBase {
      * and ProtocolSubmissionType which is trivial.
      */
     @Test
-    public void testRequest() throws WorkflowException {
+    public void testRequest() throws Exception {
         ProtocolActionAttachment attachment = new ProtocolActionAttachment();
-        attachment.setFile(new MockFormFile());
+        MockFormFile formFile = new MockFormFile();
+        formFile.setFileData(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        formFile.setFileSize(formFile.getFileData().length);
+        formFile.setFileName("test");
+        attachment.setFile(formFile);
         ProtocolRequestBean closeRequest = getMockProtocolRequestBean(ProtocolActionType.REQUEST_TO_CLOSE, ProtocolSubmissionType.REQUEST_TO_CLOSE, 
                 COMMITTEE_ID, "protocolCloseRequestBean", attachment);
         

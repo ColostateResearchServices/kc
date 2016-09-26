@@ -25,6 +25,7 @@ import org.kuali.coeus.common.committee.impl.bo.CommitteeMembershipBase;
 import org.kuali.coeus.common.committee.impl.bo.CommitteeMembershipRole;
 import org.kuali.coeus.common.committee.impl.bo.CommitteeScheduleBase;
 import org.kuali.coeus.common.committee.impl.web.struts.form.schedule.Time12HrFmt;
+import org.kuali.kra.protocol.ProtocolBase;
 import org.kuali.kra.protocol.actions.submit.ProtocolSubmissionLiteBase;
 import org.kuali.kra.protocol.correspondence.ProtocolCorrespondence;
 import org.kuali.rice.core.api.datetime.DateTimeService;
@@ -456,14 +457,30 @@ public abstract class MeetingServiceImplBase<CS extends CommitteeScheduleBase<CS
 
     @Override
     public void addCommitteeScheduleMinute(MeetingHelperBase meetingHelper) {
-        meetingHelper.getNewCommitteeScheduleMinute().refreshReferenceObject("minuteEntryType");
-        meetingHelper.getNewCommitteeScheduleMinute().refreshReferenceObject("protocol");
-        meetingHelper.getNewCommitteeScheduleMinute().refreshReferenceObject("commScheduleActItem");
-        
-        Long submissionId = null;
-        if (meetingHelper.getNewCommitteeScheduleMinute().getProtocol() != null) {
-            submissionId = meetingHelper.getNewCommitteeScheduleMinute().getProtocol().getProtocolSubmission().getSubmissionId();
+        if (meetingHelper.getNewCommitteeScheduleMinute().getProtocol() == null) {
+            meetingHelper.getNewCommitteeScheduleMinute().refreshReferenceObject("protocol");
         }
+        if (meetingHelper.getNewCommitteeScheduleMinute().getMinuteEntryType() == null) {
+            meetingHelper.getNewCommitteeScheduleMinute().refreshReferenceObject("minuteEntryType");
+        }
+        if (meetingHelper.getNewCommitteeScheduleMinute().getCommScheduleActItem() == null) {
+            meetingHelper.getNewCommitteeScheduleMinute().refreshReferenceObject("commScheduleActItem");
+        }
+
+        ProtocolBase protocol = null;
+        String protocolNumber = null;
+        Long submissionId = null;
+        Integer submissionNumber = null;
+
+        if (meetingHelper.getNewCommitteeScheduleMinute().getProtocol() != null) {
+            protocol = meetingHelper.getNewCommitteeScheduleMinute().getProtocol();
+            protocolNumber = protocol.getProtocolNumber();
+            if (protocol.getProtocolSubmission() != null) {
+                submissionId = protocol.getProtocolSubmission().getSubmissionId();
+                submissionNumber = protocol.getProtocolSubmission().getSubmissionNumber();
+            }
+        }
+
         Long scheduleId = meetingHelper.getCommitteeSchedule().getId();
         Integer entryNumber = getNextMinuteEntryNumber((CS) meetingHelper.getCommitteeSchedule());
         String principalName = GlobalVariables.getUserSession().getPrincipalName();
@@ -471,6 +488,8 @@ public abstract class MeetingServiceImplBase<CS extends CommitteeScheduleBase<CS
         Timestamp createTimestamp = dateTimeService.getCurrentTimestamp();
         
         meetingHelper.getNewCommitteeScheduleMinute().setSubmissionIdFk(submissionId);
+        meetingHelper.getNewCommitteeScheduleMinute().setSubmissionNumber(submissionNumber);
+        meetingHelper.getNewCommitteeScheduleMinute().setProtocolNumber(protocolNumber);
         meetingHelper.getNewCommitteeScheduleMinute().setScheduleIdFk(scheduleId);
         meetingHelper.getNewCommitteeScheduleMinute().setEntryNumber(entryNumber);
         meetingHelper.getNewCommitteeScheduleMinute().setCreateUser(principalName);
@@ -584,6 +603,7 @@ public abstract class MeetingServiceImplBase<CS extends CommitteeScheduleBase<CS
      */
     protected void resetProtocolFields(MeetingHelperBase meetingHelper) {
         meetingHelper.getNewCommitteeScheduleMinute().setProtocolIdFk(null);
+        meetingHelper.getNewCommitteeScheduleMinute().setProtocolNumber(null);
         meetingHelper.getNewCommitteeScheduleMinute().setProtocol(null);
     }
     

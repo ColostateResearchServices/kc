@@ -58,6 +58,8 @@
         <field-descriptor name="fedAwardProjDesc" column="FED_AWARD_PROJ_DESC" jdbc-type="VARCHAR"/>
         <field-descriptor name="fAndARate" column="F_AND_A_RATE" jdbc-type="DECIMAL" conversion="org.kuali.coeus.sys.framework.persistence.OjbScaleTwoDecimalFieldConversion" />
         <field-descriptor name="deMinimus" column="DE_MINIMUS" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+        <field-descriptor name="ffataRequired" column="FFATA_REQUIRED" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+        <field-descriptor name="fsrsSubawardNumber" column="FSRS_SUBAWARD_NUMBER" jdbc-type="VARCHAR" />
         <field-descriptor name="subAwardSequenceStatus" column="SUBAWARD_SEQUENCE_STATUS" jdbc-type="VARCHAR"/>
 
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
@@ -137,6 +139,7 @@
         <field-descriptor name="mimeType" column="MIME_TYPE" jdbc-type="VARCHAR" />
         <field-descriptor name="modificationEffectiveDate" column="MODIFICATION_EFFECTIVE_DATE" jdbc-type="DATE" />
         <field-descriptor name="modificationID" column="MODIFICATION_NUMBER" jdbc-type="VARCHAR" />
+        <field-descriptor name="modificationTypeCode" column="MODIFICATION_TYPE_CODE" jdbc-type="VARCHAR"/>'
         <field-descriptor name="periodofPerformanceStartDate" column="PERFORMANCE_START_DATE" jdbc-type="DATE" />
         <field-descriptor name="periodofPerformanceEndDate" column="PERFORMANCE_END_DATE" jdbc-type="DATE" />
         <field-descriptor name="fileDataId" column="FILE_DATA_ID" jdbc-type="VARCHAR"/>
@@ -146,6 +149,9 @@
 		<reference-descriptor name="subAward" class-ref="org.kuali.kra.subaward.bo.SubAward" auto-retrieve="true" auto-update="none" auto-delete="none">
 			<foreignkey field-ref="subAwardId" />
 		</reference-descriptor>
+		<reference-descriptor name="modificationType" class-ref="org.kuali.kra.subaward.fdp.SubAwardModificationType" auto-retrieve="true" auto-update="none" auto-delete="none"> 
+            <foreignkey field-ref="modificationTypeCode"/> 
+        </reference-descriptor>
     </class-descriptor>
     
     <class-descriptor class="org.kuali.kra.subaward.bo.SubAwardAmountReleased" table="SUBAWARD_AMT_RELEASED">
@@ -398,8 +404,21 @@
         <field-descriptor name="treatmentPrgmIncomeAdditive" column="TREATMENT_PRGM_INCOME_ADDITIVE" jdbc-type="VARCHAR"/>
         <field-descriptor name="applicableProgramRegulations" column="APPLICABLE_PROGRAM_REGULATIONS" jdbc-type="VARCHAR"/>
         <field-descriptor name="applicableProgramRegsDate" column="APPLICABLE_PROGRAM_REGS_DATE" jdbc-type="DATE" />
+        <field-descriptor name="rAndD" column="R_AND_D" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+        <field-descriptor name="includesCostSharing" column="INCLUDES_COST_SHARING" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+        <field-descriptor name="fcio" column="FCIO" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
 		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
     </class-descriptor>
+    
+    <class-descriptor class="org.kuali.kra.subaward.fdp.SubAwardModificationType" table="SUBAWARD_MODIFICATION_TYPE">
+		<field-descriptor name="code" column="code" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" />
+		<field-descriptor name="active" column="ACTIVE" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" />
+		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" />
+		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" />
+		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />
+	</class-descriptor>
     
 </descriptor-repository>

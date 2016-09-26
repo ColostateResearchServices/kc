@@ -54,4 +54,5 @@
     <import resource="classpath:org/kuali/kra/negotiation/NegotiationBootstrapSpringBeans.xml"/>
     <import resource="classpath:org/kuali/kra/coi/CoiBootstrapSpringBeans.xml"/>
 	<import resource="classpath:org/kuali/kra/excon/ExconBootstrapSpringBeans.xml"/>
+    <import resource="classpath:org/kuali/coeus/sys/impl/DataDictionaryOverrideSpringBeans.xml"/>
 </beans>

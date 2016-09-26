@@ -45,7 +45,7 @@
         name="newQuestionSequence" value="${QuestionLookupForm.newQuestionSequence}"/>
 	<input type="hidden" id="anchor"
 		name="anchor" value="${QuestionLookupForm.anchor}"/>
-
+	<kul:csrf />
 
    		<label>
    		<%--

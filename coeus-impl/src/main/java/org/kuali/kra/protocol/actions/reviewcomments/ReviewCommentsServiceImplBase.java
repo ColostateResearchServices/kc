@@ -215,13 +215,14 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
         ProtocolSubmissionBase protocolSubmission = getSubmission(protocol);
         if (protocolSubmission.getScheduleIdFk() != null) {
             newReviewComment.setScheduleIdFk(protocolSubmission.getScheduleIdFk());
+            newReviewComment.setSubmissionNumber(protocolSubmission.getSubmissionNumber());
         }
         else {
             newReviewComment.setScheduleIdFk(CommitteeScheduleBase.DEFAULT_SCHEDULE_ID);
         }
         newReviewComment.setEntryNumber(reviewComments.size());
         newReviewComment.setProtocolIdFk(protocol.getProtocolId());
-        newReviewComment.setProtocol(protocol);
+        newReviewComment.setProtocolNumber(protocol.getProtocolNumber());
         newReviewComment.setSubmissionIdFk(protocolSubmission.getSubmissionId());
         newReviewComment.setCreateUser(GlobalVariables.getUserSession().getPrincipalName());
         newReviewComment.setCreateTimestamp(dateTimeService.getCurrentTimestamp());
@@ -608,14 +609,16 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
 
 
     private List<String> getActiveMemberId(ProtocolReviewableBase reviewComment) {
+        if (reviewComment.getProtocol() == null) {
+            reviewComment.refreshReferenceObject("protocol");
+        }
         List<String> activeMemberIds = new ArrayList<String>();
         List<CommitteeMembershipBase> members = new ArrayList<CommitteeMembershipBase>();
         if (reviewComment.isReviewComment()) {
             members = ((CommitteeScheduleMinuteBase) reviewComment).getCommitteeSchedule().getParentCommittee().getCommitteeMemberships();
         }
         else {
-            members = ((PRA) reviewComment).getProtocol().getProtocolSubmission().getCommittee()
-                    .getCommitteeMemberships();
+            members = ((PRA) reviewComment).getProtocolSubmission().getCommittee().getCommitteeMemberships();
         }
         for (CommitteeMembershipBase member : members) {
             if (member.isActive()) {
@@ -631,6 +634,9 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
     }
 
     private List<String> getPersonnelIds(ProtocolReviewableBase reviewComment) {
+        if (reviewComment.getProtocol() == null) {
+            reviewComment.refreshReferenceObject("protocol");
+        }
         List<String> PersonnelIds = new ArrayList<String>();
         if (reviewComment.getProtocol() != null) {
             for (ProtocolPersonBase person : reviewComment.getProtocol().getProtocolPersons()) {
@@ -669,9 +675,8 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
      */
     private List<String> getProtocolReviewerIds(ProtocolReviewableBase reviewComment) {
         List<String> reviewerIds = new ArrayList<String>();
-        if (reviewComment.getProtocolId() != null) {
-            // TODO : need to check if the submission number is ok to get this way
-            reviewerIds = getProtocolReviewerIds(reviewComment.getProtocolId(), reviewComment.getProtocol().getProtocolSubmission().getSubmissionNumber());
+        if (reviewComment.getSubmissionNumber() != null) {
+            reviewerIds = getProtocolReviewerIds(reviewComment.getProtocolId(), reviewComment.getSubmissionNumber());
         }
         return reviewerIds;
     }
@@ -725,9 +730,9 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
 
             aggregatorIds = new HashSet<String>();
 
-            if (StringUtils.isNotBlank(minute.getProtocol().getProtocolNumber())) {
+            if (StringUtils.isNotBlank(minute.getProtocolNumber())) {
                 Map<String, String> protocolAttr = new HashMap<String, String>();
-                protocolAttr.put(KcKimAttributes.PROTOCOL, minute.getProtocol().getProtocolNumber());
+                protocolAttr.put(KcKimAttributes.PROTOCOL, minute.getProtocolNumber());
                 Set<String> protoResults = (Set<String>) roleService.getRoleMemberPrincipalIds(getNamespaceHook(),
                         getAggregatorRoleNameHook(), new HashMap<String, String>(protocolAttr));
 
@@ -736,6 +741,9 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
                 }
             }
 
+            if (minute.getProtocol() == null) {
+                minute.refreshReferenceObject("protocol");
+            }
             if (StringUtils.isNotBlank(minute.getProtocol().getLeadUnitNumber())) {
                 Map<String, String> leadUnitAttr = new HashMap<String, String>();
                 leadUnitAttr.put(KcKimAttributes.UNIT_NUMBER, minute.getProtocol().getLeadUnitNumber());
@@ -770,12 +778,12 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
 
             viewerIds = new HashSet<String>();
 
-            if (StringUtils.isNotBlank(minute.getProtocol().getProtocolNumber())) {
+            if (StringUtils.isNotBlank(minute.getProtocolNumber())) {
                 Map<String, String> protocolAttr = new HashMap<String, String>();
                 /*
                  * IS the kim attr data for iacuc also under 'protocol'?? not sure, need to verify that
                  */
-                protocolAttr.put(KcKimAttributes.PROTOCOL, minute.getProtocol().getProtocolNumber());
+                protocolAttr.put(KcKimAttributes.PROTOCOL, minute.getProtocolNumber());
                 Set<String> protoResults = (Set<String>) roleService.getRoleMemberPrincipalIds(getNamespaceHook(),
                         getProtocolViewerRoleNameHook(), new HashMap<String, String>(protocolAttr));
 
@@ -784,6 +792,9 @@ public abstract class ReviewCommentsServiceImplBase<PRA extends ProtocolReviewAt
                 }
             }
 
+            if (minute.getProtocol() == null) {
+                minute.refreshReferenceObject("protocol");
+            }
             if (StringUtils.isNotBlank(minute.getProtocol().getLeadUnitNumber())) {
                 Map<String, String> leadUnitAttr = new HashMap<String, String>();
                 leadUnitAttr.put(KcKimAttributes.UNIT_NUMBER, minute.getProtocol().getLeadUnitNumber());
