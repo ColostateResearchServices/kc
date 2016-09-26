@@ -1,0 +1,544 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="Negotiation" parent="Negotiation-parentBean" >
+    <property name="attributes" >
+      <list merge="true">
+        
+        <!-- IU Customization Starts -->
+        <!-- UITSRA-2543  -->
+        <ref bean="Negotiation-awardSponsorAwardNumber" />
+        
+        <!-- UITSRA-2893  -->
+        <ref bean="Negotiation-recordResidesWith" />
+        <ref bean="Negotiation-gsTeam" />
+        <ref bean="Negotiation-accountId" />
+        <ref bean="Negotiation-associatedNegotiable.subAwardOrganizationName" />
+        
+        <!-- UITSRA-3190  -->
+        <ref bean="Negotiation-associatedNegotiable.piPersonId" />
+        <ref bean="Negotiation-associatedNegotiable.piEmployeeUserName" />
+        
+        <!-- UITSRA-3761  -->
+        <ref bean="Negotiation-associatedNegotiable.subAwardRequisitionerUserName" />
+		<ref bean="Negotiation-customData-proposalDocID" />
+		<ref bean="Negotiation-customData-modificationID" />
+		<ref bean="Negotiation-customData-proposalType" />
+		<ref bean="Negotiation-negotiationAgreementType.description"/>
+		
+		<!-- UITSRA-4218  -->
+		<ref bean="Negotiation-customData-agreementDate" />
+        <!-- IU Customization Ends -->
+        
+        <!--  CSU custom -->
+        <ref bean="Negotiation-customData-csuRefNum" />
+
+		<ref bean="Negotiation-customData-ricroCleared" />
+		<ref bean="Negotiation-customData-coiCleared" />
+		<ref bean="Negotiation-customData-proposalActionType" />
+        
+        
+      </list>
+    </property>
+  </bean>
+
+	<!-- Attribute Definitions -->
+	<!-- IU Customization Starts -->
+	<bean id="Negotiation-awardSponsorAwardNumber" parent="Award-sponsorAwardNumber" >
+		<property name="name" value="sponsorAwardNumber" />
+		<property name="label" value="Sponsor Award ID" />
+		<property name="shortLabel" value="Sponsor Award ID" />
+		<property name="required" value="false" /> 
+	</bean>
+  
+	<!-- UITSRA-2893 -->
+	<bean id="Negotiation-associatedNegotiable.subAwardOrganizationName" parent="Negotiation-associatedNegotiable.subAwardOrganizationName-parentBean" />
+	<bean id="Negotiation-associatedNegotiable.subAwardOrganizationName-parentBean" abstract="true" parent="SubAward-organizationName">
+		<property name="name" value="associatedNegotiable.subAwardOrganizationName" />
+		<property name="label" value="Subaward Organization" />
+		<property name="shortLabel" value="Subaward Org" />
+	</bean>  
+
+    <bean id="Negotiation-recordResidesWith" parent="AttributeDefinition">
+        <property name="name" value="recordResidesWith" />
+        <property name="label" value="Record Resides With" />
+        <property name="shortLabel" value="Record Resides With" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="100" />
+    	<property name="validationPattern" >
+      		<bean parent="AnyCharacterValidationPattern"
+            	p:allowWhitespace="true" />
+    	</property>
+    	<property name="control" >
+      		<bean parent="TextControlDefinition"
+           	 p:size="20" />
+    	</property>
+   		<property name="summary" value="Record Location" />
+    	<property name="description" value="Record Location" />
+    </bean>
+    
+    <bean id="Negotiation-gsTeam" parent="AttributeDefinition">
+        <property name="name" value="gsTeam" />
+        <property name="label" value="SP Team" />
+        <property name="shortLabel" value="SP Team" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="200" />
+    	<property name="validationPattern" >
+      		<bean parent="AnyCharacterValidationPattern"
+           	 p:allowWhitespace="true" />
+    	</property>
+   		<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="20" />
+    	</property>
+    	<property name="summary" value="Sponsored Programs Team" />
+    	<property name="description" value="Sponsored Programs Team" />
+    </bean>
+    
+    <bean id="Negotiation-accountId" parent="AttributeDefinition">
+        <property name="name" value="accountId" />
+        <property name="label" value="Account ID" />
+        <property name="shortLabel" value="Account ID" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="30" />
+    	<property name="validationPattern" >
+      		<bean parent="AnyCharacterValidationPattern"
+            	p:allowWhitespace="true" />
+    	</property>
+    	<property name="control" >
+      		<bean parent="TextControlDefinition"
+           	 p:size="30" />
+    	</property>
+    	<property name="summary" value="Account ID(s)" />
+    	<property name="description" value="Account ID(s)" />
+    </bean>
+    
+	<bean id="Negotiation-negotiationStartDate" parent="Negotiation-negotiationStartDate-parentBean" >
+	    <property name="name" value="negotiationStartDate" />
+	    <property name="label" value="Negotiation Start Date" />
+	    <property name="shortLabel" value="Negotiation Start Date" />
+	    <property name="required" value="true" />
+	    <property name="validationPattern" >
+			<bean parent="DateValidationPattern" />
+		</property>
+	    <property name="summary" value="Start Date" />
+	    <property name="description" value="Start Date" />
+	</bean>
+
+  <bean id="Negotiation-negotiationAgreementTypeId" parent="Negotiation-negotiationAgreementTypeId-parentBean" />
+  <bean id="Negotiation-negotiationAgreementTypeId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="negotiationAgreementTypeId" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Agreement Type" />
+    <property name="shortLabel" value="Agreement Type" />
+    <property name="maxLength" value="100" />
+    <property name="required" value="true" />
+    <property name="validationPattern" >
+      <bean parent="NumericValidationPattern" />
+    </property>
+    <property name="control" >
+      <bean parent="SelectControlDefinition"
+            p:businessObjectClass="org.kuali.kra.negotiations.bo.NegotiationAgreementType"
+            p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="false"
+            p:keyAttribute="id"
+            p:labelAttribute="description" />
+    </property>
+    <property name="summary" value="Agreement Type" />
+    <property name="description" value="Agreement Type" />
+  </bean>
+  
+	<bean id="Negotiation-negotiationEndDate" parent="Negotiation-negotiationEndDate-parentBean" >
+    	<property name="name" value="negotiationEndDate" />
+    	<property name="label" value="Negotiation End Date" />
+    	<property name="shortLabel" value="Negotiation End Date" />
+    	<property name="required" value="false" />
+    	<property name="validationPattern" >
+			<bean parent="DateValidationPattern" />
+		</property>
+    	<property name="summary" value="End Date" />
+    	<property name="description" value="End Date" />
+	</bean>
+
+	<!-- UITSRA-3190 -->
+	<bean id="Negotiation-associatedNegotiable.piName" parent="Negotiation-associatedNegotiable.piName-parentBean" >
+		<property name="name" value="associatedNegotiable.piName" />
+		<property name="label" value="Principal Investigator" />
+		<property name="shortLabel" value="Principal Investigator" />
+	</bean>
+  
+	<bean id="Negotiation-associatedNegotiable.piPersonId" parent="Negotiation-associatedNegotiable.piPersonId-parentBean" />
+	<bean id="Negotiation-associatedNegotiable.piPersonId-parentBean" abstract="true" parent="NegotiationUnassociatedDetail-sponsorAwardNumber">
+		<property name="name" value="associatedNegotiable.principalInvestigatorPersonId" />
+		<property name="label" value="Principal Investigator ID" />
+		<property name="shortLabel" value="PI ID" />
+        <property name="control">
+            <bean parent="HiddenControlDefinition" />
+        </property>
+        <property name="displayLabelAttribute" value="associatedNegotiable.principalInvestigatorUserName" />		
+		<property name="summary" value="Principal Investigator ID " />
+		<property name="description" value="Principal Investigator ID" />		
+	</bean>
+  
+    <bean id="Negotiation-associatedNegotiable.piEmployeeUserName" parent="Negotiation-associatedNegotiable.piEmployeeUserName-parentBean" />
+	<bean id="Negotiation-associatedNegotiable.piEmployeeUserName-parentBean" abstract="true" parent="NegotiationUnassociatedDetail-piEmployeeUserName">
+    	<property name="name" value="associatedNegotiable.principalInvestigatorUserName" />
+   		 <property name="label" value="Principal Investigator" />
+    	<property name="shortLabel" value="Principal Investigator" />
+    	<property name="required" value="false" />
+		<property name="forceUppercase" value="false" />
+		<property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern" />
+        </property>
+		<property name="control" >
+			<bean parent="KualiUserControlDefinition"
+                p:personNameAttributeName="associatedNegotiable.piName"
+                p:universalIdAttributeName="associatedNegotiable.principalInvestigatorPersonId"
+                p:userIdAttributeName="associatedNegotiable.principalInvestigatorUserName" />
+		</property>    	
+    	<property name="summary" value="Principal Investigator User Name" />
+    	<property name="description" value="Principal Investigator User Name" />    
+    </bean>
+
+	<!-- UITSRA-3191 -->
+	<bean id="Negotiation-negotiatorPersonId" parent="Negotiation-negotiatorPersonId-parentBean" >
+		<property name="name" value="negotiatorPersonId" />
+		<property name="label" value="Negotiator" />
+		<property name="shortLabel" value="Negotiator" />
+		<property name="required" value="true" />
+		<property name="summary" value="Negotiator" />
+		<property name="displayLabelAttribute" value="negotiatorUserName" />
+		<property name="control">
+            <bean parent="TextControlDefinition" p:size="15" />
+        </property>
+		<property name="description" value="Negotiator" />
+	</bean>
+		
+	<bean id="Negotiation-negotiatorUserName" parent="Negotiation-negotiatorUserName-parentBean" >
+		<property name="name" value="negotiatorUserName" />
+		<property name="label" value="Negotiator User Name" />
+		<property name="shortLabel" value="Negotiator User Name" />
+		<property name="required" value="false" />
+		<property name="forceUppercase" value="false" />
+		<property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern" />
+        </property>
+		<property name="control" >
+			<bean parent="KualiUserControlDefinition"
+                p:personNameAttributeName="negotiatorName"
+                p:universalIdAttributeName="negotiatorPersonId"
+                p:userIdAttributeName="negotiatorUserName" />
+		</property>
+				
+		<property name="summary" value="Negotiator Username" />
+		<property name="description" value="Negotiator's Username" />
+	</bean>
+  
+	<bean id="Negotiation-negotiatorName" parent="Negotiation-negotiatorName-parentBean" >
+		<property name="name" value="negotiatorName" />
+        <property name="label" value="Negotiator Full Name" />
+        <property name="shortLabel" value="Negotiator" />
+	</bean>  
+  
+	<!-- UITSRA-3761 -->
+	<bean id="Negotiation-associatedNegotiable.subAwardRequisitionerId" parent="Negotiation-associatedNegotiable.subAwardRequisitionerId-parentBean">
+		<property name="name" value="associatedNegotiable.subAwardRequisitionerId" />
+        <property name="control">
+            <bean parent="HiddenControlDefinition" />
+        </property>
+        <property name="displayLabelAttribute" value="associatedNegotiable.requisitionerUserName" />		
+	</bean>
+  
+    <bean id="Negotiation-associatedNegotiable.subAwardRequisitionerUserName" parent="Negotiation-associatedNegotiable.subAwardRequisitionerUserName-parentBean" />
+	<bean id="Negotiation-associatedNegotiable.subAwardRequisitionerUserName-parentBean" abstract="true" parent="NegotiationUnassociatedDetail-piEmployeeUserName">
+    	<property name="name" value="associatedNegotiable.requisitionerUserName" />
+   		 <property name="label" value="Principal Investigator (subaward module)" />
+    	<property name="shortLabel" value="Principal Investigator (subaward module)" />
+    	<property name="required" value="false" />
+		<property name="forceUppercase" value="false" />
+		<property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern" />
+        </property>
+		<property name="control" >
+			<bean parent="KualiUserControlDefinition"
+                p:personNameAttributeName="associatedNegotiable.subAwardRequisitionerName"
+                p:universalIdAttributeName="associatedNegotiable.subAwardRequisitionerId"
+                p:userIdAttributeName="associatedNegotiable.requisitionerUserName" />
+		</property>    	
+    	<property name="summary" value="Principal Investigator User Name (subaward module)" />
+    	<property name="description" value="Principal Investigator User Name (subaward module)" />    
+    </bean>
+
+    <bean id="Negotiation-customData-modificationID" parent="AttributeDefinition">
+        <property name="name" value="modification_id" />
+        <property name="label" value="Modification ID" />
+        <property name="shortLabel" value="Modification ID" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="200" />
+    	<property name="validationPattern" >
+      		<bean parent="AnyCharacterValidationPattern"
+           	 p:allowWhitespace="true" />
+    	</property>
+   		<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="20" />
+    	</property>
+    	<property name="summary" value="Modification ID" />
+    	<property name="description" value="Modification ID" />
+    </bean>
+    
+    <bean id="Negotiation-customData-proposalDocID" parent="AttributeDefinition">
+        <property name="name" value="proposalDocID" />
+        <property name="label" value="Proposal Development Doc Nbr" />
+        <property name="shortLabel" value="Proposal Development Doc Nbr" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="200" />
+    	<property name="validationPattern" >
+      		<bean parent="AnyCharacterValidationPattern"
+           	 p:allowWhitespace="true" />
+    	</property>
+   		<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="20" />
+    	</property>
+    	<property name="summary" value="Proposal Development Document Number" />
+    	<property name="description" value="Proposal Development Document Number" />
+    </bean>
+
+    <bean id="Negotiation-customData-csuRefNum" parent="AttributeDefinition">
+        <property name="name" value="csuRefNum" />
+        <property name="label" value="CSU Reference # (Pass or Acct)" />
+        <property name="shortLabel" value="CSU Ref #" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="200" />
+    	<property name="validationPattern" >
+      		<bean parent="AnyCharacterValidationPattern"
+           	 p:allowWhitespace="true" />
+    	</property>
+   		<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="20" />
+    	</property>
+    	<property name="summary" value="CSU Reference Number (Pass or Acct)" />
+    	<property name="description" value="CSU Reference Number (Pass or Acct)" />
+    </bean>
+    
+    <bean id="Negotiation-customData-proposalType" parent="AttributeDefinition">
+        <property name="name" value="proposalType" />
+        <property name="label" value="Post-Proposal Action Type" />
+        <property name="shortLabel" value="Post-Proposal Action Type" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="200" />
+    	<property name="validationPattern" >
+      		<bean parent="AnyCharacterValidationPattern"
+           	 p:allowWhitespace="true" />
+    	</property>
+   		<property name="control" >
+      		<bean parent="TextControlDefinition"
+            	p:size="20" />
+    	</property>
+    	<property name="summary" value="Post-Proposal Action Type" />
+    	<property name="description" value="Post-Proposal Action Type" />
+    </bean>
+
+	<bean id="Negotiation-negotiationAgreementType.description" parent="Negotiation-negotiationAgreementType.description-parentBean"/>
+	<bean id="Negotiation-negotiationAgreementType.description-parentBean" parent="Negotiation-negotiationAgreementTypeId-parentBean">
+		<property name="name" value="negotiationAgreementType.description" />
+	</bean>  
+  
+	<!-- UITSRA-4218 -->
+    <bean id="Negotiation-customData-agreementDate" parent="AttributeDefinition">
+        <property name="name" value="agreementDate" />
+        <property name="label" value="Fully Executed Agrmnt Date" />
+        <property name="shortLabel" value="Fully Executed Agrmnt Date" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="20" />
+    	<property name="validationPattern" >
+			<bean parent="DateValidationPattern" />
+		</property>
+    	<property name="control" >
+      		<bean parent="TextControlDefinition"
+           	 p:size="20" />
+    	</property>
+   		<property name="summary" value="Fully Executed Agreement Date (Format MM/DD/YYYY)" />
+    	<property name="description" value="Fully Executed Agreement Date (Format MM/DD/YYYY)" />
+    </bean>
+    
+	<bean id="Negotiation-associatedNegotiable.leadUnitNumber" parent="Negotiation-associatedNegotiable.leadUnitNumber-parentBean" >
+		<property name="label" value="Lead Unit" />
+		<property name="shortLabel" value="Lead Unit" />
+ 	</bean>
+	<!-- IU Customization Ends -->
+
+
+    <bean id="Negotiation-customData-ricroCleared" parent="AttributeDefinition">
+        <property name="name" value="ricroCleared" />
+        <property name="label" value="RICRO Cleared for Award" />
+        <property name="shortLabel" value="RICRO Cleared" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="20" />
+        <property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+        </property>
+    <property name="control" >
+      <bean parent="RadioControlDefinition"
+            p:valuesFinderClass="org.kuali.coeus.common.framework.ynq.YnqAnswersValuesFinder"
+            p:includeKeyInLabel="false" />
+    </property> 
+   		<property name="summary" value="RICRO Cleared for Award" />
+    	<property name="description" value="RICRO Cleared for Award" />
+    </bean>
+    
+    <bean id="Negotiation-customData-coiCleared" parent="AttributeDefinition">
+        <property name="name" value="coiCleared" />
+        <property name="label" value="COI Cleared for Award" />
+        <property name="shortLabel" value="COI Cleared" />
+        <property name="required" value="false" />    
+        <property name="maxLength" value="20" />
+        <property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern" p:allowWhitespace="true" />
+        </property>
+    <property name="control" >
+      <bean parent="RadioControlDefinition"
+			p:valuesFinderClass="org.kuali.coeus.common.framework.ynq.YnqAnswersValuesFinder"
+            p:includeKeyInLabel="false" />
+    </property> 
+   		<property name="summary" value="COI Cleared for Award" />
+    	<property name="description" value="COI Cleared for Award" />
+    </bean>    
+
+
+  <bean id="Negotiation-customData-proposalActionType" parent="AttributeDefinition">
+    <property name="name" value="proposalActionType" />
+    <property name="forceUppercase" value="false" />
+    <property name="label" value="Proposal Action Type" />
+    <property name="shortLabel" value="Proposal Action" />
+    <property name="maxLength" value="100" />
+    <property name="required" value="false" />
+    <property name="validationPattern" >
+      <bean parent="AnyCharacterValidationPattern"
+            	p:allowWhitespace="true" />
+    </property>
+    <property name="control" >
+    	<bean parent="TextControlDefinition"
+         	 p:size="20" />
+    </property>    
+<!--    <property name="control" >
+       <bean parent="SelectControlDefinition"
+            p:businessObjectClass="org.kuali.kra.bo.ArgValueLookup"
+            p:valuesFinderClass="org.kuali.kra.lookup.keyvalue.ArgValueLookupValuesFinder"
+            p:includeKeyInLabel="false"
+            p:includeBlankRow="true"
+            p:keyAttribute="value"
+            p:labelAttribute="value" />
+    </property> -->
+    <property name="summary" value="Proposal Action Type" />
+    <property name="description" value="Proposal Action Type" />
+  </bean>
+
+
+
+
+  <!-- Business Object Lookup Definition -->
+	<bean id="Negotiation-lookupDefinition" parent="Negotiation-lookupDefinition-parentBean" />
+  	<bean id="Negotiation-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Negotiation Lookup" />
+		<property name="lookupableID" value="negotiationLookupable" />
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
+		<!-- UITSRA-3719 -->
+		<property name="resultSetLimit" value="200" />
+		<property name="defaultSort" >
+		  <bean parent="SortDefinition">
+		  	<property name="attributeNames">
+		  		<list>
+		  			<value>negotiationId</value>
+		  		</list>
+		  	</property>
+		  </bean>
+		</property>
+		<property name="lookupFields" >
+		  <list>
+            <bean p:attributeName="negotiationId" parent="FieldDefinition" />
+          <!--   <bean p:attributeName="accountId" parent="FieldDefinition" />  -->
+		  	<bean p:attributeName="negotiationAssociationTypeId" parent="FieldDefinition" />
+		  	<bean p:attributeName="associatedDocumentId" parent="FieldDefinition" />
+		    <!-- UITSRA-3761  -->
+		    <bean p:attributeName="proposalDocID" parent="FieldDefinition" />
+		    <bean p:attributeName="csuRefNum" parent="FieldDefinition" />
+		    <!-- UITSRA-2543  -->
+		    <bean p:attributeName="sponsorAwardNumber" parent="FieldDefinition" />		    
+		    <!-- UITSRA-3190  -->
+		    <bean p:attributeName="associatedNegotiable.principalInvestigatorUserName" parent="FieldDefinition" />
+		    <bean p:attributeName="associatedNegotiable.leadUnitNumber" parent="FieldDefinition" /> <!-- name change -->
+		    <!-- UITSRA-3761  -->
+		    <bean p:attributeName="associatedNegotiable.requisitionerUserName" parent="FieldDefinition" />	
+		    <bean p:attributeName="associatedNegotiable.title" parent="FieldDefinition" />
+			<!-- UITSRA-3761  -->
+		    <bean p:attributeName="negotiationAgreementTypeId" parent="FieldDefinition" />
+		 <!--    <bean p:attributeName="proposalType" parent="FieldDefinition" />  -->
+            <bean p:attributeName="negotiationStatusId" parent="FieldDefinition" />
+			<bean p:attributeName="associatedNegotiable.sponsorCode" parent="FieldDefinition" />
+			<!-- UITSRA-4418 -->
+			<bean p:attributeName="associatedNegotiable.sponsorName" parent="FieldDefinition" />
+		    <!-- UITSRA-2893  -->
+		    <bean p:attributeName="associatedNegotiable.subAwardOrganizationName" parent="FieldDefinition" />			
+		    <!-- UITSRA-2893 -->
+		    <bean p:attributeName="gsTeam" parent="FieldDefinition" />
+		  	 <bean p:attributeName="recordResidesWith" parent="FieldDefinition" />
+			<!-- UITSRA-3191 -->
+		    <bean p:attributeName="negotiatorUserName" parent="FieldDefinition"  />
+		    <bean p:attributeName="negotiationStartDate" parent="FieldDefinition" />
+		    <bean p:attributeName="negotiationAge" parent="FieldDefinition" />
+		    <bean p:attributeName="activities.followupDate" parent="FieldDefinition" />
+		    <bean p:attributeName="ricroCleared" parent="FieldDefinition" />
+		    <bean p:attributeName="coiCleared" parent="FieldDefinition" />
+		    <bean p:attributeName="proposalActionType" parent="FieldDefinition" />
+			<bean p:attributeName="modification_id" parent="FieldDefinition" />	
+
+		  </list>
+		</property>
+
+		<property name="resultFields" >
+		  <list>
+            <bean p:attributeName="negotiationId" parent="FieldDefinition" />
+            <bean p:attributeName="negotiationStatus.description" parent="FieldDefinition" />
+            <bean p:attributeName="negotiationAgreementType.description" parent="FieldDefinition" />
+		  	<bean p:attributeName="negotiationAssociationType.description" parent="FieldDefinition" />
+		    <bean p:attributeName="associatedNegotiable.associatedDocumentId" parent="FieldDefinition" />
+		    <bean p:attributeName="associatedNegotiable.piName" parent="FieldDefinition" />
+		    <bean p:attributeName="associatedNegotiable.leadUnitNumber" parent="FieldDefinition" />		    		    
+
+		    <bean p:attributeName="csuRefNum" parent="FieldDefinition" p:useShortLabel="true"/>
+
+	    
+		    <bean p:attributeName="associatedNegotiable.negotiableProposalType.description" parent="FieldDefinition" />
+		    <bean p:attributeName="associatedNegotiable.sponsorName" parent="FieldDefinition" />
+			<bean p:attributeName="sponsorAwardNumber" parent="FieldDefinition" />
+			<bean p:attributeName="modification_id" parent="FieldDefinition" />	
+		 <!--   	<bean p:attributeName="accountId" parent="FieldDefinition" />   -->
+		    <bean p:attributeName="associatedNegotiable.title" parent="FieldDefinition" />			
+			<bean p:attributeName="recordResidesWith" parent="FieldDefinition" p:useShortLabel="true"/>
+		    <!-- UITSRA-3191 -->
+		    <bean p:attributeName="negotiatorName" parent="FieldDefinition"  p:useShortLabel="true" />			
+		    <bean p:attributeName="gsTeam" parent="FieldDefinition" p:useShortLabel="true" />
+		    
+		    <bean p:attributeName="proposalActionType" parent="FieldDefinition" p:useShortLabel="true"/>
+		    
+		    <bean p:attributeName="negotiationStartDate" parent="FieldDefinition" />
+			<bean p:attributeName="negotiationEndDate" parent="FieldDefinition" />
+			<!-- UITSRA-4218 -->
+	<!-- 		<bean p:attributeName="agreementDate" parent="FieldDefinition" />   -->
+		    <bean p:attributeName="negotiationAge" parent="FieldDefinition" />
+		    <bean p:attributeName="ricroCleared" parent="FieldDefinition" p:useShortLabel="true"/>
+		    <bean p:attributeName="coiCleared" parent="FieldDefinition" p:useShortLabel="true"/>
+		    
+		  </list>
+		</property>
+	</bean>
+    
+</beans>
+

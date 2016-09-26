@@ -29,6 +29,8 @@ import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.util.Calendar;
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
+
 /**
  * 
  * Validation class to use when validating activities.
@@ -102,6 +104,17 @@ public class NegotiationActivityRuleImpl implements NegotiationActivityAddRule {
         if (activity.getEndDate() != null && negotiation.getNegotiationEndDate() != null
                 && activity.getEndDate().compareTo(negotiation.getNegotiationEndDate()) > 0) {
             getErrorReporter().reportWarning(END_DATE_PROPERTY, KeyConstants.NEGOTIATION_ACTIVITY_END_AFTER_NEGOTIATION);
+        }
+        if (activity.getFollowupDate() != null) {
+            //get today but without any time fields so compare is done strictly on the date.
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar.SECOND, 0);
+            today.set(Calendar.MILLISECOND, 0);
+            if (activity.getFollowupDate().compareTo(today.getTime()) < 0) {
+                errorReporter.reportWarning("followupDate", CSUKeyConstants.NEGOTIATION_WARNING_ACTIVITY_FOLLOWUP_BEFORE_TODAY);
+            }
         }
 
         return result;

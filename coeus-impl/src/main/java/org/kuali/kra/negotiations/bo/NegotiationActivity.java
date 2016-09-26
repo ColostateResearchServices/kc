@@ -77,8 +77,8 @@ public class NegotiationActivity extends KcPersistableBusinessObjectBase {
     private transient KcPersonService kcPersonService;
 
     public NegotiationActivity() {
-        restricted = Boolean.TRUE;
-        attachments = new ArrayList<>();
+        restricted = Boolean.FALSE;
+        attachments = new ArrayList<NegotiationActivityAttachment>();
         newAttachment = new NegotiationActivityAttachment();
     }
 

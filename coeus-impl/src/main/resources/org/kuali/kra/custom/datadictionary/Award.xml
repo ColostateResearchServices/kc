@@ -1,0 +1,20 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<bean id="Award-nsfCode" parent="Award-nsfCode-parentBean"/>
+	<bean id="Award-nsfCode-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="nsfCode"/>
+		<property name="forceUppercase" value="false"/>
+		<property name="label" value="Field of Research"/>
+		<property name="shortLabel" value="Field of Research"/>
+		<property name="maxLength" value="15"/>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
+		<property name="required" value="false"/>
+		<property name="control">
+			<bean parent="SelectControlDefinition" p:businessObjectClass="org.kuali.kra.bo.NsfCode" p:valuesFinderClass="org.kuali.kra.lookup.keyvalue.ExtendedPersistableBusinessObjectValuesFinder" p:includeKeyInLabel="false" p:includeBlankRow="false" p:keyAttribute="nsfCode" p:labelAttribute="description"/>
+		</property>
+		<property name="summary" value="The Field of Research for this Award"/>
+		<property name="description" value="A number used to indicate the type of research activity as defined by the National Science Foundation. Codes are not specific for NSF proposals and/or awards."/>
+	</bean>
+</beans>

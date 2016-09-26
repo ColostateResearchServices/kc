@@ -1103,4 +1103,10 @@ implements Permissionable, SequenceOwner<SubAward>, CustomDataContainer, Negotia
     public List<? extends DocumentCustomData> getCustomDataList() {
         return getSubAwardCustomDataList();
     }
+
+    @Override
+    public String getPrincipalInvestigatorUserName() { return EMPTY_STRING; }
+
+    @Override
+    public String getPrincipalInvestigatorPersonId() { return EMPTY_STRING; }
 }

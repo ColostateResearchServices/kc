@@ -17,10 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.kuali.kra.negotiations.bo;
+import java.sql.Timestamp;
 
 import org.apache.struts.upload.FormFile;
 import org.kuali.coeus.common.framework.attachment.AttachmentFile;
 import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
+import org.kuali.rice.kim.api.identity.PersonService;
+
 
 /**
  * Negotiation Activity Attachment BO.
@@ -45,6 +49,8 @@ public class NegotiationActivityAttachment extends KcPersistableBusinessObjectBa
     private AttachmentFile file;
 
     private transient FormFile newFile;
+
+    private String updateUser;
 
     public NegotiationActivityAttachment() {
         restricted = Boolean.TRUE;
@@ -113,4 +119,31 @@ public class NegotiationActivityAttachment extends KcPersistableBusinessObjectBa
     public void setNewFile(FormFile newFile) {
         this.newFile = newFile;
     }
+
+    public String getUpdateUser() {   return updateUser;  }
+
+    @Override
+    public void setUpdateTimestamp(Timestamp updateTimestamp) {
+        if (getUpdateTimestamp() == null) {
+            super.setUpdateTimestamp(updateTimestamp);
+        }
+    }
+
+    // UITSRA-4142
+    public void setUpdateUser(String updateUser) {
+        if (this.updateUser == null) {
+            this.updateUser = updateUser;
+        }
+    }
+
+    // UITSRA-4142
+    /**
+     *
+     * This method returns the full name of the update user.
+     * @return
+     */
+    public String getUpdateUserName() {
+        return this.getUpdateUser() == null ? "KC Data Conversion" : KcServiceLocator.getService(PersonService.class).getPersonByPrincipalName(this.getUpdateUser()).getName();
+    }
+
 }

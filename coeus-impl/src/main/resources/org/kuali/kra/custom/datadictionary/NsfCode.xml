@@ -1,0 +1,60 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<bean id="NsfCode-nsfCode" parent="NsfCode-nsfCode-parentBean"/>
+	<bean id="NsfCode-nsfCode-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="nsfCode"/>
+		<property name="forceUppercase" value="false"/>
+		<property name="label" value="Field of Research Code"/>
+		<property name="shortLabel" value="Field of Research Code"/>
+		<property name="maxLength" value="15"/>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10"/>
+		</property>
+		<property name="summary" value="Field of Research Code"/>
+		<property name="description" value="Field of Research Code"/>
+	</bean>
+	<!-- Business Object Inquiry Definition -->
+	<bean id="NsfCode-inquiryDefinition" parent="NsfCode-inquiryDefinition-parentBean"/>
+	<bean id="NsfCode-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
+		<property name="title" value="NSF Code"/>
+		<property name="inquirySections">
+			<list>
+				<bean parent="InquirySectionDefinition">
+					<property name="title" value="Field of Research"/>
+					<property name="numberOfColumns" value="1"/>
+					<property name="inquiryFields">
+						<list>
+							<bean parent="FieldDefinition" p:attributeName="nsfCode" p:forceInquiry="true"/>
+							<bean parent="FieldDefinition" p:attributeName="description"/>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<!-- Business Object Lookup Definition -->
+	<bean id="NsfCode-lookupDefinition" parent="NsfCode-lookupDefinition-parentBean"/>
+	<bean id="NsfCode-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+		<property name="title" value="Field of Research Lookup"/>
+		<property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;"/>
+		<property name="defaultSort">
+			<bean parent="SortDefinition">
+      </bean>
+		</property>
+		<property name="lookupFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="nsfCode"/>
+				<bean parent="FieldDefinition" p:attributeName="description"/>
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="nsfCode" p:forceInquiry="true"/>
+				<bean parent="FieldDefinition" p:attributeName="description"/>
+			</list>
+		</property>
+	</bean>
+</beans>

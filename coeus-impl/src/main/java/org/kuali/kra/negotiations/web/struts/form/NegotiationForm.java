@@ -35,6 +35,9 @@ import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kns.web.ui.HeaderField;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.coeus.common.notification.impl.NotificationContextBase;
+
+import edu.iu.uits.kra.negotiations.bo.IUNegotiationAssociationTypeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +62,11 @@ public class NegotiationForm extends KcTransactionalDocumentFormBase implements 
     private NegotiationActivityHelper negotiationActivityHelper;
     private NegotiationAssociatedDetailBean negotiationAssociatedDetailBean;
     private CustomDataHelper customDataHelper = new CustomDataHelper(this);
-    private NotificationHelper<NegotiationCloseNotificationContext> notificationHelper;
-    private String filterActivities;
+    /* Begin UITSRA-3668 */
+    /* Ideally below would be something like NotificationHelper<NegotiationNotificationContext> but that would require us to
+     * overlay additional classes just to change their class hierarchy. */
+    private NotificationHelper<NotificationContextBase> notificationHelper;
+    /* End UITSRA-3668 */    private String filterActivities;
     
     private MedusaBean medusaBean;
     
@@ -70,7 +76,7 @@ public class NegotiationForm extends KcTransactionalDocumentFormBase implements 
         negotiationUnassociatedDetailsToDelete = new ArrayList<NegotiationUnassociatedDetail>();
         negotiationActivityHelper = new NegotiationActivityHelper(this);
         medusaBean = new MedusaBean();
-        notificationHelper = new NotificationHelper<NegotiationCloseNotificationContext>();
+        notificationHelper = new NotificationHelper<NotificationContextBase>();
         filterActivities = "All";
         init();
     }
@@ -142,11 +148,17 @@ public class NegotiationForm extends KcTransactionalDocumentFormBase implements 
         }
         return false;
     }
-    
+
+    /* Start UITSRA-3231 */
     public boolean getDisplayUnAssociatedDetail() {
-        return isAssocitationType(NegotiationAssociationType.NONE_ASSOCIATION);
+        NegotiationAssociationType negotiationAssociationType = this.getNegotiationDocument().getNegotiation().getNegotiationAssociationType();
+        if (negotiationAssociationType != null) {
+            return IUNegotiationAssociationTypeUtil.isUnassociatedType(negotiationAssociationType.getCode());
+        }
+        return false;
     }
-    
+    /* End UITSRA-3231 */
+
     public boolean getDisplayProposalLog() {
         return isAssocitationType(NegotiationAssociationType.PROPOSAL_LOG_ASSOCIATION);
     }
@@ -301,13 +313,16 @@ public class NegotiationForm extends KcTransactionalDocumentFormBase implements 
         return this.getNegotiationService().getNegotiationNotifications(this.getNegotiationDocument().getNegotiation());
     }
 
-    public NotificationHelper<NegotiationCloseNotificationContext> getNotificationHelper() {
+    /* Begin UITSRA-3668 */
+    public NotificationHelper<NotificationContextBase> getNotificationHelper() {
         return notificationHelper;
     }
 
-    public void setNotificationHelper(NotificationHelper<NegotiationCloseNotificationContext> notificationHelper) {
+    public void setNotificationHelper(NotificationHelper<NotificationContextBase> notificationHelper) {
         this.notificationHelper = notificationHelper;
     }
+    /* End UITSRA-3668 */
+
 
     public String getFilterAllActivities() {
         return filterAllActivities;
@@ -336,9 +351,15 @@ public class NegotiationForm extends KcTransactionalDocumentFormBase implements 
         if (getDispayChangeAssociatedDocumentWarning() && this.getNegotiationDocument().getNegotiation().getNegotiationAssociationType() != null) {
             StringBuffer sb = new StringBuffer("<div id=\"searchIconDiv\" style=\"display: inline;\" onclick=\"return confirm('");
             String associatedType = this.getNegotiationDocument().getNegotiation().getNegotiationAssociationType().getDescription();
-            String docNumber = this.getNegotiationDocument().getNegotiation().getAssociatedNegotiable().getAssociatedDocumentId();
+
+            /* Start UITSRA-3730 */
+            String docNumber = "";
+            if (this.getNegotiationDocument().getNegotiation().getAssociatedDocumentId() != null) {
+                docNumber = this.getNegotiationDocument().getNegotiation().getAssociatedDocumentId();
+            }
+            /* End UITSRA-3730 */
             sb.append("This Negotiation is already associated with ").append(associatedType).append(" number ").append(docNumber);
-            sb.append(".  Selecting a different ").append(associatedType).append(" document will disassociate this Negotiation with "); 
+            sb.append(".  Selecting a different ").append(associatedType).append(" document will disassociate this Negotiation with ");
             sb.append(docNumber).append(".  Are you sure?").append("')\">");
             return sb.toString();
             

@@ -2924,4 +2924,35 @@ public class Award extends KcPersistableBusinessObjectBase implements KeywordsMa
     public void setSponsorHierarchyService(SponsorHierarchyService sponsorHierarchyService) {
         this.sponsorHierarchyService = sponsorHierarchyService;
     }
+
+    @Override
+    public String getPrincipalInvestigatorUserName() {
+        String piUserName=EMPTY_STRING;
+        AwardPerson pi = getPrincipalInvestigator();
+        if (pi != null) {
+            if (!pi.getIsRolodexPerson() &&pi.getPerson() != null) {
+                piUserName = pi.getPerson().getUserName();
+            }
+        }
+        return piUserName;
+    }
+
+    @Override
+    public String getPrincipalInvestigatorPersonId() {
+        String piPersonId=EMPTY_STRING;
+        AwardPerson pi = getPrincipalInvestigator();
+        if (pi != null) {
+            if (!pi.getIsRolodexPerson()) {
+                piPersonId = pi.getPersonId();
+            }
+        }
+        return piPersonId;
+    }
+
+    @Override
+    public String getRequisitionerUserName() {
+        // Note this defaults to empty string as other s/a requisitioner methods
+        return EMPTY_STRING;
+    }
+
 }

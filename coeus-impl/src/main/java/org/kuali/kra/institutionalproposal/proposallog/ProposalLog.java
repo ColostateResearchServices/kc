@@ -532,4 +532,20 @@ public class ProposalLog extends KcPersistableBusinessObjectBase implements Nego
     }
 
 
+    @Override
+    public String getRequisitionerUserName() { return EMPTY_STRING; }
+
+    @Override
+    public String getPrincipalInvestigatorUserName() {
+        String uname=EMPTY_STRING;
+        KcPerson pi=getPerson();
+        if (pi!=null ) {
+            uname=pi.getUserName();
+        }
+        return uname;
+    }
+
+    @Override
+    public String getPrincipalInvestigatorPersonId() {  return getPiId()!=null?getPiId():EMPTY_STRING; }
+
 }

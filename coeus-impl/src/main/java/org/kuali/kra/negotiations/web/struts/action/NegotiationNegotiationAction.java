@@ -18,11 +18,15 @@
  */
 package org.kuali.kra.negotiations.web.struts.action;
 
+import edu.iu.uits.kra.negotiations.bo.IUNegotiationAssociationTypeUtil;
+import edu.iu.uits.kra.negotiations.notification.IUNegotiationAwardReceivedNotificationContext;
+import edu.iu.uits.kra.negotiations.rules.IUNegotiationAttachmentFileDataNotNullRuleImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.kuali.coeus.common.framework.attachment.AttachmentFile;
+import org.kuali.coeus.common.framework.print.AttachmentDataSource;
 import org.kuali.coeus.sys.framework.controller.StrutsConfirmation;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
@@ -32,11 +36,16 @@ import org.kuali.kra.negotiations.notifications.NegotiationCloseNotificationCont
 import org.kuali.kra.negotiations.notifications.NegotiationNotification;
 import org.kuali.kra.negotiations.printing.NegotiationActivityPrintType;
 import org.kuali.kra.negotiations.web.struts.form.NegotiationForm;
-import org.kuali.coeus.common.framework.print.AttachmentDataSource;
 import org.kuali.rice.kns.question.ConfirmationQuestion;
 import org.kuali.rice.kns.web.struts.form.KualiForm;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
+
+import org.kuali.coeus.sys.impl.validation.ErrorReporterImpl;
+import org.kuali.kra.web.struts.action.GenericAttachmentObject;
+
+import static org.kuali.rice.krad.util.KRADConstants.EMPTY_STRING;
+import static org.kuali.rice.krad.util.KRADConstants.QUESTION_CLICKED_BUTTON;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,9 +53,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
-import static org.kuali.rice.krad.util.KRADConstants.EMPTY_STRING;
-import static org.kuali.rice.krad.util.KRADConstants.QUESTION_CLICKED_BUTTON;
+
 
 /**
  * 
@@ -54,6 +63,10 @@ import static org.kuali.rice.krad.util.KRADConstants.QUESTION_CLICKED_BUTTON;
  */
 public class NegotiationNegotiationAction extends NegotiationAction {
 
+    private static final ActionForward RESPONSE_ALREADY_HANDLED = null;
+
+    private static final org.apache.commons.logging.Log LOG = org.apache.commons.logging.LogFactory
+            .getLog(NegotiationNegotiationAction.class);
 
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
@@ -66,6 +79,7 @@ public class NegotiationNegotiationAction extends NegotiationAction {
         negotiationForm.getMedusaBean().generateParentNodes();
         negotiationForm.getNegotiationActivityHelper().sortActivities();
         negotiationForm.getNegotiationActivityHelper().generateAllAttachments();
+        negotiationForm.getNegotiationActivityHelper().sortAttachments();
         return actionForward;
     }
     
@@ -122,7 +136,24 @@ public class NegotiationNegotiationAction extends NegotiationAction {
     @Override
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+             /* Start UITSRA-3231 */
         NegotiationForm negotiationForm = (NegotiationForm) form;
+        LOG.warn("Save Button clicked on Negotiation: " + negotiationForm.getNegotiationDocument().getDocumentNumber());
+        return handleSave(mapping, form, request, response, false);
+    }
+
+    @Override
+    protected ActionForward saveOnClose(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        NegotiationForm negotiationForm = (NegotiationForm) form;
+        LOG.warn("Close Button clicked on Negotiation: " + negotiationForm.getNegotiationDocument().getDocumentNumber());
+        return handleSave(mapping, form, request, response, true);
+    }
+
+    //This method handles the common logic for save and saveOnClose
+    private ActionForward handleSave(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, final boolean close) throws Exception {
+        NegotiationForm negotiationForm = (NegotiationForm) form;
+        preSave(mapping, negotiationForm, request, response);
+
         boolean sendCloseNotification = false;
         loadCodeObjects(negotiationForm.getNegotiationDocument().getNegotiation());
         Negotiation negotiation = negotiationForm.getNegotiationDocument().getNegotiation();
@@ -138,6 +169,7 @@ public class NegotiationNegotiationAction extends NegotiationAction {
                 && getNegotiationService().getInProgressStatusCodes().contains(oldNegotiation.getNegotiationStatus().getCode())
                 && negotiation.getNegotiationStatus() != null
                 && getNegotiationService().getCompletedStatusCodes().contains(negotiation.getNegotiationStatus().getCode())) {
+            LOG.warn("Negotiation - Save - Status Change: " + negotiationForm.getNegotiationDocument().getDocumentNumber());
             if (negotiation.getNegotiationEndDate() != null
                     && negotiationForm.getNegotiationActivityHelper().hasPendingActivities()) {
                 StrutsConfirmation question = buildParameterizedConfirmationQuestion(mapping, form, request, response,
@@ -145,7 +177,7 @@ public class NegotiationNegotiationAction extends NegotiationAction {
                 question.setCaller(((KualiForm) question.getForm()).getMethodToCall());
                 if (question.hasQuestionInstAttributeName()
                         && StringUtils.equals(question.getRequest().getParameter(KRADConstants.QUESTION_INST_ATTRIBUTE_NAME),
-                                question.getQuestionId())) {
+                        question.getQuestionId())) {
                     Object buttonClicked = question.getRequest().getParameter(QUESTION_CLICKED_BUTTON);
                     if (ConfirmationQuestion.YES.equals(buttonClicked)) {
                         negotiationForm.getNegotiationActivityHelper().closeAllPendingActivities();
@@ -164,10 +196,16 @@ public class NegotiationNegotiationAction extends NegotiationAction {
                 sendCloseNotification = true;
             }
         }
-        ActionForward actionForward = super.save(mapping, form, request, response);
-        
+
+        ActionForward actionForward;
+        if(close) {
+            actionForward = super.saveOnClose(mapping, negotiationForm, request, response);
+        } else {
+            actionForward = super.save(mapping, negotiationForm, request, response);
+        }
+
         NegotiationCloseNotificationContext context = new NegotiationCloseNotificationContext(negotiationForm.getNegotiationDocument());
-        
+
         if (sendCloseNotification && GlobalVariables.getMessageMap().getErrorCount() == 0) {
             if (negotiationForm.getNotificationHelper().getPromptUserForNotificationEditor(context)) {
                 negotiationForm.getNotificationHelper().initializeDefaultValues(context);
@@ -176,6 +214,20 @@ public class NegotiationNegotiationAction extends NegotiationAction {
                 getNotificationService().sendNotificationAndPersist(context, new NegotiationNotification(), negotiation);
             }
         }
+
+        /* Begin UITSRA-3668 */
+        IUNegotiationAwardReceivedNotificationContext awardReceivedContext = new IUNegotiationAwardReceivedNotificationContext(negotiationForm.getNegotiationDocument());
+        if ((oldNegotiation == null || !validToSendAwardRecievedNotification(oldNegotiation))
+                && validToSendAwardRecievedNotification(negotiation)) {
+            if (negotiationForm.getNotificationHelper().getPromptUserForNotificationEditor(awardReceivedContext)) {
+                negotiationForm.getNotificationHelper().initializeDefaultValues(awardReceivedContext);
+                return mapping.findForward("notificationEditor");
+            } else {
+                getNotificationService().sendNotificationAndPersist(awardReceivedContext, new NegotiationNotification(), negotiation);
+            }
+        }
+        /* End UITSRA-3668 */
+
         if (negotiation.getUnAssociatedDetail() != null) {
             if (negotiation.getUnAssociatedDetail().getNegotiationId() == null) {
                 negotiation.getUnAssociatedDetail().setNegotiationId(negotiation.getNegotiationId());
@@ -190,10 +242,36 @@ public class NegotiationNegotiationAction extends NegotiationAction {
         if (!negotiationForm.getNegotiationUnassociatedDetailsToDelete().isEmpty()) {
             this.getBusinessObjectService().delete(negotiationForm.getNegotiationUnassociatedDetailsToDelete());
         }
-       negotiation.refresh();
-       return actionForward;
-   }
-    
+        negotiation.refresh();
+        LOG.warn("Done with Save method on Negotiation: " + negotiationForm.getNegotiationDocument().getDocumentNumber());
+
+        return actionForward;
+    }
+    /* End UITSRA-3231 */
+
+    /* Begin UITSRA-3668 */
+    private boolean validToSendAwardRecievedNotification(Negotiation negotiation) {
+        boolean isValid = true;
+        isValid = isValid && negotiation.getNegotiationStatus() != null;
+        if (negotiation.getNegotiationStatus() != null) {
+            isValid = isValid && getNegotiationService().getInProgressStatusCodes().contains(negotiation.getNegotiationStatus().getCode());
+        }
+        isValid = isValid && negotiation.getNegotiationAssociationType() != null;
+        if (negotiation.getNegotiationAssociationType() != null) {
+            isValid = isValid && (StringUtils.equals(negotiation.getNegotiationAssociationType().getCode(), NegotiationAssociationType.AWARD_ASSOCIATION) ||
+                    StringUtils.equals(negotiation.getNegotiationAssociationType().getCode(), NegotiationAssociationType.AWARD_IN_PROGRESS_ASSOCIATION));
+        }
+        isValid = isValid && negotiation.getNegotiator() != null;
+        isValid = isValid && negotiation.getAssociatedDocument() != null;
+        if (negotiation.getAssociatedDocument() != null) {
+            isValid = isValid && negotiation.getAssociatedDocument().getSponsorCode() != null;
+        }
+        isValid = isValid && negotiation.getNegotiationStartDate() != null;
+        isValid = isValid && GlobalVariables.getMessageMap().getErrorCount() == 0;
+        return isValid;
+    }
+    /* End UITSRA-3668 */
+
     @Override
     public ActionForward refresh(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         NegotiationForm negotiationForm = (NegotiationForm) form;
@@ -246,6 +324,7 @@ public class NegotiationNegotiationAction extends NegotiationAction {
     public ActionForward close(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         NegotiationForm negotiationForm = (NegotiationForm) form;
+        LOG.warn("Negotiation being closed: " + negotiationForm.getNegotiationDocument().getDocumentNumber());
         loadCodeObjects(negotiationForm.getNegotiationDocument().getNegotiation());
         return super.close(mapping, negotiationForm, request, response);
     }
@@ -285,8 +364,7 @@ public class NegotiationNegotiationAction extends NegotiationAction {
                 NegotiationAssociationType asscType = (NegotiationAssociationType) this.getBusinessObjectService().findBySinglePrimaryKey(
                         NegotiationAssociationType.class, associationTypeId);
                 String newAssociation = asscType != null ? asscType.getDescription() : "nothing";
-                if (StringUtils.equals(negotiation.getNegotiationAssociationType()
-                        .getCode(), NegotiationAssociationType.NONE_ASSOCIATION)) {
+                if (IUNegotiationAssociationTypeUtil.isUnassociatedType(negotiation.getNegotiationAssociationType().getCode())) {
                     newAssociation = newAssociation + ".  You will lose any Negotiation attributes that have been entered";
                 }
                 request.setAttribute(KRADConstants.METHOD_TO_CALL_ATTRIBUTE, "methodToCall.changeAssociationRedirector");
@@ -325,24 +403,28 @@ public class NegotiationNegotiationAction extends NegotiationAction {
         ActionForward actionForward = mapping.findForward(Constants.MAPPING_BASIC);
         NegotiationForm negotiationForm = (NegotiationForm) form;
         Long newAssociationTypeId = negotiationForm.getNegotiationDocument().getNegotiation().getNegotiationAssociationTypeId();
+        /* UITSRA-3937 */
         if (newAssociationTypeId == null) {
-            // we've lost association with Negotiation, probably from user hitting back button, so exit gracefully
-            return mapping.findForward(Constants.NEGOTIATION_LOST_PLACE_PAGE);
+            return mapping.findForward(KRADConstants.MAPPING_PORTAL);
         }
+        /* End of UITSRA-3937*/
         NegotiationAssociationType asscType = (NegotiationAssociationType) this.getBusinessObjectService().findBySinglePrimaryKey(
                 NegotiationAssociationType.class, newAssociationTypeId);
         negotiationForm.getNegotiationDocument().getNegotiation().setNegotiationAssociationType(asscType);
         negotiationForm.getNegotiationDocument().getNegotiation().setAssociatedDocumentId("");
 
-        if (asscType != null && StringUtils.equalsIgnoreCase(asscType.getCode(), NegotiationAssociationType.NONE_ASSOCIATION)) {
+        /* Start UITSRA-3231 */
+        if (negotiationForm.getNegotiationDocument().getNegotiation().getUnAssociatedDetail() != null) {
+            negotiationForm.getNegotiationUnassociatedDetailsToDelete().add(
+                    negotiationForm.getNegotiationDocument().getNegotiation().getUnAssociatedDetail());
+        }
+        if (asscType != null && IUNegotiationAssociationTypeUtil.isUnassociatedType(asscType.getCode())) {
             negotiationForm.getNegotiationDocument().getNegotiation().setUnAssociatedDetail(new NegotiationUnassociatedDetail());
         } else {
-            if (negotiationForm.getNegotiationDocument().getNegotiation().getUnAssociatedDetail() != null) {
-                negotiationForm.getNegotiationUnassociatedDetailsToDelete().add(
-                        negotiationForm.getNegotiationDocument().getNegotiation().getUnAssociatedDetail());
-                negotiationForm.getNegotiationDocument().getNegotiation().setUnAssociatedDetail(null);
-            }
+            negotiationForm.getNegotiationDocument().getNegotiation().setUnAssociatedDetail(null);
         }
+        /* End UITSRA-3231 */
+
         negotiationForm.populate(request);
         return actionForward;
     }
@@ -361,6 +443,7 @@ public class NegotiationNegotiationAction extends NegotiationAction {
             HttpServletResponse response) throws Exception {
         NegotiationForm negotiationForm = (NegotiationForm) form;
         negotiationForm.getNegotiationActivityHelper().addActivity();
+        handleSave(mapping, form, request, response, false);
         return mapping.findForward(Constants.MAPPING_BASIC);
     }
 
@@ -379,10 +462,27 @@ public class NegotiationNegotiationAction extends NegotiationAction {
     }
 
     public ActionForward addAttachment(ActionMapping mapping, ActionForm form, HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+                                       HttpServletResponse response) throws Exception {
         NegotiationForm negotiationForm = (NegotiationForm) form;
+        LOG.warn("Negotiation Activity Attachment added to: " + negotiationForm.getNegotiationDocument().getDocumentNumber());
         negotiationForm.getNegotiationActivityHelper().addAttachment(getActivityIndex(request));
+        /** Begin IU Customization: UITSRA-4137 - Run null attachment audit rules after attachment is added */
+        GlobalVariables.getMessageMap().addToErrorPath("document.negotiationList[0]");
+        new IUNegotiationAttachmentFileDataNotNullRuleImpl(new ErrorReporterImpl()).checkAttachmentFileDataNotNull(negotiationForm.getNegotiationDocument().getNegotiation());
+        GlobalVariables.getMessageMap().removeFromErrorPath("document.negotiationList[0]");
+        /** End IU Customization: UITSRA-4137 */
         return mapping.findForward(Constants.MAPPING_BASIC);
+    }
+
+    @Override
+    public ActionForward docHandler(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ActionForward forward = super.docHandler(mapping, form, request, response);
+        /** Begin IU Customization: UITSRA-4137 - Run null attachment audit rules after attachment is added */
+        GlobalVariables.getMessageMap().addToErrorPath("document.negotiationList[0]");
+        new IUNegotiationAttachmentFileDataNotNullRuleImpl(new ErrorReporterImpl()).checkAttachmentFileDataNotNull(((NegotiationForm) form).getNegotiationDocument().getNegotiation());
+        GlobalVariables.getMessageMap().removeFromErrorPath("document.negotiationList[0]");
+        /** End IU Customization: UITSRA-4137 */
+        return forward;
     }
 
     public ActionForward deleteAttachment(ActionMapping mapping, ActionForm form, HttpServletRequest request,
@@ -428,6 +528,27 @@ public class NegotiationNegotiationAction extends NegotiationAction {
         this.streamToResponse(file.getData(), getValidHeaderString(file.getName()), getValidHeaderString(file.getType()), response);
 
         return null;
+    }
+
+    public ActionForward downloadAllNegotiationAttachments(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+                                                           HttpServletResponse response) throws Exception {
+        NegotiationForm negotiationForm = (NegotiationForm) form;
+        List<NegotiationActivityAttachment> attachments = negotiationForm.getNegotiationActivityHelper().getAllAttachments();
+        List <GenericAttachmentObject> genericAtts = new ArrayList <GenericAttachmentObject>();
+
+        for(NegotiationActivityAttachment attachment: attachments) {
+            AttachmentFile attachmentfile = attachment.getFile();
+
+            GenericAttachmentObject newADS = new GenericAttachmentObject();
+            newADS.setAttachmentData(attachmentfile.getData());
+            newADS.setContentType(attachmentfile.getType());
+            newADS.setFileName(attachmentfile.getName());
+            genericAtts.add(newADS);
+        }
+
+        downloadAllAttachments(genericAtts, form, response, negotiationForm.getNegotiationDocument().getNegotiation().getNegotiationId() + "-Attachments.zip");
+
+        return RESPONSE_ALREADY_HANDLED;
     }
 
     protected Integer getActivityIndex(HttpServletRequest request) {

@@ -175,5 +175,31 @@ public interface Negotiable {
      * @return
      */
     String getSubAwardRequisitionerUnitName();
+
+        /* IU Customization Starts */
+    // UITSRA-3190
+    /**
+     *
+     * This method returns the Principal Investigator's user name.
+     * @return
+     */
+    String getPrincipalInvestigatorUserName();
+
+    /**
+     *
+     * This method returns the Principal Investigator's person ID.
+     * @return
+     */
+    String getPrincipalInvestigatorPersonId();
+
+    // UITSRA-3761
+    /**
+     *
+     * This method returns the SubAward Requisitioner's user name.
+     * @return
+     */
+    String getRequisitionerUserName();
+
+    /* IU Customization Ends */
     
 }

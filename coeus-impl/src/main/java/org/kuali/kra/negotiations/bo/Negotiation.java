@@ -33,12 +33,18 @@ import org.kuali.kra.negotiations.notifications.NegotiationNotification;
 import org.kuali.kra.negotiations.service.NegotiationService;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.coeus.common.framework.custom.attr.CustomAttribute;
+import org.kuali.rice.krad.service.BusinessObjectService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * 
@@ -48,6 +54,13 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
 
     private static final long MILLISECS_PER_DAY = 24 * 60 * 60 * 1000;
 
+    @Autowired
+    @Qualifier("businessObjectService")
+    private BusinessObjectService businessObjectService;
+
+
+    @Autowired
+    @Qualifier("kcPersonService")
     private transient KcPersonService kcPersonService;
 
 
@@ -90,8 +103,48 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
     private boolean printAll = true;
     private Long oldNegotiationAssociationTypeId;
 
+    /* IU Customization Starts */
+    // UITSRA-2543
+    private String sponsorAwardNumber;
+    private static final String NEGOTIATION_SPONSOR_AWARD_NUMBER_CUSTOM_ATTR_LABEL="Sponsor Award ID";
+    private Long SPONSOR_AWARD_NUMBER_CUSTOM_ATTRIBUTE_ID = 110L;
+
+    // UITSRA-2893, UITSRA-2894
+    private transient String recordResidesWith;
+    private transient String gsTeam;
+    private transient String accountId;
+    private static final String NEGOTIATION_GS_TEAM_CUSTOM_ATTR_LABEL="Grant Services Team";
+    private Long GS_TEAM_CUSTOM_ATTRIBUTE_ID = 107L;
+    private static final String NEGOTIATION_RECORD_RESIDES_WITH_CUSTOM_ATTR_LABEL="Record Resides With";
+    private Long RECORD_RESIDES_WITH_CUSTOM_ATTRIBUTE_ID = 106L;
+    /* IU Customization Ends */
+
     private List<NegotiationNotification> negotiationNotifications;
-    
+
+    // UITSRA-3761
+    private transient String modification_id;
+    private transient String proposalDocID;
+    private transient String proposalType;
+    private static final String NEGOTIATION_MODIFICATION_ID_CUSTOM_ATTR_LABEL="Modification ID";
+    private Long MODIFICATION_ID_CUSTOM_ATTRIBUTE_ID = 105L;
+
+    // UITSRA-4133
+    private static final String NEGOTIATION_ACCOUNT_ID_CUSTOM_ATTR_LABEL="Account ID(s)";
+    private Long ACCOUNT_ID_CUSTOM_ATTRIBUTE_ID = 112L;
+
+    // UITSRA-4218
+    private transient String agreementDate;
+    private static final String NEGOTIATION_AGREEMENT_DATE_CUSTOM_ATTR_LABEL="Fully Executed Agreement Date (Format MM/DD/YYYY)";
+    private Long AGREEMENT_DATE_CUSTOM_ATTRIBUTE_ID = 125L;
+
+
+
+    // CSU enhancements
+    private transient String csuRefNum;
+    private transient boolean ricroCleared;
+    private transient boolean coiCleared;
+    private transient String proposalActionType;
+
     public int getPrintindex() {
         return printindex;
     }
@@ -472,6 +525,227 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
     public void addNotification(NegotiationNotification negotiationNotification) {
         getNegotiationNotifications().add(negotiationNotification);        
     }
+
+    /* IU Customization Starts */
+    /**
+     * @return the sponsorAwardNumber
+     */
+    public String getSponsorAwardNumber() {
+        // UITSRA-2543
+        return getCustomDataValue(NEGOTIATION_SPONSOR_AWARD_NUMBER_CUSTOM_ATTR_LABEL, SPONSOR_AWARD_NUMBER_CUSTOM_ATTRIBUTE_ID);
+    }
+
+    /**
+     * @param sponsorAwardNumber the sponsorAwardNumber to set
+     */
+    public void setSponsorAwardNumber(String sponsorAwardNumber) {
+        this.sponsorAwardNumber = sponsorAwardNumber;
+    }
+
+    /**
+     * @return the recordResidesWith
+     */
+    public String getRecordResidesWith() {
+        Long attrId = Long.valueOf(getCustomAttributeId("All Negotiations", "RECORD_RESIDES_WITH"));
+        this.recordResidesWith = getCustomDataValueByAttrId(attrId);
+        return this.recordResidesWith;
+    }
+
+
+    /**
+     * @param recordResidesWith the recordResidesWith to set
+     */
+    public void setRecordResidesWith(String recordResidesWith) {
+        this.recordResidesWith = recordResidesWith;
+    }
+
+    /**
+     * @return the gsTeam
+     */
+    public String getGsTeam() {
+        Long attrId = Long.valueOf(getCustomAttributeId("All Negotiations", "SP_TEAM"));
+        this.gsTeam = getCustomDataValueByAttrId(attrId);
+        return this.gsTeam;
+    }
+
+    /**
+     * @param gsTeam the gsTeam to set
+     */
+    public void setGsTeam(String gsTeam) {
+        this.gsTeam = gsTeam;
+    }
+
+    /**
+     * @return the accountId
+     */
+    public String getAccountId() {
+        return getCustomDataValue(NEGOTIATION_ACCOUNT_ID_CUSTOM_ATTR_LABEL, ACCOUNT_ID_CUSTOM_ATTRIBUTE_ID);
+    }
+
+    /**
+     * @param accountId the accountId to set
+     */
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    /**
+     * @return the modificationID
+     */
+    public String getModification_id() {
+        Long attrId = Long.valueOf(getCustomAttributeId("All Negotiations", "MOD_NUM"));
+        this.modification_id = getCustomDataValueByAttrId(attrId);
+        return this.modification_id;
+    }
+
+    /**
+     * @param modification_id the modificationID to set
+     */
+    public void setModification_id(String modification_id) {
+        this.modification_id = modification_id;
+    }
+
+    /**
+     * @return the ipid
+     */
+    public String getCsuRefNum() {
+        Long attrId = Long.valueOf(getCustomAttributeId("All Negotiations", "CSU_REF_NUM"));
+        this.csuRefNum = getCustomDataValueByAttrId(attrId);
+        return this.csuRefNum;
+    }
+
+    /**
+     * @param csuRefNum the csuRefNum to set
+     */
+    public void setCsuRefNum(String csuRefNum) {
+
+        this.csuRefNum = csuRefNum;
+    }
+
+    /**
+     * @return the proposalDocID
+     */
+    public String getProposalDocID() {
+        return proposalDocID;
+    }
+
+    /**
+     * @param proposalDocID the proposalDocID to set
+     */
+    public void setProposalDocID(String proposalDocID) {
+        this.proposalDocID = proposalDocID;
+    }
+
+    /**
+     * @return the proposalType
+     */
+    public String getProposalType() {
+        return proposalType;
+    }
+
+    /**
+     * @param proposalType the proposalType to set
+     */
+    public void setProposalType(String proposalType) {
+        this.proposalType = proposalType;
+    }
+
+	/* IU Customization Ends */
+
+    /**
+     * @return the agreementDate
+     */
+    public String getAgreementDate() {
+        // UITSRA-4218
+        return getCustomDataValue(NEGOTIATION_AGREEMENT_DATE_CUSTOM_ATTR_LABEL, AGREEMENT_DATE_CUSTOM_ATTRIBUTE_ID);
+    }
+
+    public String getCustomDataValue(String customAttributeLabel, long customAttributeId) {
+        for (NegotiationCustomData customData : negotiationCustomDataList) {
+            if (customData.getCustomAttribute() != null) {
+                if (customData.getCustomAttribute().getLabel().equalsIgnoreCase(customAttributeLabel)) {
+                    return customData.getValue();
+                }
+            }
+            if (customData.getCustomAttributeId().equals(customAttributeId)) {
+                return customData.getValue();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * @param agreementDate the agreementDate to set
+     */
+    public void setAgreementDate(String agreementDate) {
+        this.agreementDate = agreementDate;
+    }
+
+
+    public boolean isCoiCleared() {
+        Long coiClearedCustAttrId = Long.valueOf(getCustomAttributeId("SP Office Negotiations", "COI_CLEARED"));
+        String coiClearedString = getCustomDataValueByAttrId(coiClearedCustAttrId);
+        this.coiCleared = StringUtils.equalsIgnoreCase("Y",coiClearedString);
+
+        return coiCleared;
+    }
+
+    public void setCoiCleared(boolean coiCleared) {
+        this.coiCleared = coiCleared;
+    }
+
+
+    public boolean isRicroCleared() {
+        Long ricroCustAttrId = Long.valueOf(getCustomAttributeId("SP Office Negotiations", "RICRO_CLEARED"));
+        String ricroClearedString = getCustomDataValueByAttrId(ricroCustAttrId);
+        this.ricroCleared = StringUtils.equalsIgnoreCase("Y",ricroClearedString);
+
+        return ricroCleared;
+    }
+
+    public void setRicroCleared(boolean ricroCleared) {
+        this.ricroCleared = ricroCleared;
+    }
+
+
+    public String getCustomDataValueByAttrId(long customAttributeId) {
+        for (NegotiationCustomData customData : negotiationCustomDataList) {
+            if (customData.getCustomAttributeId().equals(customAttributeId)) {
+                return customData.getValue();
+            }
+        }
+        return "";
+    }
+
+    private String getCustomAttributeId(String groupName, String attributeName) {
+        Map<String, String> fieldValues = new HashMap<String, String>();
+        fieldValues.put("groupName", groupName);
+        fieldValues.put("name", attributeName);
+        List<CustomAttribute> customAttributes = (List<CustomAttribute>) getBusinessObjectService().findMatching(CustomAttribute.class, fieldValues);
+        if (CollectionUtils.isNotEmpty(customAttributes)) {
+            return customAttributes.get(0).getId().toString();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public BusinessObjectService getBusinessObjectService() {
+        return businessObjectService;
+    }
+    public void setBusinessObjectService(BusinessObjectService service) {
+        businessObjectService=service;
+    }
+
+
+    public String getProposalActionType() {
+        Long attrId = Long.valueOf(getCustomAttributeId("SP Office Negotiations", "PROP_ACTION_TYPE"));
+        this.proposalActionType = getCustomDataValueByAttrId(attrId);
+
+        return this.proposalActionType;
+    }
+
+    public void setProposalActionType(String proposalActionType) {    this.proposalActionType = proposalActionType; }
 
     protected KcPersonService getKcPersonService() {
         if (this.kcPersonService == null) {

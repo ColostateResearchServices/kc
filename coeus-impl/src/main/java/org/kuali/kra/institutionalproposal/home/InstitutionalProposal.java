@@ -1656,4 +1656,26 @@ public class InstitutionalProposal extends KcPersistableBusinessObjectBase imple
     public void setProposalLogService(ProposalLogService proposalLogService) {
         this.proposalLogService = proposalLogService;
     }
+
+    @Override
+    public String getRequisitionerUserName() { return EMPTY_STRING; }
+
+    @Override
+    public String getPrincipalInvestigatorUserName() {
+        String uname=EMPTY_STRING;
+        if (getPrincipalInvestigator()!=null && getPrincipalInvestigator().getPerson() !=null) {
+            uname=getPrincipalInvestigator().getPerson().getUserName();
+        }
+        return uname;
+    }
+
+    @Override
+    public String getPrincipalInvestigatorPersonId() {
+        String personId=EMPTY_STRING;
+        if (getPrincipalInvestigator()!=null && getPrincipalInvestigator().getPerson() !=null) {
+            personId=getPrincipalInvestigator().getPerson().getPersonId();
+        }
+        return personId;
+    }
+
 }

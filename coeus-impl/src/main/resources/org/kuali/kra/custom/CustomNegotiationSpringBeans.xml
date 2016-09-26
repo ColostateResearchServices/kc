@@ -1,0 +1,64 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:p="http://www.springframework.org/schema/p" 
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<!-- IU Customization Starts -->
+
+    <!-- Begin UITSRA-4037 -->
+     <bean id="negotiationModuleConfiguration" parent="negotiationModuleConfiguration-parentBean" >
+         <property name="databaseRepositoryFilePaths">
+             <list merge="true">
+                 <value>org/kuali/kra/custom/repository-negotiation-custom.xml</value>
+             </list>
+         </property>
+
+     </bean>
+    <!-- End UITSRA-4037-->
+	
+
+	<!-- UITSRA-2543     -->
+    <bean id="negotiationLookupableHelperService" class="org.kuali.kra.negotiations.lookup.IUNegotiationLookupableHelperServiceImpl" 
+          parent="parentLookupableHelperService" scope="prototype">
+        <property name="negotiationDao" ref="negotiationDao" />
+    </bean>
+
+    <!-- UITSRA-2562-->
+    <bean id="negotiationService" class="edu.iu.uits.kra.negotiations.service.IUNegotiationServiceImpl">
+        <property name="parameterService" ref="parameterService" />
+        <property name="businessObjectService" ref="businessObjectService" />
+        <property name="awardBudgetService" ref="awardBudgetService" />
+        <property name="institutionalProposalService" ref="institutionalProposalService" />   
+        <property name="unitAdministratorDerivedRoleTypeServiceImpl" ref="unitAdministratorDerivedRoleTypeService" />
+        <property name="kcPersonService" ref="kcPersonService" />
+        <property name="versionHistoryService" ref="versionHistoryService" />   
+    </bean>
+
+	<!-- UITSRA-2894     -->
+    <bean id="negotiationDao" class="edu.iu.uits.kra.negotiations.lookup.IUNegotiationDaoOjb" parent="platformAwareDao">
+        <property name="negotiationService" ref="negotiationService" />
+        <property name="persistenceStructureService" ref="persistenceStructureService" />
+        <property name="dateTimeService" ref="dateTimeService" />
+    </bean>
+
+	<!-- UITSRA-2972	 -->
+    <bean id="unitService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="unitService" />
+    </bean>
+
+    
+    
+    <!-- CSU adding attachment DAO -->
+    <bean id="protocolAttachmentDao" class="edu.iu.uits.kra.dao.ojb.ProtocolAttachmentDaoOjb" parent="platformAwareDao">
+    
+    </bean>
+    
+    
+</beans>

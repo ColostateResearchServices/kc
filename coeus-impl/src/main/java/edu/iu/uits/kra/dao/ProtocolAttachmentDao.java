@@ -1,4 +1,4 @@
-package edu.iu.uits.kra.dao.ojb;
+package edu.iu.uits.kra.dao;
 
 import java.util.ArrayList;
 
