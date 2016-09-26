@@ -648,6 +648,8 @@
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardForms.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardFundingSource.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/SubAwardModificationType.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/SubAwardModificationTypeMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubawardPersonMassChange.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardPrintAgreement.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardReportType.xml</value>
@@ -970,6 +972,8 @@
                 <value>classpath:org/kuali/coeus/common/impl/auth/docperm/DocumentAccessMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/coeus/sys/impl/mq/ActiveMqMessage.xml</value>
                 <value>classpath:org/kuali/coeus/sys/impl/mq/ActiveMqMessageMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/coeus/sys/impl/dd/DataDictionaryOverride.xml</value>
+                <value>classpath:org/kuali/coeus/sys/impl/dd/DataDictionaryOverrideMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/LineItemTableCommon.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/AwardCgb.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/krad/common/DummyLoginOverrides.xml</value>
