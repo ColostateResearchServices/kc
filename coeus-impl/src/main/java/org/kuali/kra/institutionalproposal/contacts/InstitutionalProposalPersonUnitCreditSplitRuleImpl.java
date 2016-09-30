@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
 
 public class InstitutionalProposalPersonUnitCreditSplitRuleImpl extends KcTransactionalDocumentRuleBase implements
         InstitutionalProposalPersonUnitCreditSplitRule {
@@ -41,8 +42,26 @@ private static final ScaleTwoDecimal MAX_TOTAL_VALUE = new ScaleTwoDecimal(100.0
                 if(value == null) {
                     break;   // value may not have been initialized yet, so we don't want to block save
                 }
-                if(!MAX_TOTAL_VALUE.subtract(value).isZero()) {
+                InstitutionalProposalPerson person = event.getProjectPerson();
+                if (person.getUnits().isEmpty()) {return true;}
+                ScaleTwoDecimal personValue = new ScaleTwoDecimal(0);
+                for (InstitutionalProposalPersonCreditSplit personSplit: person.getCreditSplits()) {
+                    if (personSplit.getInvestigatorCreditType().equals(creditType)) {
+                        personValue = personSplit.getCredit();
+                    }
+                }
+                if(!MAX_TOTAL_VALUE.subtract(value).isZero() && !value.isZero()) {
                     InstitutionalProposalCreditSplitAuditError.addAuditError(PROPOSAL_PERSON_UNIT_CREDIT_SPLIT_ERROR_MSG_KEY, creditType.getDescription());
+                    errorCount++;
+                }
+                if(personValue.isZero() && !value.isZero()) {
+                    reportError(PROPOSAL_PERSON_UNIT_CREDIT_SPLIT_ERROR_MSG_KEY, CSUKeyConstants.AWARD_PERSON_UNIT_CREDIT_SPLIT_ERROR_MISMATCH_KEY,
+                                creditType.getDescription(), person.getFullName());
+                    errorCount++;
+                }
+                if(!personValue.isZero() && value.isZero()) {
+                    reportError(PROPOSAL_PERSON_UNIT_CREDIT_SPLIT_ERROR_MSG_KEY, CSUKeyConstants.AWARD_PERSON_UNIT_CREDIT_SPLIT_ERROR_ZERO_KEY,
+                                creditType.getDescription(), person.getFullName());
                     errorCount++;
                 }
             }

@@ -42,7 +42,7 @@ public class InstitutionalProposalPersonCreditSplitRuleImpl extends KcTransactio
                 if(value == null) {
                     break;   // value may not have been initialized yet, so we don't want to block save
                 }
-                if(!MAX_TOTAL_VALUE.subtract(value).isZero()) {
+                if(!MAX_TOTAL_VALUE.subtract(value).isZero() && !value.isZero()) {
                     InstitutionalProposalCreditSplitAuditError.addAuditError(PROPOSAL_PERSON_CREDIT_SPLIT_ERROR_MSG_KEY, creditType.getDescription());
                     retval = false;
                 }

@@ -260,7 +260,7 @@ public class AwardPersonCreditSplitAuditRule implements DocumentAuditRule {
                 if(value == null) {
                     break;   // value may not have been initialized yet, so we don't want to block save
                 }
-                if(!MAX_TOTAL_VALUE.subtract(value).isZero()) {
+                if(!MAX_TOTAL_VALUE.subtract(value).isZero() && !value.isZero()) {
                     auditErrors.add(new AuditError(AWARD_CREDIT_SPLIT_LIST_ERROR_KEY, AWARD_PERSON_CREDIT_SPLIT_ERROR_MSG_KEY,
                             Constants.MAPPING_AWARD_CONTACTS_PAGE + "." + Constants.CONTACTS_PANEL_ANCHOR, new String[]{creditType.getDescription()}));
 
@@ -283,7 +283,7 @@ public class AwardPersonCreditSplitAuditRule implements DocumentAuditRule {
                     if(value == null) {
                         break;   // value may not have been initialized yet, so we don't want to block save
                     }
-                    if(!MAX_TOTAL_VALUE.subtract(value).isZero()) {
+                    if(!MAX_TOTAL_VALUE.subtract(value).isZero() && !value.isZero()) {
                         auditErrors.add(new AuditError(AWARD_UNIT_CREDIT_SPLIT_LIST_ERROR_KEY, AWARD_PERSON_UNIT_CREDIT_SPLIT_ERROR_MSG_KEY,
                                 Constants.MAPPING_AWARD_CONTACTS_PAGE + "." + Constants.CONTACTS_PANEL_ANCHOR, new String[]{creditType.getDescription(), person.getFullName()}));
 
