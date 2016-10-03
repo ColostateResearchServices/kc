@@ -54,7 +54,7 @@
 		  <div align="center"><a href="${ConfigProperties.csu.kc.budget.util.url}?TMDocNum=${docNum}&AccNum=${acctNum}" target="budgetWindow"><img src="${ConfigProperties.kra.externalizable.images.url}tinybutton1-modifybudget.gif"></a></div>
 	  </c:when>
 	  <c:otherwise>
-		  No Account Number
+		  <div "color:#FF0000;text-align:center">No Account Number</div>
 	  </c:otherwise>
   </c:choose>
 </c:if>
