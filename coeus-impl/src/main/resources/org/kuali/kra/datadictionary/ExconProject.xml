@@ -196,7 +196,7 @@
   <bean id="ExconProject-unitNumber" parent="ExconProject-unitNumber-parentBean" />
   <bean id="ExconProject-unitNumber-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="name" value="unitNumber" />
-		<property name="forceUppercase" value="false" />
+		<property name="forceUppercase" value="true" />
 		<property name="label" value="Lead Unit ID" />
 		<property name="shortLabel" value="Lead Unit ID" />
 		<property name="maxLength" value="8" />

@@ -17,10 +17,14 @@
 package org.kuali.kra.excon.document;
 
 
+import org.apache.commons.lang.StringUtils;
+import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
 import org.kuali.coeus.sys.framework.rule.KcDocumentEventBaseExtension;
 import org.kuali.coeus.sys.framework.rule.KcTransactionalDocumentRuleBase;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.excon.project.ExconProject;
 import org.kuali.coeus.sys.framework.rule.KcBusinessRule;
+import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.MessageMap;
@@ -56,7 +60,30 @@ public class ExconProjectDocumentRule extends
     protected boolean  processSaveExconProjectBusinessRules(ExconProject exconProject, String propertyPrefix){
      
         boolean rulePassed = true;
+        if (!StringUtils.isEmpty(exconProject.getSponsorCode()) && exconProject.getSponsor()==null) {
+            reportError(propertyPrefix+".sponsorCode"
+                    , KeyConstants.ERROR_INVALID_SPONSOR_CODE, exconProject.getSponsorCode());  // this error msg isn't specific to Excon
 
+            rulePassed = false;
+        }
+
+        if (!StringUtils.isEmpty(exconProject.getLeadUnitNumber()) && exconProject.getUnit()==null) {
+            reportError(propertyPrefix+".unitNumber"
+                    , KeyConstants.ERROR_INVALID_UNIT, exconProject.getLeadUnitNumber());  // this error msg isn't specific to Excon
+            rulePassed = false;
+        }
+
+        if (!StringUtils.isEmpty(exconProject.getHrExtension().getJobCode()) && exconProject.getHrExtension().getJob()==null) {
+            reportError(propertyPrefix+".hrExtension.jobCode"
+                    , KeyConstants.ERROR_PERSON_INVALID_JOBCODE_VALUE,exconProject.getHrExtension().getJobCode());  // this error msg isn't specific to Excon
+            rulePassed = false;
+        }
+
+        if (!StringUtils.isEmpty(exconProject.getRespPartyUsername()) && exconProject.getRespPartyPerson()==null) {
+            reportError(propertyPrefix+".respPartyUsername"
+                    , "error.exconProjectResponsibleParty.isInvalid",exconProject.getRespPartyUsername());
+            rulePassed = false;
+        }
 
         return rulePassed;
     }
@@ -90,6 +117,10 @@ public class ExconProjectDocumentRule extends
         boolean retVal = false;
         retVal = event.getRule().processRules(event);
         return retVal;
+    }
+
+    private void addError(String errComponent, String errMsg, String[] parameters) {
+
     }
  
 }

@@ -284,7 +284,11 @@
       	  <property name="coiDisclosureService" ref="coiDisclosureService" />
     </bean>
     
-     <bean id="coiDisclosureService" class="org.kuali.kra.coi.disclosure.CoiDisclosureServiceImpl">
+
+
+
+
+    <bean id="coiDisclosureService" class="org.kuali.kra.coi.disclosure.CoiDisclosureServiceImpl">
         <property name="businessObjectService" ref="businessObjectService" />
         <property name="dataObjectService" ref="dataObjectService" />
         <property name="kcPersonService" ref="kcPersonService" />
@@ -295,6 +299,7 @@
         <property name="coiDisclosureDao" ref="coiDisclosureDao" />
         <property name="krmsRulesExecutionService" ref="krmsRulesExecutionService" />
         <property name="coiDisclosureUndisclosedEventsDao" ref="coiDisclosureUndisclosedEventsDao" />
+        <property name="csuWorkProjectLookupSvc" ref="csuWorkProjectLookupSvc" />
     </bean>
 
     <bean id="dbPlatform" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
@@ -472,5 +477,28 @@
     	<property name="questionnaireAnswerService" ref="questionnaireAnswerService"/>
     	<property name="financialEntityService" ref="financialEntityService" />
     </bean>
+
+
+
+
+    <bean id="csuWorkProjectLookupSvc" class="edu.colostate.kc.coi.CsuWorkDisclosureProjectLookupServiceImpl">
+        <property name="businessObjectService" ref="businessObjectService" />
+    </bean>
+
+
+    <bean id="pessimisticLockService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="pessimisticLockService" />
+    </bean>
+
+
+    <bean id="csuCoiDisclosureActionService" class="edu.colostate.kc.coi.CsuCoiDisclosureActionServiceImpl">
+        <property name="businessObjectService" ref="businessObjectService" />
+        <property name="documentService" ref="documentService" />
+        <property name="kcNotificationService" ref="kcNotificationService" />
+        <property name="questionnaireAnswerService" ref="questionnaireAnswerService" />
+        <property name="pessimisticLockService" ref="pessimisticLockService" />
+        <property name="dateTimeService" ref="dateTimeService" />
+    </bean>
+
 
 </beans>

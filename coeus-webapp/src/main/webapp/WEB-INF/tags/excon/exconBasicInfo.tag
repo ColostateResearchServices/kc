@@ -21,7 +21,7 @@
 <c:set var="readOnly" value="${not KualiForm.editingMode['fullEntry']}" scope="request" />
 <c:set var="action" value="exconProjectHome" />
 
-<kul:tabTop tabTitle="Export Control Project" defaultOpen="true" tabErrorKey="document.exconProjectList[0].projectStatusCode,document.exconProjectList[0].projectTypeCode">
+<kul:tabTop tabTitle="Export Control Project" defaultOpen="true" tabErrorKey="document.exconProjectList[0].projectStatusCode,document.exconProjectList[0].projectTypeCode,document.exconProjectList[0].unitNumber,document.exconProjectList[0].sponsorCode">
 
 <div class="tab-container" align="center">
 
@@ -105,7 +105,8 @@
         	<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.unitNumber}" skipHelpUrl="true"/></div>
         </th>
     	<td>
-            <kul:htmlControlAttribute property="document.exconProjectList[0].unitNumber" attributeEntry="${exconProjectAttributes.unitNumber}" readOnly="${readOnly}" /> 
+            <kul:htmlControlAttribute property="document.exconProjectList[0].unitNumber" attributeEntry="${exconProjectAttributes.unitNumber}"
+									  onblur="loadUnitNameTo('document.exconProjectList[0].unitNumber','document.exconProjectList[0].unit.unitName')" readOnly="${readOnly}" />
             <c:if test="${!readOnly}">
                <kul:lookup boClassName="org.kuali.coeus.common.framework.unit.Unit" fieldConversions="unitNumber:document.exconProjectList[0].unitNumber"
   			         anchor="${tabKey}" lookupParameters="document.exconProjectList[0].unitNumber:unitNumber"/>
@@ -116,6 +117,18 @@
                 <kul:htmlControlAttribute property="document.exconProjectList[0].unitName" attributeEntry="${exconProjectAttributes.unitName}" readOnly="true" />
             </c:if>
             <kul:directInquiry boClassName="org.kuali.coeus.common.framework.unit.Unit" inquiryParameters="document.exconProjectList[0].unitNumber:unitNumber" anchor="${tabKey}" />
+			<div id="unitName.div" >
+				<c:if test="${!empty KualiForm.document.exconProjectList[0].unitNumber}">
+					<c:choose>
+						<c:when test="${empty KualiForm.document.exconProjectList[0].unit}">
+							<span style='color: red;'>not found</span>
+						</c:when>
+						<c:otherwise>
+							<c:out value="${KualiForm.document.exconProjectList[0].unit.unitName}" />
+						</c:otherwise>
+					</c:choose>
+				</c:if>
+			</div>
     	</td>
 	</tr>
 </table>

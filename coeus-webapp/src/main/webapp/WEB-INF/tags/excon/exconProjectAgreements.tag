@@ -24,7 +24,7 @@
 <c:set var="readOnly" value="${not KualiForm.editingMode['fullEntry']}" scope="request" />
 <c:set var="action" value="exconProjectAgreements" />
 
-<kul:tabTop tabTitle="Basic Agreement Info" defaultOpen="true" tabErrorKey="document.exconProjectList[0].agreementRole,document.exconProjectList[0].responsibleParty">
+<kul:tabTop tabTitle="Basic Agreement Info" defaultOpen="true" tabErrorKey="document.exconProjectList[0].agreementRole,document.exconProjectList[0].respPartyUsername">
 
 <div class="tab-container" align="center">
 
