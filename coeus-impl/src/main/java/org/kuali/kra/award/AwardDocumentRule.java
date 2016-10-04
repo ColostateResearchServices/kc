@@ -90,7 +90,11 @@ import java.util.List;
 import static org.kuali.kra.infrastructure.KeyConstants.AWARD_ATTACHMENT_FILE_REQUIRED;
 import static org.kuali.kra.infrastructure.KeyConstants.AWARD_ATTACHMENT_TYPE_CODE_REQUIRED;
 
+import edu.colostate.kc.award.AwardChartOfAccountsAuditRule;
+import edu.colostate.kc.award.AwardSponsorValidationAuditRule;
 import edu.colostate.kc.award.contacts.AwardUnitContactsAuditRule;
+import edu.colostate.kc.award.customdata.AwardCustomDataAuditRule;
+import edu.colostate.kc.award.home.fundingproposal.AwardFundingProposalAuditRule;
 
 
 /**
@@ -517,6 +521,12 @@ public class AwardDocumentRule extends KcTransactionalDocumentRuleBase implement
         retval &= new AwardSponsorContactAuditRule().processRunAuditBusinessRules(document);
         retval &= new AwardBudgetLimitsAuditRule().processRunAuditBusinessRules(document);
         retval &= new AwardDetailsAndDatesAuditRule().processRunAuditBusinessRules(document);
+        retval &= processDateBusinessRule(GlobalVariables.getMessageMap(), (AwardDocument)document);
+        retval &= new AwardSponsorValidationAuditRule().processRunAuditBusinessRules(document);
+        retval &= new AwardUnitContactsAuditRule().processRunAuditBusinessRules(document);
+        retval &= new AwardFundingProposalAuditRule().processRunAuditBusinessRules(document);
+        retval &= new AwardChartOfAccountsAuditRule().processRunAuditBusinessRules(document);
+        retval &= new AwardCustomDataAuditRule().processRunAuditBusinessRules(document);
         return retval;
         
         

@@ -26,7 +26,9 @@
 <c:set var="unitAttributes" value="${DataDictionary.Unit.attributes}" />
 <c:set var="fundingProposalBeanAttributes" value="${DataDictionary.AwardFundingProposalBean.attributes}" />
 
-<kul:tab tabTitle="Funding Proposals" defaultOpen="false" tabErrorKey="document.awardList[0].fundingProposals*,fundingProposalBean.newFundingProposal">
+<kul:tab tabTitle="Funding Proposals" defaultOpen="false" tabErrorKey="document.awardList[0].fundingProposals*,fundingProposalBean.newFundingProposal"
+	tabAuditKey="fundingProposalBean.*"
+	auditCluster="fundingProposalsAuditWarnings" useRiceAuditMode="true">
 	<div class="tab-container" align="right">
 	
         <c:if test="${!readOnly}">

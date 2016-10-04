@@ -43,6 +43,8 @@ public class AwardFandARateAuditRule implements DocumentAuditRule {
     private KeyValuesFinder finder;
     private ParameterService parameterService;
     
+    private static final String ERROR_AWARD_FANDA_RATE_MISSING = "error.awardDirectFandADistribution.missing.rate";
+
     /**
      * Looks up and returns the ParameterService.
      * @return the parameter service. 
@@ -57,6 +59,7 @@ public class AwardFandARateAuditRule implements DocumentAuditRule {
     public boolean processRunAuditBusinessRules(Document document) {
         boolean retval = true;
         AwardDocument awardDocument = (AwardDocument) document;
+        retval = isFandaRateEntered(awardDocument.getAward().getAwardFandaRate());
         if(StringUtils.equalsIgnoreCase(
                 this.getParameterService().getParameterValueAsString(AwardDocument.class,
                         KeyConstants.ENABLE_AWARD_FNA_VALIDATION),
@@ -66,6 +69,23 @@ public class AwardFandARateAuditRule implements DocumentAuditRule {
         return retval;
     }
     
+    /**
+     *
+     * This method takes as the input a list of <code>AwardFandaRate</code>
+     * and verifies there is at least one entered.
+     * Returns true if there is at least one F&A rate.
+     * @param awardFandaRateList
+     * @return
+     */
+     protected boolean isFandaRateEntered(List<AwardFandaRate> awardFandaRateList){
+     	if (awardFandaRateList==null || awardFandaRateList.isEmpty()){
+     		addAuditError(new AuditError(Constants.REPORT_TERMS_AUDIT_RULES_ERROR_KEY, ERROR_AWARD_FANDA_RATE_MISSING, createPageContext()));
+     		reportAndCreateAuditCluster();
+     		return false;
+     	}
+     	return true;
+     	}
+
     /**
      * 
      * This method takes as the input a list of <code>AwardFandaRate</code>,

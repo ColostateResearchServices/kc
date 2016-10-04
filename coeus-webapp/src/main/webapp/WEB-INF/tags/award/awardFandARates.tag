@@ -24,7 +24,7 @@
 <c:set var="awardFandaRateCommentAttributes" value="${DataDictionary.AwardComment.attributes}" />
 <c:set var="awardBenefitsRateCommentAttributes" value="${DataDictionary.AwardComment.attributes}" />
 <c:set var="action" value="awardTimeAndMoney" />
-<kul:tab tabTitle="Rates" defaultOpen="false" auditCluster="requiredFieldsAuditErrors" tabAuditKey="" useRiceAuditMode="true">
+<kul:tab tabTitle="Rates" defaultOpen="false" auditCluster="fandaAuditErrors" tabAuditKey="document.reportTermsAuditRules" useRiceAuditMode="true">
     <kul:innerTab tabTitle="F&A Rates" parentTab="Rates" defaultOpen="true" tabErrorKey="newAwardFandaRate.*,document.awardList[0].awardFandaRate*">
 		<div class="tab-container" align="right">
 	    	<h3>
