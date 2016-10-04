@@ -278,7 +278,7 @@
 
 <%-- --%>
 <div align="right"><kul:help parameterNamespace="KC-COIDISCLOSURE" parameterDetailType="Document" parameterName="coiDisclosure1Help" altText="help"/></div>
-<kul:documentOverview editingMode="${KualiForm.editingMode}" />
+
 
 <kra-coi:disclosureReporter />
 
@@ -312,14 +312,16 @@
 	<kra-coi:allDisclosedProjects/>
 </c:if>
 
+    <%-- hiding this
 <kra-coi:coiNotifications/>
+--%>
 
 <kra-coi:coiNoteAndAttachment/>
 
 <kra-coi:coiCertification topTab="false" />
 
 <c:if test="${KualiForm.document.coiDisclosure.disclosureSaved}">
-	<kra:dataValidation auditActivated="${KualiForm.auditActivated}" topTab="false"/>
+	<kra:dataValidation auditActivated="${KualiForm.auditActivated}" topTab="false"  title="Show Data Entry Errors"/>
 </c:if>
 
 <kul:panelFooter />
