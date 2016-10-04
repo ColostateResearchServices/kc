@@ -606,13 +606,13 @@
                                             <div align="right">Anticipated Amount:</div>
 					        			</th>
 										<td align="left" valign="middle">
-					            			<kul:htmlControlAttribute property="document.awardList[0].awardAmountInfos[${KualiForm.indexOfAwardAmountInfoForDisplay}].anticipatedTotalAmount" attributeEntry="${awardAttributes.anticipatedTotal}" readOnly="${!awardObligatedAndAnticipatedAmountsEditable}"/>
+				            				<fmt:formatNumber currencySymbol="$" type="currency" value="${KualiForm.document.awardList[0].awardAmountInfos[KualiForm.indexOfAwardAmountInfoForDisplay].anticipatedTotalAmount}"/>
 					        			</td>
 					        			<th>
 					            			<div align="right">Obligated Amount:</div>
 					        			</th>
 					        			<td align="left" valign="middle">
-					            			<kul:htmlControlAttribute property="document.awardList[0].awardAmountInfos[${KualiForm.indexOfAwardAmountInfoForDisplay}].amountObligatedToDate" attributeEntry="${awardAttributes.obligatedTotal}" readOnly="${!awardObligatedAndAnticipatedAmountsEditable}"/>
+				           					<fmt:formatNumber currencySymbol="$" type="currency" value="${KualiForm.document.awardList[0].awardAmountInfos[KualiForm.indexOfAwardAmountInfoForDisplay].amountObligatedToDate}"/>
 					        			</td>
 			        				</tr>
 								</c:otherwise>
