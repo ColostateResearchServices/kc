@@ -40,6 +40,7 @@
         var kualiElements = kualiForm.elements;
     </SCRIPT>
     <script language="javascript" src="scripts/kuali_application.js"></script>
+    <script language="javascript" src="dwr/interface/JobCodeService.js"></script>
 
     <kul:documentControls transactionalDocument="true" suppressRoutingControls="true" suppressCancelButton="true" />
 
