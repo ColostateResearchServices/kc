@@ -106,7 +106,7 @@
         </th>
     	<td>
             <kul:htmlControlAttribute property="document.exconProjectList[0].unitNumber" attributeEntry="${exconProjectAttributes.unitNumber}"
-									  onblur="loadUnitNameTo('document.exconProjectList[0].unitNumber','document.exconProjectList[0].unit.unitName')" readOnly="${readOnly}" />
+									  onblur="loadUnitNameTo('document.exconProjectList[0].unitNumber','unitName')" readOnly="${readOnly}" />
             <c:if test="${!readOnly}">
                <kul:lookup boClassName="org.kuali.coeus.common.framework.unit.Unit" fieldConversions="unitNumber:document.exconProjectList[0].unitNumber"
   			         anchor="${tabKey}" lookupParameters="document.exconProjectList[0].unitNumber:unitNumber"/>
