@@ -97,6 +97,14 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
         </property>
         <property name="items">
             <list>
+                <bean parent="Kc-Header-CoiMenu" p:toggleText="COI" p:order="8">
+                    <property name="wrapperCssClasses">
+                        <list merge="true">
+                            <value>kc-researcherDropdown</value>
+                            <value>kc-listIconDropdown</value>
+                        </list>
+                    </property>
+                </bean>
                 <bean parent="Kc-Header-ResearcherMenu" p:order="10">
                     <property name="wrapperCssClasses">
                         <list merge="true">
@@ -223,6 +231,25 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         <bean parent="Kc-Header-Researcher-Group2" p:order="20"/>
                         <bean parent="Kc-Header-Researcher-Group3" p:order="30"/>
                         <bean parent="Kc-Header-Researcher-Group4" p:order="40"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+
+
+    <bean id="Kc-Header-CoiMenu" parent="Kc-Header-CoiMenu-parentBean"/>
+    <bean id="Kc-Header-CoiMenu-parentBean" abstract="true"
+          parent="Kc-Header-DefaultMenu" p:toggleText="COI">
+        <property name="menuGroup">
+            <bean parent="Uif-AppMenuGroup">
+                <property name="layoutManager.defaultItemSizes.smSize" value="4"/>
+                <property name="layoutManager.defaultItemSizes.mdSize" value="3"/>
+                <property name="items">
+                    <list>
+                        <bean parent="Kc-Header-Researcher-Group3" p:order="20"/>
+                        <bean parent="Kc-Header-Unit-CoiGroup" p:order="30"/>
                     </list>
                 </property>
             </bean>

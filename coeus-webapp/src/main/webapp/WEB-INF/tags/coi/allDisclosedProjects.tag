@@ -25,7 +25,7 @@
 	<c:set var="projectsGroupedByDescription" value="(Grouped by Financial Entities)" />
 </c:if>
 
-<kul:tab defaultOpen="false" tabTitle="Disclosed Projects" tabErrorKey="document.committee*">
+<kul:tab defaultOpen="false" tabTitle="Project & Financial Entity Relationships" tabErrorKey="document.committee*">
 	<div class="tab-container" align="center">
 	    <h3>
 	        <span class="subhead-left">Disclosed Projects ${projectsGroupedByDescription}</span>

@@ -99,7 +99,6 @@
 <%-- --%>
 <c:set var="readOnly" value="${not KualiForm.editingMode['fullEntry']}" scope="request" />
 <div align="right"><kul:help documentTypeName="CoiDisclosureDocument" pageName="CoiDisclosure" /></div>
-<kul:documentOverview editingMode="${KualiForm.editingMode}" />
 <kra-coi:disclosureReporter />
 <c:if test="${KualiForm.document.coiDisclosureList[0].annualUpdate or KualiForm.document.coiDisclosureList[0].updateEvent}" >  
 	<kra-coi:disclosureQuestionnaire />

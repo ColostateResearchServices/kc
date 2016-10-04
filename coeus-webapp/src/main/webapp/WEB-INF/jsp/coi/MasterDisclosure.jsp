@@ -106,7 +106,6 @@
 <%-- --%>
 <c:set var="readOnly" value="true" scope="request"/>
 <div align="right"><kul:help documentTypeName="CoiDisclosureDocument" pageName="CoiDisclosure" /></div>
-<kul:documentOverview editingMode="${KualiForm.editingMode}" />
 <kra-coi:disclosureReporter />
 <kra-coi:masterAnnualQuestionnaires />                    
 <c:set var="masterDisclosure" value="${KualiForm.disclosureHelper.masterDisclosureBean}" />
