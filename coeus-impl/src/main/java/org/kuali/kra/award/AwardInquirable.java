@@ -177,12 +177,10 @@ public class AwardInquirable extends KualiInquirableImpl {
         addField(teamId + "", row6, "teamId", "Team ID");
         section.getRows().add(row6);
 
-/*
         Row row7 = new Row();
         addField(((AwardExtension)award.getExtension()).getResearchReportCode(), row7, "researchReportCode", "Research Report Code");
         addField(((AwardExtension)award.getExtension()).getFundSourceCode(), row7, "fundSourceCode", "Fund Source Code");
         section.getRows().add(row7);
-*/
 
         Row row9 = new Row();
         addField(SCOCode,row9,"SCOCode","SCO Code");
