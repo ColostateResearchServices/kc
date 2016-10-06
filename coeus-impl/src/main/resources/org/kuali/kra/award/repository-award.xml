@@ -117,6 +117,8 @@
 		<field-descriptor name="awardId" column="AWARD_ID" jdbc-type="BIGINT" primarykey="true"  index="true" />
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
 		<field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
+        <field-descriptor name="researchReportCode" column="RESEARCH_REPORT_CODE" jdbc-type="VARCHAR" />
+        <field-descriptor name="fundSourceCode" column="FUND_SOURCE_CODE" jdbc-type="VARCHAR" />
 		<field-descriptor name="fullAccountNumber" column="FULL_ACCOUNT_NUMBER" jdbc-type="VARCHAR" />
 
     	<collection-descriptor name="awardAlternateNumbers" proxy="true" element-class-ref="edu.colostate.kc.award.awardalternatenumber.AwardAlternateNumber" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
@@ -136,7 +138,18 @@
 		</reference-descriptor>
 
 	</class-descriptor>
-	<!-- End CSU Customizations -->
+
+    <class-descriptor class="edu.colostate.kc.award.ResearchReportCode" table="CSU_AWD_RESEARCH_REPORT_CODE_T">
+    	<field-descriptor name="researchReportCode" column="RESEARCH_REPORT_CODE" jdbc-type="VARCHAR" />
+    	<field-descriptor name="sponsorTypeCode" column="SPONSOR_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+    	<field-descriptor name="sponsorNameWildcard" column="SPONSOR_NAME_WILDCARD" jdbc-type="VARCHAR" primarykey="true" />
+    </class-descriptor>
+
+	<class-descriptor class="edu.colostate.kc.award.FundSourceCode" table="CSU_AWD_FUND_SOURCE_CODE_T">
+    	<field-descriptor name="fundSourceCode" column="FUND_SOURCE_CODE" jdbc-type="VARCHAR" />
+    	<field-descriptor name="sponsorTypeCode" column="SPONSOR_TYPE_CODE" jdbc-type="VARCHAR" primarykey="true" />
+    	<field-descriptor name="hasPrimeSponsor" column="HAS_PRIME_SPONSOR" jdbc-type="VARCHAR" primarykey="true" />
+    </class-descriptor>
 
 	<class-descriptor class="org.kuali.kra.award.home.Award" table="AWARD">
 		<field-descriptor name="awardId" column="AWARD_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="SEQUENCE_AWARD_ID" />		

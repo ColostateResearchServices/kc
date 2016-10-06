@@ -1,7 +1,6 @@
 package edu.colostate.kc.award;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import edu.colostate.kc.award.awardalternatenumber.AwardAlternateNumber;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +25,10 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
 
 
 	private List<CsuCentralAdminContact> centralAdminContacts;
+
+    private String researchReportCode;
+
+    private String fundSourceCode;
 
 	private String fullAccountNumber;
 
@@ -154,6 +157,22 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
 		getCentralAdminContacts().remove(numberToDelete);
 	}
 
+	public String getResearchReportCode() {
+		return researchReportCode;
+	}
+
+	public void setResearchReportCode(String researchReportCode) {
+		this.researchReportCode = researchReportCode;
+	}
+
+    public String getFundSourceCode() {
+		return fundSourceCode;
+	}
+
+	public void setFundSourceCode(String fundSourceCode) {
+		this.fundSourceCode = fundSourceCode;
+	}
+
 	public String getFullAccountNumber() {
 		populateFullAccountNumber();
 		return fullAccountNumber;
@@ -182,8 +201,63 @@ public class AwardExtension extends PersistableBusinessObjectExtensionBase imple
 		fullAccountNumber=getAward().getFinancialChartOfAccountsCode()+getAward().getAccountNumber();
 	}
 
+	public void deriveResearchReportCode() {
+    	if (getAward()==null || getAward().getSponsor()==null) {
+    		return;
+    	}
+        Map<String, Object> values = new HashMap<String, Object>();
+        String sponsorTypeCode=getAward().getSponsor().getSponsorTypeCode();
+        String sponsorName=getAward().getSponsor().getSponsorName();
+        if (getAward().getPrimeSponsor()!=null && StringUtils.equals(getAward().getPrimeSponsor().getSponsorTypeCode(), "A")) {
+        	sponsorTypeCode=getAward().getPrimeSponsor().getSponsorTypeCode();
+        	sponsorName=getAward().getPrimeSponsor().getSponsorName();
+        }
+        values.put("sponsorTypeCode", sponsorTypeCode);
+        String sponsorNameWildcard=null;
+        Collection<ResearchReportCode> codes = getBusinessObjectService().findMatching(ResearchReportCode.class, values);
+        List<ResearchReportCode> sortedCodes = (List<ResearchReportCode>)codes;
+        Collections.sort(sortedCodes);
+        for (ResearchReportCode code : codes) {
+        	sponsorNameWildcard=code.getSponsorNameWildcard();
+        	if (sponsorName.startsWith(sponsorNameWildcard.replace("%", ""))) {
+        		researchReportCode=code.getResearchReportCode();
+        		return;
+        	}
+
+        }
+        return;
+    }
+
+	public void deriveFundSourceCode() {
+    	if (getAward()==null || getAward().getSponsor()==null) {
+    		return;
+    	}
+        Map<String, Object> values = new HashMap<String, Object>();
+        String hasPrimeSponsor=(getAward().getPrimeSponsor() != null && StringUtils.equals(getAward().getPrimeSponsor().getSponsorTypeCode(), "A")) ? "Y" : "N";
+        values.put("sponsorTypeCode", getAward().getSponsor().getSponsorTypeCode());
+        values.put("hasPrimeSponsor", hasPrimeSponsor);
+        Collection<FundSourceCode> codes = getBusinessObjectService().findMatching(FundSourceCode.class, values);
+        if (!codes.isEmpty()) {
+        	fundSourceCode=codes.iterator().next().getFundSourceCode();
+        }
+        return;
+	}
+
+
 	private BusinessObjectService getBusinessObjectService() {
     	return KcServiceLocator.getService(BusinessObjectService.class);
     }
-    
+
+	protected void prePersist() {
+		deriveResearchReportCode();
+		deriveFundSourceCode();
+		super.prePersist();
+	}
+
+	protected void preUpdate() {
+		deriveResearchReportCode();
+		deriveFundSourceCode();
+		super.preUpdate();
+	}
+
 }
