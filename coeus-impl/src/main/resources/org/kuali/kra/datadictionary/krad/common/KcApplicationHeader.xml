@@ -100,7 +100,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                 <bean parent="Kc-Header-CoiMenu" p:toggleText="COI" p:order="8">
                     <property name="wrapperCssClasses">
                         <list merge="true">
-                            <value>kc-researcherDropdown</value>
+                            <value>kc-reportsDropdown</value>
                             <value>kc-listIconDropdown</value>
                         </list>
                     </property>
@@ -244,15 +244,34 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
           parent="Kc-Header-DefaultMenu" p:toggleText="COI">
         <property name="menuGroup">
             <bean parent="Uif-AppMenuGroup">
-                <property name="layoutManager.defaultItemSizes.smSize" value="4"/>
-                <property name="layoutManager.defaultItemSizes.mdSize" value="3"/>
+                <property name="layoutManager.defaultItemSizes.smSize" value="10"/>
+                <property name="layoutManager.defaultItemSizes.mdSize" value="10"/>
                 <property name="items">
                     <list>
-                        <bean parent="Kc-Header-Researcher-Group3" p:order="20"/>
-                        <bean parent="Kc-Header-Unit-CoiGroup" p:order="30"/>
+                        <bean parent="Kc-Header-Coi-Group1" p:order="10"/>
                     </list>
                 </property>
             </bean>
+        </property>
+    </bean>
+
+    <bean id="Kc-Header-Coi-Group1" parent="Kc-Header-Coi-Group1-parentBean"/>
+    <bean id="Kc-Header-Coi-Group1-parentBean" abstract="true"
+          parent="Uif-SimpleGroup">
+        <property name="items">
+            <list>
+                <bean parent="Kc-Header-Researcher-COIMonolithGroup1" p:order="10"
+                      p:render="@{!#ConfigProperties['coi.projects.enabled']}"/>
+                <bean parent="Kc-Header-Researcher-COIMonolithGroup2" p:order="12"
+                      p:render="@{!#ConfigProperties['coi.projects.enabled']}"/>
+                <bean parent="Kc-Header-Researcher-COIMonolithGroup3" p:order="15"
+                      p:render="@{!#ConfigProperties['coi.projects.enabled'] and (#userSession != null and
+                                    #getService('unitAuthorizationService').hasPermission(#userSession.getPrincipalId(),
+                                                                                           T(org.kuali.kra.infrastructure.RoleConstants).COI_DISCLOSURE_ROLE_TYPE,
+                                                                                           T(org.kuali.kra.infrastructure.PermissionConstants).APPROVE_COI_DISCLOSURE))}"/>
+                <bean parent="Kc-Header-Researcher-COIStandaloneGroup" p:order="20"
+                      p:render="@{#ConfigProperties['coi.projects.enabled']}"/>
+            </list>
         </property>
     </bean>
 
@@ -283,10 +302,6 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
           parent="Uif-SimpleGroup">
         <property name="items">
             <list>
-                <bean parent="Kc-Header-Researcher-COIMonolithGroup" p:order="10"
-                      p:render="@{!#ConfigProperties['coi.projects.enabled']}"/>
-                <bean parent="Kc-Header-Researcher-COIStandaloneGroup" p:order="20"
-                      p:render="@{#ConfigProperties['coi.projects.enabled']}"/>
                 <bean parent="Kc-Header-Researcher-IacucGroup" p:order="30"/>
             </list>
         </property>
@@ -552,50 +567,17 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
         </property>
     </bean>
 
-    <bean id="Kc-Header-Researcher-COIMonolithGroup" parent="Kc-Header-Researcher-COIMonolithGroup-parentBean"/>
-    <bean id="Kc-Header-Researcher-COIMonolithGroup-parentBean" abstract="true"
-          parent="Uif-MenuList" p:headerText="Conflict of Interest">
+    <bean id="Kc-Header-Researcher-COIMonolithGroup1" parent="Kc-Header-Researcher-COIMonolithGroup1-parentBean"/>
+    <bean id="Kc-Header-Researcher-COIMonolithGroup1-parentBean" abstract="true"
+          parent="Uif-MenuList" p:headerText="Faculty/Staff Disclosure">
         <property name="items">
             <list>
-                <bean parent="Uif-SimpleHeaderFour" p:headerText="  My Financial Entities" p:order="10"/>
-                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="Financial Entity"
-                      p:order="20">
-                    <property name="actionUrl.requestParameters">
-                        <map>
-                            <entry key="href"
-                                   value="@{#ConfigProperties['application.url']}/financialEntityManagement.do?methodToCall=management&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
-                        </map>
-                    </property>
-                </bean>
-
-                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="View/Edit Financial Entities"
-                      p:order="30">
-                    <property name="actionUrl.requestParameters">
-                        <map>
-                            <entry key="href"
-                                   value="@{#ConfigProperties['application.url']}/financialEntityManagement.do?methodToCall=editList&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
-                        </map>
-                    </property>
-                </bean>
-                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="All My Financial Entities"
-                      p:order="40">
-                    <property name="actionUrl.requestParameters">
-                        <map>
-                            <entry key="href"
-
-                                   value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&amp;businessObjectClassName=org.kuali.kra.coi.personfinancialentity.PersonFinIntDisclosure&amp;docFormKey=88888888&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true"/>
-                        </map>
-                    </property>
-                </bean>
 
                 <bean parent="Uif-SimpleHeaderFour" p:headerText="My Disclosures"
-                      p:order="50"/>
+                      p:order="10"/>
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="Master Disclosure"
-                      p:order="60">
+                      p:actionLabel="View Current Disclosure"
+                      p:order="20">
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
@@ -605,7 +587,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                 </bean>
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
                       p:actionLabel="Create Annual Disclosure"
-                      p:order="70">
+                      p:order="30">
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
@@ -613,26 +595,9 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </map>
                     </property>
                 </bean>
+
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="Create Manual Disclosure" p:order="80">
-                    <property name="actionUrl.requestParameters">
-                        <map>
-                            <entry key="href"
-                                   value="@{#ConfigProperties['application.url']}/coiDisclosure.do?methodToCall=docHandler&amp;command=initiate_12&amp;docTypeName=CoiDisclosureDocument&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
-                        </map>
-                    </property>
-                </bean>
-                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="New Project Disclosures To Complete" p:order="90">
-                    <property name="actionUrl.requestParameters">
-                        <map>
-                            <entry key="href"
-                                   value="@{#ConfigProperties['application.url']}/projectEventDisclosure.do?methodToCall=getDisclosuresToComplete&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
-                        </map>
-                    </property>
-                </bean>
-                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="Update Master Disclosure" p:order="100">
+                      p:actionLabel="Update Master Disclosure" p:order="60">
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
@@ -642,7 +607,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                 </bean>
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
                       p:actionLabel="All My Disclosures"
-                      p:order="110">
+                      p:order="70">
                     <property name="actionUrl.requestParameters">
                         <map>
 
@@ -651,6 +616,80 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </map>
                     </property>
                 </bean>
+
+
+
+
+                <bean parent="Uif-SimpleHeaderFour" p:headerText="  My Financial Entities" p:order="80"/>
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="New Financial Entity"
+                      p:order="90">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href"
+                                   value="@{#ConfigProperties['application.url']}/financialEntityManagement.do?methodToCall=editNew&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
+                        </map>
+                    </property>
+                </bean>
+
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="View My Financial Entities"
+                      p:order="100">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href"
+                                   value="@{#ConfigProperties['application.url']}/financialEntityManagement.do?methodToCall=editList&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
+                        </map>
+                    </property>
+                </bean>
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="Financial Entity Lookup"
+                      p:order="110">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href"
+
+                                   value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&amp;businessObjectClassName=org.kuali.kra.coi.personfinancialentity.PersonFinIntDisclosure&amp;docFormKey=88888888&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true"/>
+                        </map>
+                    </property>
+                </bean>
+
+
+
+                <bean parent="Uif-SimpleHeaderFour" p:headerText="  PHS Investigators" p:order="120"/>
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="Create PHS Travel Disclosure" p:order="130">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href"
+                                   value="@{#ConfigProperties['application.url']}/coiDisclosure.do?methodToCall=docHandler&amp;command=initiate_15&amp;docTypeName=CoiDisclosureDocument&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
+                        </map>
+                    </property>
+                </bean>
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="New Project Disclosures To Complete" p:order="140">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href"
+                                   value="@{#ConfigProperties['application.url']}/projectEventDisclosure.do?methodToCall=getDisclosuresToComplete&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView"/>
+                        </map>
+                    </property>
+                </bean>
+                <bean parent="Uif-Link"
+                      p:href="https://rsweb.research.colostate.edu/PHSTraining/"
+                      p:target="trainingWindow" p:linkText="PHS COI Training" p:order="150"/>
+
+
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="Kc-Header-Researcher-COIMonolithGroup2" parent="Kc-Header-Researcher-COIMonolithGroup2-parentBean"/>
+    <bean id="Kc-Header-Researcher-COIMonolithGroup2-parentBean" abstract="true"
+          parent="Uif-MenuList" p:headerText="COI Reviewers">
+        <property name="items">
+            <list>
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
                       p:actionLabel="All My Disclosure Reviews"
                       p:order="120">
@@ -661,6 +700,32 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </map>
                     </property>
                 </bean>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="Kc-Header-Researcher-COIMonolithGroup3" parent="Kc-Header-Researcher-COIMonolithGroup3-parentBean"/>
+    <bean id="Kc-Header-Researcher-COIMonolithGroup3-parentBean" abstract="true"
+          parent="Uif-MenuList" p:headerText="COI Approvers"
+          p:render="@{#userSession != null and
+                            	    #getService('unitAuthorizationService').hasPermission(#userSession.getPrincipalId(),
+                      	                        T(org.kuali.kra.infrastructure.RoleConstants).COI_DISCLOSURE_ROLE_TYPE,
+                      		                    T(org.kuali.kra.infrastructure.PermissionConstants).APPROVE_COI_DISCLOSURE)}">
+        <property name="items">
+            <list>
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="Disclosures I've been asked to Approve"
+                      p:order="125">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href"
+                                   value="@{#ConfigProperties['application.url']}/portal.do?channelTitle=Action%20List&amp;channelUrl=@{#ConfigProperties['application.url']}/kew/ActionList.do"/>
+
+                        </map>
+                    </property>
+                </bean>
+
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
                       p:actionLabel="Search Disclosures"
                       p:order="130">
@@ -671,7 +736,16 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </map>
                     </property>
                 </bean>
-
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+                      p:actionLabel="My Direct Reports Disclosure Status"
+                      p:order="140">
+                    <property name="actionUrl.requestParameters">
+                        <map>
+                            <entry key="href"
+                                   value="https://rsweb.research.colostate.edu/coi/approvers.aspx"/>
+                        </map>
+                    </property>
+                </bean>
             </list>
         </property>
     </bean>
@@ -838,6 +912,8 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
             </bean>
         </property>
     </bean>
+
+
 
     <bean id="Kc-Header-Unit-CoiGroup" parent="Kc-Header-Unit-CoiGroup-parentBean"/>
     <bean id="Kc-Header-Unit-CoiGroup-parentBean" abstract="true" parent="Uif-SimpleGroup">
