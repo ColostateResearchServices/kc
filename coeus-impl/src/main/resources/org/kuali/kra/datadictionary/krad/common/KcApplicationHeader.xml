@@ -736,16 +736,10 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </map>
                     </property>
                 </bean>
-                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
-                      p:actionLabel="My Direct Reports Disclosure Status"
-                      p:order="140">
-                    <property name="actionUrl.requestParameters">
-                        <map>
-                            <entry key="href"
-                                   value="https://rsweb.research.colostate.edu/coi/approvers.aspx"/>
-                        </map>
-                    </property>
-                </bean>
+                <bean parent="Uif-Link"
+                      p:href="https://rsweb.research.colostate.edu/coi/approvers.aspx"
+                      p:target="trainingWindow" p:linkText="My Direct Reports Disclosure Status" p:order="150"/>
+
             </list>
         </property>
     </bean>

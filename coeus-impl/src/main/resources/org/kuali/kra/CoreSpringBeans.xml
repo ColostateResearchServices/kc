@@ -1034,7 +1034,6 @@
                 <value>classpath:org/kuali/kra/datadictionary/docs/ExconProjectTypeMaintenanceDocument.xml</value>
 
 
-                <value>classpath:org/kuali/kra/custom/datadictionary/ArgValueLookup.xml</value>
                 <value>classpath:org/kuali/kra/custom/datadictionary/Negotiation.xml</value>
                 <value>classpath:org/kuali/kra/custom/datadictionary/NegotiationUnassociatedDetail.xml</value>
                 <value>classpath:org/kuali/kra/custom/datadictionary/NegotiationActivity.xml</value>
