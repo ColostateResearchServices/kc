@@ -415,8 +415,8 @@
   <bean id="Negotiation-customData-proposalActionType" parent="AttributeDefinition">
     <property name="name" value="proposalActionType" />
     <property name="forceUppercase" value="false" />
-    <property name="label" value="Proposal Action Type" />
-    <property name="shortLabel" value="Proposal Action" />
+    <property name="label" value="Post-Proposal Action Type" />
+    <property name="shortLabel" value="Post-Prop Act" />
     <property name="maxLength" value="100" />
     <property name="required" value="false" />
     <property name="validationPattern" >
