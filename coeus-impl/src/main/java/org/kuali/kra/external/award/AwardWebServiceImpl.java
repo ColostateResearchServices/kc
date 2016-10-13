@@ -221,6 +221,7 @@ public class AwardWebServiceImpl implements AwardWebService {
             if (awards.size()>1) {
     			result.setSuccess(false);
     			result.getErrorMessages().add("Cannot update mulitple awards, found "+ awards.size() +" awards based on critera provided.");
+                result.getErrorMessages().add("SearchCriteria were:" + values.toString());
     			return result;            	
             }
             else if (!awards.isEmpty()) {
@@ -231,6 +232,7 @@ public class AwardWebServiceImpl implements AwardWebService {
 		if (award == null || award.getAwardCgb() == null) {
 			result.setSuccess(false);
 			result.getErrorMessages().add("Unable to find an award for update based on unique identifiers.");
+			result.getErrorMessages().add("SearchCriteria were:" + values.toString());
 			return result;
 		}
 		
