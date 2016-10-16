@@ -228,8 +228,8 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                 <property name="items">
                     <list>
                         <bean parent="Kc-Header-Researcher-Group1" p:order="10"/>
-                        <bean parent="Kc-Header-Researcher-Group2" p:order="20"/>
-                        <bean parent="Kc-Header-Researcher-Group3" p:order="30"/>
+<!--                        <bean parent="Kc-Header-Researcher-Group2" p:order="20"/>
+                        <bean parent="Kc-Header-Researcher-Group3" p:order="30"/>-->
                         <bean parent="Kc-Header-Researcher-Group4" p:order="40"/>
                     </list>
                 </property>
@@ -1264,7 +1264,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                         </map>
                     </property>
                 </bean>
-                <bean parent="Uif-SimpleHeaderFour" p:headerText="Protocols" p:order="80"/>
+<!--                <bean parent="Uif-SimpleHeaderFour" p:headerText="Protocols" p:order="80"/>
                 <bean parent="Uif-HorizontalBoxSection" p:order="90">
                     <property name="items">
                         <list>
@@ -1314,7 +1314,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                             </bean>
                         </list>
                     </property>
-                </bean>
+                </bean>-->
             </list>
         </property>
     </bean>
@@ -1324,7 +1324,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
           p:headerText="Post-Submission Compliance">
         <property name="items">
             <list>
-                <bean parent="Uif-HorizontalBoxSection" p:order="10">
+ <!--               <bean parent="Uif-HorizontalBoxSection" p:order="10">
                     <property name="items">
                         <list>
                             <bean parent="Uif-Message" p:messageText="IRB Committee" p:order="10"/>
@@ -1416,7 +1416,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                                    value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=start&amp;businessObjectClassName=org.kuali.kra.iacuc.committee.bo.IacucCommitteeSchedule&amp;docFormKey=88888888&amp;showMaintenanceLinks=true&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true"/>
                         </map>
                     </property>
-                </bean>
+                </bean>-->
 
                 <bean parent="Uif-SimpleHeaderSix" p:headerText="Export Control" p:order="95"/>
                 <bean parent="Uif-HorizontalBoxSection" p:order="98">
