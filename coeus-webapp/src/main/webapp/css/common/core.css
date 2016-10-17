@@ -471,6 +471,8 @@ input[type="checkbox"] {
     width: 40em;
 }
 
+
+
 /**  Nav menu responsive to screen size css **/
 
 .kc-navMenuDropdown .dropdown-menu a, .kc-navMenuDropdown .dropdown-menu h3, .kc-navMenuDropdown .dropdown-menu h4 {
@@ -489,8 +491,15 @@ input[type="checkbox"] {
     .kc-reportsDropdown .dropdown-menu {
     	min-width: 25em !important;
 	}
-
-    .kc-researcherDropdown .dropdown-menu, .kc-unitDropdown .dropdown-menu, .kc-centralAdminDropdown .dropdown-menu, .kc-reportsDropdown .dropdown-menu {
+    .kc-coiDropdown .dropdown-menu {
+        max-width: 25em !important;
+        min-width: 25em !important;
+    }
+    .kc-smallResearcherDropdown .dropdown-menu {
+        max-width: 35em !important;
+        min-width: 25em !important;
+    }
+    .kc-researcherDropdown .dropdown-menu, .kc-smallResearcherDropdown .dropdown-menu, .kc-unitDropdown .dropdown-menu, .kc-centralAdminDropdown .dropdown-menu, .kc-reportsDropdown .dropdown-menu, .kc-coiDropdown .dropdown-menu {
         left: 0;
         right: inherit;
     }
@@ -505,7 +514,18 @@ input[type="checkbox"] {
     	min-width: 25em !important;
 	}
 
-    .kc-centralAdminDropdown .dropdown-menu, .kc-reportsDropDown .dropdown-menu {
+    .kc-coiDropdown .dropdown-menu {
+        max-width: 25em !important;
+        min-width: 25em !important;
+
+    }
+    .kc-smallResearcherDropdown .dropdown-menu {
+        max-width: 35em !important;
+        min-width: 35em !important;
+
+    }
+
+    .kc-centralAdminDropdown .dropdown-menu, .kc-reportsDropDown .dropdown-menu, .kc-smallResearcherDropdown .dropdown-menu, .kc-coiDropdown .dropdown-menu {
         right: 0;
     }
 }
@@ -513,6 +533,14 @@ input[type="checkbox"] {
 @media (min-width: 1200px) {
     .kc-researcherDropdown .dropdown-menu, .kc-unitDropdown .dropdown-menu {
         right: 0;
+    }
+    .kc-smallResearcherDropdown .dropdown-menu {
+        max-width: 35em !important;
+        min-width: 35em !important;
+    }
+    .kc-coiDropdown .dropdown-menu {
+        max-width: 25em !important;
+        min-width: 25em !important;
     }
 }
 

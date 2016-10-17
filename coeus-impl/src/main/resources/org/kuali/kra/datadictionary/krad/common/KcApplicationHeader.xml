@@ -100,7 +100,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                 <bean parent="Kc-Header-CoiMenu" p:toggleText="COI" p:order="8">
                     <property name="wrapperCssClasses">
                         <list merge="true">
-                            <value>kc-reportsDropdown</value>
+                            <value>kc-coiDropdown</value>
                             <value>kc-listIconDropdown</value>
                         </list>
                     </property>
@@ -108,7 +108,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                 <bean parent="Kc-Header-ResearcherMenu" p:order="10">
                     <property name="wrapperCssClasses">
                         <list merge="true">
-                            <value>kc-researcherDropdown</value>
+                            <value>kc-smallResearcherDropdown</value>
                             <value>kc-listIconDropdown</value>
                         </list>
                     </property>
@@ -223,8 +223,8 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
           parent="Kc-Header-DefaultMenu" p:toggleText="RESEARCHER">
         <property name="menuGroup">
             <bean parent="Uif-AppMenuGroup">
-                <property name="layoutManager.defaultItemSizes.smSize" value="4"/>
-                <property name="layoutManager.defaultItemSizes.mdSize" value="3"/>
+                <property name="layoutManager.defaultItemSizes.smSize" value="6"/>
+                <property name="layoutManager.defaultItemSizes.mdSize" value="6"/>
                 <property name="items">
                     <list>
                         <bean parent="Kc-Header-Researcher-Group1" p:order="10"/>
@@ -244,8 +244,8 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
           parent="Kc-Header-DefaultMenu" p:toggleText="COI">
         <property name="menuGroup">
             <bean parent="Uif-AppMenuGroup">
-                <property name="layoutManager.defaultItemSizes.smSize" value="10"/>
-                <property name="layoutManager.defaultItemSizes.mdSize" value="10"/>
+                <property name="layoutManager.defaultItemSizes.smSize" value="12"/>
+                <property name="layoutManager.defaultItemSizes.mdSize" value="12"/>
                 <property name="items">
                     <list>
                         <bean parent="Kc-Header-Coi-Group1" p:order="10"/>

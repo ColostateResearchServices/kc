@@ -21,6 +21,7 @@ package org.kuali.kra.external.award;
 import java.util.List;
 import java.util.Properties;
 
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.award.home.Award;
 import org.kuali.kra.award.lookup.AwardLookupableHelperServiceImpl;
 import org.kuali.rice.kew.impl.document.search.DocumentSearchCriteriaBo;
@@ -29,6 +30,7 @@ import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
+
 
 public class AwardCgbLookupableHelperServiceImpl extends AwardLookupableHelperServiceImpl {
 
@@ -39,7 +41,9 @@ public class AwardCgbLookupableHelperServiceImpl extends AwardLookupableHelperSe
     @SuppressWarnings("unchecked")
     public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
     	List<HtmlData> result = super.getCustomActionUrls(businessObject, pkNames);
-    	result.add(getInvoicesLookupUrl(businessObject));
+        if (getParameterService().getParameterValueAsBoolean("KC-AWARD", "Document", "AWARD_CGB_ENABLED")==true) {
+            result.add(getInvoicesLookupUrl(businessObject));
+        }
     	return result;    	
     }
     
@@ -61,6 +65,6 @@ public class AwardCgbLookupableHelperServiceImpl extends AwardLookupableHelperSe
         params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, DocumentSearchCriteriaBo.class.getName());
         String url = UrlFactory.parameterizeUrl(KRADConstants.LOOKUP_ACTION, params);
         return new AnchorHtmlData(url, KRADConstants.SEARCH_METHOD, "View Invoices");
-    }    
+    }
     
 }
