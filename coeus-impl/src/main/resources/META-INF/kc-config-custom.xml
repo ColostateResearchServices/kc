@@ -19,4 +19,10 @@
 -->
 <config>
 	<param name="kc.struts.message.resources">ApplicationResources,CSUApplicationResources</param>
+	<param name="devl.version">CSU Kuali Research ${build.version} Development</param>
+	<param name="qual.version">CSU Kuali Research ${build.version} Quality Assurance</param>
+	<param name="trng.version">CSU Kuali Research ${build.version} Training</param>
+	<param name="test.version">CSU Kuali Research ${build.version} Testing</param>
+	<param name="prd.version">CSU Kuali Research ${build.version} Production</param>
+	<param name="version">${${environment}.version}</param>
 </config>
