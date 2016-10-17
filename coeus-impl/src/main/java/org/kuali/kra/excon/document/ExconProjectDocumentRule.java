@@ -73,7 +73,7 @@ public class ExconProjectDocumentRule extends
             rulePassed = false;
         }
 
-        if (!StringUtils.isEmpty(exconProject.getHrExtension().getJobCode()) && exconProject.getHrExtension().getJob()==null) {
+        if (exconProject.getHrExtension()!=null && !StringUtils.isEmpty(exconProject.getHrExtension().getJobCode()) && exconProject.getHrExtension().getJob()==null) {
             reportError(propertyPrefix+".hrExtension.jobCode"
                     , KeyConstants.ERROR_PERSON_INVALID_JOBCODE_VALUE,exconProject.getHrExtension().getJobCode());  // this error msg isn't specific to Excon
             rulePassed = false;
