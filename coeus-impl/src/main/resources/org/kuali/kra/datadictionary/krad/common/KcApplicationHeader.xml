@@ -411,7 +411,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
-                                   value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&amp;businessObjectClassName=org.kuali.kra.negotiations.bo.Negotiation&amp;docFormKey=88888888&amp;includeCustomActionUrls=true&amp;hideReturnLink=true&amp;associatedNegotiable.piName=@{#userSession == null ? '' : #userSession.getPerson().getFirstName()+'*'+#userSession.getPerson().getLastName()}&amp;searchCriteriaEnabled=true"/>
+                                   value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&amp;businessObjectClassName=org.kuali.kra.negotiations.bo.Negotiation&amp;docFormKey=88888888&amp;includeCustomActionUrls=true&amp;hideReturnLink=true&amp;associatedNegotiable.principalInvestigatorUserName=@{#userSession == null ? '' : #userSession.getPerson().getPrincipalName()}&amp;searchCriteriaEnabled=true"/>
                         </map>
                     </property>
                 </bean>
@@ -1028,7 +1028,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
-                                   value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&amp;businessObjectClassName=org.kuali.kra.negotiations.bo.Negotiation&amp;docFormKey=88888888&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true&amp;negotiatorName=@{#userSession == null ? '' : #userSession.getPerson().getFirstName()+'*'+#userSession.getPerson().getLastName()}&amp;lookupProtocolPersonId=@{#userSession == null ? '' : #userSession.getPerson().getPrincipalId()}&amp;searchCriteriaEnabled=true"/>
+                                   value="@{#ConfigProperties['application.url']}/kr/lookup.do?methodToCall=search&amp;businessObjectClassName=org.kuali.kra.negotiations.bo.Negotiation&amp;docFormKey=88888888&amp;returnLocation=@{#ConfigProperties['application.url']}%2Fkc-krad%2FlandingPage%3FviewId%3DKc-LandingPage-RedirectView&amp;hideReturnLink=true&amp;negotiatorUserName=@{#userSession == null ? '' : #userSession.getPerson().getPrincipalName()}&amp;searchCriteriaEnabled=true"/>
                         </map>
                     </property>
                 </bean>
