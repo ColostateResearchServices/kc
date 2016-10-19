@@ -3,7 +3,7 @@
   <bean id="SponsorCrosswalkMaintenanceDocument" parent="SponsorCrosswalkMaintenanceDocument-parentBean"/>
 
   <bean id="SponsorCrosswalkMaintenanceDocument-parentBean" abstract="true" parent="KcMaintenanceDocumentEntry">
-    <property name="businessObjectClass" value="edu.colostate.kc.bo.SponsorCrosswalk"/>
+    <property name="businessObjectClass" value="edu.colostate.kc.common.framework.sponsor.SponsorCrosswalk"/>
     <property name="maintainableClass" value="org.kuali.kra.maintenance.KraMaintainableImpl"/>
     <property name="maintainableSections">
       <list>
@@ -14,7 +14,9 @@
       <list>
         <value>sponsorId</value>
       </list>
-    </property>	<property name="allowsRecordDeletion" value="true" />    <property name="documentTypeName" value="SponsorCrosswalkMaintenanceDocument"/>
+    </property>
+	<property name="allowsRecordDeletion" value="true" />
+    <property name="documentTypeName" value="SponsorCrosswalkMaintenanceDocument"/>
     <property name="documentAuthorizerClass" value="org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase"/>
     
     

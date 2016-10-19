@@ -40,20 +40,16 @@
     <bean id="sponsorCrosswalkModuleConfiguration" parent="sponsorCrosswalkModuleConfiguration-parentBean" />
     
     <bean id="sponsorCrosswalkModuleConfiguration-parentBean" class="org.kuali.rice.krad.bo.ModuleConfiguration" abstract="true">
-        <property name="initializeDataDictionary" value="true"/>
-        <property name="dataDictionaryPackages">
-			<list>
-				<value>edu/colostate/kc/datadictionary</value>
-				<value>edu/colostate/kc/datadictionary/docs</value>
-			</list>
-		</property>
         <property name="databaseRepositoryFilePaths">
             <list>
                 <value>edu/colostate/kc/repository-SponsorCrosswalk.xml</value>
-                <value>edu/colostate/kc/repository-AwardAccountReservation.xml</value>
             </list>
         </property>
     </bean>
 
-		    
+    <bean id="sponsorService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="sponsorService" />
+    </bean>
+
+
 </beans>

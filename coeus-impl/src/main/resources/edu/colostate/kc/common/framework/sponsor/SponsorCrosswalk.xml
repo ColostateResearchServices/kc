@@ -7,7 +7,7 @@
   <bean id="SponsorCrosswalk" parent="SponsorCrosswalk-parentBean" />
 
   <bean id="SponsorCrosswalk-parentBean" abstract="true" parent="BusinessObjectEntry">
-    <property name="businessObjectClass" value="edu.colostate.kc.bo.SponsorCrosswalk" />
+    <property name="businessObjectClass" value="edu.colostate.kc.common.framework.sponsor.SponsorCrosswalk" />
 		<property name="objectLabel" value="Sponsor Crosswalk" />
     <property name="inquiryDefinition" >
       <ref bean="SponsorCrosswalk-inquiryDefinition" />
@@ -44,10 +44,19 @@
       <bean parent="TextControlDefinition"
             p:size="12" />
     </property>
+      <property name="controlField">
+          <bean p:size="12" parent="Uif-TextControl"/>
+      </property>
     <property name="summary" value="KC Sponsor Code" />
     <property name="description" value="KC Sponsor Code" />
   </bean>
 
+    <bean id="SponsorCrosswalk-sponsor.sponsorName" parent="SponsorCrosswalk-sponsor.sponsorName-parentBean"/>
+    <bean id="SponsorCrosswalk-sponsor.sponsorName-parentBean" abstract="true" parent="Sponsor-sponsorName">
+        <property name="name" value="sponsor.sponsorName" />
+        <property name="label" value="Sponsor Name" />
+        <property name="shortLabel" value="Sponsor" />
+    </bean>
   <bean id="SponsorCrosswalk-sponsorId" parent="SponsorCrosswalk-sponsorId-parentBean" />
   
   <bean id="SponsorCrosswalk-sponsorId-parentBean" abstract="true" parent="AttributeDefinition">
@@ -75,7 +84,7 @@
 
 
   <bean id="SponsorCrosswalk-inquiryDefinition" parent="SponsorCrosswalk-inquiryDefinition-parentBean" />
-
+    <bean id="SponsorCrosswalk-InquiryView" parent="SponsorCrosswalk-InquiryView-parentBean" />
   <bean id="SponsorCrosswalk-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
     <property name="title" value="Sponsor Crosswalk" />
     <property name="inquirySections" >
@@ -97,11 +106,30 @@
     </property>
   </bean>
 
+    <bean id="SponsorCrosswalk-InquiryView-parentBean" abstract="true" parent="Uif-InquiryView">
+        <property name="headerText" value="Sponsor Crosswalk"/>
+        <property name="dataObjectClassName" value="edu.colostate.kc.common.framework.sponsor.SponsorCrosswalk"/>
+        <property name="items">
+            <list>
+                <bean parent="Uif-Disclosure-GridSection">
+                    <property name="headerText" value="Sponsor Crosswalk"/>
+                    <property name="layoutManager.numberOfColumns" value="2"/>
+                    <property name="items">
+                        <list>
+                            <bean p:propertyName="sponsorId" parent="Uif-DataField"/>
+                            <bean p:propertyName="sponsorCode" parent="Uif-DataField"/>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
 <!-- Business Object Lookup Definition -->
 
 
   <bean id="SponsorCrosswalk-lookupDefinition" parent="SponsorCrosswalk-lookupDefinition-parentBean" />
 
+    <bean id="SponsorCrosswalk-LookupView" parent="SponsorCrosswalk-LookupView-parentBean"/>
   <bean id="SponsorCrosswalk-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
     <property name="title" value="Sponsor Crosswalk Lookup" />
     <property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
@@ -113,19 +141,37 @@
     <property name="lookupFields" >
       <list>
         <bean parent="FieldDefinition"
-              p:attributeName="sponsorCode" />
+              p:attributeName="sponsorCode" p:forceLookup="true" />
         <bean parent="FieldDefinition"
               p:attributeName="sponsorId" />
       </list>
     </property>
     <property name="resultFields" >
       <list>
+          <bean parent="FieldDefinition"
+                p:attributeName="sponsorId"
+                p:forceInquiry="true" />
         <bean parent="FieldDefinition"
               p:attributeName="sponsorCode"/>
-        <bean parent="FieldDefinition"
-              p:attributeName="sponsorId"
-                    p:forceInquiry="true" />
+          <bean parent="FieldDefinition" p:attributeName="sponsor.sponsorName" />
+
       </list>
     </property>
   </bean>
+    <bean id="SponsorCrosswalk-LookupView-parentBean" abstract="true" parent="Uif-LookupView">
+        <property name="dataObjectClassName" value="edu.colostate.kc.common.framework.sponsor.SponsorCrosswalk"/>
+        <property name="headerText" value="Sponsor Crosswalk Lookup"/>
+        <property name="criteriaFields">
+            <list>
+                <bean p:propertyName="sponsorId" parent="Uif-LookupCriteriaInputField"/>
+                <bean p:propertyName="sponsorCode" parent="Uif-LookupCriteriaInputField"/>
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean p:propertyName="sponsorId" parent="Uif-DataField"/>
+                <bean p:propertyName="sponsorCode" parent="Uif-DataField"/>
+            </list>
+        </property>
+    </bean>
 </beans>
