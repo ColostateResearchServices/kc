@@ -415,8 +415,8 @@
   <bean id="Negotiation-customData-proposalActionType" parent="AttributeDefinition">
     <property name="name" value="proposalActionType" />
     <property name="forceUppercase" value="false" />
-    <property name="label" value="Proposal Action Type" />
-    <property name="shortLabel" value="Proposal Action" />
+    <property name="label" value="Post-Proposal Action Type" />
+    <property name="shortLabel" value="Post-Prop Act" />
     <property name="maxLength" value="100" />
     <property name="required" value="false" />
     <property name="validationPattern" >
@@ -463,41 +463,27 @@
 		<property name="lookupFields" >
 		  <list>
             <bean p:attributeName="negotiationId" parent="FieldDefinition" />
-          <!--   <bean p:attributeName="accountId" parent="FieldDefinition" />  -->
+			<bean p:attributeName="negotiationStatusId" parent="FieldDefinition" />
+			<bean p:attributeName="negotiatorUserName" parent="FieldDefinition"  />
+			<bean p:attributeName="negotiationAgreementTypeId" parent="FieldDefinition" />
 		  	<bean p:attributeName="negotiationAssociationTypeId" parent="FieldDefinition" />
 		  	<bean p:attributeName="associatedDocumentId" parent="FieldDefinition" />
-		    <!-- UITSRA-3761  -->
-		    <bean p:attributeName="proposalDocID" parent="FieldDefinition" />
-		    <bean p:attributeName="csuRefNum" parent="FieldDefinition" />
-		    <!-- UITSRA-2543  -->
-		    <bean p:attributeName="sponsorAwardNumber" parent="FieldDefinition" />		    
-		    <!-- UITSRA-3190  -->
-		    <bean p:attributeName="associatedNegotiable.principalInvestigatorUserName" parent="FieldDefinition" />
-		    <bean p:attributeName="associatedNegotiable.leadUnitNumber" parent="FieldDefinition" /> <!-- name change -->
-		    <!-- UITSRA-3761  -->
-		    <bean p:attributeName="associatedNegotiable.requisitionerUserName" parent="FieldDefinition" />	
-		    <bean p:attributeName="associatedNegotiable.title" parent="FieldDefinition" />
-			<!-- UITSRA-3761  -->
-		    <bean p:attributeName="negotiationAgreementTypeId" parent="FieldDefinition" />
-		 <!--    <bean p:attributeName="proposalType" parent="FieldDefinition" />  -->
-            <bean p:attributeName="negotiationStatusId" parent="FieldDefinition" />
-			<bean p:attributeName="associatedNegotiable.sponsorCode" parent="FieldDefinition" />
-			<!-- UITSRA-4418 -->
-			<bean p:attributeName="associatedNegotiable.sponsorName" parent="FieldDefinition" />
-		    <!-- UITSRA-2893  -->
-		    <bean p:attributeName="associatedNegotiable.subAwardOrganizationName" parent="FieldDefinition" />			
-		    <!-- UITSRA-2893 -->
-		    <bean p:attributeName="gsTeam" parent="FieldDefinition" />
-		  	 <bean p:attributeName="recordResidesWith" parent="FieldDefinition" />
-			<!-- UITSRA-3191 -->
-		    <bean p:attributeName="negotiatorUserName" parent="FieldDefinition"  />
+			<bean p:attributeName="associatedNegotiable.principalInvestigatorUserName" parent="FieldDefinition" />
+			  <bean p:attributeName="associatedNegotiable.leadUnitNumber" parent="FieldDefinition" /> <!-- name change -->
+			  <bean p:attributeName="associatedNegotiable.title" parent="FieldDefinition" />
+			  <bean p:attributeName="associatedNegotiable.sponsorCode" parent="FieldDefinition" />
+			  <bean p:attributeName="associatedNegotiable.sponsorName" parent="FieldDefinition" />
+			  <bean p:attributeName="gsTeam" parent="FieldDefinition" />
+			  <bean p:attributeName="recordResidesWith" parent="FieldDefinition" />
+			  <bean p:attributeName="csuRefNum" parent="FieldDefinition" />
+			  <bean p:attributeName="sponsorAwardNumber" parent="FieldDefinition" />
+			  <bean p:attributeName="modification_id" parent="FieldDefinition" />
+			  <bean p:attributeName="activities.followupDate" parent="FieldDefinition" />
 		    <bean p:attributeName="negotiationStartDate" parent="FieldDefinition" />
 		    <bean p:attributeName="negotiationAge" parent="FieldDefinition" />
-		    <bean p:attributeName="activities.followupDate" parent="FieldDefinition" />
+			  <bean p:attributeName="proposalActionType" parent="FieldDefinition" />
 		    <bean p:attributeName="ricroCleared" parent="FieldDefinition" />
 		    <bean p:attributeName="coiCleared" parent="FieldDefinition" />
-		    <bean p:attributeName="proposalActionType" parent="FieldDefinition" />
-			<bean p:attributeName="modification_id" parent="FieldDefinition" />	
 
 		  </list>
 		</property>
@@ -506,36 +492,26 @@
 		  <list>
             <bean p:attributeName="negotiationId" parent="FieldDefinition" />
             <bean p:attributeName="negotiationStatus.description" parent="FieldDefinition" />
-            <bean p:attributeName="negotiationAgreementType.description" parent="FieldDefinition" />
+			  <bean p:attributeName="negotiatorName" parent="FieldDefinition"  p:useShortLabel="true" />
+			  <bean p:attributeName="negotiationAgreementType.description" parent="FieldDefinition" />
 		  	<bean p:attributeName="negotiationAssociationType.description" parent="FieldDefinition" />
 		    <bean p:attributeName="associatedNegotiable.associatedDocumentId" parent="FieldDefinition" />
 		    <bean p:attributeName="associatedNegotiable.piName" parent="FieldDefinition" />
-		    <bean p:attributeName="associatedNegotiable.leadUnitNumber" parent="FieldDefinition" />		    		    
-
-		    <bean p:attributeName="csuRefNum" parent="FieldDefinition" p:useShortLabel="true"/>
-
-	    
-		    <bean p:attributeName="associatedNegotiable.negotiableProposalType.description" parent="FieldDefinition" />
-		    <bean p:attributeName="associatedNegotiable.sponsorName" parent="FieldDefinition" />
-			<bean p:attributeName="sponsorAwardNumber" parent="FieldDefinition" />
-			<bean p:attributeName="modification_id" parent="FieldDefinition" />	
-		 <!--   	<bean p:attributeName="accountId" parent="FieldDefinition" />   -->
-		    <bean p:attributeName="associatedNegotiable.title" parent="FieldDefinition" />			
-			<bean p:attributeName="recordResidesWith" parent="FieldDefinition" p:useShortLabel="true"/>
-		    <!-- UITSRA-3191 -->
-		    <bean p:attributeName="negotiatorName" parent="FieldDefinition"  p:useShortLabel="true" />			
-		    <bean p:attributeName="gsTeam" parent="FieldDefinition" p:useShortLabel="true" />
-		    
-		    <bean p:attributeName="proposalActionType" parent="FieldDefinition" p:useShortLabel="true"/>
-		    
+		    <bean p:attributeName="associatedNegotiable.leadUnitNumber" parent="FieldDefinition" />
+			  <bean p:attributeName="associatedNegotiable.title" parent="FieldDefinition" />
+			  <bean p:attributeName="associatedNegotiable.sponsorName" parent="FieldDefinition" />
+			  <bean p:attributeName="gsTeam" parent="FieldDefinition" p:useShortLabel="true" />
+			  <bean p:attributeName="recordResidesWith" parent="FieldDefinition" p:useShortLabel="true"/>
+			  <bean p:attributeName="csuRefNum" parent="FieldDefinition" p:useShortLabel="true"/>
+			  <bean p:attributeName="sponsorAwardNumber" parent="FieldDefinition" />
+			  <bean p:attributeName="modification_id" parent="FieldDefinition" />
 		    <bean p:attributeName="negotiationStartDate" parent="FieldDefinition" />
 			<bean p:attributeName="negotiationEndDate" parent="FieldDefinition" />
-			<!-- UITSRA-4218 -->
-	<!-- 		<bean p:attributeName="agreementDate" parent="FieldDefinition" />   -->
 		    <bean p:attributeName="negotiationAge" parent="FieldDefinition" />
+			  <bean p:attributeName="proposalActionType" parent="FieldDefinition" p:useShortLabel="true"/>
 		    <bean p:attributeName="ricroCleared" parent="FieldDefinition" p:useShortLabel="true"/>
 		    <bean p:attributeName="coiCleared" parent="FieldDefinition" p:useShortLabel="true"/>
-		    
+
 		  </list>
 		</property>
 	</bean>

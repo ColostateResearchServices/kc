@@ -117,7 +117,9 @@ public abstract class CustomDataHelperBase<T extends DocumentCustomData> impleme
                     customAttributeGroups.put(groupName, customAttributeDocumentList);
                 }
         customAttributeDocumentList.add(customAttributeDocument.getValue());
-        }
+        Collections.sort(customAttributeDocumentList, new SortIdComparator());
+
+    }
 
     protected boolean isMatch(T documentCustomData, Entry<String, CustomAttributeDocument> customAttributeDocumentEntry) {
         return documentCustomData.getCustomAttributeId() == ((long)customAttributeDocumentEntry.getValue().getId());
@@ -145,7 +147,7 @@ public abstract class CustomDataHelperBase<T extends DocumentCustomData> impleme
                 
             }
             customAttributeDocumentList.add(getCustomAttributeDocuments().get(customAttributeDocumentEntry.getValue().getId().toString()));
-            Collections.sort(customAttributeDocumentList, new LabelComparator());
+            Collections.sort(customAttributeDocumentList, new SortIdComparator());
         }
     }
     

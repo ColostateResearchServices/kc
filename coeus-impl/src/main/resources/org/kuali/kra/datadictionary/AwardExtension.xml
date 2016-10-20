@@ -18,6 +18,8 @@
 		<property name="attributes">
 			<list>
 				<ref bean="AwardExtension-awardId" />
+				<ref bean="AwardExtension-researchReportCode" />
+				<ref bean="AwardExtension-fundSourceCode" />
 				<ref bean="AwardExtension-fullAccountNumber" />
 
 			</list>
@@ -27,6 +29,30 @@
 
    <bean id="AwardExtension-awardId" parent="Award-awardId"/>
    
+   <bean id="AwardExtension-researchReportCode" parent="AttributeDefinition">
+		<property name="name" value="researchReportCode" />
+		<property name="label" value="Research Report Code" />
+		<property name="shortLabel" value="Research Report Code" />
+		<property name="forceUppercase" value="true" />
+		<property name="maxLength" value="1" />
+		<property name="required" value="false" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="1" />
+		</property>
+   </bean>
+
+	<bean id="AwardExtension-fundSourceCode" parent="AttributeDefinition">
+		<property name="name" value="fundSourceCode" />
+		<property name="label" value="Fund Source Code" />
+		<property name="shortLabel" value="Fund Source Code" />
+		<property name="forceUppercase" value="true" />
+		<property name="maxLength" value="3" />
+		<property name="required" value="false" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="3" />
+		</property>
+   </bean>
+
    <bean id="AwardExtension-fullAccountNumber" parent="AttributeDefinition">
    		<property name="name" value="fullAccountNumber" />
    		<property name="label" value="Full Account Number" />

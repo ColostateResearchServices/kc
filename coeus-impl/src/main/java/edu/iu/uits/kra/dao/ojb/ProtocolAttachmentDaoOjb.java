@@ -61,7 +61,7 @@ public class ProtocolAttachmentDaoOjb extends PlatformAwareDaoBaseOjb implements
 		String negotiationQuery = "SELECT file_id FROM attachment_file WHERE " +
 		"file_id IN (SELECT file_id FROM negotiation_attachment WHERE activity_id " +
 		"IN (SELECT negotiation_activity_id FROM negotiation_activity WHERE negotiation_id = ?)) AND " +
-		"file_data_id IS NULL";
+		"file_data_id IS NULL and file_data IS NULL";
 
 		String paramName = "Negotiation ID";
 		return checkForNullFileData(negotiationId, negotiationQuery, paramName);

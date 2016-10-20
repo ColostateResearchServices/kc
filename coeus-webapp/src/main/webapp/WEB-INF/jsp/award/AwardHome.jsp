@@ -40,6 +40,7 @@
 <kra-a:awardFundingProposals />
 <kra-a:awardDetailsDates />
 <kra-a:awardAlternateAccountIds />
+<kra-a:awardDerivedCodes />
 <kra-a:awardSubaward />
 <kra-a:awardSponsorTemplate />
 

@@ -50,8 +50,8 @@ public class NegotiationCustomData extends NegotiationAssociate implements Docum
     }
 
 
-    public void setProposalCustomDataId(Long proposalCustomDataId) {
-        this.negotiationCustomDataId = proposalCustomDataId;
+    public void setNegotiationCustomDataId(Long negotiationCustomDataId) {
+        this.negotiationCustomDataId = negotiationCustomDataId;
     }
 
 

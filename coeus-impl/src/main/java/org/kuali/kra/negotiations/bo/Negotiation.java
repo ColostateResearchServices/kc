@@ -54,13 +54,8 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
 
     private static final long MILLISECS_PER_DAY = 24 * 60 * 60 * 1000;
 
-    @Autowired
-    @Qualifier("businessObjectService")
-    private BusinessObjectService businessObjectService;
 
-
-    @Autowired
-    @Qualifier("kcPersonService")
+    private transient BusinessObjectService businessObjectService;
     private transient KcPersonService kcPersonService;
 
 
@@ -731,6 +726,9 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
     }
 
     public BusinessObjectService getBusinessObjectService() {
+        if (businessObjectService==null) {
+            businessObjectService =  KcServiceLocator.getService(BusinessObjectService.class);
+        }
         return businessObjectService;
     }
     public void setBusinessObjectService(BusinessObjectService service) {

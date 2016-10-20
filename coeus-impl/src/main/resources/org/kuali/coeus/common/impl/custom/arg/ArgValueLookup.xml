@@ -36,6 +36,7 @@
                 <ref bean="ArgValueLookup-value" />
                 <ref bean="ArgValueLookup-description" />
                 <ref bean="ArgValueLookup-versionNumber" />
+                <ref bean="ArgValueLookup-actvInd"/>
             </list>
         </property>
     </bean>
@@ -137,6 +138,23 @@
         <property name="description" value="Description" />
     </bean>
 
+    <bean id="ArgValueLookup-actvInd" parent="AttributeDefinition">
+        <property name="name" value="actvInd" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Active" />
+        <property name="shortLabel" value="Active" />
+        <property name="maxLength" value="1" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Active" />
+        <property name="description" value="Active" />
+    </bean>
+
+
+
+
+
     <bean id="ArgValueLookup-versionNumber" parent="ArgValueLookup-versionNumber-parentBean" />
   <bean id="ArgValueLookup-versionNumber-parentBean" abstract="true" parent="AttributeReferenceDummy-versionNumber"/>
     <!-- Business Object Inquiry Definition -->
@@ -196,6 +214,7 @@
         <bean parent="FieldDefinition" p:attributeName="argumentName"/>
         <bean parent="FieldDefinition" p:attributeName="value"/>
         <bean parent="FieldDefinition" p:attributeName="description"/>
+        <bean parent="FieldDefinition"  p:attributeName="actvInd"/>
       </list>
     </property>
     <property name="resultFields">
@@ -204,6 +223,8 @@
         <bean parent="FieldDefinition" p:attributeName="argumentName"/>
         <bean parent="FieldDefinition" p:attributeName="value"/>
         <bean parent="FieldDefinition" p:attributeName="description"/>
+        <bean parent="FieldDefinition" p:attributeName="actvInd"/>
+
       </list>
     </property>
   </bean>
@@ -217,6 +238,7 @@
         <bean p:propertyName="argumentName" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="value" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="description" parent="Uif-LookupCriteriaInputField"/>
+          <bean p:propertyName="actvInd"  parent="Uif-LookupCriteriaInputField"/>
             </list>
         </property>
         <property name="resultFields" >
@@ -225,6 +247,8 @@
         <bean p:propertyName="argumentName" parent="Uif-DataField"/>
         <bean p:propertyName="value" parent="Uif-DataField"/>
         <bean p:propertyName="description" parent="Uif-DataField"/>
+        <bean p:propertyName="actvInd" parent="Uif-DataField"/>
+
             </list>
         </property>
     </bean>

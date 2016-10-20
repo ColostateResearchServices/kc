@@ -113,7 +113,7 @@ public class NegotiationActivityRuleImpl implements NegotiationActivityAddRule {
             today.set(Calendar.SECOND, 0);
             today.set(Calendar.MILLISECOND, 0);
             if (activity.getFollowupDate().compareTo(today.getTime()) < 0) {
-                errorReporter.reportWarning("followupDate", CSUKeyConstants.NEGOTIATION_WARNING_ACTIVITY_FOLLOWUP_BEFORE_TODAY);
+                getErrorReporter().reportWarning("followupDate", CSUKeyConstants.NEGOTIATION_WARNING_ACTIVITY_FOLLOWUP_BEFORE_TODAY);
             }
         }
 

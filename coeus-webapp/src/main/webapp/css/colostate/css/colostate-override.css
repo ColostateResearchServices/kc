@@ -81,3 +81,11 @@ body {
 .modal-dialog {
   top: 107px;
 }
+
+input[type="radio"] + label {
+  display: inline;
+}
+input[type="radio"] + label:after {
+  content: "\a";
+  white-space: pre;
+}

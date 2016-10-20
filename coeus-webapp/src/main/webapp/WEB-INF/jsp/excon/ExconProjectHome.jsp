@@ -46,7 +46,10 @@ var kualiElements = kualiForm.elements;
 <script>
   $j = jQuery.noConflict();
 </script>
+
 <script language="javascript" src="dwr/interface/SponsorService.js"></script>
+<script language="javascript" src="dwr/interface/UnitService.js"></script>
+
 
 <c:if test="${readOnly && KualiForm.document.canModify && KualiForm.displayEditButton}">
 	<c:set var="extraButtonSource" value="${ConfigProperties.kra.externalizable.images.url}buttonsmall_edit_temp.gif"/>

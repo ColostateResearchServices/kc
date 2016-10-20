@@ -270,10 +270,13 @@
     		<ref bean="coiDisclosureReviewsLookupableHelperService" />
   		</property>
 	</bean>
-	
+
+
     <bean id="coiDisclosureReviewsLookupableHelperService" class="org.kuali.kra.coi.lookup.CoiDisclosureReviewsLookupableHelper" parent="parentLookupableHelperService" scope="prototype">
+        <property name="coiDisclosureDao" ref="coiDisclosureDao" />
+
     </bean>
-    
+
     <bean id="coiDisclosureUndisclosedEventsLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
   		<property name="lookupableHelperService">
     		<ref bean="coiDisclosureUndisclosedEventsLookupableHelperService" />
