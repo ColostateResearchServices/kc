@@ -349,6 +349,9 @@
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.sponsor.term.SponsorTerm" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.sponsor.term.SponsorTermType" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.sponsor.SponsorType" />
+    <!-- CSU Customization -->
+    <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="edu.colostate.kc.common.framework.sponsor.SponsorCrosswalk" />
+    <!-- End CSU Customization -->
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.bo.Training" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.kra.personmasschange.bo.UnitAdministratorPersonMassChange" />
     <bean parent="simpleCrudMapBasedRestController" p:dataObjectClazz="org.kuali.coeus.common.framework.compliance.core.ValidSpecialReviewApproval" />

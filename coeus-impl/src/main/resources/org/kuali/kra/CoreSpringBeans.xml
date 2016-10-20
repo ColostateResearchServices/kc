@@ -992,6 +992,8 @@
                 <value>classpath:edu/colostate/kc/datadictionary/AwardAccountReservationDocument.xml</value>
                 <value>classpath:edu/colostate/kc/datadictionary/ResearchAccount.xml</value>
                 <value>classpath:edu/colostate/kc/datadictionary/ReservedAwardAccount.xml</value>
+                <value>classpath:edu/colostate/kc/common/framework/sponsor/SponsorCrosswalk.xml</value>
+                <value>classpath:edu/colostate/kc/common/framework/sponsor/SponsorCrosswalkMaintenanceDocument.xml</value>
 
                 <value>classpath:org/kuali/kra/datadictionary/CsuCentralAdminContact.xml</value>
 
@@ -1046,6 +1048,9 @@
             <list>
                 <value>repository.xml</value>
                 <value>org/kuali/kra/external/repository-external.xml</value>
+                <!-- CSU Modification -->
+                <value>edu/colostate/kc/repository-SponsorCrosswalk.xml</value>
+                <!-- End CSU Modification -->
             </list>
         </property>
         <property name="providers">
