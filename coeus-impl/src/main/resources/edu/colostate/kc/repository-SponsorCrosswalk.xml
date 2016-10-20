@@ -1,8 +1,8 @@
 <descriptor-repository version="1.0">
 	  
 	<class-descriptor class="edu.colostate.kc.common.framework.sponsor.SponsorCrosswalk" table="CSU_SPONSOR_CROSSWALK">
-		<field-descriptor name="sponsorId" column="SPONSOR_ID" jdbc-type="VARCHAR" primarykey="true" />
-		<field-descriptor name="sponsorCode" column="SPONSOR_CODE" jdbc-type="VARCHAR" />
+		<field-descriptor name="sponsorId" column="SPONSOR_ID" jdbc-type="VARCHAR" />
+		<field-descriptor name="sponsorCode" column="SPONSOR_CODE" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP"/>		
 		<field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR"/>
 		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" />

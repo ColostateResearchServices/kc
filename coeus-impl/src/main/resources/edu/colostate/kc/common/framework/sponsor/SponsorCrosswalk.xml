@@ -15,26 +15,66 @@
     <property name="lookupDefinition" >
       <ref bean="SponsorCrosswalk-lookupDefinition" />
     </property>
-    <property name="titleAttribute" value="sponsorCode" />
+    <property name="titleAttribute" value="sponsorId" />
     <property name="attributes" >
       <list>
-        <ref bean="SponsorCrosswalk-sponsorCode" />
-        <ref bean="SponsorCrosswalk-sponsorId" />
+          <ref bean="SponsorCrosswalk-sponsorId" />
+          <ref bean="SponsorCrosswalk-sponsorCode" />
+          <ref bean="SponsorCrosswalk-sponsor.sponsorName" />
         <ref bean="SponsorCrosswalk-versionNumber" />
       </list>
     </property>
+      <property name="relationships" >
+          <list>
+              <bean parent="RelationshipDefinition">
+                  <property name="objectAttributeName" value="sponsor"/>
+                  <property name="primitiveAttributes">
+                      <list>
+                          <bean p:sourceName="sponsorCode" p:targetName="sponsorCode" parent="PrimitiveAttributeDefinition"/>
+                      </list>
+                  </property>
+                  <property name="supportAttributes">
+                      <list>
+                          <bean p:identifier="true" p:sourceName="sponsor.sponsorName" p:targetName="sponsorName" parent="SupportAttributeDefinition"/>
+                      </list>
+                  </property>
+              </bean>
+          </list>
+      </property>
   </bean>
 
 <!-- Attribute Definitions -->
 
+    <bean id="SponsorCrosswalk-sponsorId" parent="SponsorCrosswalk-sponsorId-parentBean" />
+
+    <bean id="SponsorCrosswalk-sponsorId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="sponsorId" />
+        <property name="forceUppercase" value="true" />
+        <property name="label" value="Vision Sponsor Id" />
+        <property name="shortLabel" value="Vision Sponsor" />
+        <property name="maxLength" value="6" />
+        <property name="validationPattern" >
+            <bean parent="AnyCharacterValidationPattern" />
+        </property>
+        <property name="required" value="true" />
+        <property name="control" >
+            <bean parent="TextControlDefinition"
+                  p:size="8" />
+        </property>
+        <property name="controlField">
+            <bean p:size="8" parent="Uif-TextControl"/>
+        </property>
+        <property name="summary" value="Vision Sponsor Id" />
+        <property name="description" value="Vision Sponsor Id" />
+    </bean>
 
   <bean id="SponsorCrosswalk-sponsorCode" parent="SponsorCrosswalk-sponsorCode-parentBean" />
 
   <bean id="SponsorCrosswalk-sponsorCode-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="name" value="sponsorCode" />
     <property name="forceUppercase" value="false" />
-    <property name="label" value="KC Sponsor Code" />
-    <property name="shortLabel" value="KC Sponsor" />
+    <property name="label" value="KR Sponsor Code" />
+    <property name="shortLabel" value="KR Sponsor" />
     <property name="maxLength" value="6" />
     <property name="validationPattern" >
       <bean parent="AnyCharacterValidationPattern" />
@@ -42,41 +82,23 @@
 	<property name="required" value="true" />
     <property name="control" >
       <bean parent="TextControlDefinition"
-            p:size="12" />
+            p:size="8" />
     </property>
       <property name="controlField">
-          <bean p:size="12" parent="Uif-TextControl"/>
+          <bean p:size="8" parent="Uif-TextControl"/>
       </property>
     <property name="summary" value="KC Sponsor Code" />
     <property name="description" value="KC Sponsor Code" />
   </bean>
 
     <bean id="SponsorCrosswalk-sponsor.sponsorName" parent="SponsorCrosswalk-sponsor.sponsorName-parentBean"/>
-    <bean id="SponsorCrosswalk-sponsor.sponsorName-parentBean" abstract="true" parent="Sponsor-sponsorName">
-        <property name="name" value="sponsor.sponsorName" />
-        <property name="label" value="Sponsor Name" />
-        <property name="shortLabel" value="Sponsor" />
+    <bean abstract="true" id="SponsorCrosswalk-sponsor.sponsorName-parentBean" parent="Sponsor-sponsorName">
+        <property name="name" value="sponsor.sponsorName"/>
+        <property name="label" value="KR Sponsor Name"/>
+        <property name="shortLabel" value="KR Sponsor"/>
     </bean>
-  <bean id="SponsorCrosswalk-sponsorId" parent="SponsorCrosswalk-sponsorId-parentBean" />
-  
-  <bean id="SponsorCrosswalk-sponsorId-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="name" value="sponsorId" />
-    <property name="forceUppercase" value="true" />
-    <property name="label" value="Vision Sponsor Id" />
-    <property name="shortLabel" value="Vision Sponsor" />
-    <property name="maxLength" value="6" />
-    <property name="validationPattern" >
-      <bean parent="AnyCharacterValidationPattern" />
-    </property>
-	<property name="required" value="true" />
-    <property name="control" >
-      <bean parent="TextControlDefinition"
-            p:size="12" />
-    </property>
-    <property name="summary" value="Vision Sponsor Id" />
-    <property name="description" value="Vision Sponsor Id" />
-  </bean>
-  <bean id="SponsorCrosswalk-versionNumber" parent="SponsorCrosswalk-versionNumber-parentBean"/>
+
+    <bean id="SponsorCrosswalk-versionNumber" parent="SponsorCrosswalk-versionNumber-parentBean"/>
   <bean abstract="true" id="SponsorCrosswalk-versionNumber-parentBean" parent="AttributeReferenceDummy-versionNumber">
   </bean>
 
@@ -96,6 +118,7 @@
             <list>
               <bean parent="FieldDefinition"
                     p:attributeName="sponsorCode" />
+                <bean parent="FieldDefinition" p:attributeName="sponsor.sponsorName"/>
               <bean parent="FieldDefinition"
                     p:attributeName="sponsorId"
                     p:forceInquiry="true" />
@@ -118,6 +141,7 @@
                         <list>
                             <bean p:propertyName="sponsorId" parent="Uif-DataField"/>
                             <bean p:propertyName="sponsorCode" parent="Uif-DataField"/>
+                            <bean p:propertyName="sponsor.sponsorName" parent="Uif-DataField"/>
                         </list>
                     </property>
                 </bean>
@@ -132,7 +156,6 @@
     <bean id="SponsorCrosswalk-LookupView" parent="SponsorCrosswalk-LookupView-parentBean"/>
   <bean id="SponsorCrosswalk-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
     <property name="title" value="Sponsor Crosswalk Lookup" />
-    <property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
 
     <property name="defaultSort" >
       <bean parent="SortDefinition">
@@ -140,20 +163,21 @@
     </property>
     <property name="lookupFields" >
       <list>
+          <bean parent="FieldDefinition"
+                p:attributeName="sponsorId" />
         <bean parent="FieldDefinition"
-              p:attributeName="sponsorCode" p:forceLookup="true" />
-        <bean parent="FieldDefinition"
-              p:attributeName="sponsorId" />
+              p:attributeName="sponsorCode" />
+          <bean p:attributeName="sponsor.sponsorName" parent="FieldDefinition"/>
       </list>
     </property>
     <property name="resultFields" >
       <list>
           <bean parent="FieldDefinition"
-                p:attributeName="sponsorId"
-                p:forceInquiry="true" />
-        <bean parent="FieldDefinition"
-              p:attributeName="sponsorCode"/>
-          <bean parent="FieldDefinition" p:attributeName="sponsor.sponsorName" />
+                p:attributeName="sponsorId" p:forceInquiry="true" />
+          <bean parent="FieldDefinition"
+                p:attributeName="sponsorCode" p:forceInquiry="true"/>
+          <bean parent="FieldDefinition"
+                p:attributeName="sponsor.sponsorName"/>
 
       </list>
     </property>
@@ -165,12 +189,14 @@
             <list>
                 <bean p:propertyName="sponsorId" parent="Uif-LookupCriteriaInputField"/>
                 <bean p:propertyName="sponsorCode" parent="Uif-LookupCriteriaInputField"/>
+                <bean p:propertyName="sponsor.sponsorName" parent="Uif-LookupCriteriaInputField"/>
             </list>
         </property>
         <property name="resultFields">
             <list>
                 <bean p:propertyName="sponsorId" parent="Uif-DataField"/>
                 <bean p:propertyName="sponsorCode" parent="Uif-DataField"/>
+                <bean p:propertyName="sponsor.sponsorName" parent="Uif-DataField"/>
             </list>
         </property>
     </bean>

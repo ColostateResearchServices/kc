@@ -1049,6 +1049,9 @@
             <list>
                 <value>repository.xml</value>
                 <value>org/kuali/kra/external/repository-external.xml</value>
+                <!-- CSU Modification -->
+                <value>edu/colostate/kc/repository-SponsorCrosswalk.xml</value>
+                <!-- End CSU Modification -->
             </list>
         </property>
         <property name="providers">
