@@ -51,6 +51,9 @@
         <ref bean="ExconProject-responsibleParty" />
         <ref bean="ExconProject-respPartyUsername" />
         <ref bean="ExconProject-exconProjectExternalInstitutions.rolodexId" />
+          <ref bean="ExconProject-exconProjectAssociatedDocuments.assocDocNumber" />
+          <ref bean="ExconProject-exconProjectAssociatedDocuments.assocDocTitle" />
+          <ref bean="ExconProject-exconProjectAssociatedDocuments.assocDocTypeCode" />
       </list>
     </property>
     <property name="collections">
@@ -471,6 +474,18 @@
 	<bean id="ExconProject-exconProjectExternalInstitutions.rolodexId" parent="ExconProjectExternalInstitution-rolodexId">
 		<property name="name" value="exconProjectExternalInstitutions.rolodexId" />
 	</bean>
+
+    <bean id="ExconProject-exconProjectAssociatedDocuments.assocDocNumber" parent="ExconProjectAssociatedDocument-assocDocNumber">
+        <property name="name" value="exconProjectAssociatedDocuments.assocDocNumber" />
+    </bean>
+
+    <bean id="ExconProject-exconProjectAssociatedDocuments.assocDocTitle" parent="ExconProjectAssociatedDocument-assocDocTitle">
+        <property name="name" value="exconProjectAssociatedDocuments.assocDocTitle" />
+    </bean>
+
+    <bean id="ExconProject-exconProjectAssociatedDocuments.assocDocTypeCode" parent="ExconProjectAssociatedDocument-assocDocTypeCode">
+        <property name="name" value="exconProjectAssociatedDocuments.assocDocTypeCode" />
+    </bean>
   
     <bean id="ExconProject-inquiryDefinition" parent="ExconProject-inquiryDefinition-parentBean" />
 
@@ -521,6 +536,8 @@
 			    <bean p:attributeName="exconProjectUnitPersons.fullName" parent="FieldDefinition" />
 			    <bean p:attributeName="exconProjectRPSEntities.concatNames" parent="FieldDefinition" />
 			    <bean p:attributeName="exconProjectExternalInstitutions.rolodexId" parent="FieldDefinition" />
+                <bean p:attributeName="exconProjectAssociatedDocuments.assocDocTypeCode" parent="FieldDefinition" />
+                <bean p:attributeName="exconProjectAssociatedDocuments.assocDocNumber" parent="FieldDefinition" />
 		  </list>
 		</property>
 		<property name="resultFields" >
@@ -531,7 +548,7 @@
 			    <bean p:attributeName="unit.unitName" parent="FieldDefinition" />
 			    <bean p:attributeName="sponsor.sponsorName" parent="FieldDefinition" />
 			    <bean p:attributeName="projectStatus.description" parent="FieldDefinition" />
-			    <bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />		
+			    <bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
 		  </list>
 		</property>
 		<property name="resultSetLimit" value="50" />
