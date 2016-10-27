@@ -94,8 +94,8 @@ public class ExconProjectEmailBean implements Serializable {
     		}
     		destStr+=destination.getDestinationCountryName();
     	}
-    	String currentEnv=getConfigurationService().getPropertyValueAsString("environment");
-    	String prodEnv=getConfigurationService().getPropertyValueAsString("production.environment.code");
+//    	String currentEnv=getConfigurationService().getPropertyValueAsString("environment");
+//    	String prodEnv=getConfigurationService().getPropertyValueAsString("production.environment.code");
     	String senderEmail=getPersonService().getKcPersonByUserName(GlobalVariables.getUserSession().getPrincipalName()).getEmailAddress();
     	String recipEmail=senderEmail;
     	String prodEmail="";
@@ -109,7 +109,7 @@ public class ExconProjectEmailBean implements Serializable {
 			}
     	}
 
-    	if (currentEnv.equals(prodEnv)) {
+    	if (GlobalVariables.getUserSession().isProductionEnvironment()) {
     		recipEmail=prodEmail;
     	}
     	else
