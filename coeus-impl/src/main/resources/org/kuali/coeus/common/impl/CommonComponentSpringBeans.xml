@@ -184,6 +184,15 @@
           p:localServiceName="unitRoleTypeService"
           p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService" />
 
+    <bean id="principalUnitDerivedRoleTypeService" class="edu.colostate.kc.propdev.impl.person.principalUnitDerivedRoleTypeServiceImpl"/>
+    <!-- CSU Customization -->
+    <bean id="principalUnitDerivedRoleTypeServiceCallback" parent="kcCoreCallbackService"
+          p:callbackService-ref="principalUnitDerivedRoleTypeService"
+          p:localServiceName="principalUnitDerivedRoleTypeService"
+          p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService" />
+    <!--<bean id="principalUnitDerivedRoleTypeService"/>-->
+
+    <!-- End CSU Customization -->
     <util:constant id="kc.integrationServiceNamespace" static-field="org.kuali.kra.infrastructure.Constants.FINANCIAL_INTEGRATION_KC_SERVICE_NAMESPACE"/>
 
     <bean id="institutionalUnitServiceJavaExporter" class="org.kuali.rice.ksb.api.bus.support.ServiceBusExporter">

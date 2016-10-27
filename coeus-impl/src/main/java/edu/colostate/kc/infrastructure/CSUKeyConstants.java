@@ -1,5 +1,7 @@
 package edu.colostate.kc.infrastructure;
 
+import java.lang.String;
+
 public final class CSUKeyConstants {
 	
     // Generic CSU key constants
@@ -49,5 +51,6 @@ public final class CSUKeyConstants {
 
 	public static final String HIDE_AND_DEFAULT_NEGOTIATION_DOC_DESC_PARAM = "HIDE_AND_DEFAULT_NEGOTIATION_DOC_DESC_PARAM";
 
+    public static final String USE_PRINCIPAL_PRIMARY_UNIT_PROP_CREATOR = "use.primary.unit.proposal.creator";
 
 }

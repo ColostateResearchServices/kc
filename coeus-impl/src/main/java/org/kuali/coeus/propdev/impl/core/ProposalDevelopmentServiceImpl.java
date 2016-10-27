@@ -18,6 +18,8 @@
  */
 package org.kuali.coeus.propdev.impl.core;
 
+import java.lang.String;
+import edu.colostate.kc.infrastructure.CSUKeyConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -40,6 +42,7 @@ import org.kuali.rice.core.api.criteria.QueryByCriteria;
 import org.kuali.rice.coreservice.framework.parameter.ParameterConstants;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.exception.WorkflowException;
+import org.kuali.rice.kim.api.identity.IdentityService;
 import org.kuali.rice.kim.api.role.RoleService;
 import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.krad.data.DataObjectService;
@@ -92,6 +95,10 @@ public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentServic
     @Autowired
     @Qualifier("proposalTypeService")
     private ProposalTypeService proposalTypeService;
+
+    @Autowired
+    @Qualifier("identityService")
+    private IdentityService identityService;
 
     /**
      * This method gets called from the "save" action. It initializes the applicant org. on the first save; it also sets the
@@ -268,6 +275,26 @@ public class ProposalDevelopmentServiceImpl implements ProposalDevelopmentServic
             }
         }
         //the above line could potentially be a performance problem - need to revisit
+        // CSU Customization
+        // add principal primary unit to list of units.
+        try {
+            if (getParameterService().getParameterValueAsBoolean(Constants.MODULE_NAMESPACE_PROPOSAL_DEVELOPMENT,
+                    ParameterConstants.DOCUMENT_COMPONENT, CSUKeyConstants.USE_PRINCIPAL_PRIMARY_UNIT_PROP_CREATOR)){
+                String unitNumber = identityService.getEntityByPrincipalId(userId).getPrimaryEmployment().getPrimaryDepartmentCode();
+                if (unitNumber != null) {
+                    Unit unit = getUnitService().getUnit(unitNumber);
+                    if (unit != null && unit.isActive()) {
+                        units.add(unit);
+                    }
+                }
+            }
+
+        }
+        catch (Exception ex){
+            LOG.warn("Error retrieving Use Principal Primary Unit Proposal Creator parameter: " + ex.getMessage(), ex);
+        }
+        // End CSU Customization
+
         return new ArrayList<>(units);
     }
     
