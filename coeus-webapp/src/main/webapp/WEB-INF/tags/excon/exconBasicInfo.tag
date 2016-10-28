@@ -23,114 +23,118 @@
 
 <kul:tabTop tabTitle="Export Control Project" defaultOpen="true" tabErrorKey="document.exconProjectList[0].projectStatusCode,document.exconProjectList[0].projectTypeCode,document.exconProjectList[0].unitNumber,document.exconProjectList[0].sponsorCode">
 
-<div class="tab-container" align="center">
+	<div class="tab-container" align="center">
 
-<h3>
-	<span class="subhead-left">Export Control Project</span>
-	<span class="subhead-right"><kul:help businessObjectClassName="org.kuali.kra.excon.project.ExconProject" altText="help"/></span>
-</h3>
-<table cellpAdding="0" cellspacing="0" summary="">
-  	<tr>
-    	<th width="25%">
-    		<div align="right">
-        		<kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.title}" />
-      		</div>
-      	</th>
-    	<td width="25%">
-            <kul:htmlControlAttribute property="document.exconProjectList[0].title" attributeEntry="${exconProjectAttributes.title}" />
-    	</td>
-    	<th width="25%">
-    		<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.fundamentalResearch}" /></div>
-    	</th>
-    	<td width="25%">
-    		<kul:htmlControlAttribute property="document.exconProjectList[0].fundamentalResearch" attributeEntry="${exconProjectAttributes.fundamentalResearch}" />
-		</td>
-  	</tr>
-  	<tr>
-    	<th>
-    		<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectTypeCode}" /></div>
-    	</th>
-    	<td>
-    		<kul:htmlControlAttribute property="document.exconProjectList[0].projectTypeCode" attributeEntry="${exconProjectAttributes.projectTypeCode}" />
-		</td>
-    	<th>
-    		<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectStatusCode}" /></div>
-    	</th>
-    	<td>
-    		<kul:htmlControlAttribute property="document.exconProjectList[0].projectStatusCode" attributeEntry="${exconProjectAttributes.projectStatusCode}" />
-		</td>
-  	</tr>
-  	<tr>
-    	<th>
-    		<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectStartDate}" /></div>
-    	</th>
-    	<td>
-    		<kul:htmlControlAttribute property="document.exconProjectList[0].projectStartDate" attributeEntry="${exconProjectAttributes.projectStartDate}" />
-		</td>
-    	<th>
-    		<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectEndDate}" /></div>
-    	</th>
-    	<td>
-    		<kul:htmlControlAttribute property="document.exconProjectList[0].projectEndDate" attributeEntry="${exconProjectAttributes.projectEndDate}" />
-		</td>
-  	</tr>
-  	<tr>
-  	    <th>
-            <div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.sponsorCode}" /></div>
-        </th>
-        <td>
-        	<kul:htmlControlAttribute property="document.exconProjectList[0].sponsorCode" attributeEntry="${exconProjectAttributes.sponsorCode}" 
-        	                          onblur="loadSponsorName('document.exconProjectList[0].sponsorCode', 'sponsorName');" readOnly="${readOnly}" /> 
-        	<c:if test="${!readOnly}">
-                <kul:lookup boClassName="org.kuali.coeus.common.framework.sponsor.Sponsor" fieldConversions="sponsorCode:document.exconProjectList[0].sponsorCode,sponsorName:document.exconProjectList[0].sponsor.sponsorName" anchor="${tabKey}" />
-            </c:if>
-	        <c:if test="${readOnly}">
-	           <html:hidden property="document.exconProjectList[0].sponsorCode" />
-	        </c:if>
-            <kul:directInquiry boClassName="org.kuali.coeus.common.framework.sponsor.Sponsor" inquiryParameters="document.exconProjectList[0].sponsorCode:sponsorCode" anchor="${tabKey}" />
-            <div id="sponsorName.div" >
-            	<c:if test="${!empty KualiForm.document.exconProjectList[0].sponsorCode}">
-            		<c:choose>
-						<c:when test="${empty KualiForm.document.exconProjectList[0].sponsor}">
-	                    	<span style='color: red;'>not found</span>
-	               		</c:when>
-	                  	<c:otherwise>
-							<c:out value="${KualiForm.document.exconProjectList[0].sponsor.sponsorName}" />
-						</c:otherwise>
-					</c:choose>
-            	</c:if>
-			</div>
-        </td>
-        <th>
-        	<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.unitNumber}" skipHelpUrl="true"/></div>
-        </th>
-    	<td>
-            <kul:htmlControlAttribute property="document.exconProjectList[0].unitNumber" attributeEntry="${exconProjectAttributes.unitNumber}"
-									  onblur="loadUnitNameTo('document.exconProjectList[0].unitNumber','unitName')" readOnly="${readOnly}" />
-            <c:if test="${!readOnly}">
-               <kul:lookup boClassName="org.kuali.coeus.common.framework.unit.Unit" fieldConversions="unitNumber:document.exconProjectList[0].unitNumber"
-  			         anchor="${tabKey}" lookupParameters="document.exconProjectList[0].unitNumber:unitNumber"/>
-  			</c:if>
-            <c:if test="${readOnly}">
-                <html:hidden property="document.exconProjectList[0].unitNumber" />
-                -
-                <kul:htmlControlAttribute property="document.exconProjectList[0].unitName" attributeEntry="${exconProjectAttributes.unitName}" readOnly="true" />
-            </c:if>
-            <kul:directInquiry boClassName="org.kuali.coeus.common.framework.unit.Unit" inquiryParameters="document.exconProjectList[0].unitNumber:unitNumber" anchor="${tabKey}" />
-			<div id="unitName.div" >
-				<c:if test="${!empty KualiForm.document.exconProjectList[0].unitNumber}">
-					<c:choose>
-						<c:when test="${empty KualiForm.document.exconProjectList[0].unit}">
-							<span style='color: red;'>not found</span>
-						</c:when>
-						<c:otherwise>
-							<c:out value="${KualiForm.document.exconProjectList[0].unit.unitName}" />
-						</c:otherwise>
-					</c:choose>
-				</c:if>
-			</div>
-    	</td>
-	</tr>
-</table>
-</div>
+		<h3>
+			<span class="subhead-left">Export Control Project</span>
+			<span class="subhead-right"><kul:help businessObjectClassName="org.kuali.kra.excon.project.ExconProject" altText="help"/></span>
+		</h3>
+		<table cellpAdding="0" cellspacing="0" summary="">
+			<tr>
+				<th width="25%">
+					<div align="right">
+						<kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.title}" />
+					</div>
+				</th>
+				<td width="25%">
+					<kul:htmlControlAttribute property="document.exconProjectList[0].title" attributeEntry="${exconProjectAttributes.title}" />
+				</td>
+				<td width="50%" colspan="2">
+					<b><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.fundamentalResearch}" /></b><kul:htmlControlAttribute property="document.exconProjectList[0].fundamentalResearch" attributeEntry="${exconProjectAttributes.fundamentalResearch}" />
+					<span>&nbsp;&nbsp;&nbsp;</span>
+					<b><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.internationalResearch}" /></b><kul:htmlControlAttribute property="document.exconProjectList[0].internationalResearch" attributeEntry="${exconProjectAttributes.internationalResearch}" />
+					<span>&nbsp;&nbsp;&nbsp;</span>
+					<b><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.classifiedResearch}" /></b><kul:htmlControlAttribute property="document.exconProjectList[0].classifiedResearch" attributeEntry="${exconProjectAttributes.classifiedResearch}" />
+					<span>&nbsp;&nbsp;&nbsp;</span>
+					<b><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.restrictedResearch}" /></b><kul:htmlControlAttribute property="document.exconProjectList[0].restrictedResearch" attributeEntry="${exconProjectAttributes.restrictedResearch}" />
+
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectTypeCode}" /></div>
+				</th>
+				<td>
+					<kul:htmlControlAttribute property="document.exconProjectList[0].projectTypeCode" attributeEntry="${exconProjectAttributes.projectTypeCode}" />
+				</td>
+				<th>
+					<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectStatusCode}" /></div>
+				</th>
+				<td>
+					<kul:htmlControlAttribute property="document.exconProjectList[0].projectStatusCode" attributeEntry="${exconProjectAttributes.projectStatusCode}" />
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectStartDate}" /></div>
+				</th>
+				<td>
+					<kul:htmlControlAttribute property="document.exconProjectList[0].projectStartDate" attributeEntry="${exconProjectAttributes.projectStartDate}" />
+				</td>
+				<th>
+					<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.projectEndDate}" /></div>
+				</th>
+				<td>
+					<kul:htmlControlAttribute property="document.exconProjectList[0].projectEndDate" attributeEntry="${exconProjectAttributes.projectEndDate}" />
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.sponsorCode}" /></div>
+				</th>
+				<td>
+					<kul:htmlControlAttribute property="document.exconProjectList[0].sponsorCode" attributeEntry="${exconProjectAttributes.sponsorCode}"
+											  onblur="loadSponsorName('document.exconProjectList[0].sponsorCode', 'sponsorName');" readOnly="${readOnly}" />
+					<c:if test="${!readOnly}">
+						<kul:lookup boClassName="org.kuali.coeus.common.framework.sponsor.Sponsor" fieldConversions="sponsorCode:document.exconProjectList[0].sponsorCode,sponsorName:document.exconProjectList[0].sponsor.sponsorName" anchor="${tabKey}" />
+					</c:if>
+					<c:if test="${readOnly}">
+						<html:hidden property="document.exconProjectList[0].sponsorCode" />
+					</c:if>
+					<kul:directInquiry boClassName="org.kuali.coeus.common.framework.sponsor.Sponsor" inquiryParameters="document.exconProjectList[0].sponsorCode:sponsorCode" anchor="${tabKey}" />
+					<div id="sponsorName.div" >
+						<c:if test="${!empty KualiForm.document.exconProjectList[0].sponsorCode}">
+							<c:choose>
+								<c:when test="${empty KualiForm.document.exconProjectList[0].sponsor}">
+									<span style='color: red;'>not found</span>
+								</c:when>
+								<c:otherwise>
+									<c:out value="${KualiForm.document.exconProjectList[0].sponsor.sponsorName}" />
+								</c:otherwise>
+							</c:choose>
+						</c:if>
+					</div>
+				</td>
+				<th>
+					<div align="right"><kul:htmlAttributeLabel attributeEntry="${exconProjectAttributes.unitNumber}" skipHelpUrl="true"/></div>
+				</th>
+				<td>
+					<kul:htmlControlAttribute property="document.exconProjectList[0].unitNumber" attributeEntry="${exconProjectAttributes.unitNumber}"
+											  onblur="loadUnitNameTo('document.exconProjectList[0].unitNumber','unitName')" readOnly="${readOnly}" />
+					<c:if test="${!readOnly}">
+						<kul:lookup boClassName="org.kuali.coeus.common.framework.unit.Unit" fieldConversions="unitNumber:document.exconProjectList[0].unitNumber"
+									anchor="${tabKey}" lookupParameters="document.exconProjectList[0].unitNumber:unitNumber"/>
+					</c:if>
+					<c:if test="${readOnly}">
+						<html:hidden property="document.exconProjectList[0].unitNumber" />
+						-
+						<kul:htmlControlAttribute property="document.exconProjectList[0].unitName" attributeEntry="${exconProjectAttributes.unitName}" readOnly="true" />
+					</c:if>
+					<kul:directInquiry boClassName="org.kuali.coeus.common.framework.unit.Unit" inquiryParameters="document.exconProjectList[0].unitNumber:unitNumber" anchor="${tabKey}" />
+					<div id="unitName.div" >
+						<c:if test="${!empty KualiForm.document.exconProjectList[0].unitNumber}">
+							<c:choose>
+								<c:when test="${empty KualiForm.document.exconProjectList[0].unit}">
+									<span style='color: red;'>not found</span>
+								</c:when>
+								<c:otherwise>
+									<c:out value="${KualiForm.document.exconProjectList[0].unit.unitName}" />
+								</c:otherwise>
+							</c:choose>
+						</c:if>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
 </kul:tabTop>

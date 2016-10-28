@@ -73,6 +73,9 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
     private String sponsorName;
     private Sponsor sponsor;
     private Boolean fundamentalResearch;
+	private Boolean internationalResearch;
+	private Boolean classifiedResearch;
+	private Boolean restrictedResearch;
     private Date projectStartDate;
     private Date projectEndDate;
     private String projectStatusCode="DON";
@@ -235,6 +238,29 @@ public class ExconProject extends KcPersistableBusinessObjectBase implements Per
 
 	public void setFundamentalResearch(Boolean fundamentalResearch) {
 		this.fundamentalResearch = fundamentalResearch;
+	}
+
+
+	public Boolean getInternationalResearch() {
+		return internationalResearch;
+	}
+
+	public void setInternationalResearch(Boolean internationalResearch) { this.internationalResearch = internationalResearch; }
+
+	public Boolean getClassifiedResearch() {
+		return classifiedResearch;
+	}
+
+	public void setClassifiedResearch(Boolean classifiedResearch) {
+		this.classifiedResearch = classifiedResearch;
+	}
+
+	public Boolean getRestrictedResearch() {
+		return restrictedResearch;
+	}
+
+	public void setRestrictedResearch(Boolean restrictedResearch) {
+		this.restrictedResearch = restrictedResearch;
 	}
 
 	public Date getProjectStartDate() {

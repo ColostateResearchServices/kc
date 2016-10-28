@@ -32,6 +32,9 @@
         <ref bean="ExconProject-projectTypeCode" />
         <ref bean="ExconProject-projectType.description" />
         <ref bean="ExconProject-fundamentalResearch" />
+          <ref bean="ExconProject-internationalResearch" />
+          <ref bean="ExconProject-classifiedResearch" />
+          <ref bean="ExconProject-restrictedResearch" />
         <ref bean="ExconProject-unitNumber" />
         <ref bean="ExconProject-unitName" />
         <ref bean="ExconProject-unit.unitName" />
@@ -195,6 +198,51 @@
     <property name="summary" value="Fundamental Research" />
     <property name="description" value="Fundamental Research" />
   </bean>
+
+    <bean id="ExconProject-internationalResearch" parent="ExconProject-internationalResearch-parentBean" />
+    <bean id="ExconProject-internationalResearch-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="internationalResearch" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="International" />
+        <property name="shortLabel" value="International" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="International" />
+        <property name="description" value="International" />
+    </bean>
+
+    <bean id="ExconProject-classifiedResearch" parent="ExconProject-classifiedResearch-parentBean" />
+    <bean id="ExconProject-classifiedResearch-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="classifiedResearch" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Classified" />
+        <property name="shortLabel" value="Classified" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Classified" />
+        <property name="description" value="Classified" />
+    </bean>
+
+    <bean id="ExconProject-restrictedResearch" parent="ExconProject-restrictedResearch-parentBean" />
+    <bean id="ExconProject-restrictedResearch-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="restrictedResearch" />
+        <property name="forceUppercase" value="false" />
+        <property name="label" value="Export Restricted" />
+        <property name="shortLabel" value="Export Restricted" />
+        <property name="maxLength" value="1" />
+        <property name="required" value="false" />
+        <property name="control" >
+            <bean parent="CheckboxControlDefinition" />
+        </property>
+        <property name="summary" value="Export Restricted" />
+        <property name="description" value="Export Restricted" />
+    </bean>
    
   <bean id="ExconProject-unitNumber" parent="ExconProject-unitNumber-parentBean" />
   <bean id="ExconProject-unitNumber-parentBean" abstract="true" parent="AttributeDefinition">

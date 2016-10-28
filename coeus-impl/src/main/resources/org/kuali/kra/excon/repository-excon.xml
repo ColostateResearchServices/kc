@@ -36,6 +36,9 @@
 		<field-descriptor name="unitNumber" column="LEAD_UNIT_NUMBER" jdbc-type="VARCHAR" />
 		<field-descriptor name="sponsorCode" column="SPONSOR_CODE" jdbc-type="VARCHAR" />
 		<field-descriptor name="fundamentalResearch" column="FUNDMNTL_RESEARCH_IND" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="internationalResearch" column="INTERNATIONAL_IND" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="classifiedResearch" column="CLASSIFIED_IND" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
+		<field-descriptor name="restrictedResearch" column="RESTRICTION_IND" jdbc-type="CHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
 		<field-descriptor name="projectStartDate" column="PROJECT_START_DATE" jdbc-type="DATE"/>
 		<field-descriptor name="projectEndDate" column="PROJECT_END_DATE" jdbc-type="DATE"/>
 		<field-descriptor name="projectStatusCode" column="PROJECT_STATUS_CODE" jdbc-type="VARCHAR" />
