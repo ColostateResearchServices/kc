@@ -340,6 +340,7 @@
         <bean p:propertyName="ownedByUnit" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="rolodexId" parent="Uif-LookupCriteriaInputField"/>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="dunningCampaignId"/>
+          <bean p:propertyName="active" parent="Uif-LookupCriteriaInputField" p:defaultValue="Y"/>
       </list>
     </property>
     <property name="resultFields">

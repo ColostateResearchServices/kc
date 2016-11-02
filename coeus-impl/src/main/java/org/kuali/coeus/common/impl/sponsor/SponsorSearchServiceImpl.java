@@ -47,7 +47,7 @@ public class SponsorSearchServiceImpl implements SponsorSearchService {
         TypedQuery<SponsorSearchResult> query = entityManager.createQuery(
                 "SELECT NEW org.kuali.coeus.common.framework.sponsor.SponsorSearchResult(t.sponsorCode, t.sponsorName) " +
                         "FROM Sponsor t " +
-                        "WHERE UPPER(t.sponsorCode) like :likeCriteria OR UPPER(t.acronym) like :likeCriteria or UPPER(t.sponsorName) like :likeCriteria", SponsorSearchResult.class)
+                        "WHERE t.active = true and (UPPER(t.sponsorCode) like :likeCriteria OR UPPER(t.acronym) like :likeCriteria or UPPER(t.sponsorName) like :likeCriteria)", SponsorSearchResult.class)
                 .setParameter("likeCriteria", likeCriteria);
 
         return ListUtils.emptyIfNull(query.setMaxResults(25).getResultList());
