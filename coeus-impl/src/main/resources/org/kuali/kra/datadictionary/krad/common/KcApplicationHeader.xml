@@ -1560,7 +1560,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
         <property name="items">
             <list>
                 <bean parent="Uif-MenuAction" p:actionLabel="People Flow"
-                      p:actionUrl.baseUrl="@{#ConfigProperties['rice.server.url']}/kr-krad"
+                      p:actionUrl.baseUrl="@{#ConfigProperties['application.url']}/kr-krad"
                       p:actionUrl.methodToCall="start"
                       p:actionUrl.viewId="PeopleFlow-LookupView"
                       p:actionUrl.controllerMapping="/lookup"
@@ -1616,7 +1616,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
 
     <bean id="Kc-BusinessRules-MenuAction" parent="Kc-BusinessRules-MenuAction-parentBean"/>
     <bean id="Kc-BusinessRules-MenuAction-parentBean" abstract="true" parent="Uif-MenuAction"
-          p:actionUrl.baseUrl="@{#ConfigProperties['rice.server.url']}/kr-krad"
+          p:actionUrl.baseUrl="@{#ConfigProperties['application.url']}/kr-krad"
           p:actionUrl.methodToCall="start" p:actionUrl.controllerMapping="/lookup"/>
 
     <bean id="Kc-Header-Unit-Group7" parent="Kc-Header-Unit-Group7-parentBean"/>

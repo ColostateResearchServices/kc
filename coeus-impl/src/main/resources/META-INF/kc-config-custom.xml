@@ -25,4 +25,6 @@
 	<param name="test.version">CSU Kuali Research ${build.version} Testing</param>
 	<param name="prd.version">CSU Kuali Research ${build.version} Production</param>
 	<param name="version">${${environment}.version}</param>
+	<param name="krad.url">${appserver.url}/${context.names.kc}/kr-krad</param>
+
 </config>
