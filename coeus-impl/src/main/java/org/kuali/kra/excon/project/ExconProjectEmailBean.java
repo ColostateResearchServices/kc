@@ -22,8 +22,10 @@ import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.excon.document.ExconProjectDocument;
 import org.kuali.coeus.common.framework.mail.KcEmailService;
 import org.kuali.coeus.common.framework.mail.EmailAttachment;
+import org.kuali.kra.infrastructure.Constants;
 import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.kuali.rice.core.api.membership.MemberType;
+import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kim.api.group.Group;
 import org.kuali.rice.kim.api.group.GroupMember;
 import org.kuali.rice.kim.api.group.GroupService;
@@ -96,8 +98,13 @@ public class ExconProjectEmailBean implements Serializable {
     	}
 //    	String currentEnv=getConfigurationService().getPropertyValueAsString("environment");
 //    	String prodEnv=getConfigurationService().getPropertyValueAsString("production.environment.code");
+		Boolean emailTestEnabled = getParameterService().getParameterValueAsBoolean(Constants.KC_GENERIC_PARAMETER_NAMESPACE,
+				Constants.KC_ALL_PARAMETER_DETAIL_TYPE_CODE, "EMAIL_NOTIFICATION_TEST_ENABLED");
+		boolean inDevelopment=emailTestEnabled==null?false:emailTestEnabled;
+		String testAddress = getParameterService().getParameterValueAsString(Constants.KC_GENERIC_PARAMETER_NAMESPACE,
+				Constants.KC_ALL_PARAMETER_DETAIL_TYPE_CODE, "EMAIL_NOTIFICATION_TEST_ADDRESS");
     	String senderEmail=getPersonService().getKcPersonByUserName(GlobalVariables.getUserSession().getPrincipalName()).getEmailAddress();
-    	String recipEmail=senderEmail;
+    	String recipEmail=testAddress;
     	String prodEmail="";
     	String firstName="Traveler";
     	
@@ -109,7 +116,7 @@ public class ExconProjectEmailBean implements Serializable {
 			}
     	}
 
-    	if (GlobalVariables.getUserSession().isProductionEnvironment()) {
+    	if (!inDevelopment) {
     		recipEmail=prodEmail;
     	}
     	else
@@ -158,6 +165,8 @@ public class ExconProjectEmailBean implements Serializable {
     	KNSGlobalVariables.getMessageList().add("info.exconProjectTravelerEmail.sent", recipEmail);
     	return;
     }
+
+	private ParameterService getParameterService() { return KcServiceLocator.getService(ParameterService.class);}
 
     private KcEmailService getEmailService() {
     	return KcServiceLocator.getService(KcEmailService.class);
