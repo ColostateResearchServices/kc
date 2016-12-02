@@ -18,25 +18,17 @@
  */
 package org.kuali.coeus.award.dto;
 
+
+import com.codiform.moo.annotation.Property;
+
 public class AwardSponsorContactDto {
 
-    protected String personId;
-
     protected Integer rolodexId;
-
     protected String roleCode;
-
     private Long awardContactId;
-
-    private String fullName;
-
-    public String getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(String personId) {
-        this.personId = personId;
-    }
+    private String orgName;
+    @Property(translate = true, update = true)
+    private RolodexDto rolodex;
 
     public Integer getRolodexId() {
         return rolodexId;
@@ -62,11 +54,19 @@ public class AwardSponsorContactDto {
         this.awardContactId = awardContactId;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getOrgName() {
+        return orgName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public RolodexDto getRolodex() {
+        return rolodex;
+    }
+
+    public void setRolodex(RolodexDto rolodex) {
+        this.rolodex = rolodex;
     }
 }

@@ -19,6 +19,7 @@
 package org.kuali.kra.bo;
 
 
+import org.kuali.coeus.common.framework.module.CoeusModule;
 import org.kuali.coeus.sys.framework.model.KcPersistableBusinessObjectBase;
 
 public class Training extends KcPersistableBusinessObjectBase {
@@ -26,8 +27,8 @@ public class Training extends KcPersistableBusinessObjectBase {
     private static final long serialVersionUID = 1L;
 
     private Integer trainingCode;
-
     private String description;
+
 
     public Training() {
     }
@@ -47,4 +48,5 @@ public class Training extends KcPersistableBusinessObjectBase {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }

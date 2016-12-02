@@ -88,10 +88,10 @@
     </bean>
 
     <bean id="Training-versionNumber" parent="Training-versionNumber-parentBean" />
-  <bean id="Training-versionNumber-parentBean" abstract="true" parent="AttributeReferenceDummy-versionNumber"/>
+    <bean id="Training-versionNumber-parentBean" abstract="true" parent="AttributeReferenceDummy-versionNumber"/>
     <!-- Business Object Inquiry Definition -->
     <bean id="Training-inquiryDefinition" parent="Training-inquiryDefinition-parentBean" />
-  <bean id="Training-InquiryView" parent="Training-InquiryView-parentBean"/>
+    <bean id="Training-InquiryView" parent="Training-InquiryView-parentBean"/>
     <bean id="Training-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
         <property name="title" value="Training Code" />
         <property name="inquirySections" >
@@ -138,14 +138,14 @@
         </property>
         <property name="lookupFields" >
             <list>
-        <bean parent="FieldDefinition" p:attributeName="trainingCode" p:forceInquiry="true"/>
-        <bean parent="FieldDefinition" p:attributeName="description"/>
+                <bean parent="FieldDefinition" p:attributeName="trainingCode" p:forceInquiry="true"/>
+                <bean parent="FieldDefinition" p:attributeName="description"/>
             </list>
         </property>
         <property name="resultFields" >
             <list>
-        <bean parent="FieldDefinition" p:attributeName="trainingCode" p:forceInquiry="true"/>
-        <bean parent="FieldDefinition" p:attributeName="description"/>
+                <bean parent="FieldDefinition" p:attributeName="trainingCode" p:forceInquiry="true"/>
+                <bean parent="FieldDefinition" p:attributeName="description"/>
             </list>
         </property>
     </bean>

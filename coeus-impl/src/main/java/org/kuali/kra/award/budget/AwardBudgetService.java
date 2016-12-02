@@ -37,19 +37,18 @@ public interface AwardBudgetService extends BudgetCommonService<Award> {
 
 
     void processSubmision(AwardBudgetDocument awardBudgetDocument);
-    
 
     void processApproval(AwardBudgetDocument awardBudgetDocument);
-    
 
     void processDisapproval(AwardBudgetDocument awardBudgetDocument);
-    
+
+    boolean isFinancialIntegrationOn();
 
     void post(AwardBudgetDocument awardBudgetDocument);
 
+    void postWithFinancialIntegration(AwardBudgetDocument awardBudgetDocument) throws Exception;
 
     void toggleStatus(AwardBudgetDocument awardBudgetDocument);
- 
 
     AwardBudgetDocument rebudget(AwardDocument awardDocument,String documentDescription) throws WorkflowException;
 
@@ -120,6 +119,14 @@ public interface AwardBudgetService extends BudgetCommonService<Award> {
      * This method will clear the BudgetSumamryPeriodCalcAmounts
      */
     void removeBudgetSummaryPeriodCalcAmounts(BudgetPeriod budgetPeriod);
+
+    /**
+     *
+     * Compares the budget limit lists to make sure they match.
+     */
+    public boolean limitsMatch(List<AwardBudgetLimit> awardLimits, List<AwardBudgetLimit> budgetLimits);
+
+
 
     void populateSummaryCalcAmounts(Budget budget,BudgetPeriod budgetPeriod);
     

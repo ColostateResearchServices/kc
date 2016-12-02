@@ -24,6 +24,7 @@ import com.codiform.moo.annotation.Property;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.kuali.coeus.award.finance.*;
+import org.kuali.coeus.common.framework.sponsor.SponsorDto;
 import org.kuali.coeus.instprop.impl.api.customSerializers.CustomSqlDateSerializer;
 import org.kuali.coeus.instprop.impl.api.customSerializers.ScaleTwoDecimalSerializer;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
@@ -43,6 +44,8 @@ public class AwardDto {
     private String awardNumber;
     private Integer sequenceNumber;
     private String sponsorCode;
+    @Property(translate = true, update = true)
+    private SponsorDto sponsor;
     private Integer statusCode;
     private String accountNumber;
     @JsonDeserialize(using = CustomSqlDateSerializer.class)
@@ -131,7 +134,7 @@ public class AwardDto {
     private List<AwardCommentDto> awardComments;
 
     @JsonProperty(value="awardSponsorContacts")
-    @CollectionProperty(source="awardSponsorContacts", itemClass= AwardSponsorContact.class)
+    @CollectionProperty(source="sponsorContacts", itemClass= AwardSponsorContactDto.class)
     private List<AwardSponsorContactDto> awardSponsorContacts;
 
     @JsonProperty(value="awardCostShares")
@@ -703,11 +706,11 @@ public class AwardDto {
         this.awardComments = awardComments;
     }
 
-    public List<AwardSponsorContactDto> getSponsorContacts() {
+    public List<AwardSponsorContactDto> getAwardSponsorContacts() {
         return awardSponsorContacts;
     }
 
-    public void setSponsorContacts(List<AwardSponsorContactDto> awardSponsorContacts) {
+    public void setAwardSponsorContacts(List<AwardSponsorContactDto> awardSponsorContacts) {
         this.awardSponsorContacts = awardSponsorContacts;
     }
 
@@ -877,5 +880,13 @@ public class AwardDto {
 
     public void setObligationStartDate(Date obligationStartDate) {
         this.obligationStartDate = obligationStartDate;
+    }
+
+    public SponsorDto getSponsor() {
+        return sponsor;
+    }
+
+    public void setSponsor(SponsorDto sponsor) {
+        this.sponsor = sponsor;
     }
 }
