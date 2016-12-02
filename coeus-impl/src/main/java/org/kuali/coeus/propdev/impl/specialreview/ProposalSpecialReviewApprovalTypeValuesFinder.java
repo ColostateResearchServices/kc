@@ -27,6 +27,7 @@ import org.kuali.coeus.common.framework.compliance.core.SpecialReviewApprovalTyp
 import org.kuali.coeus.common.framework.compliance.core.SpecialReviewType;
 import org.kuali.coeus.common.impl.compliance.core.SpecialReviewApprovalTypeValuesFinder;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocumentForm;
+import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.krad.uif.field.InputField;
 import org.kuali.rice.krad.uif.util.ObjectPropertyUtils;
@@ -58,6 +59,17 @@ public class ProposalSpecialReviewApprovalTypeValuesFinder extends SpecialReview
         }
     	setMatchingCriteria(matchingCriteria);
     	approvalTypes = super.getKeyValues();
+        int i=0;
+        while (i<approvalTypes.size()) {
+            KeyValue thisKV=approvalTypes.get(i);
+            if (SpecialReviewApprovalType.LINK_TO_IACUC.equals(thisKV.getKey()) || SpecialReviewApprovalType.LINK_TO_IRB.equals(thisKV.getKey())) {
+                approvalTypes.remove(thisKV);
+            }
+            else
+            {
+                i++;
+            }
+        }
         return approvalTypes;
     }
 
