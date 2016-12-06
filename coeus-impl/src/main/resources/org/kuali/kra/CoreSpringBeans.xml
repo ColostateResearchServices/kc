@@ -396,7 +396,6 @@
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalComment.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalContact.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalCostShare.xml</value>
-                <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalCreditSplit.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalCustomData.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/InstitutionalProposalNotepad.xml</value>
@@ -495,7 +494,7 @@
                 <value>classpath:org/kuali/coeus/propdev/impl/budget/ProposalDevelopmentBudgetExt.xml</value>
                 <value>classpath:org/kuali/coeus/propdev/impl/core/ProposalDevelopmentDocument.xml</value>
                 <value>classpath:org/kuali/coeus/propdev/impl/person/masschange/ProposalDevelopmentPersonMassChange.xml</value>
-                <value>classpath:org/kuali/coeus/propdev/impl/action/ProposalDevelopmentRejectionBean.xml</value>
+                <value>classpath:org/kuali/coeus/propdev/impl/action/ProposalDevelopmentActionBean.xml</value>
                 <value>classpath:org/kuali/coeus/propdev/impl/person/ProposalInvestigatorCertification.xml</value>
                 <value>classpath:org/kuali/coeus/propdev/impl/location/ProposalLocationType.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/ProposalLogPersonMassChange.xml</value>
@@ -629,7 +628,6 @@
                 <value>classpath:org/kuali/kra/datadictionary/ScheduleStatus.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SchoolCode.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/keyword/ScienceKeyword.xml</value>
-                <value>classpath:org/kuali/kra/datadictionary/ScienceKeywordReference.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/compliance/core/SpecialReview.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/compliance/core/SpecialReviewApprovalType.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/compliance/exemption/SpecialReviewExemption.xml</value>
@@ -656,6 +654,7 @@
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardForms.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardFundingSource.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/SubAwardFfataReporting.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubAwardModificationType.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/docs/SubAwardModificationTypeMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/SubawardPersonMassChange.xml</value>
@@ -669,6 +668,7 @@
                 <value>classpath:org/kuali/coeus/common/budget/impl/personnel/TbnPerson.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/TimeAndMoneyDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/Training.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/TrainingModule.xml</value>
                 <value>classpath:org/kuali/coeus/common/budget/impl/rate/TrainingStipendRate.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/TransactionDetail.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/unit/Unit.xml</value>
@@ -943,6 +943,7 @@
                 <value>classpath:org/kuali/kra/datadictionary/docs/SubAwardTemplateTypeMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/coeus/common/budget/impl/personnel/TbnPersonMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/kra/datadictionary/docs/TrainingMaintenanceDocument.xml</value>
+                <value>classpath:org/kuali/kra/datadictionary/docs/TrainingModuleMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/coeus/common/budget/impl/rate/TrainingStipendRateMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/unit/admin/UnitAdministratorMaintenanceDocument.xml</value>
                 <value>classpath:org/kuali/coeus/common/impl/unit/admin/UnitAdministratorTypeMaintenanceDocument.xml</value>

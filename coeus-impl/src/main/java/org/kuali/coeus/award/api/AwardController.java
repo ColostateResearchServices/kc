@@ -20,35 +20,27 @@ package org.kuali.coeus.award.api;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.kuali.coeus.award.dto.*;
+import org.kuali.coeus.award.dto.AwardBudgetExtDto;
+import org.kuali.coeus.award.dto.AwardDto;
+import org.kuali.coeus.award.dto.AwardPersonDto;
 import org.kuali.coeus.common.api.document.service.CommonApiService;
-import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocument;
-import org.kuali.coeus.common.framework.sponsor.term.SponsorTerm;
 import org.kuali.coeus.common.framework.version.VersionStatus;
 import org.kuali.coeus.common.framework.version.VersioningService;
 import org.kuali.coeus.common.framework.version.history.VersionHistory;
 import org.kuali.coeus.common.framework.version.history.VersionHistoryService;
-import org.kuali.coeus.sys.framework.controller.rest.RestController;
 import org.kuali.coeus.sys.framework.controller.rest.audit.RestAuditLogger;
 import org.kuali.coeus.sys.framework.controller.rest.audit.RestAuditLoggerFactory;
-import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
 import org.kuali.coeus.sys.framework.rest.NotImplementedException;
 import org.kuali.coeus.sys.framework.rest.ResourceNotFoundException;
 import org.kuali.coeus.sys.framework.rest.UnprocessableEntityException;
 import org.kuali.kra.award.awardhierarchy.AwardHierarchyBean;
-import org.kuali.kra.award.budget.AwardBudgetExt;
 import org.kuali.kra.award.contacts.AwardPerson;
-import org.kuali.kra.award.contacts.AwardProjectPersonnelBean;
-import org.kuali.kra.award.contacts.AwardSponsorContact;
-import org.kuali.kra.award.customdata.AwardCustomData;
 import org.kuali.kra.award.dao.AwardDao;
 import org.kuali.kra.award.document.AwardDocument;
 import org.kuali.kra.award.home.Award;
 import org.kuali.kra.award.home.AwardAmountInfo;
 import org.kuali.kra.award.home.AwardService;
-import org.kuali.kra.award.home.AwardSponsorTerm;
 import org.kuali.kra.award.home.fundingproposal.AwardFundingProposalBean;
-import org.kuali.kra.award.paymentreports.awardreports.AwardReportTerm;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.institutionalproposal.home.InstitutionalProposal;
 import org.kuali.kra.institutionalproposal.service.InstitutionalProposalService;
@@ -78,7 +70,7 @@ import java.util.stream.Collectors;
 
 @RequestMapping(value="/api/v2")
 @Controller("awardController")
-public class AwardController extends RestController implements InitializingBean {
+public class AwardController extends AwardControllerBase implements InitializingBean {
 
     public static final String PENDING_VERSION_ERROR = "There exists a pending version of this award. It cannot be versioned.";
     @Autowired
@@ -86,20 +78,8 @@ public class AwardController extends RestController implements InitializingBean 
     private AwardDao awardDao;
 
     @Autowired
-    @Qualifier("commonApiService")
-    private CommonApiService commonApiService;
-
-    @Autowired
-    @Qualifier("businessObjectService")
-    private BusinessObjectService businessObjectService;
-
-    @Autowired
     @Qualifier("documentService")
     private DocumentService documentService;
-
-    @Autowired
-    @Qualifier("globalVariableService")
-    private GlobalVariableService globalVariableService;
 
     @Autowired
     @Qualifier("versionHistoryService")
@@ -141,10 +121,15 @@ public class AwardController extends RestController implements InitializingBean 
             throw new ResourceNotFoundException("Award with award id " + awardId + " not found.");
         }
 
-        AwardDto awardDto = commonApiService.convertObject(award, AwardDto.class);
+        AwardDocument awardDocument = (AwardDocument) commonApiService.getDocumentFromDocId(Long.parseLong(award.getAwardDocument().getDocumentNumber()));
+
+
+        AwardDto awardDto = commonApiService.convertAwardToDto(award);
         if (!includeBudgets) {
             awardDto.setBudgets(new ArrayList<>());
         }
+        awardDto.setDocNbr(awardDocument.getDocumentNumber());
+        awardDto.setDocStatus(awardDocument.getDocumentHeader().getWorkflowDocument().getStatus().getLabel());
         return awardDto;
     }
 
@@ -183,6 +168,7 @@ public class AwardController extends RestController implements InitializingBean 
     }
 
     protected AwardDto versionAward(AwardDto awardDto, Award awardToVersion) throws WorkflowException {
+        commonApiService.clearErrors();
         AwardDocument oldAwardDocument = (AwardDocument) commonApiService.getDocumentFromDocId(Long.parseLong(awardToVersion.getAwardDocument().getDocumentNumber()));
         String rootAwardNumber = awardService.getRootAwardNumber(awardToVersion.getAwardNumber());
         if(timeAndMoneyExistenceService.validateTimeAndMoneyRule(awardToVersion, rootAwardNumber)) {
@@ -204,11 +190,12 @@ public class AwardController extends RestController implements InitializingBean 
                 AwardDocument newAwardDocument = awardService.generateAndPopulateAwardDocument(oldAwardDocument, newAwardVersion);
                 newAwardDocument.getAward().setAwardTransactionTypeCode(awardDto.getAwardTransactionTypeCode());
                 addFundingProposals(awardDto, newAwardVersion);
-                newAwardDocument = (AwardDocument) documentService.saveDocument(newAwardDocument);
+                changeDates(newAwardDocument.getAward(), awardDto);
+                newAwardDocument = (AwardDocument) commonApiService.saveDocument(newAwardDocument);
                 awardService.updateAwardSequenceStatus(newAwardDocument.getAward(), VersionStatus.PENDING);
                 versionHistoryService.updateVersionHistory(newAwardDocument.getAward(), VersionStatus.PENDING,
                         globalVariableService.getUserSession().getPrincipalId());
-                return commonApiService.convertObject(newAwardDocument.getAward(), AwardDto.class);
+                return commonApiService.convertAwardToDto(newAwardDocument.getAward());
 
            }
         } else {
@@ -216,70 +203,24 @@ public class AwardController extends RestController implements InitializingBean 
         }
     }
 
-    @RequestMapping(method= RequestMethod.GET, value="/awards/{awardId}/budgets/", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(value = HttpStatus.OK)
-    @ResponseBody
-    List<AwardBudgetExtDto> getBudgets( @PathVariable Long awardId) {
-        Award award = getAwardDao().getAward(awardId);
-        if(award == null) {
-            throw new ResourceNotFoundException("Award with award id " + awardId + " not found.");
-        }
-        return award.getBudgets().stream().map(budget ->
-                        commonApiService.convertObject(budget, AwardBudgetExtDto.class)
-
-        ).collect(Collectors.toList());
-    }
-
-    @RequestMapping(method= RequestMethod.GET, value="/award-budgets/{budgetId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(value = HttpStatus.OK)
-    @ResponseBody
-    AwardBudgetExtDto getAwardBudget(@PathVariable String budgetId) {
-        AwardBudgetExt budget = getAwardDao().getAwardBudget(budgetId);
-        if(budget == null) {
-            throw new ResourceNotFoundException("Budget with budget id " + budgetId + " not found.");
-        }
-        return commonApiService.convertObject(budget, AwardBudgetExtDto.class);
-    }
-
-    @RequestMapping(method= RequestMethod.GET, value="/award-budgets", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(value = HttpStatus.OK)
-    @ResponseBody
-    List<AwardBudgetExtDto> getAwardBudgetByStatus(@RequestParam(value = "budgetStatusCode", required = true) Integer budgetStatusCode) {
-        List<AwardBudgetExt> budgets = getAwardDao().getAwardBudgetByStatusCode(budgetStatusCode);
-        return budgets.stream().map(budget ->
-                        commonApiService.convertObject(budget, AwardBudgetExtDto.class)
-        ).collect(Collectors.toList());
-    }
-
-    @RequestMapping(method= RequestMethod.PUT, value="/award-budgets/{budgetId}/general-info/", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(value = HttpStatus.OK)
-    @ResponseBody
-    void modifyAwardBudget(@RequestBody AwardBudgetGeneralInfoDto generalInfoDto, @PathVariable String budgetId) {
-        AwardBudgetExt budget = getAwardDao().getAwardBudget(budgetId);
-        if(budget == null) {
-            throw new ResourceNotFoundException("Budget with budget id " + budgetId + " not found.");
-        }
-        commonApiService.updateDataObjectFromDto(budget, generalInfoDto);
-        businessObjectService.save(budget);
-    }
-
     @RequestMapping(method= RequestMethod.POST, value="/awards/",
             consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    AwardDto createAward(@RequestBody AwardDto awardDto) throws WorkflowException, InvocationTargetException, IllegalAccessException {
+    public AwardDto createAward(@RequestBody AwardDto awardDto) throws WorkflowException, InvocationTargetException, IllegalAccessException {
         commonApiService.clearErrors();
         Award award = commonApiService.convertObject(awardDto, Award.class);
         defaultValues(award, awardDto);
         AwardDocument awardDocument = (AwardDocument) documentService.getNewDocument(AwardDocument.class);
         awardDocument.setAward(award);
         translateCollections(awardDto, awardDocument);
+        changeDates(award, awardDto);
         addFundingProposals(awardDto, award);
 
         awardService.checkAwardNumber(award);
         awardService.updateCurrentAwardAmountInfo(award);
         AwardDocument newDocument = (AwardDocument) commonApiService.saveDocument(awardDocument);
-        AwardDto newAwardDto = commonApiService.convertObject(newDocument.getAward(), AwardDto.class);
+        AwardDto newAwardDto = commonApiService.convertAwardToDto(newDocument.getAward());
         newAwardDto.setDocNbr(newDocument.getDocumentNumber());
         newAwardDto.setDocStatus(newDocument.getDocumentHeader().getWorkflowDocument().getStatus().getLabel());
         versionHistoryService.updateVersionHistory(award, VersionStatus.PENDING, globalVariableService.getUserSession().getPrincipalName());
@@ -295,46 +236,6 @@ public class AwardController extends RestController implements InitializingBean 
         auditLogger.addNewItem(awardDto);
         auditLogger.saveAuditLog();
         return newAwardDto;
-    }
-
-    protected void translateCollections(AwardDto awardDto, AwardDocument awardDocument) {
-
-        final Award award = awardDocument.getAward();
-        award.setProjectPersons(new ArrayList<>());
-        final List<AwardPersonDto> projectPersons = awardDto.getProjectPersons();
-        addPersons(projectPersons, awardDocument);
-        addSponsorTerms(award, awardDto);
-        addReportTerms(award, awardDto);
-        addCustomData(awardDocument, award, awardDto);
-        addAmountInfo(awardDto, award);
-        translateSponsorContacts(awardDto, award);
-        if(!globalVariableService.getMessageMap().getErrorMessages().isEmpty()) {
-            String errors = commonApiService.getValidationErrors();
-            throw new UnprocessableEntityException(errors);
-        }
-    }
-
-    private void addAmountInfo(AwardDto awardDto, Award award) {
-        award.getAwardAmountInfo().setAnticipatedTotalDirect(awardDto.getAnticipatedTotalDirect());
-        award.getAwardAmountInfo().setObligatedTotalDirect(awardDto.getObligatedTotalDirect());
-        award.getAwardAmountInfo().setObligatedTotalIndirect(awardDto.getObligatedTotalIndirect());
-        award.getAwardAmountInfo().setAnticipatedTotalIndirect(awardDto.getAnticipatedTotalIndirect());
-        award.getAwardAmountInfo().setCurrentFundEffectiveDate(awardDto.getObligationStartDate());
-        award.getAwardAmountInfo().setObligationExpirationDate(awardDto.getObligationEndDate());
-        award.getAwardAmountInfo().setFinalExpirationDate(awardDto.getProjectEndDate());
-
-    }
-
-    public void translateSponsorContacts(AwardDto awardDto, Award award) {
-        if(CollectionUtils.isNotEmpty(awardDto.getSponsorContacts())) {
-            award.setSponsorContacts(awardDto.getSponsorContacts().stream().map(awardSponsorContactDto -> {
-                        AwardSponsorContact awardSponsorContact = commonApiService.convertObject(awardSponsorContactDto, AwardSponsorContact.class);
-                        awardSponsorContact.setAwardNumber(award.getAwardNumber());
-                        awardSponsorContact.setSequenceNumber(award.getSequenceNumber());
-                        return awardSponsorContact;
-                    }
-            ).collect(Collectors.toList()));
-        }
     }
 
     @RequestMapping(method= RequestMethod.DELETE, value="/awards/{awardId}",
@@ -366,6 +267,20 @@ public class AwardController extends RestController implements InitializingBean 
     }
 
 
+    @RequestMapping(method= RequestMethod.GET, value="/awards/{awardId}/budgets/", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    List<AwardBudgetExtDto> getBudgets( @PathVariable Long awardId) {
+        Award award = getAwardDao().getAward(awardId);
+        if(award == null) {
+            throw new ResourceNotFoundException("Award with award id " + awardId + " not found.");
+        }
+        return award.getBudgets().stream().map(budget ->
+                        commonApiService.convertObject(budget, AwardBudgetExtDto.class)
+
+        ).collect(Collectors.toList());
+    }
+
     @RequestMapping(method= RequestMethod.POST, value="/awards/{awardId}/award-persons/",
             consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -395,6 +310,7 @@ public class AwardController extends RestController implements InitializingBean 
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     void deletePerson(@PathVariable Long awardId, @PathVariable Long id) throws WorkflowException {
+        commonApiService.clearErrors();
         AwardDocument awardDocument = getAwardDocumentById(awardId);
         if(awardDocument.getAward().getProjectPersons() != null) {
             AwardPerson person = getAwardPerson(id, awardDocument.getAward().getProjectPersons());
@@ -423,22 +339,6 @@ public class AwardController extends RestController implements InitializingBean 
         return awardPersonDtos;
     }
 
-    protected void addPersons(List<AwardPersonDto> awardPersonsDto, AwardDocument awardDocument) {
-        Award award = awardDocument.getAward();
-        if (awardPersonsDto != null) {
-            List<AwardPerson> awardPersons = awardPersonsDto.stream().map(awardPersonDto -> {
-                AwardPerson awardPerson = commonApiService.convertObject(awardPersonDto, AwardPerson.class);
-                AwardProjectPersonnelBean awardProjectPersonnelBean = new AwardProjectPersonnelBean(awardDocument);
-                awardProjectPersonnelBean.addPersonUnits(awardPerson);
-                awardPerson.setAward(award);
-                return awardPerson;
-            }).collect(Collectors.toList());
-            award.setProjectPersons(awardPersons);
-            awardDocument.setAward(award);
-        }
-
-    }
-
     protected AwardDocument getAwardDocument(Long documentNumber) {
         Document document = getDocument(documentNumber);
         AwardDocument awardDocument;
@@ -450,7 +350,7 @@ public class AwardController extends RestController implements InitializingBean 
         return awardDocument;
     }
 
-    protected AwardDocument getAwardDocumentById(Long awardId) {
+    public AwardDocument getAwardDocumentById(Long awardId) {
         Award award = awardDao.getAward(awardId);
         if(award == null) {
             throw new ResourceNotFoundException("Award with award id " + awardId + " not found.");
@@ -460,33 +360,6 @@ public class AwardController extends RestController implements InitializingBean 
 
     protected Document getDocument(Long documentNumber) {
         return commonApiService.getDocumentFromDocId(documentNumber);
-    }
-
-    public void addCustomData(AwardDocument awardDocument, Award award, AwardDto awardDto) {
-        List<AwardCustomDataDto> awardCustomDataList = awardDto.getAwardCustomDataList();
-        award.setAwardCustomDataList(new ArrayList<>());
-        if (awardDto.getAwardCustomDataList() != null) {
-            awardCustomDataList.stream().forEach(customDataDto -> {
-                String customAttributeId = customDataDto.getCustomAttributeId().toString();
-                String customDataValue = customDataDto.getValue();
-                Map<String, CustomAttributeDocument> customAttributeDocuments = awardDocument.getCustomAttributeDocuments();
-                List<AwardCustomData> customDataList = customAttributeDocuments.entrySet().stream().
-                        filter(entry -> {
-                                    CustomAttributeDocument customAttributeDoc = entry.getValue();
-                                    return customAttributeId.equalsIgnoreCase(customAttributeDoc.getCustomAttribute().getId().toString());
-                                }
-                        ).map(entry -> {
-                    CustomAttributeDocument customAttributeDoc = entry.getValue();
-                    AwardCustomData customData = new AwardCustomData();
-                    customData.setCustomAttributeId(customAttributeDoc.getId());
-                    customData.setCustomAttribute(customAttributeDoc.getCustomAttribute());
-                    customData.setValue(customDataValue);
-                    customData.setAward(award);
-                    return customData;
-                }).collect(Collectors.toList());
-                award.getAwardCustomDataList().addAll(customDataList);
-            });
-        }
     }
 
     public void addFundingProposals(AwardDto awardDto, Award award) {
@@ -503,45 +376,6 @@ public class AwardController extends RestController implements InitializingBean 
                 fundingProposalBean.validateAndPerformFeed(new ArrayList<>(), award);
             });
         }
-    }
-
-    protected void addSponsorTerms(Award award, AwardDto awardDto) {
-        List<AwardSponsorTermDto> sponsorTermsDtos = awardDto.getAwardSponsorTerms();
-        award.setAwardSponsorTerms(new ArrayList<>());
-        if (sponsorTermsDtos != null) {
-            List<AwardSponsorTerm> sponsorTerms = sponsorTermsDtos.stream().map(awardSponsorTermDto ->
-                getAwardSponsorTerm(awardSponsorTermDto.getSponsorTermId(), award)
-            ).collect(Collectors.toList());
-            award.getAwardSponsorTerms().addAll(sponsorTerms);
-        }
-    }
-
-    protected AwardSponsorTerm getAwardSponsorTerm(Long sponsorTermId, Award award) {
-        SponsorTerm sponsorTerm = getSponsorTerm(sponsorTermId);
-        if (sponsorTerm == null) {
-            throw new UnprocessableEntityException("Sponsor term " + sponsorTermId + " cannot be found.");
-        }
-        AwardSponsorTerm newAwardSponsorTerm = new AwardSponsorTerm(sponsorTermId, sponsorTerm);
-        newAwardSponsorTerm.setAward(award);
-        return newAwardSponsorTerm;
-    }
-
-    protected void addReportTerms(Award award, AwardDto awardDto) {
-        List<AwardReportTermDto> awardReportTermDtos = awardDto.getAwardReportTerms();
-        award.setAwardReportTermItems(new ArrayList<>());
-        if(awardReportTermDtos != null) {
-            List<AwardReportTerm> awardReportTerms = awardReportTermDtos.stream().map(awardReportTermDto -> {
-                        AwardReportTerm awardReportTerm = commonApiService.convertObject(awardReportTermDto, AwardReportTerm.class);
-                        awardReportTerm.setAward(award);
-                        return awardReportTerm;
-                    }
-            ).collect(Collectors.toList());
-            award.getAwardReportTermItems().addAll(awardReportTerms);
-        }
-    }
-
-    protected SponsorTerm getSponsorTerm(Long sponsorTermId) {
-        return businessObjectService.findBySinglePrimaryKey(SponsorTerm.class, sponsorTermId.toString());
     }
 
     public void setDocumentService(DocumentService documentService) {
@@ -623,7 +457,7 @@ public class AwardController extends RestController implements InitializingBean 
 
     protected List<AwardDto> translateAwards(boolean includeBudgets, List<Award> awards) {
         List<AwardDto> awardDtos = awards.stream().map(award -> {
-                AwardDto awardDto = commonApiService.convertObject(award, AwardDto.class);
+                AwardDto awardDto = commonApiService.convertAwardToDto(award);
                 if (!includeBudgets) {
                     awardDto.setBudgets(new ArrayList<>());
                 }

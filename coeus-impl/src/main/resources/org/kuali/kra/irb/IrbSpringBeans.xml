@@ -720,13 +720,14 @@
         <property name="dbPlatform" ref="dbPlatform" />
     </bean>
 
-    <bean id="protocolDao" parent="platformAwareDao" class="org.kuali.kra.irb.ProtocolDaoOjb">
+    <bean id="protocolDao" parent="platformAwareDao" class="org.kuali.kra.irb.ProtocolDaoImpl">
         <property name="lookupDao">
             <ref bean="lookupDao" />
         </property>
         <property name="dataDictionaryService">
             <ref bean="dataDictionaryService" />
         </property>
+        <property name="dataSource" ref="dataSource"/>
     </bean>
     
     <bean id="lookupDao" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
@@ -1019,12 +1020,7 @@
             <property name="protocolSummaryViewPrint" ref="protocolSummaryViewPrint" />
             <property name="dateTimeService" ref="dateTimeService"/>
             <property name="kualiConfigurationService" ref="kualiConfigurationService" />
-            <property name="watermarkService" ref="watermarkService" />
         </bean>
-
-    <bean id="watermarkService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
-        <property name="serviceName" value="watermarkService" />
-    </bean>
 
         <bean id="protocolFullProtocolPrint"
             class="org.kuali.kra.irb.actions.print.ProtocolFullProtocolPrint" scope="prototype">

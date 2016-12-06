@@ -30,7 +30,6 @@ import org.kuali.coeus.common.framework.attachment.AttachmentFile;
 import org.kuali.coeus.common.framework.auth.task.TaskAuthorizationService;
 import org.kuali.coeus.common.framework.print.AbstractPrint;
 import org.kuali.coeus.common.framework.print.Printable;
-import org.kuali.coeus.common.framework.print.watermark.WatermarkService;
 import org.kuali.coeus.sys.framework.controller.KcHoldingPageConstants;
 import org.kuali.coeus.sys.framework.validation.AuditHelper;
 import org.kuali.coeus.sys.framework.controller.StrutsConfirmation;
@@ -853,10 +852,6 @@ public class CoiDisclosureAction extends CoiAction {
 
     protected CoiPrintingService getCoiPrintingService() {
         return  KcServiceLocator.getService(CoiPrintingService.class);
-    }
-    
-    protected WatermarkService getWatermarkService() {
-        return  KcServiceLocator.getService(WatermarkService.class);
     }
     
     protected CoiDisclosureActionService getDisclosureActionService() {

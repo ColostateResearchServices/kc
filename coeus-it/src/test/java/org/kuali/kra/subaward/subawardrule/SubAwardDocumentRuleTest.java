@@ -22,9 +22,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.kuali.kra.award.AwardFixtureFactory;
+import org.kuali.kra.award.document.AwardDocument;
+import org.kuali.kra.award.home.Award;
 import org.kuali.kra.subaward.bo.*;
 import org.kuali.kra.test.infrastructure.KcIntegrationTestBase;
+import org.kuali.rice.krad.service.DocumentService;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 
 import java.sql.Date;
 
@@ -38,8 +43,8 @@ public class SubAwardDocumentRuleTest extends KcIntegrationTestBase {
     SubAwardContact subAwardContact;
     SubAwardCloseout subAwardCloseout;
     SubAwardFundingSource subAwardFundingSource;
-    
-    
+    SubAwardFfataReporting subAwardFfataReporting;
+
     @Before
     public void setUp() throws Exception {              
         
@@ -60,6 +65,9 @@ public class SubAwardDocumentRuleTest extends KcIntegrationTestBase {
         subAwardAmountInfo.setEffectiveDate(new Date(System.currentTimeMillis()));  
         subAwardAmountInfo.setObligatedChange(new ScaleTwoDecimal(150));
         subAwardAmountInfo.setAnticipatedChange(new ScaleTwoDecimal(200));
+        subAwardAmountInfo.setModificationTypeCode("RESBOOT1002");
+        subAwardAmountInfo.setSubAwardAmountInfoId(999);
+
         subAwardAmountReleased = new SubAwardAmountReleased();
         subAwardAmountReleased.setInvoiceNumber("1") ;
         subAwardAmountReleased.setStartDate(new Date(System.currentTimeMillis()));
@@ -76,8 +84,21 @@ public class SubAwardDocumentRuleTest extends KcIntegrationTestBase {
         subAwardCloseout.setDateRequested(new Date(2012, 1, 1));
         subAwardCloseout.setDateFollowup(new Date(2012, 2, 15));
         
+        DocumentService documentService = KcServiceLocator.getService(DocumentService.class);
+        Award testAward = AwardFixtureFactory.createAwardFixture();
+        AwardDocument awardDoc = (AwardDocument) documentService.getNewDocument(AwardDocument.class);
+        awardDoc.setAward(testAward);
+        documentService.saveDocument(awardDoc);
+        
         subAwardFundingSource = new SubAwardFundingSource();
-        subAwardFundingSource.setAwardId(new Long("1183316613046"));        
+        subAwardFundingSource.setAwardId(testAward.getAwardId());
+
+        subAwardFfataReporting = new SubAwardFfataReporting();
+        subAwardFfataReporting.setSubAwardAmountInfoId(999);
+        subAwardFfataReporting.setSubAwardAmountInfo(subAwardAmountInfo);
+        subAwardFfataReporting.setSubmitterId("admin");
+        subAwardFfataReporting.setDateSubmitted(subAwardAmountInfo.getEffectiveDate());
+        
         
     }
     
@@ -121,6 +142,23 @@ public class SubAwardDocumentRuleTest extends KcIntegrationTestBase {
     public void testProcessAddSubAwardFundingSourceBusinessRules(){
         
         Assert.assertTrue(subAwardDocumentRule.processAddSubAwardFundingSourceBusinessRules(subAwardFundingSource,subAward));
-    }    
-       
+    }
+
+    @Test
+    public void testProcessAddSubAwardFfataReportingBusinessRules_pass(){
+
+        Assert.assertTrue(subAwardDocumentRule.processAddSubAwardFfataReportingBusinessRules(subAwardFfataReporting,subAward));
+    }
+
+    @Test
+    public void testProcessAddSubAwardFfataReportingBusinessRules_fail_effective_date(){
+        subAwardFfataReporting.setDateSubmitted(new Date(0));
+        Assert.assertFalse(subAwardDocumentRule.processAddSubAwardFfataReportingBusinessRules(subAwardFfataReporting,subAward));
+    }
+
+    @Test
+    public void testProcessAddSubAwardFfataReportingBusinessRules_fail_transaction_or_desc(){
+        subAwardFfataReporting.setOtherTransactionDescription("A desc");
+        Assert.assertFalse(subAwardDocumentRule.processAddSubAwardFfataReportingBusinessRules(subAwardFfataReporting,subAward));
+    }
 }

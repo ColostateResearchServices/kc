@@ -34,21 +34,11 @@
             </list>
         </property>
 		<property name="allowsRecordDeletion" value="true" />
-	
-        
-        
-        
-        
-        
         <property name="documentTypeName" value="TrainingMaintenanceDocument"/>
-        <!--<property name="documentAuthorizerClass" value="org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase"/> -->
-          <property name="documentAuthorizerClass" value="org.kuali.coeus.common.impl.person.attr.TrainingMaintenanceDocumentAuthorizer"/>
-        
-        
+        <property name="documentAuthorizerClass" value="org.kuali.coeus.common.impl.person.attr.TrainingMaintenanceDocumentAuthorizer"/>
     </bean>
 
     <!-- Maintenance Section Definitions -->
-    
     <bean id="TrainingMaintenanceDocument-EditTraining" parent="TrainingMaintenanceDocument-EditTraining-parentBean"/>
     <bean id="TrainingMaintenanceDocument-EditTraining-parentBean" abstract="true" parent="MaintainableSectionDefinition">
         <property name="id" value="Edit Training"/>

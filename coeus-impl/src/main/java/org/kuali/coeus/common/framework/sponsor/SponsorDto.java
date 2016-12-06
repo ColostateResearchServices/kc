@@ -18,13 +18,17 @@
  */
 package org.kuali.coeus.common.framework.sponsor;
 
+import com.codiform.moo.annotation.Property;
+
 public class SponsorDto {
 
 	private String sponsorCode;
 	private String sponsorName;
 	private String acronym;
-	
-	public String getSponsorCode() {
+    @Property(translate = true, update = true)
+    private SponsorTypeDto sponsorType;
+
+    public String getSponsorCode() {
 		return sponsorCode;
 	}
 	public void setSponsorCode(String sponsorCode) {
@@ -42,4 +46,10 @@ public class SponsorDto {
 	public void setAcronym(String acronym) {
 		this.acronym = acronym;
 	}
+    public SponsorTypeDto getSponsorType() {
+        return sponsorType;
+    }
+    public void setSponsorType(SponsorTypeDto sponsorType) {
+        this.sponsorType = sponsorType;
+    }
 }
