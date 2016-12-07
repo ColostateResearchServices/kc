@@ -20,9 +20,8 @@
 set define off
 set sqlblanklines on
 
-spool 1610_oracle_kc_upgrade.sql.log
-@./kc/bootstrap/V1610_002__fdp_form_update.sql
-@./kc/bootstrap/V1610_003__RESKC-1480.sql
-@./kc/bootstrap/V1610_008__nsf_1.6_funding_mechanism.sql
-@./kc/bootstrap/V1610_009__add_narrative_budget_form.sql
+spool 1610_oracle_kc_rice_server_upgrade.sql.log
+@./rice/bootstrap/V1610_004__RESKC-1746.sql
+@./rice/bootstrap/V1610_006__unit_sync_parameter.sql
+@./rice/bootstrap/V1610_007__project_status_feature_flag.sql
 commit;
