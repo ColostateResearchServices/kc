@@ -29,18 +29,19 @@ import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.framework.validation.ErrorReporter;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
+import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.kuali.rice.core.api.datetime.DateTimeService;
 import org.kuali.rice.kns.util.WebUtils;
 import org.kuali.rice.krad.service.BusinessObjectService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.nio.file.*;
+import java.nio.file.attribute.FileAttribute;
+import java.util.*;
 
 import static org.kuali.kra.infrastructure.Constants.MAPPING_BASIC;
 
@@ -48,7 +49,8 @@ import static org.kuali.kra.infrastructure.Constants.MAPPING_BASIC;
 
 
 public class ReportGenerationAction extends ReportGenerationBaseAction {
-    
+
+    ConfigurationService configurationService;
     /**
      * sets report parameters to action form     
      * @param mapping the ActionMapping
@@ -69,6 +71,78 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
             reportGenerationForm.setReportName(request.getParameter("reportLabel"));
         }
         return mapping.findForward(MAPPING_BASIC); 
+    }
+
+    private String addDataSource(String reportDesignText, String dataSourceName, String configParmPrefix) {
+        int dataSourceLocation=-1;
+        if ((dataSourceLocation=reportDesignText.indexOf("jdbc\" name=\""+dataSourceName+"\""))>-1) {
+            String reportDesignTextStart=reportDesignText.substring(0,reportDesignText.indexOf(">",dataSourceLocation)+1);
+            String reportDesignTextEnd=reportDesignText.substring(reportDesignText.indexOf("</oda-data-source",dataSourceLocation));
+            StringBuffer sb=new StringBuffer();
+            sb.append("\n\t\t<property name=\"odaDriverClass\">"+getConfigurationService().getPropertyValueAsString(configParmPrefix+".driver.name")+"</property>\n");
+            sb.append("\t\t<property name=\"odaURL\">"+getConfigurationService().getPropertyValueAsString(configParmPrefix+".url")+"</property>\n");
+            sb.append("\t\t<property name=\"odaUser\">"+getConfigurationService().getPropertyValueAsString(configParmPrefix+".username")+"</property>\n");
+            String encryptedPassword=Base64.getEncoder().encodeToString(getConfigurationService().getPropertyValueAsString(configParmPrefix+".password").getBytes());
+            sb.append("\t\t<encrypted-property name=\"odaPassword\" encryptionID=\"base64\">"+encryptedPassword+"</encrypted-property>\n\t");
+            reportDesignText=reportDesignTextStart+sb.toString()+reportDesignTextEnd;
+        }
+        return reportDesignText;
+    }
+
+            /*
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="Data Source" id="27">
+            <property name="odaDriverClass">oracle.jdbc.OracleDriver</property>
+            <property name="odaURL">jdbc:oracle:thin:@isdbt301.is.colostate.edu:1524:kfstrain</property>
+            <property name="odaUser">kcuser</property>
+            <encrypted-property name="odaPassword" encryptionID="base64">Y2FzZXlvMTA=</encrypted-property>
+        </oda-data-source>
+         */
+
+    public ActionForward proxyReport(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        String reportId = request.getParameter("custReportDetails.reportLabelDisplay");
+        String reportId = request.getParameter("reportId");
+        if (reportId.equalsIgnoreCase("0")) {
+            (KcServiceLocator.getService(ErrorReporter.class)).reportError("custReportDetails.reportLabelDisplay",
+                    KeyConstants.INVALID_BIRT_REPORT, "select");
+            return mapping.findForward(MAPPING_BASIC);
+        }
+        CustReportDetails reportDetails = KcServiceLocator.getService(BusinessObjectService.class).findBySinglePrimaryKey(
+                CustReportDetails.class, reportId);
+        String reportDesignDoc=new String(reportDetails.getAttachmentContent());
+
+        reportDesignDoc=addDataSource(reportDesignDoc,"ResearchDataSource","datasource");
+        reportDesignDoc=addDataSource(reportDesignDoc,"RiceDataSource","server.datasource");
+
+        String birtReportsDir=getConfigurationService().getPropertyValueAsString("birt.reports.dir");
+        String birtViewerUrl=getConfigurationService().getPropertyValueAsString("birt.viewer.url");
+        Path path = Paths.get(birtReportsDir);
+
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (Exception e) {
+                //fail to create directory
+                e.printStackTrace();
+            }
+        }
+        path=Paths.get(birtReportsDir+"/"+reportDetails.getFileName());
+        try {
+            Files.deleteIfExists(path);
+            BufferedWriter bw=Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW);
+            bw.write(reportDesignDoc);
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ActionForward birtViewer=new ActionForward();
+        birtViewer.setPath(birtViewerUrl+reportDetails.getFileName());
+        birtViewer.setRedirect(true);
+        return birtViewer;
+
+
+      //  return mapping.findForward(MAPPING_BASIC);
     }
     
     /**
@@ -181,5 +255,16 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
     
     public BirtReportService getBirtReportService() {
         return KcServiceLocator.getService(BirtReportService.class);
+    }
+
+    public ConfigurationService getConfigurationService() {
+        if (configurationService == null) {
+            configurationService =  KcServiceLocator.getService(ConfigurationService.class);
+        }
+        return configurationService;
+    }
+
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 }
