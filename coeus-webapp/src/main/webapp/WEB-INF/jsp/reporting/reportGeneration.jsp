@@ -41,14 +41,21 @@ htmlFormAction="reporting">
 					</th>
 					<td><kul:htmlControlAttribute
 							property="custReportDetails.reportLabelDisplay"
-							attributeEntry="${custReportDetailsAttributes.reportLabelDisplay}"
-							onchange="generateInputParams(this)" />
+							attributeEntry="${custReportDetailsAttributes.reportLabelDisplay}" />
 					</td>
 				</tr>
 			</table>
 		</div>
+		<div align="center">
+				<html:image
+						property="methodToCall.refresh"
+						src='${ConfigProperties.kra.externalizable.images.url}buttonsmall_report.gif' onclick="openBIRTViewer();" />
+
+			<html:image property="methodToCall.close" src="${ConfigProperties.kr.externalizable.images.url}buttonsmall_close.gif"
+						styleClass="globalbuttons" title="close" alt="close" />
+		</div>
 	</kul:tabTop>
-	<kul:tab tabTitle="" defaultOpen="true" tabErrorKey="reportParameterList[0].inputParameterText">
+<%--	<kul:tab tabTitle="" defaultOpen="true" tabErrorKey="reportParameterList[0].inputParameterText">
 	 <div class="tab-container" align="center">
 		 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<c:if test="${not empty KualiForm.reportParameterList}">
@@ -84,7 +91,7 @@ htmlFormAction="reporting">
 								</c:if>
 							</tr>
 						</c:forEach>
-						</c:if>	
+						</c:if>
 						<c:if test="${not empty KualiForm.reportId}">
 					<tr>
 						<th align="right" valign="center" width="44%"><c:out
@@ -112,5 +119,16 @@ htmlFormAction="reporting">
 			</c:if>		
 			<html:image property="methodToCall.close" src="${ConfigProperties.kr.externalizable.images.url}buttonsmall_close.gif" 
 								styleClass="globalbuttons" title="close" alt="close" />
-		</div>												
+		</div>
+--%>
+	<script>
+	function openBIRTViewer() {
+		var reportId = dwr.util.getValue("custReportDetails.reportLabelDisplay");
+		if (reportId>0) {
+			window.open(extractUrlBase() + "/reporting.do?methodToCall=proxyReport&reportId=" + reportId);
+		}
+		return false;
+	}
+
+	</script>
     </kul:page>
