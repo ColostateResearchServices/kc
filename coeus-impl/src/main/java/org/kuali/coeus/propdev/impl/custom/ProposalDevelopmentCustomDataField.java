@@ -20,6 +20,8 @@ package org.kuali.coeus.propdev.impl.custom;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.common.framework.custom.arg.ArgValueLookup;
+import org.kuali.coeus.common.framework.custom.attr.CustomAttribute;
+import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDataType;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocValue;
 import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.coeus.common.framework.rolodex.Rolodex;
@@ -29,6 +31,7 @@ import org.kuali.kra.web.krad.KcBindingInfo;
 import org.kuali.rice.kim.impl.identity.principal.PrincipalBo;
 import org.kuali.rice.krad.uif.control.Control;
 import org.kuali.rice.krad.uif.control.TextControlBase;
+import org.kuali.rice.krad.uif.control.TextAreaControl;
 import org.kuali.rice.krad.uif.field.InputFieldBase;
 import org.kuali.rice.krad.uif.util.ComponentFactory;
 import org.kuali.rice.krad.uif.util.LifecycleElement;
@@ -74,6 +77,16 @@ public class ProposalDevelopmentCustomDataField extends InputFieldBase {
         } else if (customData.getCustomAttribute().getDataTypeCode().equals("3")) {
             setControl((Control) ComponentFactory.getNewComponentInstance("Uif-DateControlOnFocus"));
             ((TextControlBase)getControl()).setWatermarkText("mm/dd/yyyy");
+        } else if (customData.getCustomAttribute().getDataTypeCode().equals("1")) {
+            int size=customData.getCustomAttribute().getDataLength();
+            int numCols=60;
+            if (size>numCols) {
+                int numRows=size/numCols;
+                setControl((Control)ComponentFactory.getNewComponentInstance(ComponentFactory.TEXTAREA_CONTROL));
+                ((TextAreaControl)getControl()).setCols(numCols);
+                ((TextAreaControl)getControl()).setRows(numRows);
+                ((TextAreaControl)getControl()).setMaxLength(size);
+            }
         }
         super.performApplyModel(model, parent);
     }
