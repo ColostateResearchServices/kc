@@ -86,6 +86,7 @@ public class ProposalDevelopmentCustomDataField extends InputFieldBase {
                 ((TextAreaControl)getControl()).setCols(numCols);
                 ((TextAreaControl)getControl()).setRows(numRows);
                 ((TextAreaControl)getControl()).setMaxLength(size);
+                ((TextAreaControl)getControl()).setWatermarkText("("+String.valueOf(size)+" characters max)");
             }
         }
         super.performApplyModel(model, parent);
