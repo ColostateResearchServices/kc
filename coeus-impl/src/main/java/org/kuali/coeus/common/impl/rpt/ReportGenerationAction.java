@@ -25,6 +25,7 @@ import org.eclipse.birt.report.engine.api.*;
 import org.eclipse.birt.report.model.api.DesignElementHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.kuali.coeus.common.impl.rpt.cust.CustReportDetails;
+import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.framework.validation.ErrorReporter;
 import org.kuali.kra.infrastructure.Constants;
@@ -51,6 +52,7 @@ import static org.kuali.kra.infrastructure.Constants.MAPPING_BASIC;
 public class ReportGenerationAction extends ReportGenerationBaseAction {
 
     ConfigurationService configurationService;
+    GlobalVariableService globalVariableService;
     /**
      * sets report parameters to action form     
      * @param mapping the ActionMapping
@@ -71,6 +73,15 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
             reportGenerationForm.setReportName(request.getParameter("reportLabel"));
         }
         return mapping.findForward(MAPPING_BASIC); 
+    }
+
+    private String addUserID(String reportDesignText, String userID) {
+        int insertPoint=reportDesignText.indexOf(">", reportDesignText.indexOf("<report"))+1;
+        String reportDesignStart=reportDesignText.substring(0,insertPoint);
+        String reportDesignEnd=reportDesignText.substring(insertPoint);
+        String userIDProperty="\n\t<property name=\"requestor\">"+userID+"</property>";
+        return reportDesignStart+userIDProperty+reportDesignEnd;
+
     }
 
     private String addDataSource(String reportDesignText, String dataSourceName, String configParmPrefix) {
@@ -110,8 +121,19 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
                 CustReportDetails.class, reportId);
         String reportDesignDoc=new String(reportDetails.getAttachmentContent());
 
-        reportDesignDoc=addDataSource(reportDesignDoc,"ResearchDataSource","datasource");
-        reportDesignDoc=addDataSource(reportDesignDoc,"RiceDataSource","server.datasource");
+        String birtReplaceDatasource=getConfigurationService().getPropertyValueAsString("birt.replace.datasource");
+
+        if (!"false".equalsIgnoreCase(birtReplaceDatasource)) {
+            reportDesignDoc = addDataSource(reportDesignDoc, "ResearchDataSource", "datasource");
+            reportDesignDoc = addDataSource(reportDesignDoc, "RiceDataSource", "server.datasource");
+        }
+        String birtRequireSecurity=getConfigurationService().getPropertyValueAsString("birt.require.security");
+        String reportSuffix="";
+        if (!"false".equalsIgnoreCase(birtRequireSecurity) && reportDetails.getPermissionName()!=null) {
+            String userID = getGlobalVariableService().getUserSession().getLoggedInUserPrincipalName();
+            reportDesignDoc = addUserID(reportDesignDoc, userID);
+            reportSuffix="."+userID.replace('@','_').replace('.','_');
+        }
 
         String birtReportsDir=getConfigurationService().getPropertyValueAsString("birt.reports.dir");
         String birtViewerUrl=getConfigurationService().getPropertyValueAsString("birt.viewer.url");
@@ -125,7 +147,8 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
                 e.printStackTrace();
             }
         }
-        path=Paths.get(birtReportsDir+"/"+reportDetails.getFileName());
+        String fullFileName=reportDetails.getFileName()+reportSuffix;
+        path=Paths.get(birtReportsDir+"/"+fullFileName);
         try {
             Files.deleteIfExists(path);
             BufferedWriter bw=Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW);
@@ -137,7 +160,7 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
         }
 
         ActionForward birtViewer=new ActionForward();
-        birtViewer.setPath(birtViewerUrl+reportDetails.getFileName());
+        birtViewer.setPath(birtViewerUrl+fullFileName);
         birtViewer.setRedirect(true);
         return birtViewer;
 
@@ -266,5 +289,16 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
 
     public void setConfigurationService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
+    }
+
+    public GlobalVariableService getGlobalVariableService() {
+        if (globalVariableService == null ) {
+            globalVariableService = KcServiceLocator.getService(GlobalVariableService.class);
+        }
+        return globalVariableService;
+    }
+
+    public void setGlobalVariableService(GlobalVariableService globalVariableService) {
+        this.globalVariableService = globalVariableService;
     }
 }
