@@ -132,7 +132,8 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
         if (!"false".equalsIgnoreCase(birtRequireSecurity) && reportDetails.getPermissionName()!=null) {
             String userID = getGlobalVariableService().getUserSession().getLoggedInUserPrincipalName();
             reportDesignDoc = addUserID(reportDesignDoc, userID);
-            reportSuffix="."+userID.replace('@','_').replace('.','_');
+ //           reportSuffix="."+userID.replace('@','_').replace('.','_');
+            reportSuffix="."+Base64.getEncoder().encodeToString(userID.getBytes()).replace("=","");
         }
 
         String birtReportsDir=getConfigurationService().getPropertyValueAsString("birt.reports.dir");
