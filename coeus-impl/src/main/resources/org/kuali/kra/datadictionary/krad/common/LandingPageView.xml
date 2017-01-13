@@ -24,7 +24,7 @@
 
     <bean id="Kc-LandingPage-DefaultView" parent="Kc-LandingPage-DefaultView-parentBean"/>
     <bean id="Kc-LandingPage-DefaultView-parentBean" abstract="true" parent="Uif-FormView"
-          p:headerText="Welcome@{#userSession == null or #userSession.getPerson() == null ? '' : ', ' + #userSession.getPerson().getFirstName()}"
+          p:headerText="Welcome@{#ConfigProperties['production.environment.code'] == #ConfigProperties['environment']? '' : ' to ' + #ConfigProperties['version'].split(#ConfigProperties['build.version']}[1]}@{#userSession == null or #userSession.getPerson() == null ? '' : ', ' + #userSession.getPerson().getFirstName()}"
           p:formClass="org.kuali.kra.web.krad.LandingPageForm">
         <property name="unifiedHeader" value="false"/>
         <property name="defaultBindingObjectPath" value=""/>
