@@ -79,9 +79,36 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
         int insertPoint=reportDesignText.indexOf(">", reportDesignText.indexOf("<report"))+1;
         String reportDesignStart=reportDesignText.substring(0,insertPoint);
         String reportDesignEnd=reportDesignText.substring(insertPoint);
-        String userIDProperty="\n\t<property name=\"requestor\">"+userID+"</property>";
+        String userIDProperty="\n\t<property name=\"requesterId\">"+userID+"</property>";
         return reportDesignStart+userIDProperty+reportDesignEnd;
 
+    }
+
+    private String replaceTag(String tagBody, String tagStart, String tagEnd, String replaceValue) {
+        String tagTextStart=tagBody.substring(0,tagBody.indexOf(tagStart)+tagStart.length()+1);
+        String tagTextEnd=tagBody.substring(tagBody.indexOf(tagEnd));
+        return tagTextStart+"<value type=\"constant\">"+replaceValue+"</value>"+tagTextEnd;
+    }
+
+    private String replaceParameter(String reportDesignText, String parameterName, String replaceValue) {
+        // <value type="constant">aakers@colostate.edu</value>
+        int parameterLocation=-1;
+        StringBuffer newDesignBuffer=new StringBuffer();
+        if ((parameterLocation=reportDesignText.indexOf("<scalar-parameter name=\""+parameterName+"\""))>-1) {
+            String reportDesignTextStart = reportDesignText.substring(0, reportDesignText.indexOf(">", parameterLocation) + 1);
+            newDesignBuffer.append(reportDesignTextStart);
+
+            String parameterTagBody = reportDesignText.substring(reportDesignText.indexOf(">", parameterLocation) + 1, (parameterLocation = reportDesignText.indexOf("</scalar-parameter", parameterLocation)));
+
+            parameterTagBody = replaceTag(parameterTagBody, "<simple-property-list name=\"defaultValue\">", "</simple-property-list>", replaceValue);
+            newDesignBuffer.append(parameterTagBody);
+
+
+            String reportDesignTextEnd = reportDesignText.substring(parameterLocation);
+            newDesignBuffer.append(reportDesignTextEnd);
+            reportDesignText = newDesignBuffer.toString();
+        }
+        return reportDesignText;
     }
 
     private String addDataSource(String reportDesignText, String dataSourceName, String configParmPrefix) {
@@ -122,16 +149,26 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
         String reportDesignDoc=new String(reportDetails.getAttachmentContent());
 
         String birtReplaceDatasource=getConfigurationService().getPropertyValueAsString("birt.replace.datasource");
-
+        String sessionUserID = getGlobalVariableService().getUserSession().getPrincipalName();
         if (!"false".equalsIgnoreCase(birtReplaceDatasource)) {
             reportDesignDoc = addDataSource(reportDesignDoc, "ResearchDataSource", "datasource");
             reportDesignDoc = addDataSource(reportDesignDoc, "RiceDataSource", "server.datasource");
         }
+        String fullPermission = reportDetails.getPermissionName();
+        String namespaceCode = "KC-UNT";
+        String permission = fullPermission;
+        if (fullPermission.contains(":")) {
+            namespaceCode = fullPermission.substring(0, fullPermission.indexOf(':'));
+            permission = fullPermission.substring(fullPermission.indexOf(':') + 1);
+        }
+        reportDesignDoc = replaceParameter(reportDesignDoc,"requesterId",sessionUserID);
+        reportDesignDoc = replaceParameter(reportDesignDoc,"reportPermNamespace",namespaceCode);
+        reportDesignDoc = replaceParameter(reportDesignDoc,"reportPermName",permission);
         String birtRequireSecurity=getConfigurationService().getPropertyValueAsString("birt.require.security");
         String reportSuffix="";
+
         if (!"false".equalsIgnoreCase(birtRequireSecurity) && reportDetails.getPermissionName()!=null) {
             String userID = getGlobalVariableService().getUserSession().getLoggedInUserPrincipalName();
-            reportDesignDoc = addUserID(reportDesignDoc, userID);
  //           reportSuffix="."+userID.replace('@','_').replace('.','_');
             reportSuffix="."+Base64.getEncoder().encodeToString(userID.getBytes()).replace("=","");
         }
