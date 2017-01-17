@@ -105,7 +105,7 @@ public class DevelopmentProposal extends KcPersistableBusinessObjectBase impleme
 
     private static final String ATTACHMENTS_COMPLETE = "Complete";
 
-    private static final String ATTACHMENTS_INCOMPLETE = "Inomplete";
+    private static final String ATTACHMENTS_INCOMPLETE = "Incomplete";
 
     private static final String ATTACHMENTS_NONE = "None";
     private static final String ROLODEX = "rolodex";
