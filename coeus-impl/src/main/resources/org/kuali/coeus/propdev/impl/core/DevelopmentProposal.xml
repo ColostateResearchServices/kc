@@ -78,6 +78,7 @@
 				<ref bean="DevelopmentProposal-opportunityIdForGG" />
 				<ref bean="DevelopmentProposal-agencyRoutingIdentifier" />
 				<ref bean="DevelopmentProposal-prevGrantsGovTrackingID" />
+				<ref bean="DevelopmentProposal-createUser" />
 			</list>
 		</property>
 		<property name="collections">
@@ -1130,6 +1131,13 @@
     <property name="description" value="Prev Grants.Gov Tracking ID "/>
 	</bean>
 
+	<bean id="DevelopmentProposal-createUser" parent="DevelopmentProposal-createUser-parentBean" />
+	<bean id="DevelopmentProposal-createUser-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="createUser" />
+		<property name="label" value="Initiator" />
+		<property name="shortLabel" value="Initiator" />
+	</bean>
+
 	<!-- Business Object Lookup Definition -->
 	<bean id="DevelopmentProposal-lookupDefinition" parent="DevelopmentProposal-lookupDefinition-parentBean" />
   <bean id="DevelopmentProposal-LookupView" parent="DevelopmentProposal-LookupView-parentBean"/>
@@ -1317,6 +1325,7 @@
             </property>
         </bean>
         <bean p:propertyName="principalInvestigatorName" parent="Uif-DataField"/>
+		  <bean p:propertyName="createUser" parent="Uif-DataField" />
         <bean p:propertyName="ownedByUnitNumber" parent="Uif-DataField">
             <property name="inquiry">
                 <bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.coeus.common.framework.unit.Unit"
