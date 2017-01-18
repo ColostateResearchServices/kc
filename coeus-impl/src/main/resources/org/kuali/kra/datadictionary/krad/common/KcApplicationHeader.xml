@@ -268,7 +268,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                       p:render="@{!#ConfigProperties['coi.projects.enabled'] and (#userSession != null and
                                     #getService('unitAuthorizationService').hasPermission(#userSession.getPrincipalId(),
                                                                                            T(org.kuali.kra.infrastructure.RoleConstants).COI_DISCLOSURE_ROLE_TYPE,
-                                                                                           T(org.kuali.kra.infrastructure.PermissionConstants).APPROVE_COI_DISCLOSURE))}"/>
+                                                                                           T(org.kuali.kra.infrastructure.PermissionConstants).VIEW_COI_DISCLOSURE))}"/>
                 <bean parent="Kc-Header-Researcher-COIStandaloneGroup" p:order="20"
                       p:render="@{#ConfigProperties['coi.projects.enabled']}"/>
             </list>
@@ -711,7 +711,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
           p:render="@{#userSession != null and
                             	    #getService('unitAuthorizationService').hasPermission(#userSession.getPrincipalId(),
                       	                        T(org.kuali.kra.infrastructure.RoleConstants).COI_DISCLOSURE_ROLE_TYPE,
-                      		                    T(org.kuali.kra.infrastructure.PermissionConstants).APPROVE_COI_DISCLOSURE)}">
+                      		                    T(org.kuali.kra.infrastructure.PermissionConstants).VIEW_COI_DISCLOSURE)}">
         <property name="items">
             <list>
                 <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
