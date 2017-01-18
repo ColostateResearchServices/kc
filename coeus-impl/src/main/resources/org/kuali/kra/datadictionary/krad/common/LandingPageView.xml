@@ -24,15 +24,15 @@
 
     <bean id="Kc-LandingPage-DefaultView" parent="Kc-LandingPage-DefaultView-parentBean"/>
     <bean id="Kc-LandingPage-DefaultView-parentBean" abstract="true" parent="Uif-FormView"
-          p:headerText="Welcome
-                        @{#userSession == null or #userSession.getPerson() == null
+          p:headerText="Welcome@{#userSession == null or #userSession.getPerson() == null
                         ? ''
-                        : ', ' + #userSession.getPerson().getFirstName()}
-                        @{#ConfigProperties['production.environment.code'] == #ConfigProperties['environment']
+                        : ', ' + #userSession.getPerson().getFirstName()}@{#ConfigProperties['production.environment.code'] == #ConfigProperties['environment']
                         ? '' :
-                        #ConfigProperties['environment'] == 'qual'
-                            ? ' you are in the quality assurance environment'
-                            : ' you are in the development environment'}"
+                        #ConfigProperties['environment'] == 'trng'
+                            ? ' you are in the training environment'
+                            : #ConfigProperties['environment'] == 'qual'
+                                ? ' you are in the quality assurance environment'
+                                : ' you are in the development environment'}"
           p:formClass="org.kuali.kra.web.krad.LandingPageForm">
         <property name="unifiedHeader" value="false"/>
         <property name="defaultBindingObjectPath" value=""/>
