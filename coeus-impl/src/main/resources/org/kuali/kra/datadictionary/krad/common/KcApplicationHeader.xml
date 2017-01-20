@@ -720,7 +720,7 @@ Portions of Kuali are copyrighted by other parties as described in the [link='@{
                     <property name="actionUrl.requestParameters">
                         <map>
                             <entry key="href"
-                                   value="@{#ConfigProperties['application.url']}/portal.do?channelTitle=Action%20List&amp;channelUrl=@{#ConfigProperties['application.url']}/kew/ActionList.do"/>
+                                   value="@{#ConfigProperties['rice.server.url']}/portal.do?channelTitle=Action%20List&amp;channelUrl=@{#ConfigProperties['application.url']}/kew/ActionList.do"/>
 
                         </map>
                     </property>
