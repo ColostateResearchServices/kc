@@ -273,10 +273,10 @@
       <bean parent="NumericPatternConstraint"/>
     </property>
     	<property name="control" >
-      <bean parent="SelectControlDefinition" p:valuesFinderClass="org.kuali.kra.coi.disclosure.CoiDispositionStatusValuesFinder"/>
+      <bean parent="SelectControlDefinition" p:valuesFinderClass="org.kuali.kra.coi.disclosure.CoiApproverDispositionStatusValuesFinder"/>
     </property>
     <property name="optionsFinder">
-      <bean class="org.kuali.kra.coi.disclosure.CoiDispositionStatusValuesFinder"/>
+      <bean class="org.kuali.kra.coi.disclosure.CoiApproverDispositionStatusValuesFinder"/>
     </property>
     <property name="controlField">
       <bean parent="Uif-DropdownControl"/>
@@ -284,6 +284,8 @@
         <property name="summary" value="Entity Status" />
         <property name="description" value="Entity Status" />
     </bean>
+
+
 
     <bean id="CoiDiscDetail-description" parent="CoiDiscDetail-description-parentBean" />
     <bean id="CoiDiscDetail-description-parentBean" abstract="true" parent="KraAttributeReferenceDummy-description"  >

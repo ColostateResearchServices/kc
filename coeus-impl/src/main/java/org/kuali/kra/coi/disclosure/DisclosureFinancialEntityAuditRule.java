@@ -94,8 +94,8 @@ public class DisclosureFinancialEntityAuditRule extends KcTransactionalDocumentR
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(Constants.COI_DISCLOSURE_DISCLOSURE_PAGE);
         stringBuilder.append(".");
-        stringBuilder.append(Constants.DISCLOSURE_FINANCIAL_ENTITY_PANEL_ANCHOR);
-        auditErrors.add(new AuditError(String.format(errorKey, property, index, index1),
+        stringBuilder.append(CSUKeyConstants.CSU_DISCLOSURE_FINANCIAL_ENTITY_PANEL_ANCHOR);
+        auditErrors.add(new AuditError(String.format(errorKey, index, property, index1),
                                         KeyConstants.ERROR_COI_FINANCIAL_ENTITY_STATUS_REQUIRED,
                                         stringBuilder.toString()));   
     }
@@ -171,13 +171,14 @@ public class DisclosureFinancialEntityAuditRule extends KcTransactionalDocumentR
     protected boolean isConflictValueSelectedForUpdate(CoiDisclosure coiDisclosure) {
         MasterDisclosureBean masterDisclosureBean = getCoiDisclosureService().getMasterDisclosureDetail(coiDisclosure);
         boolean isSelected = true;
-        isSelected &= checkProject(masterDisclosureBean.getAwardProjects(), "awardProjects");
-        isSelected &= checkProject(masterDisclosureBean.getProtocolProjects(), "protocolProjects");
-        isSelected &= checkProject(masterDisclosureBean.getProposalProjects(), "proposalProjects");
-        isSelected &= checkProject(masterDisclosureBean.getManualAwardProjects(), "manualAwardProjects");
-        isSelected &= checkProject(masterDisclosureBean.getManualProtocolProjects(), "manualProtocolProjects");
-        isSelected &= checkProject(masterDisclosureBean.getManualProposalProjects(), "manualProposalProjects");
-        isSelected &= checkProject(masterDisclosureBean.getManualTravelProjects(), "manualTravelProjects");
+//        isSelected &= checkProject(masterDisclosureBean.getAwardProjects(), "awardProjects");
+//        isSelected &= checkProject(masterDisclosureBean.getProtocolProjects(), "protocolProjects");
+//        isSelected &= checkProject(masterDisclosureBean.getProposalProjects(), "proposalProjects");
+//        isSelected &= checkProject(masterDisclosureBean.getManualAwardProjects(), "manualAwardProjects");
+//        isSelected &= checkProject(masterDisclosureBean.getManualProtocolProjects(), "manualProtocolProjects");
+//        isSelected &= checkProject(masterDisclosureBean.getManualProposalProjects(), "manualProposalProjects");
+//        isSelected &= checkProject(masterDisclosureBean.getManualTravelProjects(), "manualTravelProjects");
+        isSelected &= checkProject(masterDisclosureBean.getAllDisclosureProjects(), "allRelatedProjects");
         return isSelected;
     }
 

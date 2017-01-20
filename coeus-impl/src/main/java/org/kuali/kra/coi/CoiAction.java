@@ -50,6 +50,8 @@ public abstract class CoiAction extends KcTransactionalDocumentActionBase {
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+        final ActionForward actionForward = super.execute(mapping, form, request, response);
+
         CoiDisclosureForm coiDisclosureForm = (CoiDisclosureForm) form;
         if (coiDisclosureForm.isAuditActivated()){
             coiDisclosureForm.setUnitRulesMessages(getUnitRulesMessages(coiDisclosureForm.getCoiDisclosureDocument()));
@@ -58,7 +60,7 @@ public abstract class CoiAction extends KcTransactionalDocumentActionBase {
             KcServiceLocator.getService(AuditHelper.class).auditConditionally(coiDisclosureForm);
         }
                 
-        return super.execute(mapping, form, request, response);
+        return actionForward;
     }    
     
     public ActionForward disclosure(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
