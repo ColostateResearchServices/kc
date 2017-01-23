@@ -85,5 +85,5 @@ public interface PropDevJavaFunctionKrmsTermService extends KcKrmsJavaFunctionTe
     public String specialReviewDateRule(DevelopmentProposal developmentProposal);
     public String deadlineDateRule(DevelopmentProposal developmentProposal, String deadlineDate);
     public String routingSequenceRule(DevelopmentProposal developmentProposal);
-    
+    public String isSponsorInSponsorHierarchyGroupRule(DevelopmentProposal developmentProposal, String sponsorHierarchy, String sponsorHierarchyGroup);
 }

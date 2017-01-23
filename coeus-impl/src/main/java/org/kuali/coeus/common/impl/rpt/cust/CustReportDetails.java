@@ -173,11 +173,56 @@ public class CustReportDetails extends KcPersistableBusinessObjectBase implement
         return attachmentContent;
     }
 
+    private String stripDataSource(String reportDesignText, String dataSourceName) {
+        int dataSourceLocation=-1;
+        if ((dataSourceLocation=reportDesignText.indexOf("jdbc\" name=\""+dataSourceName+"\""))>-1) {
+            String reportDesignTextStart=reportDesignText.substring(0,reportDesignText.indexOf(">",dataSourceLocation)+1);
+            String reportDesignTextEnd=reportDesignText.substring(reportDesignText.indexOf("</oda-data-source",dataSourceLocation));
+            reportDesignText=reportDesignTextStart+reportDesignTextEnd;
+        }
+        return reportDesignText;
+    }
+
+    private String stripTag(String tagBody, String tagStart, String tagEnd) {
+        String tagTextStart=tagBody.substring(0,tagBody.indexOf(tagStart));
+        String tagTextEnd=tagBody.substring(tagBody.indexOf(tagEnd)+tagEnd.length());
+        return tagTextStart+tagTextEnd;
+    }
+
+    private String stripDefaults(String reportDesignText) {
+        int parameterLocation=-1;
+        int lastParameterLocation=0;
+        StringBuffer newDesignBuffer=new StringBuffer();
+        while ((parameterLocation=reportDesignText.indexOf("<scalar-parameter",lastParameterLocation))>-1) {
+            String reportDesignTextStart=reportDesignText.substring(lastParameterLocation,reportDesignText.indexOf(">",parameterLocation)+1);
+            newDesignBuffer.append(reportDesignTextStart);
+
+            String parameterTagBody=reportDesignText.substring(reportDesignText.indexOf(">",parameterLocation)+1,(lastParameterLocation=reportDesignText.indexOf("</scalar-parameter",parameterLocation)));
+
+            if (parameterTagBody.indexOf("removeDefault")>-1) {
+                parameterTagBody=stripTag(parameterTagBody,"<simple-property-list name=\"defaultValue\">","</simple-property-list>");
+                parameterTagBody=parameterTagBody.concat("");
+            }
+            newDesignBuffer.append(parameterTagBody);
+
+        }
+        String reportDesignTextEnd=reportDesignText.substring(lastParameterLocation);
+        newDesignBuffer.append(reportDesignTextEnd);
+        return newDesignBuffer.toString();
+    }
+
     /**
      * Sets the attachmentContent attribute value.
      * @param attachmentContent The attachmentContent to set.
      */
     public void setAttachmentContent(byte[] attachmentContent) {
+        if (attachmentContent!=null && this.attachmentContent==null) {
+            String contentStr = new String(attachmentContent);
+            contentStr = stripDataSource(contentStr,"ResearchDataSource");
+            contentStr = stripDataSource(contentStr,"RiceDataSource");
+            contentStr = stripDefaults(contentStr);
+            attachmentContent=contentStr.getBytes();
+        }
         this.attachmentContent = attachmentContent;
     }
 

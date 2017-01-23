@@ -25,22 +25,24 @@ import org.eclipse.birt.report.engine.api.*;
 import org.eclipse.birt.report.model.api.DesignElementHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.kuali.coeus.common.impl.rpt.cust.CustReportDetails;
+import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.framework.validation.ErrorReporter;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
+import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.kuali.rice.core.api.datetime.DateTimeService;
 import org.kuali.rice.kns.util.WebUtils;
 import org.kuali.rice.krad.service.BusinessObjectService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.nio.file.*;
+import java.nio.file.attribute.FileAttribute;
+import java.util.*;
 
 import static org.kuali.kra.infrastructure.Constants.MAPPING_BASIC;
 
@@ -48,7 +50,9 @@ import static org.kuali.kra.infrastructure.Constants.MAPPING_BASIC;
 
 
 public class ReportGenerationAction extends ReportGenerationBaseAction {
-    
+
+    ConfigurationService configurationService;
+    GlobalVariableService globalVariableService;
     /**
      * sets report parameters to action form     
      * @param mapping the ActionMapping
@@ -69,6 +73,137 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
             reportGenerationForm.setReportName(request.getParameter("reportLabel"));
         }
         return mapping.findForward(MAPPING_BASIC); 
+    }
+
+    private String addUserID(String reportDesignText, String userID) {
+        int insertPoint=reportDesignText.indexOf(">", reportDesignText.indexOf("<report"))+1;
+        String reportDesignStart=reportDesignText.substring(0,insertPoint);
+        String reportDesignEnd=reportDesignText.substring(insertPoint);
+        String userIDProperty="\n\t<property name=\"requesterId\">"+userID+"</property>";
+        return reportDesignStart+userIDProperty+reportDesignEnd;
+
+    }
+
+    private String replaceTag(String tagBody, String tagStart, String tagEnd, String replaceValue) {
+        String tagTextStart=tagBody.substring(0,tagBody.indexOf(tagStart)+tagStart.length()+1);
+        String tagTextEnd=tagBody.substring(tagBody.indexOf(tagEnd));
+        return tagTextStart+"<value type=\"constant\">"+replaceValue+"</value>"+tagTextEnd;
+    }
+
+    private String replaceParameter(String reportDesignText, String parameterName, String replaceValue) {
+        // <value type="constant">aakers@colostate.edu</value>
+        int parameterLocation=-1;
+        StringBuffer newDesignBuffer=new StringBuffer();
+        if ((parameterLocation=reportDesignText.indexOf("<scalar-parameter name=\""+parameterName+"\""))>-1) {
+            String reportDesignTextStart = reportDesignText.substring(0, reportDesignText.indexOf(">", parameterLocation) + 1);
+            newDesignBuffer.append(reportDesignTextStart);
+
+            String parameterTagBody = reportDesignText.substring(reportDesignText.indexOf(">", parameterLocation) + 1, (parameterLocation = reportDesignText.indexOf("</scalar-parameter", parameterLocation)));
+
+            parameterTagBody = replaceTag(parameterTagBody, "<simple-property-list name=\"defaultValue\">", "</simple-property-list>", replaceValue);
+            newDesignBuffer.append(parameterTagBody);
+
+
+            String reportDesignTextEnd = reportDesignText.substring(parameterLocation);
+            newDesignBuffer.append(reportDesignTextEnd);
+            reportDesignText = newDesignBuffer.toString();
+        }
+        return reportDesignText;
+    }
+
+    private String addDataSource(String reportDesignText, String dataSourceName, String configParmPrefix) {
+        int dataSourceLocation=-1;
+        if ((dataSourceLocation=reportDesignText.indexOf("jdbc\" name=\""+dataSourceName+"\""))>-1) {
+            String reportDesignTextStart=reportDesignText.substring(0,reportDesignText.indexOf(">",dataSourceLocation)+1);
+            String reportDesignTextEnd=reportDesignText.substring(reportDesignText.indexOf("</oda-data-source",dataSourceLocation));
+            StringBuffer sb=new StringBuffer();
+            sb.append("\n\t\t<property name=\"odaDriverClass\">"+getConfigurationService().getPropertyValueAsString(configParmPrefix+".driver.name")+"</property>\n");
+            sb.append("\t\t<property name=\"odaURL\">"+getConfigurationService().getPropertyValueAsString(configParmPrefix+".url")+"</property>\n");
+            sb.append("\t\t<property name=\"odaUser\">"+getConfigurationService().getPropertyValueAsString(configParmPrefix+".username")+"</property>\n");
+            String encryptedPassword=Base64.getEncoder().encodeToString(getConfigurationService().getPropertyValueAsString(configParmPrefix+".password").getBytes());
+            sb.append("\t\t<encrypted-property name=\"odaPassword\" encryptionID=\"base64\">"+encryptedPassword+"</encrypted-property>\n\t");
+            reportDesignText=reportDesignTextStart+sb.toString()+reportDesignTextEnd;
+        }
+        return reportDesignText;
+    }
+
+            /*
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="Data Source" id="27">
+            <property name="odaDriverClass">oracle.jdbc.OracleDriver</property>
+            <property name="odaURL">jdbc:oracle:thin:@isdbt301.is.colostate.edu:1524:kfstrain</property>
+            <property name="odaUser">kcuser</property>
+            <encrypted-property name="odaPassword" encryptionID="base64">Y2FzZXlvMTA=</encrypted-property>
+        </oda-data-source>
+         */
+
+    public ActionForward proxyReport(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        String reportId = request.getParameter("custReportDetails.reportLabelDisplay");
+        String reportId = request.getParameter("reportId");
+        if (reportId.equalsIgnoreCase("0")) {
+            (KcServiceLocator.getService(ErrorReporter.class)).reportError("custReportDetails.reportLabelDisplay",
+                    KeyConstants.INVALID_BIRT_REPORT, "select");
+            return mapping.findForward(MAPPING_BASIC);
+        }
+        CustReportDetails reportDetails = KcServiceLocator.getService(BusinessObjectService.class).findBySinglePrimaryKey(
+                CustReportDetails.class, reportId);
+        String reportDesignDoc=new String(reportDetails.getAttachmentContent());
+
+        String birtReplaceDatasource=getConfigurationService().getPropertyValueAsString("birt.replace.datasource");
+        String sessionUserID = getGlobalVariableService().getUserSession().getPrincipalName();
+        if (!"false".equalsIgnoreCase(birtReplaceDatasource)) {
+            reportDesignDoc = addDataSource(reportDesignDoc, "ResearchDataSource", "datasource");
+            reportDesignDoc = addDataSource(reportDesignDoc, "RiceDataSource", "server.datasource");
+        }
+        String fullPermission = reportDetails.getPermissionName();
+        String namespaceCode = "KC-UNT";
+        String permission = fullPermission;
+        if (fullPermission.contains(":")) {
+            namespaceCode = fullPermission.substring(0, fullPermission.indexOf(':'));
+            permission = fullPermission.substring(fullPermission.indexOf(':') + 1);
+        }
+        reportDesignDoc = replaceParameter(reportDesignDoc,"requesterId",sessionUserID);
+        reportDesignDoc = replaceParameter(reportDesignDoc,"reportPermNamespace",namespaceCode);
+        reportDesignDoc = replaceParameter(reportDesignDoc,"reportPermName",permission);
+        String birtRequireSecurity=getConfigurationService().getPropertyValueAsString("birt.require.security");
+        String reportSuffix="";
+
+        if (!"false".equalsIgnoreCase(birtRequireSecurity) && reportDetails.getPermissionName()!=null) {
+            String userID = getGlobalVariableService().getUserSession().getLoggedInUserPrincipalName();
+ //           reportSuffix="."+userID.replace('@','_').replace('.','_');
+            reportSuffix="."+Base64.getEncoder().encodeToString(userID.getBytes()).replace("=","");
+        }
+
+        String birtReportsDir=getConfigurationService().getPropertyValueAsString("birt.reports.dir");
+        String birtViewerUrl=getConfigurationService().getPropertyValueAsString("birt.viewer.url");
+        Path path = Paths.get(birtReportsDir);
+
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (Exception e) {
+                //fail to create directory
+                e.printStackTrace();
+            }
+        }
+        String fullFileName=reportDetails.getFileName()+reportSuffix;
+        path=Paths.get(birtReportsDir+"/"+fullFileName);
+        try {
+            Files.deleteIfExists(path);
+            BufferedWriter bw=Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW);
+            bw.write(reportDesignDoc);
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ActionForward birtViewer=new ActionForward();
+        birtViewer.setPath(birtViewerUrl+fullFileName);
+        birtViewer.setRedirect(true);
+        return birtViewer;
+
+
+      //  return mapping.findForward(MAPPING_BASIC);
     }
     
     /**
@@ -181,5 +316,27 @@ public class ReportGenerationAction extends ReportGenerationBaseAction {
     
     public BirtReportService getBirtReportService() {
         return KcServiceLocator.getService(BirtReportService.class);
+    }
+
+    public ConfigurationService getConfigurationService() {
+        if (configurationService == null) {
+            configurationService =  KcServiceLocator.getService(ConfigurationService.class);
+        }
+        return configurationService;
+    }
+
+    public void setConfigurationService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
+    }
+
+    public GlobalVariableService getGlobalVariableService() {
+        if (globalVariableService == null ) {
+            globalVariableService = KcServiceLocator.getService(GlobalVariableService.class);
+        }
+        return globalVariableService;
+    }
+
+    public void setGlobalVariableService(GlobalVariableService globalVariableService) {
+        this.globalVariableService = globalVariableService;
     }
 }

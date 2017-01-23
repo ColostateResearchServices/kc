@@ -20,7 +20,7 @@
 
 <c:set var="personAttributes" value="${DataDictionary.KcPerson.attributes}" />
 <c:set var="reporter" value = "document.coiDisclosureList[0].disclosurePersons[0].reporter" />
-<kul:tabTop defaultOpen="true" tabTitle="Reporter"  tabErrorKey="" >
+<kul:tabTop defaultOpen="false" tabTitle="Reporter"  tabErrorKey="" >
 
     <div class="tab-container" align="center">
         <h3>

@@ -814,7 +814,7 @@ public interface Constants {
     String DISCLOSURE_MANUAL_FINANCIAL_ENTITY_KEY = "document.coiDisclosureList[0].coiDisclProjects[0].coiDiscDetails[%s].entityStatusCode";
     String DISCLOSURE_ANNUAL_FINANCIAL_ENTITY_KEY2 = "document.coiDisclosureList[0].coiDisclProjects[%s].coiDiscDetails[%s].entityStatusCode";
 
-    String DISCLOSURE_UPDATE_FINANCIAL_ENTITY_KEY = "disclosureHelper.masterDisclosureBean.%s[%s].coiDisclProject.coiDiscDetails[%s].entityStatusCode";
+    String DISCLOSURE_UPDATE_FINANCIAL_ENTITY_KEY = "disclosureHelper.masterDisclosureBean.allDisclosuresGroupedByProjects[%s].%s[0].coiDisclProject.coiDiscDetails[%s].entityDispositionCode";
     String DISCLOSURE_CERTIFIED_NOTIFICATION = "214"; 
     
     // Person Mass Change

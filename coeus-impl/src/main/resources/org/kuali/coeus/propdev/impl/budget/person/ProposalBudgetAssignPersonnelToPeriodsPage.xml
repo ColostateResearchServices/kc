@@ -180,7 +180,7 @@
 								p:order="30" p:label="Salary Effective Date"/>
 							<bean parent="Uif-InputField" p:propertyName="budgetLineItem.costElement"
 								p:label="Object Code" p:optionsFinder="#{#getService('budgetPersonnelCostElementValuesFinder')}" 
-								p:optionsFinder.addBlankOption="false" p:order="40">
+								p:optionsFinder.addBlankOption="false" p:refreshWhenChangedPropertyNames="budgetPersonnelDetail.personSequenceNumber"  p:order="40">
 								<property name="quickfinder">
             						<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.coeus.common.budget.framework.core.CostElement"
                   						p:fieldConversions="costElement:addProjectPersonnelHelper.budgetLineItem.costElement" p:returnByScript="true"/>

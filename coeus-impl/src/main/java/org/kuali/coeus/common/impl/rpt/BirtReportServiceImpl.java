@@ -23,6 +23,7 @@ import org.kuali.coeus.common.framework.auth.UnitAuthorizationService;
 import org.kuali.coeus.sys.framework.gv.GlobalVariableService;
 import org.kuali.kra.infrastructure.PermissionConstants;
 import org.kuali.kra.infrastructure.RoleConstants;
+import org.kuali.rice.kim.api.permission.PermissionService;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,6 +50,10 @@ public class BirtReportServiceImpl implements BirtReportService{
     @Autowired
     @Qualifier("globalVariableService")
     private GlobalVariableService globalVariableService;
+
+    @Autowired
+    @Qualifier("permissionService")
+    private PermissionService permissionService;
 
     private BirtHelper birtHelper;
 
@@ -85,6 +90,7 @@ public class BirtReportServiceImpl implements BirtReportService{
         List<CustReportDetails> custReportDetails = new ArrayList<>();
         for (CustReportDetails custReportDetail : custReportDetailsList) {
             if(custReportDetail.getPermissionName() != null) {
+                /*
                 if(custReportDetail.getPermissionName().equalsIgnoreCase(PermissionConstants.RUN_GLOBAL_REPORTS)) {
                     boolean hasPermission = getUnitAuthorizationService().hasPermission(principalId, departmentCode,
                             RoleConstants.DEPARTMENT_ROLE_TYPE, custReportDetail.getPermissionName());
@@ -92,6 +98,23 @@ public class BirtReportServiceImpl implements BirtReportService{
                         custReportDetails.add(custReportDetail);
                     }
                 }
+                */
+                String fullPermission = custReportDetail.getPermissionName();
+                String namespaceCode = "KC-UNT";
+                String permission = fullPermission;
+                if (fullPermission.contains(":")) {
+                    namespaceCode = fullPermission.substring(0, fullPermission.indexOf(':'));
+                    permission = fullPermission.substring(fullPermission.indexOf(':') + 1);
+                }
+                HashMap<String,String> qualifications=new HashMap<String,String>();
+                qualifications.put("unitNumber",departmentCode);
+                boolean hasPermission = getPermissionService().isAuthorized(principalId,namespaceCode,permission,qualifications);
+                if (hasPermission) {
+                    custReportDetails.add(custReportDetail);
+                }
+            }
+            else {
+                custReportDetails.add(custReportDetail);
             }
         }
         return custReportDetails;
@@ -112,6 +135,12 @@ public class BirtReportServiceImpl implements BirtReportService{
     public UnitAuthorizationService getUnitAuthorizationService() {
         return unitAuthorizationService;
     }
+
+    public void setPermissionService(PermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
+
+    public PermissionService getPermissionService() { return permissionService;}
 
     public GlobalVariableService getGlobalVariableService() {
         return globalVariableService;

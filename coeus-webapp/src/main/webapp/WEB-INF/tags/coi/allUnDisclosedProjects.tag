@@ -28,7 +28,7 @@
 	<c:set var="projectsGroupedByDescription" value="(Grouped by Financial Entities)" />
 </c:if>
 
-<kul:tab defaultOpen="false" tabTitle="Project & Financial Entity Relationships" tabErrorKey="document.coiDisclosureList[0].coiDisclProjects*">
+<kul:tab defaultOpen="false" tabTitle="Project & Financial Entity Relationships" tabErrorKey="document.coiDisclosureList[0].coiDisclProjects*" tabAuditKey="disclosureHelper.masterDisclosureBean.allDisclosures*" useRiceAuditMode="true">
 	<div class="tab-container" align="center">
 	    <h3>
 	        <span class="subhead-left">UnDisclosed Projects ${projectsGroupedByDescription}</span>
