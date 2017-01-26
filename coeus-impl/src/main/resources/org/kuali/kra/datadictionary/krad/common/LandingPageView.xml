@@ -111,7 +111,12 @@
           parent="Kc-LandingPage-LinkGroup" p:headerText="Quick Links">
         <property name="items">
             <list>
-             <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
+
+                <bean parent="Uif-Link"
+                      p:href="https://confluence.research.colostate.edu/display/VPRKB/How+To+Report+Annual+COI"
+                      p:target="trainingWindow" p:linkText="How to Report COI" p:order="5"/>
+
+                <bean parent="Kc-Header-IframeMenuAction" p:actionUrl.viewId="Kc-Header-IframeView"
                       p:actionLabel="Search for a Sponsor" p:order="10">
                     <property name="actionUrl.requestParameters">
                         <map>
