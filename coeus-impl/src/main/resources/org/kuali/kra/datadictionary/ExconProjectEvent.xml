@@ -95,7 +95,7 @@
 	    <property name="name" value="eventDate" />
 	    <property name="label" value="Project Event Date" />
 	    <property name="shortLabel" value="Project Event Date" />
-	    <property name="required" value="false" />
+	    <property name="required" value="true" />
 	    <property name="summary" value="Project Event Date" />
 	    <property name="description" value="Project Event Date" />
   	</bean>

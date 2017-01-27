@@ -16,6 +16,7 @@
 package org.kuali.kra.excon.project;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.excon.document.ExconProjectDocument;
 import org.kuali.kra.excon.rules.ExconProjectEventAddRuleImpl;
@@ -44,17 +45,31 @@ public class ExconProjectEventsBean implements Serializable {
         boolean success = new ExconProjectEventAddRuleImpl().processAddExconProjectEventBusinessRules(getExconProject(), getExconProjectEvent());
         if(success){
             ExconProjectEvent exconProjectEvent=getExconProjectEvent();
-            if (exconProjectEvent.getProjectEventTypeCode().equals("HRD")) {
+            if (StringUtils.equals(exconProjectEvent.getProjectEventTypeCode(),"HRD")) {
                 ExconProjectHRExtension hrExtension=getExconProject().getHrExtension();
-                String commentStr="";
-                if (hrExtension.getCriminalCheck()) {commentStr+="CBC ";}
-                if (hrExtension.getSexOffenderCheck()) {commentStr+="SOR ";}
-                if (hrExtension.getMvrCheck()) {commentStr+="MVR ";}
-                if (hrExtension.getCreditCheck()) {commentStr+="FH ";}
-                if (hrExtension.getEducationCheck()) {commentStr+="EDU ";}
-                if (hrExtension.getStateCheck()) {commentStr+="STC ";}
-                commentStr=commentStr.trim();
-                exconProjectEvent.setEventComment(commentStr);
+                if (hrExtension!=null) {
+                    String commentStr = "";
+                    if (hrExtension.getCriminalCheck()) {
+                        commentStr += "CBC ";
+                    }
+                    if (hrExtension.getSexOffenderCheck()) {
+                        commentStr += "SOR ";
+                    }
+                    if (hrExtension.getMvrCheck()) {
+                        commentStr += "MVR ";
+                    }
+                    if (hrExtension.getCreditCheck()) {
+                        commentStr += "FH ";
+                    }
+                    if (hrExtension.getEducationCheck()) {
+                        commentStr += "EDU ";
+                    }
+                    if (hrExtension.getStateCheck()) {
+                        commentStr += "STC ";
+                    }
+                    commentStr = commentStr.trim();
+                    exconProjectEvent.setEventComment(commentStr);
+                }
             }
             getExconProject().add(exconProjectEvent);
             init();
