@@ -124,7 +124,8 @@ public class KeyPersonnelCertificationRule extends KcTransactionalDocumentRuleBa
     protected boolean isRouterPiAndCertified(ProposalDevelopmentDocument pdDoc) {
         String loggedInUser = getGlobalVariableService().getUserSession().getPrincipalId();
         for (ProposalPerson person : pdDoc.getDevelopmentProposal().getProposalPersons()) {
-            if (StringUtils.equalsIgnoreCase(person.getPersonId(), loggedInUser) && (person.isCoInvestigator() || person.isPrincipalInvestigator())) {
+            if (StringUtils.equalsIgnoreCase(person.getPersonId(), loggedInUser) && (person.isCoInvestigator() || person.isPrincipalInvestigator()
+                || person.isKeyPerson())) {
                 if (hasCertification(person) && !validKeyPersonCertification(person)) {
                     generateAuditError(0,person.getFullName(), ERROR_PROPOSAL_PERSON_CERTIFICATION_INCOMPLETE);
                     return false;
