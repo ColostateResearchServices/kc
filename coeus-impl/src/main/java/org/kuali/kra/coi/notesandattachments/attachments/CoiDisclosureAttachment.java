@@ -369,4 +369,11 @@ public class CoiDisclosureAttachment extends CoiDisclosureAssociate implements C
         this.usageSectionId = usageSectionId;
     }
 
+    @Override
+    public void resetPersistenceState() {
+        attachmentId=null;
+
+
+    }
+
 }

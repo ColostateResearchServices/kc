@@ -1356,6 +1356,9 @@ public class CoiDisclosureServiceImpl implements CoiDisclosureService {
     }
     
     private void addProjectDisclNotepads(CoiDisclosureProjectBean disclosureProjectBean, CoiDisclosure coiDisclosure, Long originalDisclosureId) {
+
+        if (coiDisclosure != null && coiDisclosure.getCoiDisclosureNotepads()!=null) {Collections.sort(coiDisclosure.getCoiDisclosureNotepads(), Collections.reverseOrder()); }
+
         for (CoiDisclosureNotepad disclNotepad : coiDisclosure.getCoiDisclosureNotepads()) {
             if ((disclNotepad.getOriginalCoiDisclosureId() == null && originalDisclosureId == null) || 
                     (disclNotepad.getOriginalCoiDisclosureId() != null && originalDisclosureId != null && disclNotepad.getOriginalCoiDisclosureId().equals(originalDisclosureId))) {
@@ -1879,6 +1882,10 @@ public class CoiDisclosureServiceImpl implements CoiDisclosureService {
         notesCopy.setUpdateTimestamp(notepad.getUpdateTimestamp());
         notesCopy.setUpdateUser(notepad.getUpdateUser());
         notesCopy.setUpdateUserFullName(notepad.getUpdateUserFullName());
+        notesCopy.setCreateTimestamp(notepad.getCreateTimestamp());
+        notesCopy.setCreateUser(notepad.getCreateUser());
+        notesCopy.setCreateUserFullName(notepad.getCreateUserFullName());
+        notesCopy.setUsageSectionId(notepad.getUsageSectionId());
         notesCopy.setVersionNumber(notepad.getVersionNumber());
         
         return notesCopy;
