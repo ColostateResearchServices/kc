@@ -1885,6 +1885,7 @@ public class CoiDisclosureServiceImpl implements CoiDisclosureService {
         notesCopy.setCreateTimestamp(notepad.getCreateTimestamp());
         notesCopy.setCreateUser(notepad.getCreateUser());
         notesCopy.setCreateUserFullName(notepad.getCreateUserFullName());
+        notesCopy.setUsageSectionId(notepad.getUsageSectionId());
         notesCopy.setVersionNumber(notepad.getVersionNumber());
         
         return notesCopy;
