@@ -86,7 +86,7 @@
 		        	    </td>
 		        	    <td width="12%" class="infoline">
                             <div align="center">
-                                <kul:htmlControlAttribute property="coiNotesAndAttachmentsHelper.newCoiDisclosureNotepad.noteTypeCode" attributeEntry="${notesAttributes.noteTypeCode}" readOnly="${!modifyPermission}" />
+                                <kul:htmlControlAttribute property="coiNotesAndAttachmentsHelper.newCoiDisclosureNotepad.noteTypeCode" attributeEntry="${notesAttributes.noteTypeCode}" readOnly="false" />
                             </div>
                         </td>
 			        	<td width="10%">

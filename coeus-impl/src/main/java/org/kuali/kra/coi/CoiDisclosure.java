@@ -183,7 +183,6 @@ public class CoiDisclosure extends KcPersistableBusinessObjectBase implements Se
         if (this.coiDisclosureNotepads == null) {
             this.coiDisclosureNotepads = new ArrayList<CoiDisclosureNotepad>();
         }
-        Collections.sort(coiDisclosureNotepads, Collections.reverseOrder());
         return this.coiDisclosureNotepads;
     }
 

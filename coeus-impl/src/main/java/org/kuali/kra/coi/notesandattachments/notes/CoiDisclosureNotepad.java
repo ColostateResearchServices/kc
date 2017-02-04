@@ -40,15 +40,19 @@ public class CoiDisclosureNotepad extends CoiDisclosureAssociate implements Comp
     private String noteTopic;
     private boolean restrictedView;
     private boolean editable;
+
+    @SkipVersioning
     private transient String updateUserFullName;
     private String projectId;
     private Long originalCoiDisclosureId; 
     private String noteTypeCode;
     @SkipVersioning
-    private CoiDisclosure originalCoiDisclosure; 
+    private CoiDisclosure originalCoiDisclosure;
     private Long financialEntityId;
     private String createUser;
     private Timestamp createTimestamp;
+
+    @SkipVersioning
     private transient String createUserFullName;
     private CoiNoteType noteType;
 
@@ -318,14 +322,16 @@ public class CoiDisclosureNotepad extends CoiDisclosureAssociate implements Comp
     public void setCreateUserFullName(String createUserFullName) {
         this.createUserFullName = createUserFullName;
     }
-    /*
-    @Override
+
+
+/*    @Override
     protected void prePersist() {
         super.prePersist();
-        this.setCreateUser(GlobalVariables.getUserSession().getPrincipalName());
-        this.setCreateTimestamp(((DateTimeService) KcServiceLocator.getService(Constants.DATE_TIME_SERVICE_NAME)).getCurrentTimestamp());
-    }
-    */
+        if (getCreateUser() == null) { this.setCreateUser(GlobalVariables.getUserSession().getPrincipalName()); }
+
+        if (getCreateTimestamp() == null) {  this.setCreateTimestamp(((DateTimeService) KcServiceLocator.getService(Constants.DATE_TIME_SERVICE_NAME)).getCurrentTimestamp()); }
+    }*/
+
 
     public String getUsageSectionId() {
         return usageSectionId;
@@ -365,5 +371,10 @@ public class CoiDisclosureNotepad extends CoiDisclosureAssociate implements Comp
      */
     public void setNoteTypeCode(String noteTypeCode) {
         this.noteTypeCode = noteTypeCode;
+    }
+
+    @Override
+    public void resetPersistenceState() {
+        id=null;
     }
 }

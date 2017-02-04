@@ -609,8 +609,8 @@ public class CoiNotesAndAttachmentsHelper {
             // financial entity otherwise the fin ent will be blank on add.
             notepad.refreshReferenceObject("financialEntity");
         }
+        getCoiDisclosure().getCoiDisclosureNotepads().add(notepad);
         getBusinessObjectService().save(notepad);
-        getCoiDisclosure().getCoiDisclosureNotepads().add(notepad);   
 
     }
 
