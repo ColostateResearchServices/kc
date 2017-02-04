@@ -58,7 +58,7 @@
                     <bean p:actionLabel="Send Adhoc" parent="Uif-PrimaryActionButton" p:methodToCall="sendAdHocRequests"  p:order="5"
                           p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_SEND_ADHOC_REQUESTS]}"/>
 
-					<bean  p:actionLabel="Submit for Review" parent="Uif-PrimaryActionButton" p:methodToCall="submitForReview"  p:order="10"
+					<bean  p:actionLabel="Submit to Routing" parent="Uif-PrimaryActionButton" p:methodToCall="submitForReview"  p:order="10"
                            p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_ROUTE] and document.documentHeader.workflowDocument.saved and !#parent.readOnly}"/>
 
                     <bean  p:actionLabel="Ad Hoc Recipients" parent="Uif-PrimaryActionButton" p:methodToCall="populateAdHocs"  p:order="20"
@@ -101,7 +101,7 @@
 			          	</property>
 					 </bean>
 					 
-					<bean id="PropDev-Resumbit-SubmitToSponsorButton" parent="Uif-SecondaryActionButton" p:actionLabel="Submit to Sponsor" p:methodToCall="submitToSponsor" p:order="100"
+					<bean id="PropDev-Resumbit-SubmitToSponsorButton" parent="Uif-SecondaryActionButton" p:actionLabel="Create IP" p:methodToCall="submitToSponsor" p:order="100"
 					 	p:render="@{#actionFlags[#{submitToSponsor}] and #editModes['submitToSponsor'] and !document.developmentProposal.child}" p:onClickScript="jQuery(this).hide();">
 					</bean>	
 					
