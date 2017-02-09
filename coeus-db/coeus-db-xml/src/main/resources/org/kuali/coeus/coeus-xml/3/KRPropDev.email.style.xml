@@ -32,10 +32,7 @@ Or you may access the proposal from your Action List:
 
 To view the route log of this document:
 
-    Go to <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@routeLogUrl"/><xsl:choose>
-    <xsl:when test="contains($docHandlerUrl, '?')">&amp;</xsl:when>
-    <xsl:otherwise>?</xsl:otherwise>
-</xsl:choose>documentId=<xsl:value-of select="actionItem/actionItem/documentId"/>
+    Go to <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@routeLogUrl"/><xsl:value-of select="actionItem/actionItem/documentId"/>
 
 To change how these email notifications are sent(daily, weekly or none):
     Go to <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@preferencesUrl"/>
@@ -49,6 +46,13 @@ For additional help, submit help request https://jira.research.colostate.edu/ser
         <xsl:value-of select="actionItem/actionItem/delegationType"/>
     </xsl:if>
 </xsl:if>
+
+emailUrlPrefix: <xsl:value-of select="@emailUrlPrefix"/>
+actionListUrl: <xsl:value-of select="@actionListUrl"/>
+preferenceUrl: <xsl:value-of select="@preferencesUrl"/>
+routeLogUrl: <xsl:value-of select="@routeLogUrl"/>
+documentId: <xsl:value-of select="actionItem/actionItem/documentId"/>
+docHandlerUrl: <xsl:value-of select="$docHandlerUrl"/>
 
 <xsl:value-of select="actionItem/customBody"/>
                         </body>
