@@ -25,9 +25,6 @@ To open the proposal document:
     <xsl:otherwise>?</xsl:otherwise>
 </xsl:choose>docId=<xsl:value-of select="actionItem/actionItem/documentId"/>&amp;command=displayActionListView
 
-Or you may access the proposal from your Action List:
-    Go to <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@actionListUrl"/>, and then click on the numeric Document ID: <xsl:value-of select="actionItem/actionItem/documentId"/> in the first column of the List.
-
 ** If you have questions about this proposal, please contact your department research administrator
 
 To view the route log of this document:
@@ -47,14 +44,7 @@ For additional help, submit help request https://jira.research.colostate.edu/ser
     </xsl:if>
 </xsl:if>
 
-emailUrlPrefix: <xsl:value-of select="@emailUrlPrefix"/>
-actionListUrl: <xsl:value-of select="@actionListUrl"/>
-preferenceUrl: <xsl:value-of select="@preferencesUrl"/>
-routeLogUrl: <xsl:value-of select="@routeLogUrl"/>
-documentId: <xsl:value-of select="actionItem/actionItem/documentId"/>
-docHandlerUrl: <xsl:value-of select="$docHandlerUrl"/>
-
-<xsl:value-of select="actionItem/customBody"/>
+                            <xsl:value-of select="actionItem/customBody"/>
                         </body>
                     </email>
                 </xsl:template>
