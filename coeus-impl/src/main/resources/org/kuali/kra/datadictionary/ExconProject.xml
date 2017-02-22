@@ -592,7 +592,6 @@
 			    <bean p:attributeName="projectType.description" parent="FieldDefinition" />
 			    <bean p:attributeName="unit.unitName" parent="FieldDefinition" />
 			    <bean p:attributeName="projectStatus.description" parent="FieldDefinition" />
-			    <bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
 		  </list>
 		</property>
 		<property name="resultSetLimit" value="50" />
