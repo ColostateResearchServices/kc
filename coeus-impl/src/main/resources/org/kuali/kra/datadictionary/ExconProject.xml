@@ -546,7 +546,6 @@
           <property name="numberOfColumns" value="1" />
           <property name="inquiryFields" >
             <list>
-			  	<bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
 			  	<bean p:attributeName="projectNumber" parent="FieldDefinition" />
 			  	<bean p:attributeName="title" parent="FieldDefinition" />
 			    <bean p:attributeName="projectTypeCode" parent="FieldDefinition" />
@@ -573,12 +572,10 @@
 		</property>
 		<property name="lookupFields" >
 		  <list>
-			  	<bean p:attributeName="projectId" parent="FieldDefinition" />
 			  	<bean p:attributeName="projectNumber" parent="FieldDefinition" />
 			  	<bean p:attributeName="title" parent="FieldDefinition" />
 			    <bean p:attributeName="projectTypeCode" parent="FieldDefinition" />
 			    <bean p:attributeName="unitNumber" parent="FieldDefinition" />
-			    <bean p:attributeName="sponsorCode" parent="FieldDefinition" />
 			    <bean p:attributeName="projectStatusCode" parent="FieldDefinition" />
 			    <bean p:attributeName="exconProjectPersons.fullName" parent="FieldDefinition" />
 			    <bean p:attributeName="exconProjectUnitPersons.fullName" parent="FieldDefinition" />
@@ -594,7 +591,6 @@
 			  	<bean p:attributeName="title" parent="FieldDefinition" />
 			    <bean p:attributeName="projectType.description" parent="FieldDefinition" />
 			    <bean p:attributeName="unit.unitName" parent="FieldDefinition" />
-			    <bean p:attributeName="sponsor.sponsorName" parent="FieldDefinition" />
 			    <bean p:attributeName="projectStatus.description" parent="FieldDefinition" />
 			    <bean p:attributeName="projectId" p:forceInquiry="true" parent="FieldDefinition" />
 		  </list>
