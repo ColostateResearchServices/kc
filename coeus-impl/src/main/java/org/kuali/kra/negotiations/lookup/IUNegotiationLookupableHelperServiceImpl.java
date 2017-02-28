@@ -1,6 +1,7 @@
 package org.kuali.kra.negotiations.lookup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import org.kuali.coeus.common.framework.custom.attr.CustomAttribute;
 import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.kra.negotiations.bo.Negotiation;
 import org.kuali.kra.negotiations.customdata.NegotiationCustomData;
+import org.kuali.kra.negotiations.customdata.LookupableNegotiationCustomData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.kns.web.struts.form.LookupForm;
 import org.kuali.rice.kns.web.ui.Column;
@@ -22,7 +24,6 @@ import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.krad.lookup.CollectionIncomplete;
 import org.kuali.rice.krad.util.BeanPropertyComparator;
 import org.kuali.coeus.common.framework.person.KcPersonService;
-import  org.kuali.coeus.sys.framework.util.CollectionUtils;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 
 import edu.iu.uits.kra.negotiations.lookup.IUNegotiationDaoOjb;
@@ -35,7 +36,8 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
 
 	private static final long serialVersionUID = -7144337780492481726L;
     private static final String USER_ID = "userId";
-   
+    private boolean customDataSearchParamsExist =false;
+
     private NegotiationDao negotiationDao;
     private KcPersonService kcPersonService;
 
@@ -44,57 +46,22 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
         super.setBackLocationDocFormKey(fieldValues);
+
+        String regex = "[0-9]+";
+
         if (this.getParameters().containsKey(USER_ID)) {
             fieldValues.put("associatedNegotiable.piId", ((String[]) this.getParameters().get(USER_ID))[0]);
             fieldValues.put("negotiatorPersonId", ((String[]) this.getParameters().get(USER_ID))[0]);
         }
-        
-    	List<Long> ids = null;
 
-        
-        /* Begin IU Customization */
-        //UITSRA-2543
-        Map<String, String> formProps = new HashMap<String, String>();
-        if (!StringUtils.isEmpty(fieldValues.get("sponsorAwardNumber"))
-                && !StringUtils.equals("*", fieldValues.get("sponsorAwardNumber").trim())) {
-            formProps.put("value", fieldValues.get("sponsorAwardNumber"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "SPON_AWD_ID"));
-            ids = getCustomDataIds(formProps, null);
-        }
-        fieldValues.remove("sponsorAwardNumber");
-        
-        //UITSRA-2893, UITSRA-2894
-        if (!StringUtils.isEmpty(fieldValues.get("gsTeam")) && !StringUtils.equals("*", fieldValues.get("gsTeam").trim())) {
-            formProps.put("value", fieldValues.get("gsTeam"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "gsTeam"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        
-        if (!StringUtils.isEmpty(fieldValues.get("recordResidesWith")) && !StringUtils.equals("*", fieldValues.get("recordResidesWith").trim())) {
-            formProps.put("value", fieldValues.get("recordResidesWith"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "recordLocation"));
-            ids = getCustomDataIds(formProps, ids);
+        List<Long> customDataNegotiationIds = getNegotiationIdFromCustomDataParams(fieldValues);
+
+        // if we specified customdata search parameters, but found no negotiations with those params, search is done, no results
+        if (customDataSearchParamsExist() && (customDataNegotiationIds==null || customDataNegotiationIds.isEmpty()) ) {
+            return new ArrayList<Negotiation>();
         }
 
-        if (!StringUtils.isEmpty(fieldValues.get("accountId")) && !StringUtils.equals("*", fieldValues.get("accountId").trim())) {
-            formProps.put("value", fieldValues.get("accountId"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "accountID"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        fieldValues.remove("recordResidesWith");
-        fieldValues.remove("gsTeam");
-        fieldValues.remove("accountId");
-        //End of UITSRA-2893, UITSRA-2894
-        
-        // UITSRA-4218
-        if (!StringUtils.isEmpty(fieldValues.get("contractDate")) && !StringUtils.equals("*", fieldValues.get("contractDate").trim())) {
-            formProps.put("value", fieldValues.get("contractDate"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "contractDate"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        fieldValues.remove("contractDate");
-        // End of UITSRA-4218
-        
+
         // UITSRA-3190 -Add Person Lookup capability to Search screens
         List<Long> piNegotiationIds = null;
         if (fieldValues.containsKey("associatedNegotiable.principalInvestigatorUserName")) {
@@ -112,16 +79,12 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
         			
         			if (piNegotiationIds.size() > 0) {
         				if (fieldValues.containsKey("negotiationId") && StringUtils.isNotBlank(fieldValues.get("negotiationId"))) {
-        					String regex = "[0-9]+";
         					String negotiationId = fieldValues.get("negotiationId");
         					if (negotiationId.matches(regex)) {
 	        					if (!piNegotiationIds.contains(new Long(negotiationId))) {
 	        						return new ArrayList<Negotiation>();
 	        					}
         					}
-        				}
-        				else {
-        					fieldValues.put("negotiationId", StringUtils.join(piNegotiationIds, '|'));
         				}
         			}
         			else {
@@ -166,16 +129,12 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
         			
         			if (subAwardNegotiationIds.size() > 0) {
         				if (fieldValues.containsKey("negotiationId") && StringUtils.isNotBlank(fieldValues.get("negotiationId"))) {
-        					String regex = "[0-9]+";
         					String negotiationId = fieldValues.get("negotiationId");
         					if (negotiationId.matches(regex)) {
 	        					if (!subAwardNegotiationIds.contains(new Long(negotiationId))) {
 	        						return new ArrayList<Negotiation>();
 	        					}
         					}
-        				}
-        				else {
-        					fieldValues.put("negotiationId", StringUtils.join(subAwardNegotiationIds, '|'));
         				}
         			}
         			else {
@@ -189,64 +148,7 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
             fieldValues.remove("associatedNegotiable.requisitionerUserName");
             fieldValues.remove("associatedNegotiable.subAwardRequisitionerId");
         }
-        
-        if (!StringUtils.isEmpty(fieldValues.get("modification_id")) && !StringUtils.equals("*", fieldValues.get("modification_id").trim())) {
-            formProps.put("value", fieldValues.get("modification_id"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "MOD_NUM"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        if (!StringUtils.isEmpty(fieldValues.get("proposalDocID")) && !StringUtils.equals("*", fieldValues.get("proposalDocID").trim())) {
-            formProps.put("value", fieldValues.get("proposalDocID"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "proposalDocID"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        if (!StringUtils.isEmpty(fieldValues.get("ipid")) && !StringUtils.equals("*", fieldValues.get("ipid").trim())) {
-            formProps.put("value", fieldValues.get("ipid"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "CSU_REF_NUM"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        if (!StringUtils.isEmpty(fieldValues.get("proposalType")) && !StringUtils.equals("*", fieldValues.get("proposalType").trim())) {
-            formProps.put("value", fieldValues.get("proposalType"));
-            formProps.put("customAttributeId", getCustomAttributeId("Grant Services Negotiations", "proposalType"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        fieldValues.remove("modification_id");
-        fieldValues.remove("proposalDocID");
-        fieldValues.remove("ipid");
-        fieldValues.remove("proposalType");        
-        // End of UITSRA-3761
 
-        if (!StringUtils.isEmpty(fieldValues.get("ricroCleared")) ) {
-            formProps.put("value", fieldValues.get("ricroCleared"));
-            formProps.put("customAttributeId", getCustomAttributeId("SP Office Negotiations", "RICRO_CLEARED"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        fieldValues.remove("ricroCleared");        
-        
-        if (!StringUtils.isEmpty(fieldValues.get("coiCleared")) ) {
-            formProps.put("value", fieldValues.get("coiCleared"));
-            formProps.put("customAttributeId", getCustomAttributeId("SP Office Negotiations", "COI_CLEARED"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        fieldValues.remove("coiCleared");          
-
-        if (!StringUtils.isEmpty(fieldValues.get("proposalActionType")) ) {
-            formProps.put("value", fieldValues.get("proposalActionType"));
-            formProps.put("customAttributeId", getCustomAttributeId("SP Office Negotiations", "PROP_ACTION_TYPE"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        fieldValues.remove("proposalActionType");          
-
-        if (!StringUtils.isEmpty(fieldValues.get("csuRefNum")) && !StringUtils.equals("*", fieldValues.get("csuRefNum").trim())) {
-            formProps.put("value", fieldValues.get("csuRefNum"));
-            formProps.put("customAttributeId", getCustomAttributeId("All Negotiations", "CSU_REF_NUM"));
-            ids = getCustomDataIds(formProps, ids);
-        }
-        fieldValues.remove("csuRefNum");        
-        
-        
-        /* CSU customization custom data arg search fix */
-        fieldValues.put("negotiationCustomDataList.negotiationCustomDataId", StringUtils.join(ids, '|'));
 
         /* End IU Customization */
         
@@ -258,27 +160,58 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
         List<Long> wildcardNegotiationIds = null;
         if (fieldValues.containsKey("negotiationId") && fieldValues.get("negotiationId").contains("*")) { 
         	wildcardNegotiationIds = new ArrayList<Long>(((IUNegotiationDaoOjb) getNegotiationDao()).getNegotiationIdsWithWildcard(fieldValues.get("negotiationId")));
-        	fieldValues.put("negotiationId", StringUtils.join(wildcardNegotiationIds, '|'));
         }
+
+        List<Long> userSpecifiedIds = null;
+        if (!fieldValues.get("negotiationId").isEmpty()) {
+            userSpecifiedIds = new ArrayList<>();
+            List<String> list = Arrays.asList(fieldValues.get("negotiationId").split("|"));
+            for (String value : list) {
+                if (value.matches(regex)) { userSpecifiedIds.add(new Long(value)); }
+            }
+        }
+
+        List<Long> allCommonNegotiationIds = null;
+        if (wildcardNegotiationIds != null) { allCommonNegotiationIds = wildcardNegotiationIds;}
+        if (piNegotiationIds != null && allCommonNegotiationIds == null) {
+            allCommonNegotiationIds = piNegotiationIds;
+        } else if (piNegotiationIds != null && allCommonNegotiationIds != null) {
+            allCommonNegotiationIds.retainAll(piNegotiationIds);
+        }
+        if (customDataNegotiationIds != null && allCommonNegotiationIds == null) {
+            allCommonNegotiationIds = customDataNegotiationIds;
+        } else if (customDataNegotiationIds != null && allCommonNegotiationIds != null) {
+            allCommonNegotiationIds.retainAll(customDataNegotiationIds);
+        }
+        if (subAwardNegotiationIds != null && allCommonNegotiationIds == null) {
+            allCommonNegotiationIds = subAwardNegotiationIds;
+        } else if (subAwardNegotiationIds != null && allCommonNegotiationIds != null) {
+            allCommonNegotiationIds.retainAll(subAwardNegotiationIds);
+        }
+        if (userSpecifiedIds != null && allCommonNegotiationIds != null) {
+            allCommonNegotiationIds.retainAll(userSpecifiedIds);
+        }
+
+        if (allCommonNegotiationIds != null && allCommonNegotiationIds.isEmpty()) {
+            return new ArrayList<Negotiation>();
+        }  else if (allCommonNegotiationIds != null) {
+            fieldValues.put("negotiationId", StringUtils.join(allCommonNegotiationIds, '|'));
+        }
+
+
                     
         List<Negotiation> searchResults = new ArrayList<Negotiation>();        
         CollectionIncomplete<Negotiation> limitedSearchResults;
-        
-        // UITSRA-3138
-        if (wildcardNegotiationIds == null || wildcardNegotiationIds.size() != 0 ||
-        		  piNegotiationIds == null || piNegotiationIds.size() != 0) {
-        	// UITSRA-4033
-        	limitedSearchResults = (CollectionIncomplete<Negotiation>) getNegotiationDao().getNegotiationResults(fieldValues);
-        	searchResults.addAll(limitedSearchResults);
 
-	        List defaultSortColumns = getDefaultSortColumns();
-	        if (defaultSortColumns.size() > 0) {
+        limitedSearchResults = (CollectionIncomplete<Negotiation>) getNegotiationDao().getNegotiationResults(fieldValues);
+        searchResults.addAll(limitedSearchResults);
+
+	    List defaultSortColumns = getDefaultSortColumns();
+	    if (defaultSortColumns.size() > 0) {
                 org.kuali.coeus.sys.framework.util.CollectionUtils.sort(searchResults, new BeanPropertyComparator(defaultSortColumns, true)); //UITSRA-4320
 	            return new CollectionIncomplete<Negotiation>(searchResults, limitedSearchResults.getActualSizeIfTruncated());
-	        }
+	    }
 	        return limitedSearchResults;
-        }
-        return searchResults;
     }
 
     /**
@@ -371,7 +304,7 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
     /* End IU Customization */
     
     
-    protected List<Long> getCustomDataIds(Map<String, String> formProps, List<Long> commonIds) {
+    protected List<Long> getCustomDataIdsOld(Map<String, String> formProps, List<Long> commonIds) {
         	List<Long> ids = null;
             
             // UITSRA-3138
@@ -388,4 +321,69 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
             }
             return ids;        
     }
+
+    protected List<Long> getNegotiationIdFromCustDataItem(String item, String groupName, String attributeName, Map<String, String> fieldValues, List<Long> commonIds) {
+        Map<String, String> formProps = new HashMap<String, String>();
+        List<Long> ids = null;
+
+        if (!StringUtils.isEmpty(fieldValues.get(item)) && !StringUtils.equals("*", fieldValues.get(item).trim())) {
+            formProps.put("value", fieldValues.get(item));
+            formProps.put("customAttributeId", getCustomAttributeId(groupName, attributeName));
+            ids = getCustomDataIds(formProps, commonIds);
+
+            if (commonIds != null && ids !=null && !commonIds.isEmpty() ) {
+                ids.retainAll(commonIds);
+            }
+            setCustomDataSearchParamsExist(true);
+        } else {
+            ids = commonIds;
+        }
+        fieldValues.remove(item);
+        return ids;
+    }
+
+    protected List<Long> getCustomDataIds(Map<String, String> formProps,  List<Long> commonIds) {
+        List<Long> ids = null;
+
+        Collection<LookupableNegotiationCustomData> customDatas = getLookupService().findCollectionBySearchUnbounded(LookupableNegotiationCustomData.class, formProps);
+        if (!customDatas.isEmpty()) {
+            ids = new ArrayList<Long>();
+            for (LookupableNegotiationCustomData customData : customDatas) {
+                ids.add(customData.getNegotiationId());
+            }
+        }
+
+        return ids;
+    }
+
+    protected List<Long> getNegotiationIdFromCustomDataParams(Map<String, String> fieldValues)
+    {
+        List<Long> ids = null;
+        Map<String, String> formProps = new HashMap<String, String>();
+
+        ids = getNegotiationIdFromCustDataItem("sponsorAwardNumber", "All Negotiations", "SPON_AWD_ID", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("gsTeam", "All Negotiations", "SP_TEAM", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("csuRefNum", "All Negotiations", "CSU_REF_NUM", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("recordResidesWith", "All Negotiations", "RECORD_RESIDES_WITH", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("accountId", "All Negotiations", "accountId", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("contractDate", "All Negotiations", "contractDate", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("modification_id", "All Negotiations", "MOD_NUM", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("proposalDocID", "All Negotiations", "proposalDocID", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("ipid", "All Negotiations", "CSU_REF_NUM", fieldValues, ids);
+
+
+        ids = getNegotiationIdFromCustDataItem("ricroCleared", "SP Office Negotiations", "RICRO_CLEARED", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("coiCleared", "SP Office Negotiations", "COI_CLEARED", fieldValues, ids);
+        ids = getNegotiationIdFromCustDataItem("proposalActionType", "SP Office Negotiations", "PROP_ACTION_TYPE", fieldValues, ids);
+
+
+        return ids;
+    }
+
+    protected boolean customDataSearchParamsExist() {return this.customDataSearchParamsExist;       }
+    protected void setCustomDataSearchParamsExist(boolean customDataSearchParamsExist) { this.customDataSearchParamsExist = customDataSearchParamsExist; }
+
+
+
+
 }
