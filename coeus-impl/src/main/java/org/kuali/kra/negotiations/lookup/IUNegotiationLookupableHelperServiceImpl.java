@@ -383,7 +383,30 @@ public class IUNegotiationLookupableHelperServiceImpl extends NegotiationLookupa
     protected boolean customDataSearchParamsExist() {return this.customDataSearchParamsExist;       }
     protected void setCustomDataSearchParamsExist(boolean customDataSearchParamsExist) { this.customDataSearchParamsExist = customDataSearchParamsExist; }
 
+    @Override
+    public void performClear(LookupForm lookupForm) {
+        for (Iterator iter = this.getRows().iterator(); iter.hasNext();) {
+            Row row = (Row) iter.next();
+            for (Iterator iterator = row.getFields().iterator(); iterator.hasNext();) {
+                Field field = (Field) iterator.next();
+                if (field.isSecure()) {
+                    field.setSecure(false);
+                    field.setDisplayMaskValue(null);
+                    field.setEncryptedValue(null);
+                }
 
+                if (!field.getFieldType().equals(Field.RADIO)) {
+                    field.setPropertyValue(field.getDefaultValue());
+                    if (field.getFieldType().equals(Field.MULTISELECT)) {
+                        field.setPropertyValues(null);
+                    }
+                } else {
+                    field.setPropertyValue(null);
+
+                }
+            }
+        }
+    }
 
 
 }
