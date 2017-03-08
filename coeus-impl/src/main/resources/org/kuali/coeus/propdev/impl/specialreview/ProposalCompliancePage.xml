@@ -41,7 +41,7 @@
 	<!-- Proposal Details Section -->
 	<bean id="PropDev-CompliancePage-Section" parent="PropDev-CompliancePage-Section-parentBean" />
 	<bean id="PropDev-CompliancePage-Section-parentBean" abstract="true"
-		parent="Uif-VerticalBoxSection" p:header.headerText="Compliance"
+		parent="Uif-VerticalBoxSection" p:header.headerText="Animal, Human, Biosafety"
 		p:fieldBindingObjectPath="document.developmentProposal">
 		<property name="items">
 			<list>
@@ -52,7 +52,7 @@
 
 	<bean id="PropDev-CompliancePage-CollectionGroup" parent="PropDev-CompliancePage-CollectionGroup-parentBean" />
 	<bean id="PropDev-CompliancePage-CollectionGroup-parentBean"
-		parent="Uif-Disclosure-StackedCollectionSection" p:title="Compliance" p:propertyName="propSpecialReviews"
+		parent="Uif-Disclosure-StackedCollectionSection" p:title="Animal, Human, Biosafety" p:propertyName="propSpecialReviews"
 		p:collectionObjectClass="org.kuali.coeus.propdev.impl.specialreview.ProposalSpecialReview"
 		p:layoutManager.summaryTitle="@{#line.specialReviewType.description} @{#line.approvalType != null?#line.approvalType.description:''} @{#line.protocolNumber}"
 		p:addWithDialog="true">
@@ -60,7 +60,7 @@
 			<bean parent="Uif-AddWithDialogAction" p:actionLabel="Add compliance entry" p:iconClass="icon-plus" p:render="@{!#parent.readOnly}"/>
 		</property>
         <property name="addLineDialog">
-            <bean p:id="PropDev-CompliancePage_AddDialog" parent="Uif-AddLineDialog" p:headerText="Add Compliance Entry" p:retrieveViaAjax="true"
+            <bean p:id="PropDev-CompliancePage_AddDialog" parent="Uif-AddLineDialog" p:headerText="Add Animal, Human, Biosafety Entry" p:retrieveViaAjax="true"
                   p:onHideDialogScript="var kradRequest = new KradRequest();kradRequest.methodToCall = 'clearAddCompliance';kradRequest.ajaxReturnType = 'update-none';kradRequest.send();"
                   p:destroyDialogOnHidden="true"
                   p:methodToCallOnRefresh="refreshAddCompliance"

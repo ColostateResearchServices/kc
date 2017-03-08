@@ -359,7 +359,7 @@
 
     <bean id="PropDev-SubmitPage-Compliance" parent="PropDev-SubmitPage-Compliance-parentBean"/>
     <bean id="PropDev-SubmitPage-Compliance-parentBean" abstract="true" parent="Uif-TableCollectionSection"
-        p:header.headerText="Compliance" p:propertyName="document.developmentProposal.propSpecialReviews"
+        p:header.headerText="Animal, Human, Biosafety" p:propertyName="document.developmentProposal.propSpecialReviews"
         p:collectionObjectClass="org.kuali.coeus.propdev.impl.specialreview.ProposalSpecialReview"
         p:renderAddLine="false" p:layoutManager.renderSequenceField="false"
         p:renderLineActions="false" p:layoutManager.richTable.render="false" p:readOnly="true">
