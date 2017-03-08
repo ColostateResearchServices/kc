@@ -677,7 +677,7 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
     }
 
 
-    public Boolean isCoiCleared() {
+    public Boolean getCoiCleared() {
         Long coiClearedCustAttrId = Long.valueOf(getCustomAttributeId("SP Office Negotiations", "COI_CLEARED"));
         String coiClearedString = getCustomDataValueByAttrId(coiClearedCustAttrId);
         if (!coiClearedString.isEmpty()) {
