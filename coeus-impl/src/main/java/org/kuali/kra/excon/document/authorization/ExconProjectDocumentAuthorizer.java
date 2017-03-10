@@ -18,12 +18,16 @@ package org.kuali.kra.excon.document.authorization;
 import org.drools.core.util.StringUtils;
 import org.kuali.coeus.common.framework.auth.KcTransactionalDocumentAuthorizerBase;
 import org.kuali.kra.excon.document.ExconProjectDocument;
+import org.kuali.kra.excon.project.ExconProject;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.action.ActionRequestType;
+import org.kuali.rice.kew.api.action.RequestedActions;
+import org.kuali.rice.kew.api.action.ValidActions;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kns.authorization.AuthorizationConstants;
 import org.kuali.rice.krad.document.Document;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -138,17 +142,36 @@ public class ExconProjectDocumentAuthorizer extends KcTransactionalDocumentAutho
         return hasPermission(exconProjectDocument,user,"Open");
  //       return true;
     }
-
+    /*
     @Override
     public boolean canRoute(Document document, Person user) {
         boolean canRoute = false;
         ExconProjectDocument exconProjectDocument = (ExconProjectDocument) document;
 //        canRoute = (!(isFinal(document) || isProcessed (document)) && hasPermission(exconProjectDocument, user, PermissionConstants.SUBMIT_EXCON_PROJECT));
-        canRoute = (!(isFinal(document) || isProcessed(document) || isWaitingComplete(document)) && hasPermission(exconProjectDocument,user,"Submit"));
+//        canRoute = (!(isFinal(document) || isProcessed(document) || isWaitingComplete(document) || isWaitingApproval(document)) && hasPermission(exconProjectDocument,user,"Submit"));
+        canRoute = (!(isFinal(document) || isProcessed(document) || isEnroute(document)) && hasPermission(exconProjectDocument,user,"Submit"));
+
         return canRoute;
 //        return true;
     }
-    
+*/
+    @Override
+    public boolean canApprove(Document document, Person user) {
+        return isWaitingApproval(document) && !isWaitingComplete(document);
+
+    }
+
+    @Override
+    public boolean canDisapprove(Document document, Person user) {
+        return canApprove(document,user);
+    }
+
+    @Override
+    public boolean canComplete(Document document) {
+        return super.canComplete(document) || isWaitingComplete(document);
+    }
+
+
     protected boolean isFinal(Document document) {
         return KewApiConstants.ROUTE_HEADER_FINAL_CD.equals(
                 document.getDocumentHeader().getWorkflowDocument().getStatus().getCode());
@@ -162,10 +185,23 @@ public class ExconProjectDocumentAuthorizer extends KcTransactionalDocumentAutho
                isProcessed = true;
        return isProcessed;   
    }
+
+    protected boolean isEnroute (Document document) {
+        return KewApiConstants.ROUTE_HEADER_ENROUTE_CD.equals(document.getDocumentHeader().getWorkflowDocument().getStatus().getCode());
+    }
     
     protected boolean isWaitingComplete (Document document) {
-    	return KewApiConstants.ROUTE_HEADER_ENROUTE_CD.equals(document.getDocumentHeader().getWorkflowDocument().getStatus().getCode()) &&
+    	return isEnroute(document) &&
     			document.getDocumentHeader().getWorkflowDocument().getRequestedActions().contains(ActionRequestType.COMPLETE);
+    }
+
+    protected boolean isWaitingApproval (Document document) {
+     //   ValidActions actions=document.getDocumentHeader().getWorkflowDocument().getValidActions();
+    //    RequestedActions actions=document.getDocumentHeader().getWorkflowDocument().getRequestedActions();
+
+
+        return isEnroute(document) &&
+                document.getDocumentHeader().getWorkflowDocument().getRequestedActions().contains(ActionRequestType.APPROVE);
     }
     
     private boolean hasPermission(ExconProjectDocument exconProjectDocument, Person user, String permissionName) {
