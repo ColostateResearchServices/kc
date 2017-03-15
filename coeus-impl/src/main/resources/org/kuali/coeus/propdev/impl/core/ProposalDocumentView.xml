@@ -168,7 +168,7 @@
 	<bean id="PropDev-NavigationMenu-Compliance" parent="PropDev-NavigationMenu-Compliance-parentBean" />
 	<bean id="PropDev-NavigationMenu-Compliance-parentBean" abstract="true"
 		parent="Kc-MenuAction" p:navigateToPageId="PropDev-CompliancePage"
-		p:actionLabel="Compliance" p:iconClass="icon-ok" />
+		p:actionLabel="Animal, Human, Biosafety" p:iconClass="icon-ok" />
 	<bean id="PropDev-NavigationMenu-Attachments" parent="PropDev-NavigationMenu-Attachments-parentBean" />
 	<bean id="PropDev-NavigationMenu-Attachments-parentBean" abstract="true"
 		parent="Kc-MenuAction" p:navigateToPageId="PropDev-AttachmentsPage"

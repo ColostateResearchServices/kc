@@ -171,7 +171,24 @@
             <foreignkey field-ref="customAttributeId"/>
         </reference-descriptor>
     </class-descriptor>
-    
+
+
+    <class-descriptor class="org.kuali.kra.negotiations.customdata.LookupableNegotiationCustomData" table="NEGOTIATION_CUSTOM_DATA">
+        <field-descriptor name="negotiationCustomDataId" column="NEGOTIATION_CUSTOM_DATA_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="SEQ_NEGOTIATION_CUSTOM_DATA_ID" access="readonly"/>
+        <field-descriptor name="negotiationId" column="NEGOTIATION_ID" jdbc-type="BIGINT" access="readonly"/>
+        <field-descriptor name="negotiationNumber" column="NEGOTIATION_NUMBER" jdbc-type="VARCHAR" access="readonly"/>
+        <field-descriptor name="customAttributeId" column="CUSTOM_ATTRIBUTE_ID" jdbc-type="BIGINT" access="readonly"/>
+        <field-descriptor name="value" column="VALUE" jdbc-type="VARCHAR" access="readonly"/>
+        <field-descriptor name="updateTimestamp" column="UPDATE_TIMESTAMP" jdbc-type="TIMESTAMP" access="readonly"/>
+        <field-descriptor name="updateUser" column="UPDATE_USER" jdbc-type="VARCHAR" access="readonly"/>
+        <field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="false" access="readonly"/>
+        <field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" access="readonly"/>
+        <reference-descriptor name="customAttribute" class-ref="org.kuali.coeus.common.framework.custom.attr.CustomAttribute" auto-retrieve="true" auto-update="none" auto-delete="none">
+            <foreignkey field-ref="customAttributeId"/>
+        </reference-descriptor>
+    </class-descriptor>
+
+
     <class-descriptor class="org.kuali.kra.negotiations.bo.NegotiationLocation" table="NEGOTIATION_LOCATION">
         <field-descriptor name="id" column="NEGOTIATION_LOCATION_ID" jdbc-type="BIGINT" primarykey="true" sequence-name="NEGOTIATION_LOCATION_S" autoincrement="true" />
         <field-descriptor name="code" column="NEGOTIATION_LOCATION_CODE" jdbc-type="VARCHAR" />

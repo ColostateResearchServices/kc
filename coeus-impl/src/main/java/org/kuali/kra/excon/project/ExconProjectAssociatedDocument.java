@@ -115,7 +115,7 @@ public class ExconProjectAssociatedDocument extends ExconProjectAssociate implem
 				String className=getAssocDocType().getAssocDocTypeClassName();
 				String shortClassName=className.substring(className.lastIndexOf('.')+1);
 				String documentName=shortClassName+"Document";
-				if (StringUtils.equals("DevelopmentProposal", shortClassName)) {
+				if (StringUtils.equals("LookupableDevelopmentProposal", shortClassName)) {
 					documentName="ProposalDocument";
 				}
 				HashMap<String,String> lookupVals=new HashMap<String,String>();
@@ -126,11 +126,17 @@ public class ExconProjectAssociatedDocument extends ExconProjectAssociate implem
 					PersistableBusinessObject bo=results.iterator().next();
 					String docId="";
 					try {
-						Method m=Class.forName(className).getDeclaredMethod("get"+documentName, null);
-						DocumentBase docClass=(DocumentBase)m.invoke(bo, null);
-						m=Class.forName("org.kuali.rice.krad.document.DocumentBase").getDeclaredMethod("getDocumentNumber", null);
-						docId=(String)m.invoke(docClass, null);
-					} catch (Exception e) {System.err.println(e.getMessage());}
+						Method m = Class.forName(className).getDeclaredMethod("get" + documentName, null);
+						DocumentBase docClass = (DocumentBase) m.invoke(bo, null);
+						m = Class.forName("org.kuali.rice.krad.document.DocumentBase").getDeclaredMethod("getDocumentNumber", null);
+						docId = (String) m.invoke(docClass, null);
+					} catch (Exception e) {}
+					if (StringUtils.isEmpty(docId)) {
+						try {
+							Method m = Class.forName(className).getDeclaredMethod("getDocumentNumber", null);
+							docId = (String) m.invoke(bo, null);
+						} catch (Exception e) {}
+					}
 					if (!StringUtils.isEmpty(docId)) {
 						String docViewURLParm=CoreApiServiceLocator.getKualiConfigurationService().getPropertyValueAsString("kew.url");
 						docViewURL=docViewURLParm+"/DocHandler.do?command=displayDocSearchView&docId="+docId;					

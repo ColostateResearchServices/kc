@@ -32,6 +32,7 @@
             </docHandler>
             <helpDefinitionURL>default.htm?turl=Documents/proposaldevelopment.htm</helpDefinitionURL>
             <authorizer>org.kuali.coeus.propdev.impl.auth.ProposalDevelopmentWorkflowDocumentAuthorizer</authorizer>
+            <notificationFromAddress>vpr_do_not_reply@mail.colostate.edu</notificationFromAddress>
             <emailStylesheet>KRPropDev.email.style</emailStylesheet>
             <active>true</active>
             <policies>

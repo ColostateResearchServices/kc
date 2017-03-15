@@ -136,8 +136,8 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
 
     // CSU enhancements
     private transient String csuRefNum;
-    private transient boolean ricroCleared;
-    private transient boolean coiCleared;
+    private transient Boolean ricroCleared;
+    private transient Boolean coiCleared;
     private transient String proposalActionType;
 
     public int getPrintindex() {
@@ -677,28 +677,32 @@ public class Negotiation extends KcPersistableBusinessObjectBase implements Perm
     }
 
 
-    public boolean isCoiCleared() {
+    public Boolean getCoiCleared() {
         Long coiClearedCustAttrId = Long.valueOf(getCustomAttributeId("SP Office Negotiations", "COI_CLEARED"));
         String coiClearedString = getCustomDataValueByAttrId(coiClearedCustAttrId);
-        this.coiCleared = StringUtils.equalsIgnoreCase("Y",coiClearedString);
+        if (!coiClearedString.isEmpty()) {
+            this.coiCleared = new Boolean(StringUtils.equalsIgnoreCase("Y", coiClearedString));
+        }
 
         return coiCleared;
     }
 
-    public void setCoiCleared(boolean coiCleared) {
+    public void setCoiCleared(Boolean coiCleared) {
         this.coiCleared = coiCleared;
     }
 
 
-    public boolean isRicroCleared() {
+    public Boolean getRicroCleared() {
         Long ricroCustAttrId = Long.valueOf(getCustomAttributeId("SP Office Negotiations", "RICRO_CLEARED"));
         String ricroClearedString = getCustomDataValueByAttrId(ricroCustAttrId);
-        this.ricroCleared = StringUtils.equalsIgnoreCase("Y",ricroClearedString);
+        if (!ricroClearedString.isEmpty()) {
+            this.ricroCleared = new Boolean(StringUtils.equalsIgnoreCase("Y", ricroClearedString));
+        }
 
         return ricroCleared;
     }
 
-    public void setRicroCleared(boolean ricroCleared) {
+    public void setRicroCleared(Boolean ricroCleared) {
         this.ricroCleared = ricroCleared;
     }
 

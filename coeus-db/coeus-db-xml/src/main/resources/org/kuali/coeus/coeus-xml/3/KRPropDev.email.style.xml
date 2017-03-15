@@ -12,42 +12,140 @@
                         <subject>Kuali Research Proposal Development Action List Reminder
                             <xsl:value-of select="actionItem/customSubject"/>
                         </subject>
-                        <body>Your Action List has a proposal document that needs your review and/or approval:
+
+                        <body>
+                            <xsl:choose>
+                                <xsl:when test="actionItem/actionItem/actionRequestCd = 'A'">Your Action List has a proposal document that needs your review and/or approval:</xsl:when>
+                                <xsl:when test="actionItem/actionItem/actionRequestCd = 'K'">Your Action List has a proposal document that needs your acknowledgement:</xsl:when>
+                                <xsl:when test="actionItem/actionItem/actionRequestCd = 'C'">Your Action List has a proposal document that needs you to submit to routing:</xsl:when>
+                                <xsl:when test="actionItem/actionItem/actionRequestCd = 'F'">An FYI Action Item for this proposal has been added to your Action List:</xsl:when>
+                            </xsl:choose>
+
 
 Document ID: <xsl:value-of select="actionItem/actionItem/documentId"/>
 Initiator: <xsl:value-of select="actionItem/docInitiatorDisplayName"/>
 Type: <xsl:value-of select="actionItem/documentType/label"/>
 Title: <xsl:value-of select="actionItem/actionItem/docTitle"/>
+                            <xsl:choose>
+                                <xsl:when test="actionItem/actionItem/actionRequestCd = 'A' or actionItem/actionItem/actionRequestCd = 'K' or actionItem/actionItem/actionRequestCd = 'C'">
 
-To open the proposal document:
-    Go to <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="$docHandlerUrl"/><xsl:choose>
+To open the proposal document directly
+    * Go to the URL <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="$docHandlerUrl"/><xsl:choose>
     <xsl:when test="contains($docHandlerUrl, '?')">&amp;</xsl:when>
     <xsl:otherwise>?</xsl:otherwise>
-</xsl:choose>docId=<xsl:value-of select="actionItem/actionItem/documentId"/>&amp;command=displayActionListView
+                                </xsl:choose>docId=<xsl:value-of select="actionItem/actionItem/documentId"/>&amp;command=displayActionListView
 
-** If you have questions about this proposal, please contact your department research administrator
+Access the proposal from your Action List
+    * Go to the URL <xsl:value-of select="@actionListUrl"/>
+    * Click on the numeric Document ID: <xsl:value-of select="actionItem/actionItem/documentId"/> in the first column of the List.</xsl:when>
+                                <xsl:when test="actionItem/actionItem/actionRequestCd = 'F'">
+
+An FYI does not require any action on your part.
+
+You can clear the FYI from your Action List as follows:
+    * Open Action List using the URL link <xsl:value-of select="@actionListUrl"/>
+    * In the Actions column dropdown menu, select FYI.
+    * Click the "take actions" button at the bottom of the web page.
+
+Access the proposal from your Action List
+    * Go to the URL <xsl:value-of select="@actionListUrl"/>
+    * Click on the numeric Document ID: <xsl:value-of select="actionItem/actionItem/documentId"/> in the first column of the List.</xsl:when>
+                            </xsl:choose>
+
+** If you have questions about this proposal, please contact your department research administrator<xsl:if test="not(contains(actionItem/actionItem/docTitle, concat(concat(substring-after(actionItem/docInitiatorDisplayName,','),' '),substring-before(actionItem/docInitiatorDisplayName,','))))"><xsl:value-of select="concat(' ',actionItem/docInitiatorDisplayName)"/></xsl:if>.
 
 To view the route log of this document:
-
-    Go to <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@routeLogUrl"/><xsl:value-of select="actionItem/actionItem/documentId"/>
+    * Go to the URL <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@routeLogUrl"/><xsl:value-of select="actionItem/actionItem/documentId"/>
 
 To change how these email notifications are sent(daily, weekly or none):
-    Go to <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@preferencesUrl"/>
+    * Go to the URL <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@preferencesUrl"/>
 
 For additional help, submit help request https://jira.research.colostate.edu/servicedesk/customer/portal/1/create/5
 
-<xsl:if test="@env != 'prd'">
-    Action Item sent to     <xsl:value-of select="actionItem/actionItemAuthenticationUserId/id"/>
-    <xsl:if test="string(actionItem/actionItem/delegationType)">
-        for delegation type
-        <xsl:value-of select="actionItem/actionItem/delegationType"/>
-    </xsl:if>
-</xsl:if>
+                            <xsl:if test="@env != 'prd'">
+Action Item sent to  <xsl:value-of select="user/emailAddress"/><xsl:if test="string(actionItem/actionItem/delegationType)"> for delegation type<xsl:value-of select="actionItem/actionItem/delegationType"/>
+                                </xsl:if>
+                            </xsl:if>
 
                             <xsl:value-of select="actionItem/customBody"/>
                         </body>
                     </email>
                 </xsl:template>
+
+                <xsl:template match="dailyReminder">
+                    <email xmlns="">
+                        <subject>Daily Kuali Action List Reminder</subject>
+                        <body>Your Kuali Action List has <xsl:value-of select="count(summarizedActionItem)"/> documents that need your attention:
+                            <!-- "Muenchian" method of grouping: http://www.jenitennison.com/xslt/grouping/muenchian.html
+                                 this clever little expression ensures that we only match the FIRST node
+                                 for which there is a name-to-nodeset mapping.  More specifically, we want
+                                 to ensure that we only match ONCE, but the FIRST node is the best node
+                                 to match ONCE (or at least it's as good as any other; depends on whether
+                                 we want to preserve relative ordering, etc.) -->
+                            <xsl:for-each select="summarizedActionItem[count(. | key('doctypes-by-name', docName)[1]) = 1]">
+                                <!-- the xsl:sort modifies the for-each selection order (I think) -->
+                                <!-- <xsl:sort select="name" /> -->
+                                <!-- sort by count -->
+                                <!-- the order of identical values will be arbitrary in the Java map-based implementation;
+                     switching this to desceding here because 1) it seems more useful for a user and
+                     2) I want the unit test to pass, and given that it only uses two doc types, reversing
+                     the order will make it match the literal output of the Java version ;) -->
+                                <xsl:sort data-type="number" order="descending" select="count(key('doctypes-by-name', docName))"/>
+                                <xsl:text/>
+                                <xsl:value-of select="count(key('doctypes-by-name', docName))"/>
+                                <xsl:text/>
+                                <xsl:value-of select="docName"/>
+                                <xsl-test>-</xsl-test>
+                                <xsl:value-of select="docLabel"/>
+                                <xsl:text>
+                                </xsl:text>
+                            </xsl:for-each>
+
+To respond to each of these eDocs:
+    * Go to the URL <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@actionListUrl"/>, and then click on its numeric Document ID in the first column of the List.
+
+To change how these email notifications are sent (immediately, weekly or none):
+    * Go to the URL <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@preferencesUrl"/>
+
+For additional help, submit help request https://jira.research.colostate.edu/servicedesk/customer/portal/1/create/5</body>
+                    </email>
+                </xsl:template>
+                <xsl:template match="weeklyReminder">
+                    <email xmlns="">
+                        <subject>Weekly Kuali Action List Reminder</subject>
+                        <body>Your Kuali Action List has <xsl:value-of select="count(summarizedActionItem)"/> eDocs (electronic documents) that need your attention:
+                            <!-- "Muenchian" method of grouping: http://www.jenitennison.com/xslt/grouping/muenchian.html
+                                 this clever little expression ensures that we only match the FIRST node
+                                 for which there is a name-to-nodeset mapping.  More specifically, we want
+                                 to ensure that we only match ONCE, but the FIRST node is the best node
+                                 to match ONCE (or at least it's as good as any other; depends on whether
+                                 we want to preserve relative ordering, etc.) -->
+                            <xsl:for-each select="summarizedActionItem[count(. | key('doctypes-by-name', docName)[1]) = 1]">
+                                <!-- the xsl:sort modifies the for-each selection order (I think) -->
+                                <!-- <xsl:sort select="name" /> -->
+                                <!-- sort by count -->
+                                <!-- the order of identical values will be arbitrary in the Java map-based implementation;
+                     switching this to desceding here because 1) it seems more useful for a user and
+                     2) I want the unit test to pass, and given that it only uses two doc types, reversing
+                     the order will make it match the literal output of the Java version ;) -->
+                                <xsl:sort data-type="number" order="descending" select="count(key('doctypes-by-name', docName))"/>
+                                <xsl:text/>
+                                <xsl:value-of select="count(key('doctypes-by-name', docName))"/>
+                                <xsl:text/>
+                                <xsl:value-of select="docName"/>
+                                <xsl-test>-</xsl-test>
+                                <xsl:value-of select="docLabel"/>
+                                <xsl:text>
+                                </xsl:text>
+                            </xsl:for-each>
+
+To respond to each of these eDocs:
+    * Go to the URL <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@actionListUrl"/>, and then click on its numeric Document ID in the first column of the List.
+
+
+To change how these email notifications are sent (immediately, weekly or none):
+    * Go to the URL <xsl:value-of select="@emailUrlPrefix"/><xsl:value-of select="@preferencesUrl"/>
+=======
 
                 <xsl:template match="dailyReminder">
                     <email xmlns="">
@@ -140,6 +238,7 @@ To change how these email notifications are sent (immediately, weekly or none):
 Go to
 <xsl:value-of select="@emailUrlPrefix"/>
 <xsl:value-of select="@preferencesUrl"/>
+
 
 
 For additional help, submit help request https://jira.research.colostate.edu/servicedesk/customer/portal/1/create/5

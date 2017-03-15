@@ -73,7 +73,7 @@
 					<kul:htmlControlAttribute property="exconProjectAssociatedDocumentsBean.newAssociatedDocument.assocDocNumber"
 								attributeEntry="${AssociatedDocumentAttributes.assocDocNumber}"
 								readOnly="${readOnly || returnsVals}" />
-					<c:if test="${isInternal}">
+					<c:if test="${isInternal && returnsVals}">
 								<kul:lookup boClassName="${KualiForm.exconProjectAssociatedDocumentsBean.newAssociatedDocument.assocDocType.assocDocTypeClassName}"
 									fieldConversions="${assocDocIdAttr}:exconProjectAssociatedDocumentsBean.newAssociatedDocument.assocDocNumber,title:exconProjectAssociatedDocumentsBean.newAssociatedDocument.assocDocTitle"
 									anchor="${tabKey}" />
