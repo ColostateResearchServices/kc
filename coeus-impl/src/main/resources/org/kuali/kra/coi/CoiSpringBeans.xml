@@ -236,16 +236,8 @@
     
     <bean id="coiDisclosureEventTypeLookupableHelperService" class="org.kuali.kra.coi.maintenance.CoiDisclosureEventTypeLookupableHelper" parent="parentLookupableHelperService" scope="prototype">
     </bean>
-    
-    
-    <bean id="coiSubmittedDisclosureLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
-  		<property name="lookupableHelperService">
-    		<ref bean="coiSubmittedDisclosureLookupableHelperService" />
-  		</property>
-	</bean>
-	
-    <bean id="coiSubmittedDisclosureLookupableHelperService" class="org.kuali.kra.coi.lookup.CoiSubmittedDisclosureLookupableHelper" parent="parentLookupableHelperService" scope="prototype">
-    </bean>
+
+
     
     <bean id="coiNonProjectEventDisclosureLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
   		<property name="lookupableHelperService">
@@ -271,11 +263,29 @@
   		</property>
 	</bean>
 
-
     <bean id="coiDisclosureReviewsLookupableHelperService" class="org.kuali.kra.coi.lookup.CoiDisclosureReviewsLookupableHelper" parent="parentLookupableHelperService" scope="prototype">
         <property name="coiDisclosureDao" ref="coiDisclosureDao" />
 
     </bean>
+
+    <bean id="unitService" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="unitService" />
+    </bean>
+
+    <bean id="coiSubmittedDisclosureLookupableHelperService" class="org.kuali.kra.coi.lookup.CoiSubmittedDisclosureLookupableHelper" parent="parentLookupableHelperService" scope="prototype">
+        <property name="roleService" ref ="roleService" />
+        <property name="unitService" ref ="unitService" />
+        <property name="coiDisclosureDao" ref="coiDisclosureDao" />
+    </bean>
+
+    <bean id="coiSubmittedDisclosureLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
+        <property name="lookupableHelperService">
+            <ref bean="coiSubmittedDisclosureLookupableHelperService" />
+        </property>
+    </bean>
+
+
+
 
     <bean id="coiDisclosureUndisclosedEventsLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="prototype">
   		<property name="lookupableHelperService">

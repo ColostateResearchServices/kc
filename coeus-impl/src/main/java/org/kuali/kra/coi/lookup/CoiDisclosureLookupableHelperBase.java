@@ -23,11 +23,13 @@ import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.coeus.common.framework.person.KcPersonService;
 import org.kuali.coeus.common.framework.auth.task.ApplicationTask;
 import org.kuali.coeus.common.framework.auth.task.TaskAuthorizationService;
+import org.kuali.coeus.common.framework.unit.UnitService;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.coi.CoiDisclosure;
 import org.kuali.kra.infrastructure.TaskName;
 import org.kuali.kra.lookup.KraLookupableHelperServiceImpl;
 import org.kuali.rice.kew.api.KewApiConstants;
+import org.kuali.rice.kim.api.role.RoleService;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.kns.web.struts.form.LookupForm;
@@ -40,14 +42,19 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 import java.util.*;
+import org.kuali.coeus.common.framework.unit.Unit;
+
 
 @SuppressWarnings("deprecation")
 public abstract class CoiDisclosureLookupableHelperBase extends KraLookupableHelperServiceImpl {
 
 
     private static final long serialVersionUID = -1746355811792663715L;
-    
+
     private TaskAuthorizationService taskAuthorizationService;
+    private transient RoleService roleService;
+    private transient UnitService unitService;
+
 
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
         List<? extends BusinessObject> retVal = new ArrayList<CoiDisclosure>();
@@ -151,7 +158,56 @@ public abstract class CoiDisclosureLookupableHelperBase extends KraLookupableHel
 
         return htmlData;
     }
-    
+
+
+    protected List<String> getUnitsForCoiRole(String coiRole) {
+        HashMap<String, String> qualifications = new HashMap<String, String>();
+        qualifications.put("unitNumber", "*");
+        List<Map<String,String>> roleQuals = roleService.getRoleQualifersForPrincipalByNamespaceAndRolename( getUserIdentifier(),"KC-COIDISCLOSURE", coiRole, qualifications);
+        boolean descendHierarchy = false;
+
+
+        List<String> unitList=null;
+        for ( Map<String,String> qualification : roleQuals ) {
+            if (qualification.containsKey("unitNumber")) {  //KcKimAttributes.UNIT_NUMBER SUBUNITS
+                unitList = new ArrayList<String>();
+                String unitNumber = qualification.get("unitNumber");
+                unitList.add(unitNumber);
+                if (qualification.containsKey("subunits")) {
+                    descendHierarchy = qualification.get("subunits").equalsIgnoreCase("Y");
+                    if (descendHierarchy) {
+                        // add subunits here...
+                        List<Unit> subUnits = unitService.getAllSubUnits(unitNumber);
+                        for (Unit unit: subUnits) {
+                            unitList.add(unit.getUnitNumber());
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        return unitList;
+
+    }
+
+    public RoleService getRoleService() {
+        return roleService;
+    }
+
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
+    }
+
+    public UnitService getUnitService() {
+        return unitService;
+    }
+
+    public void setUnitService(UnitService unitService) {
+        this.unitService = unitService;
+    }
+
     @Override
     protected String getDocumentTypeName() {
         return "CoiDisclosureDocument";

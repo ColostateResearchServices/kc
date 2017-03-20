@@ -177,7 +177,6 @@
         <bean p:propertyName="person.userName" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="certifiedBy" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="disclosureDispositionCode" parent="Uif-LookupCriteriaInputField"/>
-        <bean p:propertyName="disclosureStatusCode" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="expirationDate" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="eventTypeCode" parent="Uif-LookupCriteriaInputField"/>
         <bean p:propertyName="leadUnitNumber" parent="Uif-LookupCriteriaInputField"/>

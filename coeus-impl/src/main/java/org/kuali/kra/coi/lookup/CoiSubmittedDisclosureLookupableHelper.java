@@ -19,14 +19,19 @@
 package org.kuali.kra.coi.lookup;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.QueryByCriteria;
+import org.displaytag.util.CollectionUtil;
 import org.kuali.kra.coi.CoiDisclosure;
+import org.kuali.kra.coi.CoiReviewer;
+import org.kuali.kra.coi.CoiUserRole;
 import org.kuali.kra.coi.auth.CoiDisclosureTask;
+import org.kuali.kra.coi.lookup.dao.ojb.CoiDisclosureDaoOjb;
 import org.kuali.kra.infrastructure.TaskName;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class CoiSubmittedDisclosureLookupableHelper extends CoiDisclosureLookupableHelperBase {
@@ -35,10 +40,43 @@ public class CoiSubmittedDisclosureLookupableHelper extends CoiDisclosureLookupa
     private static final long serialVersionUID = 4999402404037030752L;
     //field name
     private static final String LEAD_UNIT = "leadUnitNumber";
-    
+
+    private transient CoiDisclosureDaoOjb coiDisclosureDao;
+
+
 
     @Override
     public List<? extends BusinessObject> getLookupSpecificSearchResults(Map<String, String> fieldValues) {
+
+        // disclosureStatus 2 is Routed for Review
+        fieldValues.remove("disclosureStatusCode");
+        fieldValues.put("disclosureStatusCode", "2");
+
+        List<String> allUnits = new ArrayList<String>();
+        String allUnitsString=fieldValues.get("unitNumber");
+        if (allUnitsString != null && allUnitsString.length()>0) {
+            allUnits.add(allUnitsString);
+        }
+
+        List<String> viewerUnits = getUnitsForCoiRole("COI Viewer");
+        if (viewerUnits!=null && !viewerUnits.isEmpty()) {
+            allUnits.addAll(viewerUnits);
+        }
+
+        List<String> reviewerUnits = getUnitsForCoiRole("COI Reviewer");
+        if (reviewerUnits!=null && !reviewerUnits.isEmpty()) {
+            allUnits.addAll(reviewerUnits);
+        }
+
+        List<String> approverUnits = getUnitsForCoiRole("COI Approver");
+        if (approverUnits!=null && !approverUnits.isEmpty()) {
+            allUnits.addAll(approverUnits);
+        }
+
+        if ( allUnits !=null &&  !allUnits.isEmpty()) {
+            fieldValues.put("unitNumber", String.join("|", allUnits));
+        }
+
         List<CoiDisclosure> allDisclosures = (List<CoiDisclosure>) super.getResults(fieldValues);
         List<CoiDisclosure> submittedDisclosures = new ArrayList<CoiDisclosure>();
 
@@ -47,6 +85,15 @@ public class CoiSubmittedDisclosureLookupableHelper extends CoiDisclosureLookupa
                 submittedDisclosures.add(disclosure);
             }
         }
+
+        List<CoiDisclosure> assignedDisclosureReviews = (List<CoiDisclosure>) (getAssignedDisclosureReviews());
+
+        for (CoiDisclosure disclosure : assignedDisclosureReviews) {
+            if (disclosure.isSubmitted() && this.disclosureCanBeDisplayed(disclosure, fieldValues) && !submittedDisclosures.contains(disclosure)) {
+                submittedDisclosures.add(disclosure);
+            }
+        }
+
         return submittedDisclosures;
     }
     
@@ -76,5 +123,51 @@ public class CoiSubmittedDisclosureLookupableHelper extends CoiDisclosureLookupa
     protected boolean isAuthorizedForCoiLookups() {
         return true;
     }
-    
+
+
+    /**
+     * this is identical to code in CoiDisclosureReviewsLookupableHelper, but had issues Spring injecting that class into this one.
+     * @return
+     */
+    protected List<CoiDisclosure> getAssignedDisclosureReviews() {
+
+        String currentUser = GlobalVariables.getUserSession().getPrincipalName();
+        List<CoiDisclosure> disclosuresToReview = new ArrayList<CoiDisclosure>();
+
+
+        HashMap<String, Object> roleFieldValues = new HashMap<String, Object>();
+        roleFieldValues.put("userId", currentUser);
+        roleFieldValues.put("reviewerCode", CoiReviewer.ASSIGNED_REVIEWER);
+        roleFieldValues.put("reviewCompleted", false);
+
+        List<CoiUserRole> coiUserRoles = (List<CoiUserRole>) businessObjectService.findMatching(CoiUserRole.class, roleFieldValues);
+
+        List<Long> disclosureList =   new ArrayList<Long>();
+
+        for (CoiUserRole role : coiUserRoles) {
+            disclosureList.add(role.getCoiDisclosureId());
+        }
+
+
+        Criteria crit = new Criteria();
+        crit.addIn("coiDisclosureId", disclosureList);
+        QueryByCriteria query = new QueryByCriteria(CoiDisclosure.class, crit);
+
+        if (!disclosureList.isEmpty()) {
+            disclosuresToReview =  new ArrayList<CoiDisclosure>((Collection<CoiDisclosure>)getCoiDisclosureDao().getPersistenceBrokerTemplate().getCollectionByQuery(query));
+        }
+
+        return disclosuresToReview;
+    }
+
+
+
+    public CoiDisclosureDaoOjb getCoiDisclosureDao() {
+        return coiDisclosureDao;
+    }
+
+    public void setCoiDisclosureDao(CoiDisclosureDaoOjb coiDisclosureDao) {
+        this.coiDisclosureDao = coiDisclosureDao;
+    }
+
 }
